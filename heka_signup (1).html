@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+
+/* 상단 네비 */
+.topbar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #e0e0e0}
+.back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1}
+.topbar-title{font-size:15px;font-weight:700;color:#111}
+
+/* 프로그레스 */
+.progress{display:flex;align-items:flex-start;justify-content:center;padding:14px 18px 10px}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.step-circle{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.step-circle.done{background:#1A5D1A;color:#fff}
+.step-circle.active{background:#1A5D1A;color:#fff;box-shadow:0 0 0 3px #e8f5e8}
+.step-circle.inactive{background:#f0f0f0;color:#bbb;border:1.5px solid #e0e0e0}
+.step-label{font-size:9px;font-weight:600;white-space:nowrap}
+.step-label.done,.step-label.active{color:#1A5D1A}
+.step-label.inactive{color:#bbb}
+.step-line{flex:1;height:2px;margin-top:12px;border-radius:2px}
+.step-line.done{background:#1A5D1A}
+.step-line.inactive{background:#e0e0e0}
+
+/* 화면 공통 */
+.screen{display:none;padding-bottom:16px}
+.screen.active{display:block}
+.screen-head{padding:12px 16px 8px}
+.screen-head h2{font-size:18px;font-weight:800;color:#111;line-height:1.4;margin-bottom:3px}
+.screen-head p{font-size:11px;color:#717171}
+
+/* 체크박스 */
+.check-wrap{margin:0 16px;border-radius:8px;overflow:hidden;border:.5px solid #e0e0e0}
+.check-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
+.check-item:last-child{border-bottom:none}
+.check-item.all-item{background:#e8f5e8}
+.check-item:hover{background:#fafafa}
+.check-item.all-item:hover{background:#d8f0d8}
+.check-left{display:flex;align-items:center;gap:9px}
+.chkbox{width:18px;height:18px;border-radius:4px;border:1.5px solid #e0e0e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s}
+.chkbox.checked{background:#1A5D1A;border-color:#1A5D1A}
+.chkbox.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
+.check-txt{font-size:12px;color:#111;font-weight:500}
+.check-txt.green{color:#1A5D1A;font-weight:700}
+.badge-req{font-size:9px;color:#717171;background:#f5f5f5;padding:2px 6px;border-radius:4px}
+.badge-opt{font-size:9px;color:#bbb;background:#f5f5f5;padding:2px 6px;border-radius:4px}
+.check-arrow{font-size:13px;color:#ccc}
+
+/* 폼 */
+.form-wrap{padding:6px 16px;display:flex;flex-direction:column;gap:10px}
+.field-group{display:flex;flex-direction:column;gap:4px}
+.field-label{font-size:10px;font-weight:700;color:#717171;letter-spacing:.08em;text-transform:uppercase}
+.field-input{width:100%;padding:11px 13px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:13px;background:#f5f5f5;color:#111;font-family:inherit;outline:none;transition:.15s}
+.field-input:focus{border-color:#1A5D1A;background:#fff}
+.field-input.error{border-color:#ff3b30;background:#fff8f8}
+.field-error{font-size:10px;color:#ff3b30;font-weight:500;display:none}
+.field-error.show{display:block}
+.field-ok{font-size:10px;color:#1A5D1A;font-weight:500;display:none}
+.field-ok.show{display:block}
+.field-hint{font-size:10px;color:#bbb}
+
+/* 통신사 칩 */
+.carrier-row{display:flex;gap:5px}
+.carrier-chip{flex:1;padding:8px 4px;border-radius:16px;font-size:10px;font-weight:600;border:1.5px solid #e0e0e0;background:#fff;color:#717171;cursor:pointer;text-align:center;font-family:inherit;transition:.15s}
+.carrier-chip.on{background:#1A5D1A;border-color:#1A5D1A;color:#fff}
+
+/* 인증번호 */
+.input-row{display:flex;gap:7px}
+.input-row .field-input{flex:1}
+.send-btn{flex-shrink:0;padding:0 12px;border-radius:8px;background:#1A5D1A;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.send-btn:disabled{background:#bbb;cursor:default}
+.timer-wrap{position:relative}
+.timer-wrap .field-input{padding-right:46px}
+.timer{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#1A5D1A}
+
+/* 버튼 */
+.btn-primary{width:calc(100% - 32px);margin:10px 16px 0;padding:13px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-primary:hover{background:#145014}
+.btn-primary:disabled{background:#bbb;cursor:default}
+.btn-gray{background:#f5f5f5;color:#717171;border:1.5px solid #e0e0e0}
+
+/* 팝업 */
+.popup-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:50;display:none;align-items:center;justify-content:center;border-radius:26px}
+.popup-overlay.open{display:flex}
+.popup{background:#fff;border-radius:16px;padding:24px 20px 16px;margin:0 20px;width:100%}
+.popup-title{font-size:15px;font-weight:700;color:#111;margin-bottom:8px;text-align:center}
+.popup-body{font-size:13px;color:#555;text-align:center;line-height:1.6;margin-bottom:18px}
+.popup-btn{width:100%;padding:12px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+/* 완료 팝업 */
+.popup-success .popup-icon{font-size:40px;text-align:center;margin-bottom:10px}
+
+/* 하단 네비 */
+.bnav{display:flex;border-top:.5px solid #eee;background:#fff;padding:8px 0 10px}
+.ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ni.on{color:#1A5D1A;font-weight:600}
+.ni svg{width:17px;height:17px}
+.nplus{flex:1;display:flex;flex-direction:column;align-items:center}
+.npbtn{width:34px;height:34px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+
+/* 가입완료 토스트 */
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,0.95);color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="topbar-title">이메일로 회원가입</span>
+  </div>
+
+  <!-- 프로그레스 (공통) -->
+  <div class="progress" id="progress">
+    <div class="step">
+      <div class="step-circle active" id="sc1">1</div>
+      <span class="step-label active" id="sl1">약관동의</span>
+    </div>
+    <div class="step-line inactive" id="line1"></div>
+    <div class="step">
+      <div class="step-circle inactive" id="sc2">2</div>
+      <span class="step-label inactive" id="sl2">본인인증</span>
+    </div>
+    <div class="step-line inactive" id="line2"></div>
+    <div class="step">
+      <div class="step-circle inactive" id="sc3">3</div>
+      <span class="step-label inactive" id="sl3">가입완료</span>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1: 약관 동의 ══ -->
+  <div class="screen active" id="step1">
+    <div class="screen-head">
+      <h2>약관에 동의하고<br>인증을 진행해 주세요</h2>
+    </div>
+    <div class="check-wrap">
+      <div class="check-item all-item" onclick="toggleAll(this)">
+        <div class="check-left">
+          <div class="chkbox" id="chk-all"></div>
+          <span class="check-txt green">전체 동의</span>
+        </div>
+      </div>
+      <div class="check-item" data-req="true" onclick="toggleItem(this)">
+        <div class="check-left"><div class="chkbox"></div><span class="check-txt">서비스 이용약관 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><span class="check-arrow">›</span></div>
+      </div>
+      <div class="check-item" data-req="true" onclick="toggleItem(this)">
+        <div class="check-left"><div class="chkbox"></div><span class="check-txt">개인정보 수집 및 이용 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><span class="check-arrow">›</span></div>
+      </div>
+      <div class="check-item" data-req="false" onclick="toggleItem(this)">
+        <div class="check-left"><div class="chkbox"></div><span class="check-txt">위치 정보 이용약관 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow">›</span></div>
+      </div>
+      <div class="check-item" data-req="false" onclick="toggleItem(this)">
+        <div class="check-left"><div class="chkbox"></div><span class="check-txt">마케팅 정보 수신 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow">›</span></div>
+      </div>
+      <div class="check-item" data-req="true" onclick="toggleItem(this)">
+        <div class="check-left"><div class="chkbox"></div><span class="check-txt">만 14세 이상입니다</span></div>
+        <span class="badge-req">필수</span>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="step1Next()">다음</button>
+    <p style="font-size:10px;color:#bbb;text-align:center;margin-top:8px;padding:0 16px">필수 항목 모두 동의 후 다음 단계로 진행할 수 있어요</p>
+  </div>
+
+  <!-- ══ STEP 2: 본인 인증 ══ -->
+  <div class="screen" id="step2">
+    <div class="screen-head">
+      <h2>본인 인증을<br>진행해 주세요</h2>
+      <p>휴대폰 번호로 본인을 확인합니다</p>
+    </div>
+    <div class="form-wrap">
+      <div class="field-group">
+        <div class="field-label">이름</div>
+        <input class="field-input" id="inp-name" placeholder="홍길동" type="text"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">생년월일</div>
+        <input class="field-input" id="inp-birth" placeholder="YYYY / MM / DD" type="text"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">통신사</div>
+        <div class="carrier-row">
+          <button class="carrier-chip on" onclick="selectCarrier(this)">SKT</button>
+          <button class="carrier-chip" onclick="selectCarrier(this)">KT</button>
+          <button class="carrier-chip" onclick="selectCarrier(this)">LG U+</button>
+          <button class="carrier-chip" onclick="selectCarrier(this)">알뜰폰</button>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">휴대폰 번호</div>
+        <div class="input-row">
+          <input class="field-input" id="inp-phone" placeholder="010-0000-0000" type="tel"/>
+          <button class="send-btn" id="send-btn" onclick="sendCode()">인증번호<br>받기</button>
+        </div>
+      </div>
+      <div class="field-group" id="code-group" style="display:none">
+        <div class="field-label">인증번호</div>
+        <div class="timer-wrap">
+          <input class="field-input" id="inp-code" placeholder="6자리 입력" maxlength="6" type="text"/>
+          <span class="timer" id="timer-txt">3:00</span>
+        </div>
+        <div class="field-error" id="code-error">인증번호가 올바르지 않아요</div>
+      </div>
+    </div>
+    <button class="btn-primary btn-gray" id="verify-btn" onclick="verifyCode()" disabled>인증 완료</button>
+  </div>
+
+  <!-- ══ STEP 3: 가입 정보 ══ -->
+  <div class="screen" id="step3">
+    <div class="screen-head">
+      <h2>해카 계정을<br>만들어볼까요! 🎉</h2>
+      <p>마지막 단계예요</p>
+    </div>
+    <div class="form-wrap">
+      <div class="field-group">
+        <div class="field-label">닉네임</div>
+        <div style="position:relative">
+          <input class="field-input" id="inp-nick" placeholder="여행을 좋아하는 닉네임" maxlength="20" type="text" oninput="checkNick()"/>
+          <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:10px;color:#bbb" id="nick-count">0/20</span>
+        </div>
+        <div class="field-error" id="nick-error"></div>
+        <div class="field-ok" id="nick-ok">사용 가능한 닉네임이에요 ✓</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">이메일</div>
+        <input class="field-input" id="inp-email" placeholder="example@travel.com" type="email" oninput="checkEmail()"/>
+        <div class="field-error" id="email-error"></div>
+        <div class="field-ok" id="email-ok">사용 가능한 이메일이에요 ✓</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">비밀번호</div>
+        <input class="field-input" id="inp-pw" placeholder="8자 이상, 영문 + 숫자 조합" type="password" oninput="checkPw()"/>
+        <div class="field-error" id="pw-error"></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">비밀번호 확인</div>
+        <input class="field-input" id="inp-pw2" placeholder="비밀번호를 다시 입력해주세요" type="password" oninput="checkPw2()"/>
+        <div class="field-error" id="pw2-error"></div>
+      </div>
+      <div class="field-hint">비밀번호는 암호화되어 안전하게 저장됩니다</div>
+    </div>
+    <button class="btn-primary" id="join-btn" onclick="doJoin()">가입 완료</button>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="join-toast">🎉 가입이 완료되었습니다!</div>
+
+  <!-- 하단 네비 -->
+  <div class="bnav">
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="nplus"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+
+  <!-- 팝업 -->
+  <div class="popup-overlay" id="popup-overlay">
+    <div class="popup" id="popup">
+      <div class="popup-icon" id="popup-icon"></div>
+      <div class="popup-title" id="popup-title"></div>
+      <div class="popup-body" id="popup-body"></div>
+      <button class="popup-btn" id="popup-btn" onclick="closePopup()">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStep = 1;
+var timerInterval = null;
+var timerSec = 180;
+var codeVerified = false;
+var CODE_MOCK = '123456'; // 테스트용 인증번호
+
+// 중복 DB (데모)
+var usedNicks = ['여행왕', '도쿄마스터', 'heka'];
+var usedEmails = ['test@test.com', 'admin@heka.com'];
+
+/* ── 프로그레스 업데이트 ── */
+function updateProgress(step) {
+  for (var i = 1; i <= 3; i++) {
+    var sc = document.getElementById('sc' + i);
+    var sl = document.getElementById('sl' + i);
+    sc.className = 'step-circle ' + (i < step ? 'done' : i === step ? 'active' : 'inactive');
+    sl.className = 'step-label ' + (i <= step ? (i < step ? 'done' : 'active') : 'inactive');
+    sc.textContent = i < step ? '✓' : String(i);
+    if (i < 3) {
+      document.getElementById('line' + i).className = 'step-line ' + (i < step ? 'done' : 'inactive');
+    }
+  }
+}
+
+/* ── 화면 전환 ── */
+function goStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + n).classList.add('active');
+  updateProgress(n);
+}
+
+function goBack() {
+  if (currentStep > 1) goStep(currentStep - 1);
+}
+
+/* ── 팝업 ── */
+function showPopup(icon, title, body, btnTxt, cb) {
+  document.getElementById('popup-icon').textContent = icon || '';
+  document.getElementById('popup-title').textContent = title;
+  document.getElementById('popup-body').textContent = body;
+  var btn = document.getElementById('popup-btn');
+  btn.textContent = btnTxt || '확인';
+  btn.onclick = function() { closePopup(); if (cb) cb(); };
+  document.getElementById('popup-overlay').classList.add('open');
+}
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('open');
+}
+
+/* ══ STEP 1 ══ */
+function toggleAll(el) {
+  var chk = el.querySelector('.chkbox');
+  var checked = chk.classList.contains('checked');
+  var items = el.closest('.check-wrap').querySelectorAll('.check-item:not(.all-item) .chkbox');
+  if (checked) { chk.classList.remove('checked'); items.forEach(function(c){c.classList.remove('checked');}); }
+  else { chk.classList.add('checked'); items.forEach(function(c){c.classList.add('checked');}); }
+}
+function toggleItem(el) {
+  var chk = el.querySelector('.chkbox');
+  chk.classList.toggle('checked');
+  var wrap = el.closest('.check-wrap');
+  var all = wrap.querySelectorAll('.check-item:not(.all-item) .chkbox');
+  var checked = wrap.querySelectorAll('.check-item:not(.all-item) .chkbox.checked');
+  var allChk = wrap.querySelector('.check-item.all-item .chkbox');
+  if (all.length === checked.length) allChk.classList.add('checked');
+  else allChk.classList.remove('checked');
+}
+function step1Next() {
+  // 필수 항목 체크 확인
+  var reqItems = document.querySelectorAll('#step1 .check-item[data-req="true"] .chkbox');
+  var allReqChecked = Array.prototype.every.call(reqItems, function(c){ return c.classList.contains('checked'); });
+  if (!allReqChecked) {
+    showPopup('⚠️', '필수 항목을 확인해주세요', '서비스 이용을 위해 필수 약관에\n모두 동의해주셔야 해요.', '확인');
+    return;
+  }
+  goStep(2);
+}
+
+/* ══ STEP 2 ══ */
+function selectCarrier(el) {
+  el.closest('.carrier-row').querySelectorAll('.carrier-chip').forEach(function(b){ b.classList.remove('on'); });
+  el.classList.add('on');
+}
+
+function sendCode() {
+  var phone = document.getElementById('inp-phone').value.trim();
+  if (!phone) { showPopup('📱', '휴대폰 번호를 입력해주세요', '번호를 먼저 입력해주세요.', '확인'); return; }
+  document.getElementById('code-group').style.display = 'block';
+  document.getElementById('verify-btn').disabled = false;
+  document.getElementById('verify-btn').className = 'btn-primary';
+  document.getElementById('send-btn').textContent = '재발송';
+  // 타이머 시작
+  if (timerInterval) clearInterval(timerInterval);
+  timerSec = 180;
+  updateTimer();
+  timerInterval = setInterval(function() {
+    timerSec--;
+    updateTimer();
+    if (timerSec <= 0) { clearInterval(timerInterval); document.getElementById('timer-txt').textContent = '만료'; }
+  }, 1000);
+  showPopup('📨', '인증번호를 발송했어요', '테스트 코드: ' + CODE_MOCK + '\n(실제 서비스에서는 SMS로 전송)', '확인');
+}
+
+function updateTimer() {
+  var m = Math.floor(timerSec / 60);
+  var s = timerSec % 60;
+  document.getElementById('timer-txt').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function verifyCode() {
+  var code = document.getElementById('inp-code').value.trim();
+  var errEl = document.getElementById('code-error');
+  if (code === CODE_MOCK) {
+    clearInterval(timerInterval);
+    errEl.classList.remove('show');
+    codeVerified = true;
+    showPopup('✅', '인증 완료!', '본인 인증이 완료되었어요.', '다음으로', function(){ goStep(3); });
+  } else {
+    errEl.classList.add('show');
+    document.getElementById('inp-code').classList.add('error');
+  }
+}
+
+/* ══ STEP 3 ══ */
+function checkNick() {
+  var val = document.getElementById('inp-nick').value;
+  document.getElementById('nick-count').textContent = val.length + '/20';
+  var errEl = document.getElementById('nick-error');
+  var okEl = document.getElementById('nick-ok');
+  var inp = document.getElementById('inp-nick');
+  if (!val) { errEl.classList.remove('show'); okEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  if (usedNicks.indexOf(val) > -1) {
+    errEl.textContent = '이미 사용 중인 닉네임이에요'; errEl.classList.add('show');
+    okEl.classList.remove('show'); inp.classList.add('error');
+  } else {
+    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+  }
+}
+
+function checkEmail() {
+  var val = document.getElementById('inp-email').value.trim();
+  var errEl = document.getElementById('email-error');
+  var okEl = document.getElementById('email-ok');
+  var inp = document.getElementById('inp-email');
+  if (!val) { errEl.classList.remove('show'); okEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  var emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailReg.test(val)) {
+    errEl.textContent = '올바른 이메일 형식을 입력해주세요'; errEl.classList.add('show');
+    okEl.classList.remove('show'); inp.classList.add('error'); return;
+  }
+  if (usedEmails.indexOf(val) > -1) {
+    errEl.textContent = '이미 사용 중인 이메일이에요'; errEl.classList.add('show');
+    okEl.classList.remove('show'); inp.classList.add('error');
+  } else {
+    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+  }
+}
+
+function checkPw() {
+  var val = document.getElementById('inp-pw').value;
+  var errEl = document.getElementById('pw-error');
+  var inp = document.getElementById('inp-pw');
+  if (!val) { errEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  var pwReg = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+  if (!pwReg.test(val)) {
+    errEl.textContent = '8자 이상, 영문+숫자 조합으로 입력해주세요'; errEl.classList.add('show'); inp.classList.add('error');
+  } else {
+    errEl.classList.remove('show'); inp.classList.remove('error');
+  }
+  // 비밀번호 확인도 재검사
+  if (document.getElementById('inp-pw2').value) checkPw2();
+}
+
+function checkPw2() {
+  var pw = document.getElementById('inp-pw').value;
+  var pw2 = document.getElementById('inp-pw2').value;
+  var errEl = document.getElementById('pw2-error');
+  var inp = document.getElementById('inp-pw2');
+  if (!pw2) { errEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  if (pw !== pw2) {
+    errEl.textContent = '비밀번호가 일치하지 않아요'; errEl.classList.add('show'); inp.classList.add('error');
+  } else {
+    errEl.classList.remove('show'); inp.classList.remove('error');
+  }
+}
+
+function doJoin() {
+  var nick = document.getElementById('inp-nick').value.trim();
+  var email = document.getElementById('inp-email').value.trim();
+  var pw = document.getElementById('inp-pw').value;
+  var pw2 = document.getElementById('inp-pw2').value;
+
+  // 유효성 검사
+  if (!nick) { showPopup('⚠️','닉네임을 입력해주세요','닉네임은 필수 항목이에요.','확인'); return; }
+  if (usedNicks.indexOf(nick) > -1) { showPopup('⚠️','닉네임 중복','이미 사용 중인 닉네임이에요.','확인'); return; }
+  if (!email) { showPopup('⚠️','이메일을 입력해주세요','이메일은 필수 항목이에요.','확인'); return; }
+  if (usedEmails.indexOf(email) > -1) { showPopup('⚠️','이메일 중복','이미 사용 중인 이메일이에요.','확인'); return; }
+  var emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailReg.test(email)) { showPopup('⚠️','이메일 형식 오류','올바른 이메일을 입력해주세요.','확인'); return; }
+  var pwReg = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+  if (!pwReg.test(pw)) { showPopup('⚠️','비밀번호 형식 오류','8자 이상, 영문+숫자 조합으로 입력해주세요.','확인'); return; }
+  if (pw !== pw2) { showPopup('⚠️','비밀번호 불일치','비밀번호가 일치하지 않아요.','확인'); return; }
+  if (document.querySelectorAll('#step3 .field-input.error').length > 0) {
+    showPopup('⚠️','입력 정보를 확인해주세요','오류 항목을 수정해주세요.','확인'); return;
+  }
+
+  // 가입 완료 — 토스트 후 홈 이동
+  var toast = document.getElementById('join-toast');
+  toast.classList.add('show');
+  setTimeout(function(){
+    toast.classList.remove('show');
+    setTimeout(function(){
+      document.querySelector('.phone').style.display='none';
+      var hs=document.getElementById('home-screen');
+      hs.style.display='flex';
+      setTimeout(initHome, 50);
+      document.getElementById('home-screen').style.display = 'block';
+    }, 400);
+  }, 1800);
+}
+
+/* ── 카드사 ── */
+</script>
+
+
+<style id="home-css">
+/* 홈화면 body 스타일 재적용 */
+#home-screen {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+#home-screen * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+/* signup body flex 레이아웃 무력화 */
+#home-screen .phone-wrap {
+  display: block !important;
+}
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.topbar{background:#1A5D1A;padding:12px 16px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid rgba(255,255,255,0.2)}
+.logo{font-size:16px;font-weight:600;color:#fff}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.8);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.search-icon-btn{width:32px;height:32px;border-radius:50%;border:0.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.15)}
+.search-icon-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.filterbar{padding:10px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:8px}
+.filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
+.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center}
+.chip-row::-webkit-scrollbar{display:none}
+.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.cat-wrap::-webkit-scrollbar{display:none}
+.sq-chip{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
+.sq-chip:hover{border-color:#aaa}
+.sq-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
+.cc-visa.on{background:#1a1f71;border-color:#1a1f71}
+.cc-master.on{background:#eb001b;border-color:#eb001b}
+.cc-jcb.on{background:#007b40;border-color:#007b40}
+.cc-amex.on{background:#007bc1;border-color:#007bc1}
+.cc-tlog.on{background:#FF6B00;border-color:#FF6B00}
+.cc-twallet.on{background:#FFD600;border-color:#FFD600;color:#333}
+.sq-chip-all.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
+.sq-chip-all{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid #1A5D1A;background:#fff;color:#1A5D1A;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
+.sq-chip-all.open{background:#1A5D1A;color:#fff}
+/* 바텀시트 */
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:20;display:none;border-radius:26px}
+.sheet-overlay.open{display:block}
+.bottom-sheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;z-index:21;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:60%}
+.bottom-sheet.open{transform:translateY(0)}
+.sheet-handle{width:34px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;border-bottom:0.5px solid #f0f0f0}
+.sheet-title{font-size:13px;font-weight:700;color:#111}
+.sheet-reset{font-size:11px;color:#999;cursor:pointer;padding:2px 6px;border:0.5px solid #ddd;border-radius:4px}
+.sheet-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px 18px;overflow-y:auto}
+.sheet-chip{padding:5px 11px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;user-select:none}
+.sheet-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
+.sheet-done{margin:0 14px 14px;padding:10px;border-radius:8px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;width:calc(100% - 28px)}
+/* 핫플 */
+.hotpl-section{margin:11px 14px 0}
+.hotpl-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.hotpl-section-title{font-size:13px;font-weight:500;color:#111}
+.hotpl-more{font-size:11px;color:#999;cursor:pointer}
+.hotpl{border-radius:12px;overflow:hidden;border:0.5px solid #e8e8e8;cursor:pointer}
+.hotpl-img{width:100%;height:120px;position:relative;overflow:hidden}
+.ramen-scene{width:100%;height:100%;background:#1a0e00;position:relative}
+.bowl{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:160px;height:90px}
+.bowl-
+.soup{position:absolute;top:8px;left:8px;right:8px;bottom:0;background:#8b2500;border-radius:0 0 72px 72px}
+.noodle{position:absolute;top:14px;left:18px;right:18px;height:20px;overflow:hidden}
+.nline{height:2.5px;background:#f0d090;border-radius:2px;margin-bottom:3px;opacity:.9}
+.nline:nth-child(2){margin-left:8px}.nline:nth-child(3){margin-left:-4px}
+.egg{position:absolute;top:10px;right:22px;width:26px;height:26px;border-radius:50%;background:#f5e6a0;border:2px solid #e8c840}
+.chashu{position:absolute;top:12px;left:22px;width:30px;height:18px;border-radius:4px;background:#8b3a1a}
+.bowl-rim{position:absolute;bottom:66px;left:0;width:160px;height:14px;background:#d44f12;border-radius:8px 8px 0 0}
+.stl{position:absolute;bottom:80px;width:2px;background:rgba(255,255,255,.15);border-radius:2px;animation:rise 2s ease-in-out infinite}
+.stl:nth-child(1){left:80px;height:35px}.stl:nth-child(2){left:100px;height:45px;animation-delay:.4s}.stl:nth-child(3){left:120px;height:30px;animation-delay:.8s}
+@keyframes rise{0%,100%{opacity:.1}50%{opacity:.3}}
+.shop-name{position:absolute;top:10px;left:12px;font-size:11px;color:rgba(255,255,255,.7);font-weight:500}
+.shop-stars{position:absolute;top:26px;left:12px;font-size:10px;color:#f5c800}
+.hotpl-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:8px 12px 10px}
+.live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;margin-bottom:4px}
+.ld{width:5px;height:5px;border-radius:50%;background:#4ade80}
+.live-txt{font-size:9px;color:#fff;font-weight:500}
+.hotpl-title{font-size:12px;font-weight:500;color:#fff;line-height:1.4;margin-bottom:4px}
+.hotpl-reporter{display:flex;align-items:center;gap:4px}
+.rep-av{width:15px;height:15px;border-radius:50%;background:#555;display:flex;align-items:center;justify-content:center;font-size:6px;color:#ccc}
+.rep-txt{font-size:9px;color:rgba(255,255,255,.55)}
+.rep-name{color:rgba(255,255,255,.9);font-weight:500}
+.hotpl-dots{display:flex;gap:4px;margin-top:4px}
+.dot-i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3)}
+.dot-i.on{background:#fff;width:14px;border-radius:3px}
+/* 퀵카드 */
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 14px}
+.qcard{background:#f5f5f5;border-radius:10px;padding:10px 12px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between}
+.qcard:hover{background:#e8f5e8}
+.qt{font-size:11px;font-weight:500;color:#111;margin-bottom:1px}
+.qs{font-size:10px;color:#999}
+/* 내 주변 매장 */
+.sec-head{display:flex;justify-content:space-between;align-items:center;padding:0 14px;margin-bottom:7px}
+.sec-t{font-size:13px;font-weight:500;color:#111}
+.sec-more{font-size:11px;color:#999;cursor:pointer}
+.nrow{display:flex;gap:6px;overflow-x:auto;padding:0 14px;scrollbar-width:none;margin-bottom:10px}
+.nrow::-webkit-scrollbar{display:none}
+.ncard{position:relative;flex:0 0 106px;border-radius:10px;overflow:hidden;border:0.5px solid #eee;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s,opacity .2s}
+.ncard:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
+.nimg{width:100%;height:56px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.n
+.nn{font-size:11px;font-weight:500;color:#111;margin-bottom:3px}
+.nm{font-size:10px;color:#999;display:flex;align-items:center;gap:3px;flex-wrap:nowrap;overflow:hidden}
+.cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
+.cp-visa{background:#1a1f71}.cp-master{background:#eb001b}.cp-jcb{background:#007b40}.cp-amex{background:#007bc1}
+/* 찜 버튼 */
+.zzim{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.zzim:hover{transform:scale(1.15)}
+.zzim svg{width:11px;height:11px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.zzim.on svg{fill:#e53935;stroke:#e53935}
+/* 구분선 */
+.divline{height:5px;background:#f5f5f5;margin:0 0 10px}
+/* 여행톡 */
+.ytok-wrap{padding:0 14px 12px}
+.ytok-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ytok-t{font-size:13px;font-weight:500;color:#111}
+.ytok-more{font-size:11px;color:#999;cursor:pointer;padding:3px 8px;border:0.5px solid #ddd;border-radius:5px}
+.ycard{display:flex;gap:9px;margin-bottom:8px;cursor:pointer}
+.ycard:last-child{margin-bottom:0}
+.ythumb{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ycontent{flex:1;min-width:0}
+.ytop{display:flex;align-items:center;gap:4px;margin-bottom:2px}
+.ybadge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600}
+.yb-mate{background:#1A5D1A;color:#fff}
+.yb-food{background:#f5c800;color:#111}
+.ycity{font-size:10px;color:#999}
+.ytitle{font-size:11px;font-weight:600;color:#111;line-height:1.4;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.y
+.yfoot{display:flex;gap:7px;margin-top:3px;font-size:10px;color:#bbb}
+/* 네비 */
+.bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
+.ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ni.on{color:#1A5D1A;font-weight:500}
+.ni svg{width:17px;height:17px}
+.nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+/* 매장 상세 슬라이드 패널 */
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
+.detail-overlay.open{display:block}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-panel.open{transform:translateY(0)}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
+.dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
+.dp-name{font-size:16px;font-weight:700;color:#111;margin-bottom:2px}
+.dp-cat{font-size:11px;color:#999}
+.dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px;-webkit-overflow-scrolling:touch}
+.dp-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
+.dp-map{width:100%;height:108px;border-radius:10px;background:linear-gradient(150deg,#e8f2e8,#d4e8d4);position:relative;overflow:hidden;cursor:pointer;margin-bottom:12px;border:1px solid #c8dcc8}
+.dp-map:hover .dp-map-hint{opacity:1}
+.dp-map-gh{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.5)}
+.dp-map-gv{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.5)}
+.dp-map-rh{position:absolute;left:0;right:0;background:rgba(255,255,255,.78)}
+.dp-map-rv{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.78)}
+.dp-map-pin{position:absolute;left:50%;top:44%;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center}
+.dp-map-dot{width:14px;height:14px;border-radius:50%;background:#1A5D1A;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.dp-map-tail{width:2px;height:5px;background:#1A5D1A}
+.dp-map-shadow{position:absolute;left:50%;top:44%;transform:translate(-50%,0);width:10px;height:4px;border-radius:50%;background:rgba(0,0,0,.12)}
+.dp-map-lbl{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:#1A5D1A;background:#fff;padding:2px 8px;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.12);white-space:nowrap}
+.dp-map-hint{position:absolute;inset:0;background:rgba(0,0,0,.04);display:flex;align-items:center;justify-content:center;opacity:0;transition:.15s}
+.dp-map-hint span{font-size:10px;font-weight:700;color:#1A5D1A;background:#fff;padding:4px 10px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.dp-section{font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 6px}
+.dp-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#444;margin-bottom:6px;line-height:1.5}
+.dp-ico{font-size:12px;width:16px;text-align:center;flex-shrink:0;margin-top:1px}
+.dp-divider{height:1px;background:#f0f0f0;margin:10px 0}
+.dp-rev{background:#f8f8f8;border-radius:9px;padding:9px 11px;margin-bottom:7px}
+.dp-rev-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.dp-rev-av{width:20px;height:20px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#666;flex-shrink:0}
+.dp-rev-name{font-size:11px;font-weight:600;color:#333}
+.dp-rev-date{font-size:10px;color:#bbb;margin-left:auto}
+.dp-rev-txt{font-size:11px;color:#555;line-height:1.5}
+.dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
+.dp-btn-report{flex:1;padding:11px;border-radius:10px;background:#f0f7f0;color:#1A5D1A;font-size:12px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+</style>
+<div id="home-screen" style="display:none;background:#f0f0f0;min-height:100vh;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased">
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="topbar">
+    <div>
+      <div class="logo"><span style="font-size:20px;font-weight:800">해</span><span style="font-size:11px;font-weight:500;letter-spacing:-0.2px">외에서 </span><span style="font-size:20px;font-weight:800">카</span><span style="font-size:11px;font-weight:500;letter-spacing:-0.2px;margin-left:2px">드결제하자!</span></div>
+      <div class="logo-sub">현지 카드 결제 가능한 매장을 찾아보세요</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-icon-btn"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg></div>
+    </div>
+  </div>
+
+  <div class="filterbar">
+    <!-- 카드사 -->
+    <div>
+      <div class="filter-label">카드사</div>
+      <div class="chip-row">
+        <div class="sq-chip-all" id="card-all-btn" onclick="toggleCardSheet()">모두보기 ▾</div>
+        <div class="sq-chip on" onclick="toggleCardMain(this,'all')">전체</div>
+        <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')">VISA</div>
+        <div class="sq-chip cc-master" onclick="toggleCardMain(this,'master')">MASTER</div>
+        <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'jcb')">JCB</div>
+        <div class="sq-chip cc-amex" onclick="toggleCardMain(this,'amex')">AMEX</div>
+        <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
+        <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
+      </div>
+    </div>
+    <!-- 업종 -->
+    <div>
+      <div class="filter-label">업종</div>
+      <div class="cat-wrap" id="cat-wrap">
+        <div class="sq-chip-all" id="cat-all-btn" onclick="toggleSheet()">모두보기 ▾</div>
+        <div class="sq-chip-all" id="cat-all-select" onclick="catSelectAll()">전체</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카드사 바텀시트 -->
+  <div class="sheet-overlay" id="card-overlay" onclick="closeCardSheet()"></div>
+  <div class="bottom-sheet" id="card-sheet" style="max-height:46%">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">카드사 선택 <span id="card-count" style="color:#1A5D1A;font-size:12px"></span></span>
+      <span class="sheet-reset" onclick="cardReset()">초기화</span>
+    </div>
+    <div class="sheet-wrap" id="card-sheet-wrap">
+      <div class="sheet-chip on" onclick="toggleCardChip(this,'all')">전체</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'visa')">VISA</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'master')">MASTER</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'jcb')">JCB</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'amex')">AMEX</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'트래블로그')">트래블로그</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'트래블월렛')">트래블월렛</div>
+    </div>
+    <button class="sheet-done" onclick="closeCardSheet()">선택 완료</button>
+  </div>
+
+  <!-- 업종 바텀시트 -->
+  <div class="sheet-overlay" id="overlay" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">업종 선택 <span id="cat-count" style="color:#1A5D1A;font-size:12px"></span></span>
+      <span class="sheet-reset" onclick="resetCats()">초기화</span>
+    </div>
+    <div class="sheet-wrap" id="sheet-wrap"></div>
+    <button class="sheet-done" onclick="closeSheet()">선택 완료</button>
+  </div>
+
+  <!-- 내 주변 카드 결제 매장 -->
+  <div class="sec-head" style="margin-top:12px">
+    <span class="sec-t">내 주변 카드 결제 매장</span>
+    <span class="sec-more">더보기</span>
+  </div>
+  <div class="nrow">
+    <div class="ncard" id="card-ichiran" onclick="openDetail('ichiran')">
+      <div class="nimg">🍜</div>
+      <button class="zzim" onclick="toggleZzim(event,this)" title="찜하기"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      <div class="nbody"><div class="nn">이치란 라멘</div><div class="nm">★ 4.8 <span class="cpill cp-visa">VISA</span></div></div>
+    </div>
+    <div class="ncard" id="card-donki" onclick="openDetail('donki')">
+      <div class="nimg">🛒</div>
+      <button class="zzim" onclick="toggleZzim(event,this)" title="찜하기"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      <div class="nbody"><div class="nn">돈키호테</div><div class="nm">★ 4.3 <span class="cpill cp-master">MASTER</span><span class="cpill cp-jcb">JCB</span></div></div>
+    </div>
+    <div class="ncard" id="card-sbux" onclick="openDetail('sbux')">
+      <div class="nimg">☕</div>
+      <button class="zzim" onclick="toggleZzim(event,this)" title="찜하기"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+      <div class="nbody"><div class="nn">스타벅스 긴자</div><div class="nm">★ 4.1 <span class="cpill cp-amex">AMEX</span></div></div>
+    </div>
+  </div>
+
+  <!-- 지도/도시 퀵카드 -->
+  <div class="qgrid">
+    <div class="qcard">
+      <div><div class="qt">지도로 찾기</div><div class="qs">내 주변 결제 매장</div></div>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:.6;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#1A5D1A" stroke="none"/></svg>
+    </div>
+    <div class="qcard">
+      <div><div class="qt">도시별로 찾기</div><div class="qs">전세계 도시별로</div></div>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="1.8" stroke-linecap="round" style="opacity:.6;flex-shrink:0"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    </div>
+  </div>
+
+  <!-- 실시간 핫플 -->
+  <div class="hotpl-section">
+    <div class="hotpl-header-row">
+      <span class="hotpl-section-title">지금 여기! 실시간 결제 핫플</span>
+      <span class="hotpl-more">전체보기</span>
+    </div>
+    <div class="hotpl">
+      <div class="hotpl-img">
+        <div class="ramen-scene">
+          <div class="stl"></div><div class="stl"></div><div class="stl"></div>
+          <div class="bowl"><div class="bowl-rim"></div><div class="bowl-body"><div class="soup"><div class="noodle"><div class="nline"></div><div class="nline"></div><div class="nline"></div></div><div class="egg"></div><div class="chashu"></div></div></div></div>
+          <span class="shop-name">ICHIRAN · 一蘭</span><span class="shop-stars">★★★★★</span>
+        </div>
+        <div class="hotpl-overlay">
+          <div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>
+          <div class="hotpl-title">"도쿄 이치란 라멘,<br>10분 전 비자카드 결제 완료!"</div>
+          <div class="hotpl-reporter"><div class="rep-av">여</div><span class="rep-txt">제보자 <span class="rep-name">여행러_민지</span>님</span></div>
+          <div class="hotpl-dots"><div class="dot-i on"></div><div class="dot-i"></div><div class="dot-i"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divline" style="margin-top:12px"></div>
+
+  <!-- 여행톡 -->
+  <div class="ytok-wrap">
+    <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more">전체보기 →</span></div>
+    <div class="ycard">
+      <div class="ythumb" style="background:#eef0f8">🎒</div>
+      <div class="ycontent">
+        <div class="ytop"><span class="ybadge yb-mate">동행</span><span class="ycity">도쿄 · <span style="color:#1A5D1A">●</span> 41명</span></div>
+        <div class="ytitle">3월 27-28일 도쿄 동행 구해요</div>
+        <div class="ybody">20대 중반 여자고 서로 사진도 찍어주고 같이 맛집가요!</div>
+        <div class="yfoot"><span>💬 6</span><span>❤ 11</span><span>1시간 전</span></div>
+      </div>
+    </div>
+    <div class="ycard">
+      <div class="ythumb" style="background:#f5f0e8">🥐</div>
+      <div class="ycontent">
+        <div class="ytop"><span class="ybadge yb-food">맛집</span><span class="ycity">파리 · <span style="color:#1A5D1A">●</span> 23명</span></div>
+        <div class="ytitle">에펠탑 근처 진짜 맛있는 크레페!</div>
+        <div class="ybody">골목 안에 숨어있는 집인데 줄도 없고 가격도 착해요</div>
+        <div class="yfoot"><span>💬 14</span><span>❤ 32</span><span>2시간 전</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 네비 -->
+  <div class="bnav">
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="nplus"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+
+  <!-- 매장 상세 슬라이드 패널 -->
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div><div class="dp-name" id="dp-name"></div><div class="dp-cat" id="dp-cat"></div></div>
+      <button class="dp-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-report">✍️ 결제 제보하기</button>
+      <button class="dp-btn-more">매장 상세보기 →</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
+<script id="home-js">
+function initHome(){
+
+/* ── 카드사 ── */
+var cardSelected = new Set(['all']);
+var cardData = {ichiran:['visa'], donki:['master','jcb'], sbux:['amex']};
+
+function applyCardFilter(){
+  ['ichiran','donki','sbux'].forEach(function(id){
+    var nc = document.getElementById('card-'+id); if(!nc) return;
+    var show = cardSelected.has('all') || cardData[id].some(function(c){ return cardSelected.has(c); });
+    nc.style.opacity = show ? '1' : '0.22';
+    nc.style.transform = show ? 'scale(1)' : 'scale(0.97)';
+  });
+}
+
+function syncCardChips(){
+  document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){
+    var fn = c.getAttribute('onclick') || '';
+    var m = fn.match(/toggleCardMain\(this,'([^']+)'\)/);
+    if(m) c.classList.toggle('on', cardSelected.has(m[1]) || (cardSelected.has('all') && m[1]==='all'));
+  });
+}
+
+function syncCardSheet(){
+  document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){
+    var fn = c.getAttribute('onclick') || '';
+    var m = fn.match(/toggleCardChip\(this,'([^']+)'\)/);
+    if(m) c.classList.toggle('on', cardSelected.has(m[1]));
+  });
+}
+
+function toggleCardMain(el, card){
+  if(card==='all'){ cardSelected.clear(); cardSelected.add('all'); }
+  else { cardSelected.delete('all'); if(cardSelected.has(card)) cardSelected.delete(card); else cardSelected.add(card); if(cardSelected.size===0) cardSelected.add('all'); }
+  syncCardChips(); syncCardSheet(); applyCardFilter(); updateCardCount();
+}
+
+function toggleCardChip(el, card){
+  if(card==='all'){ cardSelected.clear(); cardSelected.add('all'); }
+  else { cardSelected.delete('all'); if(cardSelected.has(card)) cardSelected.delete(card); else cardSelected.add(card); if(cardSelected.size===0) cardSelected.add('all'); }
+  syncCardSheet(); syncCardChips(); applyCardFilter(); updateCardCount();
+}
+
+function updateCardCount(){
+  var cnt = cardSelected.has('all') ? 0 : cardSelected.size;
+  var el = document.getElementById('card-count');
+  if(el) el.textContent = cnt>0 ? '('+cnt+'개 선택)' : '';
+}
+
+function cardReset(){ cardSelected.clear(); cardSelected.add('all'); syncCardSheet(); syncCardChips(); applyCardFilter(); updateCardCount(); }
+
+var cardSO = false;
+function toggleCardSheet(){ cardSO ? closeCardSheet() : openCardSheet(); }
+function openCardSheet(){
+  cardSO=true;
+  document.getElementById('card-overlay').classList.add('open');
+  document.getElementById('card-sheet').classList.add('open');
+  var b=document.getElementById('card-all-btn'); b.textContent='모두보기 ▴'; b.classList.add('open');
+}
+function closeCardSheet(){
+  cardSO=false;
+  document.getElementById('card-overlay').classList.remove('open');
+  document.getElementById('card-sheet').classList.remove('open');
+  var b=document.getElementById('card-all-btn'); b.textContent='모두보기 ▾'; b.classList.remove('open');
+}
+
+/* ── 업종 ── */
+var cats = ['식당','카페','펍','패스트푸드','이자카야','편의점','마트','호텔','입장권','전철 티켓','버스','ATM기','기타'];
+var selected = new Set();
+
+var wrap = document.getElementById('cat-wrap');
+cats.forEach(function(lbl){
+  var d = document.createElement('div');
+  d.className = 'sq-chip'; d.textContent = lbl; d.dataset.lbl = lbl;
+  d.onclick = function(){ toggleCat(lbl); syncAll(); };
+  wrap.appendChild(d);
+});
+
+var sw = document.getElementById('sheet-wrap');
+cats.forEach(function(lbl){
+  var d = document.createElement('div');
+  d.className = 'sheet-chip'; d.textContent = lbl; d.dataset.lbl = lbl;
+  d.onclick = function(){ toggleCat(lbl); syncAll(); updateCatCount(); };
+  sw.appendChild(d);
+});
+
+function toggleCat(lbl){
+  if(selected.has(lbl)) selected.delete(lbl);
+  else selected.add(lbl);
+  // 개별 선택 시 [전체] 버튼 off
+  var allBtn = document.getElementById('cat-all-select');
+  if(allBtn) allBtn.classList.remove('on');
+}
+function syncAll(){
+  wrap.querySelectorAll('.sq-chip').forEach(function(c){ c.classList.toggle('on', selected.has(c.dataset.lbl)); });
+  sw.querySelectorAll('.sheet-chip').forEach(function(c){ c.classList.toggle('on', selected.has(c.dataset.lbl)); });
+}
+function catSelectAll(){
+  selected.clear();
+  document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){ c.classList.remove('on'); });
+  document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){ c.classList.remove('on'); });
+  var allBtn = document.getElementById('cat-all-select');
+  if(allBtn) allBtn.classList.add('on');
+}
+function resetCats(){ selected.clear(); syncAll(); updateCatCount(); }
+function updateCatCount(){
+  var el = document.getElementById('cat-count');
+  if(el) el.textContent = selected.size>0 ? '('+selected.size+'개 선택)' : '';
+}
+
+var catSO = false;
+function toggleSheet(){ catSO ? closeSheet() : openSheet(); }
+function openSheet(){
+  catSO=true;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  var b=document.getElementById('cat-all-btn'); b.textContent='모두보기 ▴'; b.classList.add('open');
+}
+function closeSheet(){
+  catSO=false;
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+  var b=document.getElementById('cat-all-btn'); b.textContent='모두보기 ▾'; b.classList.remove('open');
+}
+
+/* ── 찜 ── */
+function toggleZzim(e, el){
+  e.stopPropagation();
+  el.classList.toggle('on');
+}
+
+/* ── 매장 상세 ── */
+var shopData = {
+  ichiran:{name:'이치란 라멘',cat:'식당 · 라멘',icon:'🍜',cards:[{n:'VISA',bg:'#1a1f71',cl:'#fff'}],rating:'4.8',addr:'도쿄 신주쿠구 이케부쿠로 1-2-3',hours:'11:00 ~ 23:00',tel:'+81-3-1234-5678',lat:35.7295,lng:139.7109,reviews:[{name:'여행러_민지',date:'10분 전',txt:'비자카드 결제 잘 됐어요! 줄이 좀 길지만 맛은 최고 👍'},{name:'도쿄덕후',date:'2시간 전',txt:'혼자 먹기 좋은 구조. IC카드는 안되고 신용카드만 돼요'}]},
+  donki:{name:'돈키호테',cat:'마트 · 면세점',icon:'🛒',cards:[{n:'MASTER',bg:'#eb001b',cl:'#fff'},{n:'JCB',bg:'#007b40',cl:'#fff'}],rating:'4.3',addr:'도쿄 시부야구 도겐자카 2-25-8',hours:'24시간 영업',tel:'+81-3-5778-2811',lat:35.6595,lng:139.6978,reviews:[{name:'쇼핑왕',date:'30분 전',txt:'마스터카드·JCB 모두 OK. 면세 카운터도 카드 결제 가능!'},{name:'도쿄여행자',date:'1시간 전',txt:'영수증 꼭 챙기세요! 면세 환급 바로 해줘요'}]},
+  sbux:{name:'스타벅스 긴자',cat:'카페',icon:'☕',cards:[{n:'AMEX',bg:'#007bc1',cl:'#fff'}],rating:'4.1',addr:'도쿄 주오구 긴자 6-10-1',hours:'07:00 ~ 23:00',tel:'+81-3-3572-0600',lat:35.6695,lng:139.7641,reviews:[{name:'카페홀릭',date:'1시간 전',txt:'아멕스 터치결제 가능! 긴자 한복판이라 분위기 최고'},{name:'커피러버',date:'3시간 전',txt:'AMEX만 되고 다른 카드는 안됩니다. 참고하세요'}]}
+};
+
+function openDetail(id){
+  var s = shopData[id]; if(!s) return;
+  document.getElementById('dp-name').textContent = s.name;
+  document.getElementById('dp-cat').textContent = s.cat;
+  var pills = s.cards.map(function(c){ return '<span class="dpill" style="background:'+c.bg+';color:'+c.cl+'">'+c.n+'</span>'; }).join('');
+  var mapUrl = 'https://www.google.com/maps/search/?api=1&query='+s.lat+','+s.lng;
+  var revs = s.reviews.map(function(r){
+    return '<div class="dp-rev"><div class="dp-rev-top"><div class="dp-rev-av">'+r.name[0]+'</div><span class="dp-rev-name">'+r.name+'</span><span class="dp-rev-date">'+r.date+'</span></div><div class="dp-rev-txt">'+r.txt+'</div></div>';
+  }).join('');
+  document.getElementById('dp-scroll').innerHTML =
+    '<div class="dp-pills">'+pills+'</div>'
+    +'<div class="dp-map" onclick="window.open(\''+mapUrl+'\',\'_blank\')">'
+    +'<div class="dp-map-gh" style="top:25%"></div>'
+    +'<div class="dp-map-gh" style="top:50%"></div>'
+    +'<div class="dp-map-gh" style="top:75%"></div>'
+    +'<div class="dp-map-gv" style="left:25%"></div>'
+    +'<div class="dp-map-gv" style="left:50%"></div>'
+    +'<div class="dp-map-gv" style="left:75%"></div>'
+    +'<div class="dp-map-rh" style="top:47%;height:7px"></div>'
+    +'<div class="dp-map-rv" style="left:47%;width:7px"></div>'
+    +'<div class="dp-map-pin"><div class="dp-map-dot"></div><div class="dp-map-tail"></div></div>'
+    +'<div class="dp-map-shadow"></div>'
+    +'<div class="dp-map-lbl">'+s.name+'</div>'
+    +'<div class="dp-map-hint"><span>Google 지도에서 열기 →</span></div>'
+    +'</div>'
+    +'<div class="dp-section">매장 정보</div>'
+    +'<div class="dp-row"><span class="dp-ico">📍</span>'+s.addr+'</div>'
+    +'<div class="dp-row"><span class="dp-ico">🕐</span>'+s.hours+'</div>'
+    +'<div class="dp-row"><span class="dp-ico">📞</span>'+s.tel+'</div>'
+    +'<div class="dp-row"><span class="dp-ico">⭐</span>평점 '+s.rating+'</div>'
+    +'<div class="dp-divider"></div>'
+    +'<div class="dp-section">결제 후기</div>'
+    +revs;
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('dp-scroll').scrollTop = 0;
+}
+
+function closeDetail(){
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+}
+
+}
+</script>
+</body>
+</html>
