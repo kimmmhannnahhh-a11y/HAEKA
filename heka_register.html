@@ -436,10 +436,11 @@ async function searchGooglePlaces(keyword) {
     };
     const { places } = await Place.searchByText(request);
     return places.map(function(r) {
+      var translatedCat = r.primaryType ? translateType(r.primaryType) : null;
       return {
         name: r.displayName || '',
         addr: r.formattedAddress || '',
-        cat: r.primaryType ? translateType(r.primaryType) : '',
+        cat: translatedCat,
         lat: r.location ? r.location.lat() : null,
         lng: r.location ? r.location.lng() : null,
         _source: 'google'
@@ -454,12 +455,43 @@ async function searchGooglePlaces(keyword) {
 // Google 카테고리 → 한글 변환
 function translateType(type) {
   var map = {
-    'restaurant':'식당','food':'식당','cafe':'카페','bar':'펍',
-    'convenience_store':'편의점','supermarket':'마트','lodging':'호텔',
-    'shopping_mall':'쇼핑','store':'쇼핑','bank':'은행','atm':'ATM기',
-    'subway_station':'전철 티켓','bus_station':'버스','tourist_attraction':'관광지'
+    // 식당
+    'restaurant':'식당','food':'식당','meal_takeaway':'식당','meal_delivery':'식당',
+    'japanese_restaurant':'식당','korean_restaurant':'식당','chinese_restaurant':'식당',
+    'italian_restaurant':'식당','french_restaurant':'식당','thai_restaurant':'식당',
+    'hamburger_restaurant':'패스트푸드','ramen_restaurant':'식당',
+    'tonkatsu_restaurant':'식당','sushi_restaurant':'식당','seafood_restaurant':'식당',
+    'steak_house':'식당','pizza_restaurant':'식당','sandwich_shop':'패스트푸드',
+    // 카페
+    'cafe':'카페','coffee_shop':'카페','bakery':'카페','dessert_shop':'카페',
+    'tea_house':'카페','juice_bar':'카페',
+    // 펍/바
+    'bar':'펍','pub':'펍','night_club':'펍','liquor_store':'펍',
+    'izakaya_restaurant':'이자카야',
+    // 패스트푸드
+    'fast_food_restaurant':'패스트푸드','food_court':'패스트푸드',
+    // 편의점
+    'convenience_store':'편의점','drugstore':'편의점','pharmacy':'편의점',
+    // 마트
+    'supermarket':'마트','grocery_store':'마트','department_store':'마트',
+    'shopping_mall':'마트','wholesaler':'마트',
+    // 쇼핑
+    'store':'쇼핑','clothing_store':'쇼핑','shoe_store':'쇼핑',
+    'electronics_store':'쇼핑','book_store':'쇼핑','gift_shop':'쇼핑',
+    'jewelry_store':'쇼핑','toy_store':'쇼핑','sporting_goods_store':'쇼핑',
+    // 호텔
+    'lodging':'호텔','hotel':'호텔','motel':'호텔','hostel':'호텔',
+    'resort_hotel':'호텔','guest_house':'호텔',
+    // 입장권
+    'tourist_attraction':'입장권','amusement_park':'입장권','museum':'입장권',
+    'zoo':'입장권','aquarium':'입장권','theme_park':'입장권',
+    // 전철/버스
+    'subway_station':'전철 티켓','train_station':'전철 티켓','transit_station':'전철 티켓',
+    'bus_station':'버스','bus_stop':'버스',
+    // ATM
+    'atm':'ATM기','bank':'ATM기',
   };
-  return map[type] || type;
+  return map[type] || null;
 }
 
 // ── 통합 검색 ──
