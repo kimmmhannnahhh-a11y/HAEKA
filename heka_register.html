@@ -384,7 +384,7 @@ var selectedLat=null, selectedLng=null;
 var liveSearchTimer = null;
 function liveSearch(val) {
   clearTimeout(liveSearchTimer);
-  if (val.trim().length < 2) {
+  if (val.trim().length < 1) {
     document.getElementById('map-results').innerHTML = '<div class="map-empty">가게 이름이나 주소를 검색해주세요</div>';
     return;
   }
