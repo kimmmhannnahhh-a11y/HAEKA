@@ -208,8 +208,12 @@ async function loadStores() {
 
 window.applyFilters = function() {
   var filtered = allStores.filter(function(store) {
-    var cardOk = window._cardSelected && window._cardSelected.has('all') ? true
-      : (store.payOk || []).some(function(c){ return window._cardSelected && window._cardSelected.has(c.toLowerCase()); });
+    // 카드사 필터 - _cardSelected 없거나 'all'이면 전체 허용
+    var cardOk = !window._cardSelected || window._cardSelected.has('all') ? true
+      : (store.payOk || []).some(function(c){ 
+          return window._cardSelected.has(c) || window._cardSelected.has(c.toLowerCase());
+        });
+    // 업종 필터 - _selected 없거나 size 0이면 전체 허용
     var catOk = !window._selected || window._selected.size === 0 ? true
       : window._selected.has(store.category);
     return cardOk && catOk;
