@@ -92,8 +92,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .ncard:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
 .nimg{width:100%;height:56px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:20px}
 .nbody{padding:5px 7px 7px}
-.nn{font-size:11px;font-weight:500;color:#111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nm{font-size:10px;color:#999;display:flex;align-items:center;gap:3px;flex-wrap:nowrap;overflow:hidden}
+.nn{font-size:11px;font-weight:500;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm-time{font-size:10px;color:#bbb;white-space:nowrap;margin-bottom:2px}
+.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden}
 .cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
 .zzim{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .zzim svg{width:11px;height:11px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
@@ -254,7 +255,7 @@ function renderNearby(stores) {
     card.className = 'ncard';
     card.innerHTML = imgHtml
       + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm">'+timeAgo(store.createdAt)+' '+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     row.appendChild(card);
   });
@@ -289,7 +290,11 @@ window.openFirebaseDetail = async function(store) {
         placesInfo.phone = p.nationalPhoneNumber || null;
         if (p.regularOpeningHours) {
           placesInfo.hours = p.regularOpeningHours.weekdayDescriptions || null;
-          placesInfo.isOpen = p.regularOpeningHours.isOpen ? p.regularOpeningHours.isOpen() : null;
+          try {
+            placesInfo.isOpen = p.regularOpeningHours.isOpen();
+          } catch(e) {
+            placesInfo.isOpen = p.businessStatus === 'OPERATIONAL' ? null : false;
+          }
         }
       }
     }
@@ -330,7 +335,7 @@ window.openFirebaseDetail = async function(store) {
   }
 
   // 전화번호
-  var phoneHtml = placesInfo.phone ? '<div class="dp-row"><span class="dp-ico">📞</span>'+placesInfo.phone+'</div>' : '';
+  var phoneHtml = placesInfo.phone ? '<div class="dp-row"><span class="dp-ico">📞</span><a href="tel:'+placesInfo.phone+'" style="color:#1A5D1A;text-decoration:none">'+placesInfo.phone+'</a></div>' : '';
 
   // 헤카 자체 평점
   var ratingHtml = store.rating ? '⭐ '+store.rating : '';
