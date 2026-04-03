@@ -29,8 +29,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-amex.on{background:#007bc1;border-color:#007bc1}
 .cc-tlog.on{background:#FF6B00;border-color:#FF6B00}
 .cc-twallet.on{background:#FFD600;border-color:#FFD600;color:#333}
-.sq-chip-all.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
 .sq-chip-all{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid #1A5D1A;background:#fff;color:#1A5D1A;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
+.sq-chip-all.on{background:#1A5D1A;color:#fff}
 .sq-chip-all.open{background:#1A5D1A;color:#fff}
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:20;display:none;border-radius:26px}
 .sheet-overlay.open{display:block}
@@ -88,16 +88,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sec-more{font-size:11px;color:#999;cursor:pointer}
 .nrow{display:flex;gap:6px;overflow-x:auto;padding:0 14px;scrollbar-width:none;margin-bottom:10px}
 .nrow::-webkit-scrollbar{display:none}
-.ncard{position:relative;flex:0 0 106px;border-radius:10px;overflow:hidden;border:0.5px solid #eee;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s,opacity .2s}
+.ncard{position:relative;flex:0 0 106px;border-radius:10px;overflow:hidden;border:0.5px solid #eee;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s}
 .ncard:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
 .nimg{width:100%;height:56px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:20px}
 .nbody{padding:5px 7px 7px}
 .nn{font-size:11px;font-weight:500;color:#111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm{font-size:10px;color:#999;display:flex;align-items:center;gap:3px;flex-wrap:nowrap;overflow:hidden}
 .cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
-.cp-visa{background:#1a1f71}.cp-master{background:#eb001b}.cp-jcb{background:#007b40}.cp-amex{background:#007bc1}
 .zzim{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.zzim:hover{transform:scale(1.15)}
 .zzim svg{width:11px;height:11px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
 .zzim.on svg{fill:#e53935;stroke:#e53935}
 .divline{height:5px;background:#f5f5f5;margin:0 0 10px}
@@ -152,6 +150,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 </style>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -202,23 +202,19 @@ async function loadStores() {
       renderHotpl(allStores[0]);
       renderNearby(allStores);
     }
-  } catch(e) {
-    console.error('로드 오류:', e);
-  }
+  } catch(e) { console.error('로드 오류:', e); }
 }
 
 window.applyFilters = function() {
   var filtered = allStores.filter(function(store) {
-    // 카드사 필터
     var cardOk = window._cardSelected && window._cardSelected.has('all') ? true
       : (store.payOk || []).some(function(c){ return window._cardSelected && window._cardSelected.has(c.toLowerCase()); });
-    // 업종 필터
-    var catOk = window._selected && window._selected.size === 0 ? true
-      : window._selected && window._selected.has(store.category);
+    var catOk = !window._selected || window._selected.size === 0 ? true
+      : window._selected.has(store.category);
     return cardOk && catOk;
   });
   renderNearby(filtered);
-}
+};
 
 function renderHotpl(store) {
   var el = document.getElementById('hotpl-dynamic');
@@ -264,24 +260,106 @@ function renderNearby(stores) {
   });
 }
 
-function openFirebaseDetail(store) {
+window.openFirebaseDetail = async function(store) {
+  document.getElementById('dp-name').textContent = store.name;
+  document.getElementById('dp-cat').textContent = store.category || '';
+  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('dp-scroll').scrollTop = 0;
+
+  // 결제 카드
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
   var noPills = noCards.map(function(c){ return '<span class="dpill" style="background:#eee;color:#999">'+c+'</span>'; }).join('');
-  document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = store.category || '';
-  var review = store.review ? '<div class="dp-rev"><div class="dp-rev-top"><div class="dp-rev-av">🌏</div><span class="dp-rev-name">등록자</span><span class="dp-rev-date">'+timeAgo(store.createdAt)+'</span></div><div class="dp-rev-txt">'+store.review+'</div></div>' : '';
+
+  // Google Places API
+  var placesInfo = { hours: null, phone: null, isOpen: null };
+  try {
+    if (typeof google !== 'undefined' && store.lat && store.lng) {
+      const { Place } = await google.maps.importLibrary('places');
+      const { places } = await Place.searchByText({
+        textQuery: store.name + ' ' + (store.address || ''),
+        fields: ['regularOpeningHours','nationalPhoneNumber'],
+        maxResultCount: 1,
+      });
+      if (places && places[0]) {
+        var p = places[0];
+        placesInfo.phone = p.nationalPhoneNumber || null;
+        if (p.regularOpeningHours) {
+          placesInfo.hours = p.regularOpeningHours.weekdayDescriptions || null;
+          placesInfo.isOpen = p.regularOpeningHours.isOpen ? p.regularOpeningHours.isOpen() : null;
+        }
+      }
+    }
+  } catch(e) { console.log('Places 오류:', e); }
+
+  // 지도
+  var mapHtml = '';
+  if (store.lat && store.lng) {
+    var mapUrl = 'https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;
+    mapHtml = '<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')">'
+      + '<div id="dp-gmap" style="width:100%;height:100%"></div>'
+      + '</div>';
+  }
+
+  // 영업시간 아코디언
+  var hoursHtml = '';
+  if (placesInfo.hours && placesInfo.hours.length) {
+    var dayNames = ['월','화','수','목','금','토','일'];
+    var today = new Date().getDay();
+    var todayGIdx = today === 0 ? 6 : today - 1;
+    var todayTime = (placesInfo.hours[todayGIdx] || '').replace(/^[^:]+:\s*/, '');
+    var openBadge = placesInfo.isOpen === true
+      ? '<span style="background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
+      : placesInfo.isOpen === false
+      ? '<span style="background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업종료</span>' : '';
+    var allRows = placesInfo.hours.map(function(h, i) {
+      var isT = i === todayGIdx;
+      return '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;'+(isT?'color:#1A5D1A;font-weight:700':'color:#666')+'">'
+        +'<span>'+dayNames[i]+'요일</span><span>'+h.replace(/^[^:]+:\s*/, '')+'</span></div>';
+    }).join('');
+    window._hoursOpen = false;
+    hoursHtml = '<div class="dp-section">영업시간</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
+      +'<div>'+openBadge+'<span style="font-size:12px;color:#111;font-weight:600">'+todayTime+'</span></div>'
+      +'<span id="hours-arrow" onclick="toggleHours()" style="font-size:11px;color:#888;cursor:pointer;padding:2px 8px;border:1px solid #e0e0e0;border-radius:4px">전체 ▼</span>'
+      +'</div>'
+      +'<div id="hours-full" style="display:none;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-bottom:6px">'+allRows+'</div>';
+  }
+
+  // 전화번호
+  var phoneHtml = placesInfo.phone ? '<div class="dp-row"><span class="dp-ico">📞</span>'+placesInfo.phone+'</div>' : '';
+
+  // 헤카 자체 평점
+  var ratingHtml = store.rating ? '⭐ '+store.rating : '';
+
+  // 리뷰
+  var reviewHtml = store.review
+    ? '<div class="dp-rev"><div class="dp-rev-top"><div class="dp-rev-av">🌏</div><span class="dp-rev-name">등록자</span>'+(ratingHtml?'<span class="dp-rev-date">'+ratingHtml+'</span>':'')+'</div><div class="dp-rev-txt">'+store.review+'</div></div>'
+    : '';
+
   document.getElementById('dp-scroll').innerHTML =
     '<div class="dp-pills">'+pills+'</div>'
-    + (noPills ? '<div class="dp-section">결제 불가</div><div class="dp-pills">'+noPills+'</div>' : '')
-    + '<div class="dp-section">매장 정보</div>'
-    + (store.address ? '<div class="dp-row"><span class="dp-ico">📍</span>'+store.address+'</div>' : '')
-    + (review ? '<div class="dp-divider"></div><div class="dp-section">결제 후기</div>'+review : '');
-  document.getElementById('detail-overlay').classList.add('open');
-  document.getElementById('detail-panel').classList.add('open');
-  document.getElementById('dp-scroll').scrollTop = 0;
-}
+    +(noPills ? '<div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.06em;margin:4px 0 6px">결제 불가</div><div class="dp-pills">'+noPills+'</div>' : '')
+    +mapHtml
+    +'<div class="dp-section">매장 정보</div>'
+    +(store.address ? '<div class="dp-row"><span class="dp-ico">📍</span>'+store.address+'</div>' : '')
+    +hoursHtml
+    +phoneHtml
+    +(reviewHtml ? '<div class="dp-divider"></div><div class="dp-section">결제 후기'+(ratingHtml?' · '+ratingHtml:'')+'</div>'+reviewHtml : '');
+
+  // 지도 렌더링
+  if (store.lat && store.lng && typeof google !== 'undefined') {
+    setTimeout(function() {
+      var el = document.getElementById('dp-gmap');
+      if (!el) return;
+      var map = new google.maps.Map(el, { center:{lat:store.lat,lng:store.lng}, zoom:16, disableDefaultUI:true, gestureHandling:'none' });
+      new google.maps.Marker({ position:{lat:store.lat,lng:store.lng}, map:map, title:store.name });
+    }, 150);
+  }
+};
 
 window.addEventListener('DOMContentLoaded', loadStores);
 </script>
@@ -317,7 +395,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
       <div class="filter-label">업종</div>
       <div class="cat-wrap" id="cat-wrap">
         <div class="sq-chip-all" id="cat-all-btn" onclick="toggleSheet()">모두보기 ▾</div>
-        <div class="sq-chip-all" id="cat-all-select" onclick="catSelectAll()">전체</div>
+        <div class="sq-chip-all on" id="cat-all-select" onclick="catSelectAll()">전체</div>
       </div>
     </div>
   </div>
@@ -360,21 +438,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
     <span class="sec-more">더보기</span>
   </div>
   <div class="nrow" id="nearby-row">
-    <div class="ncard" onclick="openDetail('ichiran')">
-      <div class="nimg">🍜</div>
-      <button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
-      <div class="nbody"><div class="nn">이치란 라멘</div><div class="nm">★ 4.8 <span class="cpill cp-visa">VISA</span></div></div>
-    </div>
-    <div class="ncard" onclick="openDetail('donki')">
-      <div class="nimg">🛒</div>
-      <button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
-      <div class="nbody"><div class="nn">돈키호테</div><div class="nm">★ 4.3 <span class="cpill cp-master">MASTER</span><span class="cpill cp-jcb">JCB</span></div></div>
-    </div>
-    <div class="ncard" onclick="openDetail('sbux')">
-      <div class="nimg">☕</div>
-      <button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
-      <div class="nbody"><div class="nn">스타벅스 긴자</div><div class="nm">★ 4.1 <span class="cpill cp-amex">AMEX</span></div></div>
-    </div>
+    <div style="padding:20px;text-align:center;color:#bbb;font-size:12px">불러오는 중...</div>
   </div>
 
   <!-- 지도/도시 퀵카드 -->
@@ -416,7 +480,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
 
   <!-- 여행톡 -->
   <div class="ytok-wrap">
-    <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more" onclick="window.location.href='heka_여행톡_v2.html'">전체보기 →</span></div>
+    <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more" onclick="window.location.href='heka_yeohaengtok_v2.html'">전체보기 →</span></div>
     <div class="ycard">
       <div class="ythumb" style="background:#eef0f8">🎒</div>
       <div class="ycontent">
@@ -442,7 +506,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
   <!-- 하단 네비 -->
   <div class="bnav">
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
@@ -458,20 +522,20 @@ window.addEventListener('DOMContentLoaded', loadStores);
     </div>
     <div class="dp-scroll" id="dp-scroll"></div>
     <div class="dp-btn-row">
-      <button class="dp-btn-report">✍️ 결제 제보하기</button>
+      <button class="dp-btn-report" onclick="window.location.href='heka_register.html'">✍️ 결제 제보하기</button>
       <button class="dp-btn-more">매장 상세보기 →</button>
     </div>
   </div>
 </div>
 
 <script>
-var cardSelected=new Set(['all']);
+var cardSelected = new Set(['all']);
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1])||(cardSelected.has('all')&&m[1]==='all'));});}
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1]));});}
 function toggleCardMain(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardChips();syncCardSheet();updateCardCount();if(window.applyFilters)window.applyFilters();}
 function toggleCardChip(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
 function updateCardCount(){var cnt=cardSelected.has('all')?0:cardSelected.size;var el=document.getElementById('card-count');if(el)el.textContent=cnt>0?'('+cnt+'개 선택)':'';}
-function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();}
+function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
 var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
 function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='모두보기 ▴';b.classList.add('open');}
@@ -482,21 +546,25 @@ var wrap=document.getElementById('cat-wrap');
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);});
 var sw=document.getElementById('sheet-wrap');
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sheet-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d);});
-// 처음에 전체 버튼 선택 상태로
-document.getElementById('cat-all-select').classList.add('on');
-function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.remove('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
+function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);document.getElementById('cat-all-select').classList.remove('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
 function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});}
-function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){c.classList.remove('on');});var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
-function resetCats(){selected.clear();syncAll();updateCatCount();}
+function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){c.classList.remove('on');});document.getElementById('cat-all-select').classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
+function resetCats(){selected.clear();syncAll();updateCatCount();document.getElementById('cat-all-select').classList.add('on');}
 function updateCatCount(){var el=document.getElementById('cat-count');if(el)el.textContent=selected.size>0?'('+selected.size+'개 선택)':'';}
 var catSO=false;
 function toggleSheet(){catSO?closeSheet():openSheet();}
 function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▴';b.classList.add('open');}
 function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
 function toggleZzim(e,el){e.stopPropagation();el.classList.toggle('on');}
-var shopData={ichiran:{name:'이치란 라멘',cat:'식당 · 라멘',cards:[{n:'VISA',bg:'#1a1f71',cl:'#fff'}],rating:'4.8',addr:'도쿄 신주쿠구 이케부쿠로 1-2-3',hours:'11:00 ~ 23:00',reviews:[{name:'여행러_민지',date:'10분 전',txt:'비자카드 결제 잘 됐어요!'},{name:'도쿄덕후',date:'2시간 전',txt:'혼자 먹기 좋은 구조. 신용카드만 돼요'}]},donki:{name:'돈키호테',cat:'마트 · 면세점',cards:[{n:'MASTER',bg:'#eb001b',cl:'#fff'},{n:'JCB',bg:'#007b40',cl:'#fff'}],rating:'4.3',addr:'도쿄 시부야구 도겐자카 2-25-8',hours:'24시간 영업',reviews:[{name:'쇼핑왕',date:'30분 전',txt:'마스터카드·JCB 모두 OK!'},{name:'도쿄여행자',date:'1시간 전',txt:'면세 환급 바로 해줘요'}]},sbux:{name:'스타벅스 긴자',cat:'카페',cards:[{n:'AMEX',bg:'#007bc1',cl:'#fff'}],rating:'4.1',addr:'도쿄 주오구 긴자 6-10-1',hours:'07:00 ~ 23:00',reviews:[{name:'카페홀릭',date:'1시간 전',txt:'아멕스 터치결제 가능!'},{name:'커피러버',date:'3시간 전',txt:'AMEX만 되고 다른 카드는 안됩니다'}]}};
-function openDetail(id){var s=shopData[id];if(!s)return;document.getElementById('dp-name').textContent=s.name;document.getElementById('dp-cat').textContent=s.cat;var pills=s.cards.map(function(c){return'<span class="dpill" style="background:'+c.bg+';color:'+c.cl+'">'+c.n+'</span>';}).join('');var revs=s.reviews.map(function(r){return'<div class="dp-rev"><div class="dp-rev-top"><div class="dp-rev-av">'+r.name[0]+'</div><span class="dp-rev-name">'+r.name+'</span><span class="dp-rev-date">'+r.date+'</span></div><div class="dp-rev-txt">'+r.txt+'</div></div>';}).join('');document.getElementById('dp-scroll').innerHTML='<div class="dp-pills">'+pills+'</div><div class="dp-section">매장 정보</div><div class="dp-row"><span class="dp-ico">📍</span>'+s.addr+'</div><div class="dp-row"><span class="dp-ico">🕐</span>'+s.hours+'</div><div class="dp-row"><span class="dp-ico">⭐</span>평점 '+s.rating+'</div><div class="dp-divider"></div><div class="dp-section">결제 후기</div>'+revs;document.getElementById('detail-overlay').classList.add('open');document.getElementById('detail-panel').classList.add('open');document.getElementById('dp-scroll').scrollTop=0;}
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleHours(){
+  var el=document.getElementById('hours-full');
+  var arrow=document.getElementById('hours-arrow');
+  if(!el)return;
+  window._hoursOpen=!window._hoursOpen;
+  el.style.display=window._hoursOpen?'block':'none';
+  arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';
+}
 </script>
 </body>
 </html>
