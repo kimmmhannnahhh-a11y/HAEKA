@@ -330,9 +330,9 @@ window.openFirebaseDetail = async function(store) {
     var todayDayName = dayNames[todayGIdx];
     var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
     var openBadge = isOpenCalc === true
-      ? '<span style="background:#4ADE80;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
+      ? '<span style="color:#1A5D1A;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
       : isOpenCalc === false
-      ? '<span style="background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업종료</span>' : '';
+      ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
     hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
       +openBadge
       +'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span>'
