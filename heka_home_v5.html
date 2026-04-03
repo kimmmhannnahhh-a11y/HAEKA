@@ -231,7 +231,7 @@ function renderHotpl(store) {
     : 'background:#1a0e00';
   var emoji = store.images && store.images[0] ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
   el.innerHTML =
-    '<div class="hotpl-img" style="'+imgStyle+'">'
+    '<div class="hotpl-img" style="'+imgStyle+';cursor:pointer" onclick="window.location.href=\'heka_store_detail.html?id='+(store.id||'')+'\'">'
     + emoji
     + '<div class="hotpl-overlay">'
     + '<div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>'
