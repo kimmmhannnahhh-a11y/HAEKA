@@ -330,7 +330,7 @@ window.openFirebaseDetail = async function(store) {
     var todayDayName = dayNames[todayGIdx];
     var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
     var openBadge = isOpenCalc === true
-      ? '<span style="background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
+      ? '<span style="background:#4ADE80;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
       : isOpenCalc === false
       ? '<span style="background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업종료</span>' : '';
     hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
@@ -340,19 +340,17 @@ window.openFirebaseDetail = async function(store) {
   }
 
   document.getElementById('dp-scroll').innerHTML =
-    // 4. 결제 가능 한줄
-    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">'
-    +'<span style="font-size:10px;font-weight:700;color:#2563eb;white-space:nowrap">결제 가능</span>'
-    +pills
+    // 결제 가능 두줄
+    '<div style="margin-bottom:8px">'
+    +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
     +'</div>'
-    // 5. 결제 불가 한줄
-    +(noPills ? '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
-      +'<span style="font-size:10px;font-weight:700;color:#dc2626;white-space:nowrap">⚠️ 결제 불가</span>'
-      +noPills
+    // 결제 불가 두줄
+    +(noPills ? '<div style="margin-bottom:8px">'
+      +'<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px">결제 불가</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+noPills+'</div>'
       +'</div>' : '')
-    // 2. 영업시간 텍스트 없이
     +hoursHtml
-    // 1. 주소 먼저, 지도 나중
     +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
     +mapHtml;
 
