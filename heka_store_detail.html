@@ -204,8 +204,8 @@ async function renderStore(store) {
   }
   nickEl.textContent = '등록자 ' + (store.nickname || store.nick || '해카마왕');
 
-  // 등록 정보
-  document.getElementById('meta-date').textContent = timeAgo(store.createdAt);
+  // 등록 정보 (몇분전 제거)
+  // document.getElementById('meta-date').textContent = timeAgo(store.createdAt);
 
   // 주소
   if (store.address) {
@@ -231,17 +231,17 @@ async function renderStore(store) {
   }
 
   // 결제 후기 + 해카 평점
+  document.getElementById('review-section').style.display = 'block';
+  var haekaRating = store.rating || null;
+  document.getElementById('rating-btn').textContent = haekaRating ? '★ ' + haekaRating : '★ -';
   if (store.review) {
-    document.getElementById('review-section').style.display = 'block';
-    var haekaRating = store.rating || null;
-    if (haekaRating) {
-      document.getElementById('rating-btn').textContent = '★ ' + haekaRating;
-    }
     document.getElementById('review-list').innerHTML =
       '<div class="rev-item">'
       + '<div class="rev-top"><div class="rev-av">🌏</div><span class="rev-name">등록자</span><span class="rev-date">'+timeAgo(store.createdAt)+'</span></div>'
       + '<div class="rev-txt">'+store.review+'</div>'
       + '</div>';
+  } else {
+    document.getElementById('review-list').innerHTML = '<div style="font-size:11px;color:#bbb;text-align:center;padding:10px 0">아직 결제 후기가 없어요</div>';
   }
 
   // Google Places API로 영업시간 가져오기
@@ -263,7 +263,8 @@ async function renderStore(store) {
         }
         if (p.nationalPhoneNumber) {
           document.getElementById('meta-phone').textContent = p.nationalPhoneNumber;
-          document.getElementById('meta-phone-row').style.display = 'flex';
+          document.getElementById('meta-phone').href = 'tel:'+p.nationalPhoneNumber;
+          document.getElementById('meta-phone-section').style.display = 'block';
         }
       }
     } catch(e) { console.log('Places 오류:', e); }
@@ -310,7 +311,6 @@ function renderHours(hours, isOpen) {
   }).join('');
   document.getElementById('hours-all-content').innerHTML = allHtml;
 }
-
 window.addEventListener('DOMContentLoaded', loadStore);
 </script>
 </head>
@@ -348,10 +348,9 @@ window.addEventListener('DOMContentLoaded', loadStore);
 
   <div class="scroll-wrap">
 
-    <!-- 등록 정보 -->
-    <div class="section">
-      <div class="meta-row"><span class="meta-ico">📅</span><span>등록 <span id="meta-date">-</span></span></div>
-      <div class="meta-row" id="meta-phone-row" style="display:none">
+    <!-- 전화번호만 표시 (등록 몇분전 제거) -->
+    <div class="section" id="meta-phone-section" style="display:none">
+      <div class="meta-row" id="meta-phone-row">
         <span class="meta-ico">📞</span>
         <a id="meta-phone" href="#" style="color:#1A5D1A;text-decoration:none;font-size:11px"></a>
       </div>
@@ -394,9 +393,9 @@ window.addEventListener('DOMContentLoaded', loadStore);
     </div>
 
     <!-- 결제 불가 카드 -->
-    <div class="section" id="cards-no-section" style="display:none">
+    <div class="section" id="cards-no-section">
       <div class="sec-title-red">결제 불가 카드</div>
-      <div id="cards-no"></div>
+      <div id="cards-no"><span style="font-size:11px;color:#bbb">없음</span></div>
     </div>
 
     <!-- 결제 후기 -->
