@@ -281,7 +281,9 @@ window.openFirebaseDetail = async function(store) {
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
-  var noPills = noCards.map(function(c){ return '<span class="dpill" style="background:#eee;color:#999">'+c+'</span>'; }).join('');
+  var noPills = noCards.map(function(c){
+    return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
+  }).join('');
 
   // Google Places API
   var placesInfo = { hours: null, phone: null, isOpen: null };
@@ -331,19 +333,28 @@ window.openFirebaseDetail = async function(store) {
       ? '<span style="background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
       : isOpenCalc === false
       ? '<span style="background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업종료</span>' : '';
-    hoursHtml = '<div class="dp-section">영업시간</div>'
-      +'<div style="display:flex;align-items:center;margin-bottom:4px">'
+    hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
       +openBadge
       +'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span>'
       +'</div>';
   }
 
   document.getElementById('dp-scroll').innerHTML =
-    '<div class="dp-pills">'+pills+'</div>'
-    +(noPills ? '<div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.06em;margin:4px 0 6px">결제 불가</div><div class="dp-pills">'+noPills+'</div>' : '')
-    +mapHtml
+    // 4. 결제 가능 한줄
+    '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">'
+    +'<span style="font-size:10px;font-weight:700;color:#2563eb;white-space:nowrap">결제 가능</span>'
+    +pills
+    +'</div>'
+    // 5. 결제 불가 한줄
+    +(noPills ? '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
+      +'<span style="font-size:10px;font-weight:700;color:#dc2626;white-space:nowrap">⚠️ 결제 불가</span>'
+      +noPills
+      +'</div>' : '')
+    // 2. 영업시간 텍스트 없이
     +hoursHtml
-    +(store.address ? '<div style="font-size:11px;color:#777;margin-top:4px">'+store.address+'</div>' : '');
+    // 1. 주소 먼저, 지도 나중
+    +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
+    +mapHtml;
 
   // 지도 렌더링
   if (store.lat && store.lng && typeof google !== 'undefined') {
@@ -512,8 +523,13 @@ window.addEventListener('DOMContentLoaded', loadStores);
   <div class="detail-panel" id="detail-panel">
     <div class="dp-handle"></div>
     <div class="dp-topbar">
-      <div><div class="dp-name" id="dp-name"></div><div class="dp-cat" id="dp-cat"></div></div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-cat" id="dp-cat"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
         <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dp-zzim-svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </button>
