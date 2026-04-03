@@ -111,6 +111,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .source-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;margin-bottom:2px}
 .source-google{background:#e8f0fe;color:#1a73e8}
 .source-haeka{background:#e8f5e8;color:#1A5D1A}
+
 .media-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:60;display:none;align-items:flex-end;border-radius:26px}
 .media-overlay.open{display:flex}
 .media-box{background:#fff;border-radius:18px 18px 0 0;width:100%;padding:14px 16px 18px}
@@ -124,6 +125,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .media-cancel{width:100%;margin-top:7px;padding:11px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 </style>
 
+<!-- ✅ Google Places API - YOUR_API_KEY 부분을 본인 키로 교체하세요 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta"></script>
 
 <!-- Firebase SDK -->
@@ -356,7 +358,8 @@ window.saveToFirestore = async function(data) {
           <input class="map-inp" id="map-search-inp" placeholder="가게 이름, 주소로 검색" type="text" onkeydown="if(event.key==='Enter')searchPlace()"/>
           <button class="map-search-btn" onclick="searchPlace()">검색</button>
         </div>
-                <button class="google-btn" onclick="openGoogleMap()">
+
+        <button class="google-btn" onclick="openGoogleMap()">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/></svg>
           Google Maps에서 직접 검색
         </button>
