@@ -266,6 +266,9 @@ function renderNearby(stores) {
 }
 
 window.openFirebaseDetail = async function(store) {
+  // 현재 매장 ID 저장
+  window._currentStoreId = store.id || null;
+
   document.getElementById('dp-name').textContent = store.name;
   document.getElementById('dp-cat').textContent = store.category || '';
   document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
@@ -532,7 +535,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
     <div class="dp-scroll" id="dp-scroll"></div>
     <div class="dp-btn-row">
       <button class="dp-btn-report" onclick="window.location.href='heka_register.html'">✍️ 결제 제보하기</button>
-      <button class="dp-btn-more">매장 상세보기 →</button>
+      <button class="dp-btn-more" id="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
     </div>
   </div>
 </div>
@@ -566,6 +569,11 @@ function openSheet(){catSO=true;document.getElementById('overlay').classList.add
 function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
 function toggleZzim(e,el){e.stopPropagation();el.classList.toggle('on');}
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function goToDetail(){
+  var id = window._currentStoreId;
+  if(id) window.location.href = 'heka_store_detail.html?id=' + id;
+  else window.location.href = 'heka_store_detail.html';
+}
 function toggleHours(){
   var el=document.getElementById('hours-full');
   var arrow=document.getElementById('hours-arrow');
