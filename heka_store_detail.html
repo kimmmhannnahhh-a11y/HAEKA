@@ -39,12 +39,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .meta-ico{font-size:12px;width:16px;text-align:center;flex-shrink:0}
 
 /* 주소 */
-.addr-box{background:#f8f8f8;border-radius:10px;padding:10px 12px;display:flex;align-items:flex-start;gap:8px}
+.addr-box{background:#f8f8f8;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.addr-box:hover{background:#f0f0f0}
 .addr-txt{flex:1;font-size:12px;color:#333;line-height:1.5}
-.addr-btns{display:flex;gap:5px;margin-top:8px}
-.addr-btn{flex:1;padding:6px;border-radius:7px;font-size:10px;font-weight:600;border:none;cursor:pointer;font-family:inherit;text-align:center}
-.addr-btn-map{background:#e8f5e8;color:#1A5D1A}
-.addr-btn-copy{background:#f0f0f0;color:#555}
+.addr-copy-btn{flex-shrink:0;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center}
+.addr-copy-btn svg{width:15px;height:15px;stroke:#aaa;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 /* 영업시간 */
 .hours-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
@@ -60,6 +59,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .card-chip{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;color:#fff}
 .card-chip-no{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;color:#ff3b30;background:#fff5f5;border:1px solid #fecaca}
 .card-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
+.sec-title-blue{font-size:10px;font-weight:700;color:#2563eb;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.sec-title-red{font-size:10px;font-weight:700;color:#dc2626;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
 
 /* 결제 후기 */
 .rev-item{background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:7px}
@@ -69,7 +70,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .rev-name{font-size:11px;font-weight:600;color:#333}
 .rev-date{font-size:10px;color:#bbb;margin-left:auto}
 .rev-txt{font-size:11px;color:#555;line-height:1.5}
-.rev-more{width:100%;margin-top:8px;padding:9px;border-radius:8px;background:#f0f0f0;color:#555;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+.rev-rating-btn{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#f5a623;font-weight:700;cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid #fde68a;background:#fffbeb;transition:.15s}
+.rev-rating-btn:hover{background:#fef3c7}
 
 /* 찜하기 */
 .zzim-btn{position:absolute;top:10px;right:50px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -77,9 +79,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .zzim-btn.on svg{fill:#e53935;stroke:#e53935}
 
 /* 카테고리 추가 요청 */
-.cat-request{background:#f8f8f8;border-radius:10px;padding:10px 12px;text-align:center;cursor:pointer;border:1px dashed #ddd;transition:.15s}
+.cat-request{background:#f8f8f8;border-radius:8px;padding:7px 12px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px dashed #ddd;transition:.15s;white-space:nowrap}
 .cat-request:hover{border-color:#1A5D1A;background:#f0f9f0}
-.cat-request-txt{font-size:11px;color:#888}
+.cat-request-txt{font-size:10px;color:#888;white-space:nowrap}
 
 /* 하단 버튼 */
 .bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
@@ -193,6 +195,15 @@ async function renderStore(store) {
   sigEl.textContent = signal.txt;
   sigEl.className = 'signal-badge ' + signal.cls;
 
+  // 등록일자, 닉네임
+  var dateEl = document.getElementById('hero-date');
+  var nickEl = document.getElementById('hero-nick');
+  if (store.createdAt) {
+    var d = new Date(store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt);
+    dateEl.textContent = d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+  }
+  nickEl.textContent = '등록자 ' + (store.nickname || store.nick || '해카마왕');
+
   // 등록 정보
   document.getElementById('meta-date').textContent = timeAgo(store.createdAt);
 
@@ -219,9 +230,13 @@ async function renderStore(store) {
     }).join('');
   }
 
-  // 결제 후기
+  // 결제 후기 + 해카 평점
   if (store.review) {
     document.getElementById('review-section').style.display = 'block';
+    var haekaRating = store.rating || null;
+    if (haekaRating) {
+      document.getElementById('rating-btn').textContent = '★ ' + haekaRating;
+    }
     document.getElementById('review-list').innerHTML =
       '<div class="rev-item">'
       + '<div class="rev-top"><div class="rev-av">🌏</div><span class="rev-name">등록자</span><span class="rev-date">'+timeAgo(store.createdAt)+'</span></div>'
@@ -281,9 +296,11 @@ function renderHours(hours, isOpen) {
   var today = new Date().getDay();
   var todayIdx = today === 0 ? 6 : today - 1;
   var todayDesc = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '');
+  var todayDayName = dayNames[todayIdx];
   var openBadge = isOpen === true ? '<span class="hours-badge-open">영업중</span>'
     : isOpen === false ? '<span class="hours-badge-close">영업종료</span>' : '';
-  document.getElementById('hours-today-txt').innerHTML = openBadge + '<span class="hours-today">'+todayDesc+'</span>';
+  document.getElementById('hours-today-txt').innerHTML =
+    openBadge + '<span class="hours-today">'+todayDayName+'요일 '+todayDesc+'</span>';
   var allHtml = hours.map(function(h, i) {
     var isToday = i === todayIdx;
     return '<div class="hours-day-row" style="color:'+(isToday?'#1A5D1A':'#555')+';font-weight:'+(isToday?'700':'400')+'">'
@@ -316,10 +333,16 @@ window.addEventListener('DOMContentLoaded', loadStore);
         </button>
       </div>
     </div>
-    <div class="hero-bottom">
-      <div id="signal-badge" class="signal-badge signal-green">🟢 최근 결제 확인</div>
-      <div id="hero-name" class="hero-name">매장명</div>
-      <div id="hero-cat" class="hero-cat">업종</div>
+    <div class="hero-bottom" style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div id="hero-name" class="hero-name"></div>
+        <div id="hero-cat" class="hero-cat"></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:10px">
+        <div id="signal-badge" class="signal-badge signal-green" style="margin-bottom:3px;justify-content:flex-end">🟢 최근</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.8);margin-bottom:1px" id="hero-date">-</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.6)" id="hero-nick">등록자 -</div>
+      </div>
     </div>
   </div>
 
@@ -336,21 +359,19 @@ window.addEventListener('DOMContentLoaded', loadStore);
 
     <!-- 주소 -->
     <div class="section" id="addr-section" style="display:none">
-      <div class="sec-title">주소</div>
-      <div class="addr-box">
-        <span style="font-size:14px;flex-shrink:0">📍</span>
-        <div style="flex:1">
-          <div id="addr-txt" class="addr-txt"></div>
-          <div class="addr-btns">
-            <button class="addr-btn addr-btn-map" onclick="openMap()">🗺️ 지도 열기</button>
-            <button class="addr-btn addr-btn-copy" onclick="copyAddr()">📋 복사</button>
-          </div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="display:flex;align-items:baseline;gap:6px;flex:1">
+          <span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;white-space:nowrap">주소</span>
+          <span id="addr-txt" style="font-size:12px;color:#333;line-height:1.5"></span>
         </div>
+        <button class="addr-copy-btn" onclick="copyAddr()" style="flex-shrink:0;margin-top:1px">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- 지도 -->
-    <div class="section" style="padding:0">
+    <div class="section" style="padding:0;cursor:pointer" onclick="openMap()">
       <div id="detail-map" style="width:100%;height:120px;background:#f0f0f0"></div>
     </div>
 
@@ -368,21 +389,23 @@ window.addEventListener('DOMContentLoaded', loadStore);
 
     <!-- 결제 가능 카드 -->
     <div class="section">
-      <div class="sec-title">결제 가능 카드</div>
+      <div class="sec-title-blue">결제 가능 카드</div>
       <div class="card-grid" id="cards-ok"></div>
     </div>
 
     <!-- 결제 불가 카드 -->
     <div class="section" id="cards-no-section" style="display:none">
-      <div class="sec-title">결제 불가 카드</div>
+      <div class="sec-title-red">결제 불가 카드</div>
       <div id="cards-no"></div>
     </div>
 
     <!-- 결제 후기 -->
     <div class="section" id="review-section" style="display:none">
-      <div class="sec-title">결제 후기</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="sec-title" style="margin-bottom:0">결제 후기</div>
+        <button class="rev-rating-btn" id="rating-btn" onclick="showToast('리뷰 전체보기 준비 중이에요!')">★ -</button>
+      </div>
       <div id="review-list"></div>
-      <button class="rev-more" onclick="showToast('준비 중이에요!')">후기 전체보기 →</button>
     </div>
 
     <!-- 카테고리 추가 요청 -->
