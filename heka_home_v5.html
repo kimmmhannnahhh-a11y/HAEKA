@@ -14,12 +14,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .topbar-right{display:flex;align-items:center;gap:10px}
 .search-icon-btn{width:32px;height:32px;border-radius:50%;border:0.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.15)}
 .search-icon-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-.filterbar{padding:10px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:8px}
+.filterbar{padding:10px 0 10px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
 .filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
-.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center}
+.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:24px;cursor:grab}
 .chip-row::-webkit-scrollbar{display:none}
-.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.chip-row:active{cursor:grabbing}
+.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-right:24px;cursor:grab}
 .cat-wrap::-webkit-scrollbar{display:none}
+.cat-wrap:active{cursor:grabbing}
 .sq-chip{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
 .sq-chip:hover{border-color:#aaa}
 .sq-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
@@ -155,6 +157,35 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 
+<script>
+function getCountryFlag(address) {
+  if (!address) return '🌏';
+  var map = {
+    '일본':'🇯🇵','Japan':'🇯🇵','도쿄':'🇯🇵','오사카':'🇯🇵','교토':'🇯🇵','후쿠오카':'🇯🇵','삿포로':'🇯🇵',
+    '한국':'🇰🇷','Korea':'🇰🇷','서울':'🇰🇷','부산':'🇰🇷',
+    '미국':'🇺🇸','United States':'🇺🇸','뉴욕':'🇺🇸','로스앤젤레스':'🇺🇸',
+    '프랑스':'🇫🇷','France':'🇫🇷','파리':'🇫🇷',
+    '태국':'🇹🇭','Thailand':'🇹🇭','방콕':'🇹🇭','푸켓':'🇹🇭',
+    '베트남':'🇻🇳','Vietnam':'🇻🇳','하노이':'🇻🇳','호치민':'🇻🇳','다낭':'🇻🇳',
+    '스페인':'🇪🇸','Spain':'🇪🇸','바르셀로나':'🇪🇸','마드리드':'🇪🇸',
+    '이탈리아':'🇮🇹','Italy':'🇮🇹','로마':'🇮🇹','밀라노':'🇮🇹',
+    '독일':'🇩🇪','Germany':'🇩🇪','베를린':'🇩🇪','뮌헨':'🇩🇪',
+    '크로아티아':'🇭🇷','Croatia':'🇭🇷','자그레브':'🇭🇷',
+    '헝가리':'🇭🇺','Hungary':'🇭🇺','부다페스트':'🇭🇺','Budapest':'🇭🇺',
+    '영국':'🇬🇧','United Kingdom':'🇬🇧','런던':'🇬🇧','London':'🇬🇧',
+    '중국':'🇨🇳','China':'🇨🇳','베이징':'🇨🇳','상하이':'🇨🇳',
+    '홍콩':'🇭🇰','Hong Kong':'🇭🇰','싱가포르':'🇸🇬','Singapore':'🇸🇬',
+    '호주':'🇦🇺','Australia':'🇦🇺','시드니':'🇦🇺',
+    '필리핀':'🇵🇭','Philippines':'🇵🇭','보라카이':'🇵🇭',
+    '인도네시아':'🇮🇩','Indonesia':'🇮🇩','발리':'🇮🇩','Bali':'🇮🇩',
+    '대만':'🇹🇼','Taiwan':'🇹🇼','타이베이':'🇹🇼',
+    '캐나다':'🇨🇦','Canada':'🇨🇦','Osaka':'🇯🇵','Tokyo':'🇯🇵','Fukuoka':'🇯🇵',
+  };
+  for (var key in map) { if (address.indexOf(key) > -1) return map[key]; }
+  return '🌏';
+}
+</script>
+
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -236,7 +267,7 @@ function renderHotpl(store) {
     + '<div class="hotpl-overlay">'
     + '<div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>'
     + '<div class="hotpl-title">"'+store.name+',<br>'+timeAgo(store.createdAt)+' 등록됐어요!"</div>'
-    + '<div class="hotpl-reporter"><div class="rep-av">🌏</div><span class="rep-txt">등록 <span class="rep-name">'+timeAgo(store.createdAt)+'</span></span></div>'
+    + '<div class="hotpl-reporter"><div class="rep-av">'+getCountryFlag(store.address)+'</div><span class="rep-txt">등록 <span class="rep-name">'+timeAgo(store.createdAt)+'</span></span></div>'
     + '<div class="hotpl-dots"><div class="dot-i on"></div><div class="dot-i"></div><div class="dot-i"></div></div>'
     + '</div></div>';
 }
@@ -538,6 +569,15 @@ window.addEventListener('DOMContentLoaded', loadStores);
 </div>
 
 <script>
+// PC 마우스 드래그 스크롤
+document.querySelectorAll('.chip-row, .cat-wrap, .nrow').forEach(function(el) {
+  var isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown', function(e) { isDown=true; startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
+  el.addEventListener('mouseleave', function() { isDown=false; });
+  el.addEventListener('mouseup', function() { isDown=false; });
+  el.addEventListener('mousemove', function(e) { if(!isDown) return; e.preventDefault(); var x=e.pageX-el.offsetLeft; el.scrollLeft=scrollLeft-(x-startX); });
+});
+
 var cardSelected = new Set(['all']);
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1])||(cardSelected.has('all')&&m[1]==='all'));});}
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1]));});}
