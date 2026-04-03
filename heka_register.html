@@ -20,17 +20,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .label-blue{color:#2563eb}
 .label-red{color:#dc2626}
 .req-star{color:#ff3b30;font-weight:800;margin-left:1px}
-.map-box{width:100%;height:96px;border-radius:10px;background:linear-gradient(150deg,#e8f2e8,#d4e8d4);position:relative;overflow:hidden;border:1.5px solid #c8dcc8;cursor:pointer;margin-bottom:6px;margin-top:6px}
-.map-grid-h{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.5)}
-.map-grid-v{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.5)}
-.map-road-h{position:absolute;left:0;right:0;background:rgba(255,255,255,.8)}
-.map-road-v{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.8)}
-.map-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.map-box{width:100%;height:130px;border-radius:10px;overflow:hidden;border:1.5px solid #c8dcc8;margin-bottom:6px;margin-top:6px;position:relative}
+.map-box-placeholder{position:absolute;inset:0;background:linear-gradient(150deg,#e8f2e8,#d4e8d4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}
 .map-placeholder-txt{font-size:11px;color:#888;font-weight:500}
-.map-pin{position:absolute;left:50%;top:45%;transform:translate(-50%,-100%);display:none;flex-direction:column;align-items:center}
-.map-dot{width:14px;height:14px;border-radius:50%;background:#1A5D1A;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.map-tail{width:2px;height:5px;background:#1A5D1A}
-.map-shadow{position:absolute;left:50%;top:45%;transform:translate(-50%,0);width:10px;height:3px;border-radius:50%;background:rgba(0,0,0,.12);display:none}
+#real-map{width:100%;height:100%;display:none}
 .selected-addr{font-size:10px;color:#1A5D1A;font-weight:600;margin-top:4px;padding:7px 10px;background:#e8f5e8;border-radius:8px;display:none}
 .selected-addr.show{display:block}
 .inline-input{flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:10px;background:#f0f0f0;color:#aaa;font-family:inherit;outline:none;cursor:default}
@@ -125,7 +118,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .media-cancel{width:100%;margin-top:7px;padding:11px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 </style>
 
-<!-- ✅ Google Places API - YOUR_API_KEY 부분을 본인 키로 교체하세요 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta"></script>
 
 <!-- Firebase SDK -->
@@ -209,17 +201,12 @@ window.saveToFirestore = async function(data) {
     <!-- 장소 검색 -->
     <div class="section">
       <div class="sec-label" style="margin-bottom:0">장소 검색<span class="req-star">*</span></div>
-      <div class="map-box" id="map-box" onclick="openMapSearch()">
-        <div class="map-grid-h" style="top:25%"></div><div class="map-grid-h" style="top:50%"></div><div class="map-grid-h" style="top:75%"></div>
-        <div class="map-grid-v" style="left:25%"></div><div class="map-grid-v" style="left:50%"></div><div class="map-grid-v" style="left:75%"></div>
-        <div class="map-road-h" style="top:46%;height:6px"></div>
-        <div class="map-road-v" style="left:46%;width:6px"></div>
-        <div class="map-placeholder" id="map-placeholder">
+      <div class="map-box" id="map-box">
+        <div class="map-box-placeholder" id="map-placeholder" onclick="openMapSearch()">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.6" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#ddd" stroke="none"/></svg>
           <div class="map-placeholder-txt">지도를 눌러 검색해주세요</div>
         </div>
-        <div class="map-pin" id="map-pin"><div class="map-dot"></div><div class="map-tail"></div></div>
-        <div class="map-shadow" id="map-shadow"></div>
+        <div id="real-map"></div>
       </div>
       <div class="selected-addr" id="selected-addr"></div>
       <div class="err-txt" id="err-location">위치를 검색해서 선택해주세요</div>
@@ -355,14 +342,10 @@ window.saveToFirestore = async function(data) {
       <div class="map-popup-head">
         <div class="map-popup-title">장소 검색</div>
         <div class="map-inp-row">
-          <input class="map-inp" id="map-search-inp" placeholder="가게 이름, 주소로 검색" type="text" onkeydown="if(event.key==='Enter')searchPlace()"/>
+          <input class="map-inp" id="map-search-inp" placeholder="가게 이름, 주소로 검색" type="text" onkeydown="if(event.key==='Enter')searchPlace()" oninput="liveSearch(this.value)"/>
           <button class="map-search-btn" onclick="searchPlace()">검색</button>
         </div>
 
-        <button class="google-btn" onclick="openGoogleMap()">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/></svg>
-          Google Maps에서 직접 검색
-        </button>
         <button class="map-close" onclick="closeMapSearch()">✕</button>
       </div>
       <div class="map-results" id="map-results">
@@ -397,12 +380,17 @@ var locationSelected=false, selectedCat=null, payOkList=[], payNoList=[], upload
 var currentTab='all';
 var selectedLat=null, selectedLng=null;
 
-// ── 탭 전환 ──
-function setTab(tab) {
-  currentTab = tab;
-  ['all','google','haeka'].forEach(function(t) {
-    document.getElementById('tab-'+t).classList.toggle('on', t===tab);
-  });
+// ── 실시간 검색 (디바운스) ──
+var liveSearchTimer = null;
+function liveSearch(val) {
+  clearTimeout(liveSearchTimer);
+  if (val.trim().length < 2) {
+    document.getElementById('map-results').innerHTML = '<div class="map-empty">가게 이름이나 주소를 검색해주세요</div>';
+    return;
+  }
+  liveSearchTimer = setTimeout(function() {
+    searchPlace();
+  }, 400);
 }
 
 function goBack(){if(window.history.length>1)window.history.back();else window.location.href='heka_home_v5.html';}
@@ -497,11 +485,41 @@ async function searchPlace() {
   }).join('');
 }
 
+var googleMap = null;
+var googleMarker = null;
+
+function showRealMap(lat, lng, name) {
+  var mapEl = document.getElementById('real-map');
+  var placeholder = document.getElementById('map-placeholder');
+  mapEl.style.display = 'block';
+  placeholder.style.display = 'none';
+
+  if (!googleMap) {
+    googleMap = new google.maps.Map(mapEl, {
+      center: { lat: lat, lng: lng },
+      zoom: 16,
+      disableDefaultUI: true,
+      gestureHandling: 'none',
+      zoomControl: false,
+    });
+  } else {
+    googleMap.setCenter({ lat: lat, lng: lng });
+    googleMap.setZoom(16);
+  }
+
+  if (googleMarker) googleMarker.setMap(null);
+  googleMarker = new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: googleMap,
+    title: name,
+  });
+
+  // 지도 클릭하면 검색 팝업 다시 열기
+  mapEl.onclick = function() { openMapSearch(); };
+}
+
 function selectPlace(i) {
   var p = window._r[i];
-  document.getElementById('map-placeholder').style.display='none';
-  document.getElementById('map-pin').style.display='flex';
-  document.getElementById('map-shadow').style.display='block';
   var a = document.getElementById('selected-addr');
   a.textContent = '✅ '+p.name+' · '+p.addr;
   a.classList.add('show');
@@ -513,6 +531,12 @@ function selectPlace(i) {
   document.getElementById('err-location').classList.remove('show');
   document.getElementById('err-name').classList.remove('show');
   closeMapSearch();
+
+  // 실제 지도 표시
+  if (p.lat && p.lng) {
+    showRealMap(p.lat, p.lng, p.name);
+  }
+
   showToast('📍 위치가 설정되었어요!');
 }
 
