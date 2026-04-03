@@ -29,6 +29,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-amex.on{background:#007bc1;border-color:#007bc1}
 .cc-tlog.on{background:#FF6B00;border-color:#FF6B00}
 .cc-twallet.on{background:#FFD600;border-color:#FFD600;color:#333}
+.cc-union.on{background:#e21836;border-color:#e21836}
 .sq-chip-all{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid #1A5D1A;background:#fff;color:#1A5D1A;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
 .sq-chip-all.on{background:#1A5D1A;color:#fff}
 .sq-chip-all.open{background:#1A5D1A;color:#fff}
@@ -130,8 +131,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .detail-panel.open{transform:translateY(0)}
 .dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
 .dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
-.dp-name{font-size:15px;font-weight:700;color:#111}
-.dp-cat{font-size:11px;color:#999;margin-left:5px;align-self:center}
+.dp-name{font-size:15px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.dp-cat{font-size:11px;color:#999;white-space:nowrap;flex-shrink:0}
 .dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
 .dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
 .dp-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
@@ -386,6 +387,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
         <div class="sq-chip cc-amex" onclick="toggleCardMain(this,'amex')">AMEX</div>
         <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
         <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
+        <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
       </div>
     </div>
     <div>
@@ -413,6 +415,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
       <div class="sheet-chip" onclick="toggleCardChip(this,'amex')">AMEX</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블로그')">트래블로그</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블월렛')">트래블월렛</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'UnionPay')">UnionPay</div>
     </div>
     <button class="sheet-done" onclick="closeCardSheet()">선택 완료</button>
   </div>
@@ -514,8 +517,8 @@ window.addEventListener('DOMContentLoaded', loadStores);
   <div class="detail-panel" id="detail-panel">
     <div class="dp-handle"></div>
     <div class="dp-topbar">
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline;gap:5px">
           <div class="dp-name" id="dp-name"></div>
           <div class="dp-cat" id="dp-cat"></div>
         </div>
