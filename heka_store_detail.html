@@ -258,7 +258,10 @@ async function renderStore(store) {
         if (p.regularOpeningHours) {
           var hours = p.regularOpeningHours.weekdayDescriptions || [];
           var isOpen = null;
-          try { isOpen = p.regularOpeningHours.isOpen(); } catch(e) {}
+          try { isOpen = p.regularOpeningHours.isOpen(); } catch(e) {
+            // 직접 계산
+            isOpen = calcIsOpen(hours);
+          }
           renderHours(hours, isOpen);
         }
         if (p.nationalPhoneNumber) {
@@ -288,6 +291,32 @@ async function renderStore(store) {
       new google.maps.Marker({ position: { lat: store.lat, lng: store.lng }, map: map, title: store.name });
     }, 300);
   }
+}
+
+function calcIsOpen(hours) {
+  try {
+    var now = new Date();
+    var today = now.getDay(); // 0=일
+    var todayIdx = today === 0 ? 6 : today - 1; // Google: 0=월
+    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '');
+    if (!todayHours || todayHours.includes('휴무') || todayHours.includes('Closed')) return false;
+    if (todayHours.includes('24시간') || todayHours.includes('24 hours')) return true;
+    // "오전 10:30 ~ 오후 7:30" 파싱
+    var match = todayHours.match(/(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/);
+    if (!match) return null;
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    // 한국어 오전/오후 처리
+    var openH = parseInt(match[1]), openM = parseInt(match[2]);
+    var closeH = parseInt(match[3]), closeM = parseInt(match[4]);
+    // 오후 처리 (오전/PM 포함 여부)
+    var beforeOpen = todayHours.substring(0, todayHours.indexOf('~'));
+    var afterOpen = todayHours.substring(todayHours.indexOf('~')+1);
+    if (beforeOpen.includes('오후') || beforeOpen.includes('PM')) if (openH < 12) openH += 12;
+    if (afterOpen.includes('오후') || afterOpen.includes('PM')) if (closeH < 12) closeH += 12;
+    var openMins = openH * 60 + openM;
+    var closeMins = closeH * 60 + closeM;
+    return nowMins >= openMins && nowMins < closeMins;
+  } catch(e) { return null; }
 }
 
 function renderHours(hours, isOpen) {
