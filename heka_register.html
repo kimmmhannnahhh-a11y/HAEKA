@@ -146,7 +146,7 @@ window._addDoc = addDoc;
 window._serverTimestamp = serverTimestamp;
 
 // 사진 업로드 함수
-window.uploadImages = async function(images, storeName) {
+window.uploadImages = async function(images) {
   if (!images || !images.length) return [];
   var urls = [];
   for (var i = 0; i < images.length; i++) {
@@ -155,12 +155,14 @@ window.uploadImages = async function(images, storeName) {
       await uploadString(imgRef, images[i], 'data_url');
       var url = await getDownloadURL(imgRef);
       urls.push(url);
+      console.log('사진 업로드 성공:', url);
     } catch(e) {
       console.error('사진 업로드 오류:', e);
     }
   }
   return urls;
 };
+window._storageReady = true;
 
 // Firebase 검색
 window.searchFirestore = async function(keyword) {
@@ -619,9 +621,17 @@ async function saveStore(){
 
   // 사진 먼저 업로드
   var imageUrls = [];
-  if (window.uploadImages && uploadedImgs.length > 0) {
+  if (uploadedImgs.length > 0) {
     document.getElementById('prog-txt').textContent = '사진 업로드 중...';
-    imageUrls = await window.uploadImages(uploadedImgs, document.getElementById('inp-name').value);
+    // Storage 준비될 때까지 대기
+    var waited = 0;
+    while (!window._storageReady && waited < 50) {
+      await new Promise(function(r){ setTimeout(r, 100); });
+      waited++;
+    }
+    if (window.uploadImages) {
+      imageUrls = await window.uploadImages(uploadedImgs);
+    }
   }
 
   var data = {
