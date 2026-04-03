@@ -180,9 +180,13 @@ function renderHotpl(store) {
   if (!el) return;
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var cardPills = cards.map(function(c){ return '<span class="hotpl-cpill" style="background:'+cardColor(c)+'">'+c+'</span>'; }).join('');
+  var imgStyle = store.images && store.images[0]
+    ? 'background:url('+store.images[0]+') center/cover no-repeat'
+    : 'background:linear-gradient(135deg,#1a2e1a,#2d4a1e)';
+  var emoji = store.images && store.images[0] ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px">'+catEmoji(store.category)+'</div>';
   el.innerHTML =
-    '<div class="hotpl-img" style="background:linear-gradient(135deg,#1a2e1a,#2d4a1e)">'
-    + '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px">'+catEmoji(store.category)+'</div>'
+    '<div class="hotpl-img" style="'+imgStyle+'">'
+    + emoji
     + '<div class="hotpl-overlay">'
     + '<div class="live-badge"><div class="ld"></div><span class="live-txt">NEW</span></div>'
     + '<div class="hotpl-title">"'+store.name+' 방금 등록됐어요!"</div>'
@@ -200,10 +204,13 @@ function renderNearby(stores) {
     var pillsHtml = cards.slice(0, 2).map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
     }).join('');
+    var imgHtml = store.images && store.images[0]
+      ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat;font-size:0"></div>'
+      : '<div class="nimg">'+catEmoji(store.category)+'</div>';
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML =
-      '<div class="nimg">'+catEmoji(store.category)+'</div>'
+      imgHtml
       + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
       + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm">'+timeAgo(store.createdAt)+' '+pillsHtml+'</div></div>';
     row.appendChild(card);

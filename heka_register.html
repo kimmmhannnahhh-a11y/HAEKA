@@ -124,6 +124,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
@@ -137,10 +138,29 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 window._db = db;
+window._storage = storage;
 window._collection = collection;
 window._addDoc = addDoc;
 window._serverTimestamp = serverTimestamp;
+
+// 사진 업로드 함수
+window.uploadImages = async function(images, storeName) {
+  if (!images || !images.length) return [];
+  var urls = [];
+  for (var i = 0; i < images.length; i++) {
+    try {
+      var imgRef = ref(storage, 'stores/' + Date.now() + '_' + i + '.jpg');
+      await uploadString(imgRef, images[i], 'data_url');
+      var url = await getDownloadURL(imgRef);
+      urls.push(url);
+    } catch(e) {
+      console.error('사진 업로드 오류:', e);
+    }
+  }
+  return urls;
+};
 
 // Firebase 검색
 window.searchFirestore = async function(keyword) {
@@ -596,6 +616,14 @@ function submitReg(){
 async function saveStore(){
   var addrEl = document.getElementById('selected-addr').textContent.replace('✅ ','');
   var parts = addrEl.split(' · ');
+
+  // 사진 먼저 업로드
+  var imageUrls = [];
+  if (window.uploadImages && uploadedImgs.length > 0) {
+    document.getElementById('prog-txt').textContent = '사진 업로드 중...';
+    imageUrls = await window.uploadImages(uploadedImgs, document.getElementById('inp-name').value);
+  }
+
   var data = {
     name: document.getElementById('inp-name').value,
     category: selectedCat,
@@ -605,6 +633,7 @@ async function saveStore(){
     address: parts[1] || '',
     lat: selectedLat,
     lng: selectedLng,
+    images: imageUrls,
   };
   if(window.saveToFirestore) await window.saveToFirestore(data);
 }
