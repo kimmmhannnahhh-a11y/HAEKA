@@ -130,8 +130,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .detail-panel.open{transform:translateY(0)}
 .dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
 .dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
-.dp-name{font-size:16px;font-weight:700;color:#111;margin-bottom:2px}
-.dp-cat{font-size:11px;color:#999}
+.dp-name{font-size:15px;font-weight:700;color:#111}
+.dp-cat{font-size:11px;color:#999;margin-left:5px;align-self:center}
 .dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
 .dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
 .dp-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
@@ -271,8 +271,7 @@ window.openFirebaseDetail = async function(store) {
   window._currentStoreId = store.id || null;
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = store.category || '';
-  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  document.getElementById('dp-cat').textContent = store.category || '';  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('dp-scroll').scrollTop = 0;
@@ -340,16 +339,10 @@ window.openFirebaseDetail = async function(store) {
   }
 
   document.getElementById('dp-scroll').innerHTML =
-    // 결제 가능 두줄
     '<div style="margin-bottom:8px">'
     +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
     +'</div>'
-    // 결제 불가 두줄
-    +(noPills ? '<div style="margin-bottom:8px">'
-      +'<div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px">결제 불가</div>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+noPills+'</div>'
-      +'</div>' : '')
     +hoursHtml
     +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
     +mapHtml;
@@ -522,7 +515,7 @@ window.addEventListener('DOMContentLoaded', loadStores);
     <div class="dp-handle"></div>
     <div class="dp-topbar">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
           <div class="dp-name" id="dp-name"></div>
           <div class="dp-cat" id="dp-cat"></div>
         </div>

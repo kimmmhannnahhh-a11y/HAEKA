@@ -233,8 +233,12 @@ async function renderStore(store) {
   // 결제 후기 + 해카 평점
   document.getElementById('review-section').style.display = 'block';
   var haekaRating = store.rating || null;
-  var ratingTxt = haekaRating ? ' <span style="font-size:11px;font-weight:800;color:#111">(★'+haekaRating+')</span>' : '';
-  document.getElementById('review-title').innerHTML = '결제 후기' + ratingTxt;
+  var ratingTxt = haekaRating
+    ? '<span style="font-size:12px;font-weight:800;color:#111"> (★'+haekaRating+')</span>'
+    : '<span style="font-size:12px;font-weight:800;color:#111"> (★-)</span>';
+  document.getElementById('review-title').innerHTML =
+    '<span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase">결제 후기</span>'
+    + ratingTxt;
   if (store.review) {
     document.getElementById('review-list').innerHTML =
       '<div class="rev-item">'
