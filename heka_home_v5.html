@@ -149,6 +149,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
 .dp-btn-report{flex:1;padding:11px;border-radius:10px;background:#f0f7f0;color:#1A5D1A;font-size:12px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit}
 .dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+#dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
@@ -316,51 +317,33 @@ window.openFirebaseDetail = async function(store) {
       + '</div>';
   }
 
-  // 영업시간 아코디언
+  // 전화번호 제거, 리뷰 제거
+  // 영업시간 - 영업중 + 요일 표시
   var hoursHtml = '';
   if (placesInfo.hours && placesInfo.hours.length) {
     var dayNames = ['월','화','수','목','금','토','일'];
     var today = new Date().getDay();
     var todayGIdx = today === 0 ? 6 : today - 1;
     var todayTime = (placesInfo.hours[todayGIdx] || '').replace(/^[^:]+:\s*/, '');
-    var openBadge = placesInfo.isOpen === true
+    var todayDayName = dayNames[todayGIdx];
+    var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
+    var openBadge = isOpenCalc === true
       ? '<span style="background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업중</span>'
-      : placesInfo.isOpen === false
+      : isOpenCalc === false
       ? '<span style="background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px">영업종료</span>' : '';
-    var allRows = placesInfo.hours.map(function(h, i) {
-      var isT = i === todayGIdx;
-      return '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;'+(isT?'color:#1A5D1A;font-weight:700':'color:#666')+'">'
-        +'<span>'+dayNames[i]+'요일</span><span>'+h.replace(/^[^:]+:\s*/, '')+'</span></div>';
-    }).join('');
-    window._hoursOpen = false;
     hoursHtml = '<div class="dp-section">영업시간</div>'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
-      +'<div>'+openBadge+'<span style="font-size:12px;color:#111;font-weight:600">'+todayTime+'</span></div>'
-      +'<span id="hours-arrow" onclick="toggleHours()" style="font-size:11px;color:#888;cursor:pointer;padding:2px 8px;border:1px solid #e0e0e0;border-radius:4px">전체 ▼</span>'
-      +'</div>'
-      +'<div id="hours-full" style="display:none;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-bottom:6px">'+allRows+'</div>';
+      +'<div style="display:flex;align-items:center;margin-bottom:4px">'
+      +openBadge
+      +'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span>'
+      +'</div>';
   }
-
-  // 전화번호
-  var phoneHtml = placesInfo.phone ? '<div class="dp-row"><span class="dp-ico">📞</span><a href="tel:'+placesInfo.phone+'" style="color:#1A5D1A;text-decoration:none">'+placesInfo.phone+'</a></div>' : '';
-
-  // 헤카 자체 평점
-  var ratingHtml = store.rating ? '⭐ '+store.rating : '';
-
-  // 리뷰
-  var reviewHtml = store.review
-    ? '<div class="dp-rev"><div class="dp-rev-top"><div class="dp-rev-av">🌏</div><span class="dp-rev-name">등록자</span>'+(ratingHtml?'<span class="dp-rev-date">'+ratingHtml+'</span>':'')+'</div><div class="dp-rev-txt">'+store.review+'</div></div>'
-    : '';
 
   document.getElementById('dp-scroll').innerHTML =
     '<div class="dp-pills">'+pills+'</div>'
     +(noPills ? '<div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.06em;margin:4px 0 6px">결제 불가</div><div class="dp-pills">'+noPills+'</div>' : '')
     +mapHtml
-    +'<div class="dp-section">매장 정보</div>'
-    +(store.address ? '<div class="dp-row"><span class="dp-ico">📍</span>'+store.address+'</div>' : '')
     +hoursHtml
-    +phoneHtml
-    +(reviewHtml ? '<div class="dp-divider"></div><div class="dp-section">결제 후기'+(ratingHtml?' · '+ratingHtml:'')+'</div>'+reviewHtml : '');
+    +(store.address ? '<div style="font-size:11px;color:#777;margin-top:4px">'+store.address+'</div>' : '');
 
   // 지도 렌더링
   if (store.lat && store.lng && typeof google !== 'undefined') {
@@ -530,12 +513,16 @@ window.addEventListener('DOMContentLoaded', loadStores);
     <div class="dp-handle"></div>
     <div class="dp-topbar">
       <div><div class="dp-name" id="dp-name"></div><div class="dp-cat" id="dp-cat"></div></div>
-      <button class="dp-close" onclick="closeDetail()">✕</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dp-zzim-svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="dp-close" onclick="closeDetail()">✕</button>
+      </div>
     </div>
     <div class="dp-scroll" id="dp-scroll"></div>
     <div class="dp-btn-row">
-      <button class="dp-btn-report" onclick="window.location.href='heka_register.html'">✍️ 결제 제보하기</button>
-      <button class="dp-btn-more" id="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
+      <button class="dp-btn-more" id="dp-btn-more" onclick="goToDetail()" style="flex:1">매장 상세보기 →</button>
     </div>
   </div>
 </div>
@@ -569,6 +556,34 @@ function openSheet(){catSO=true;document.getElementById('overlay').classList.add
 function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
 function toggleZzim(e,el){e.stopPropagation();el.classList.toggle('on');}
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleDpZzim(){var btn=document.getElementById('dp-zzim');if(btn)btn.classList.toggle('on');}
+function calcIsOpenSlide(hours, todayIdx) {
+  try {
+    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
+    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
+    if (todayHours.includes('24시간')) return true;
+    var parts = todayHours.split('~');
+    if (parts.length < 2) return null;
+    function parseTime(s) {
+      s = s.trim();
+      var isPM = s.includes('오후') || s.includes('PM');
+      var isAM = s.includes('오전') || s.includes('AM');
+      var m = s.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      var h = parseInt(m[1]), min = parseInt(m[2]);
+      if (isPM && h < 12) h += 12;
+      if (isAM && h === 12) h = 0;
+      return h * 60 + min;
+    }
+    var now = new Date();
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    var openMins = parseTime(parts[0]);
+    var closeMins = parseTime(parts[1]);
+    if (openMins === null || closeMins === null) return null;
+    if (closeMins <= openMins) closeMins += 24 * 60;
+    return nowMins >= openMins && nowMins < closeMins;
+  } catch(e) { return null; }
+}
 function goToDetail(){
   var id = window._currentStoreId;
   if(id) window.location.href = 'heka_store_detail.html?id=' + id;
