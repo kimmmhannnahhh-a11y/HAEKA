@@ -190,19 +190,34 @@ function timeAgo(ts) {
   return Math.floor(diff/1440) + '일 전';
 }
 
+var allStores = [];
+
 async function loadStores() {
   try {
     const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
     const snapshot = await getDocs(q);
-    const stores = [];
-    snapshot.forEach(doc => stores.push({ id: doc.id, ...doc.data() }));
-    if (stores.length > 0) {
-      renderHotpl(stores[0]);
-      renderNearby(stores);
+    allStores = [];
+    snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
+    if (allStores.length > 0) {
+      renderHotpl(allStores[0]);
+      renderNearby(allStores);
     }
   } catch(e) {
     console.error('로드 오류:', e);
   }
+}
+
+window.applyFilters = function() {
+  var filtered = allStores.filter(function(store) {
+    // 카드사 필터
+    var cardOk = window._cardSelected && window._cardSelected.has('all') ? true
+      : (store.payOk || []).some(function(c){ return window._cardSelected && window._cardSelected.has(c.toLowerCase()); });
+    // 업종 필터
+    var catOk = window._selected && window._selected.size === 0 ? true
+      : window._selected && window._selected.has(store.category);
+    return cardOk && catOk;
+  });
+  renderNearby(filtered);
 }
 
 function renderHotpl(store) {
@@ -429,8 +444,8 @@ window.addEventListener('DOMContentLoaded', loadStores);
 var cardSelected=new Set(['all']);
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1])||(cardSelected.has('all')&&m[1]==='all'));});}
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1]));});}
-function toggleCardMain(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}syncCardChips();syncCardSheet();updateCardCount();}
-function toggleCardChip(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}syncCardSheet();syncCardChips();updateCardCount();}
+function toggleCardMain(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardChips();syncCardSheet();updateCardCount();if(window.applyFilters)window.applyFilters();}
+function toggleCardChip(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
 function updateCardCount(){var cnt=cardSelected.has('all')?0:cardSelected.size;var el=document.getElementById('card-count');if(el)el.textContent=cnt>0?'('+cnt+'개 선택)':'';}
 function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();}
 var cardSO=false;
@@ -443,9 +458,9 @@ var wrap=document.getElementById('cat-wrap');
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);});
 var sw=document.getElementById('sheet-wrap');
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sheet-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d);});
-function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.remove('on');}
+function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.remove('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
 function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});}
-function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){c.classList.remove('on');});var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.add('on');}
+function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){c.classList.remove('on');});var allBtn=document.getElementById('cat-all-select');if(allBtn)allBtn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
 function resetCats(){selected.clear();syncAll();updateCatCount();}
 function updateCatCount(){var el=document.getElementById('cat-count');if(el)el.textContent=selected.size>0?'('+selected.size+'개 선택)':'';}
 var catSO=false;
