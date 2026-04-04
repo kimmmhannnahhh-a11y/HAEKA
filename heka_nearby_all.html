@@ -321,8 +321,6 @@ window.openFirebaseDetail = async function(store) {
 
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
-  var noCards = (store.payNo || []).filter(function(c){ return c !== '모르겠어요'; });
-  var noPills = noCards.map(function(c){ return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>'; }).join('');
 
   var placesInfo = { hours: null, phone: null, isOpen: null };
   try {
@@ -372,7 +370,6 @@ window.openFirebaseDetail = async function(store) {
     +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
     +'</div>'
-    +(noPills ? '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#dc2626;margin-bottom:5px">결제 불가</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+noPills+'</div></div>' : '')
     +hoursHtml
     +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
     +mapHtml;

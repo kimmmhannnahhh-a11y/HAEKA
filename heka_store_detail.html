@@ -222,7 +222,7 @@ async function renderStore(store) {
   }
 
   // 결제 불가 카드
-  var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
+  var noCards = (store.payNo || []);
   if (noCards.length) {
     document.getElementById('cards-no-section').style.display = 'block';
     document.getElementById('cards-no').innerHTML = noCards.map(function(c){
