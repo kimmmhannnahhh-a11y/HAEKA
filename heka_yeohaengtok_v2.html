@@ -12,19 +12,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15);position:relative}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
 .back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
-
-/* 실시간 인원 */
 .live-bar{margin:10px 16px 0;display:flex;align-items:center;gap:5px}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .live-txt{font-size:11px;color:#4ADE80;font-weight:500}
-
-/* 연필 버튼 */
-.fedit-wrap{padding:6px 16px 0;display:flex;justify-content:flex-end}
-.fedit-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.fedit-btn svg{width:16px;height:16px;stroke:#555;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* 검색바 */
 .search-wrap{padding:8px 16px 0}
 .search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:7px 12px;gap:8px;transition:.15s}
 .search-box:focus-within{border-color:#1A5D1A;background:#fff}
@@ -38,20 +29,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
 .search-btn:hover{background:#145014}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
-
-/* 검색 결과 안내 */
 .search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
 .search-result-bar.show{display:block}
 .search-result-bar span{color:#1A5D1A;font-weight:600}
-
-/* 카테고리 필터 */
 .filt{display:flex;align-items:center;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filt::-webkit-scrollbar{display:none}
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
 .fb:hover{border-color:#1A5D1A;color:#1A5D1A}
 .fb.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A;font-weight:600}
-
-/* 게시글 목록 */
 .post-list{padding:8px 0}
 .fpost{padding:12px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:.12s}
 .fpost:last-child{border-bottom:none}
@@ -70,8 +55,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fptag-info{background:#007bc1;color:#fff}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
 .fpthumb{width:64px;height:72px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;align-self:center}
-
-/* 하단 네비 */
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#1A5D1A;font-weight:600}
@@ -79,8 +62,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
 .nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
-
-/* 도시 사이드 패널 */
 .side-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:20;display:none;border-radius:26px}
 .side-overlay.open{display:block}
 .side-panel{position:absolute;top:0;right:0;width:200px;height:100%;background:#fff;border-left:0.5px solid #eee;z-index:21;display:flex;flex-direction:column;border-radius:0 26px 26px 0;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
@@ -101,21 +82,18 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <body>
 <div class="phone-wrap">
 <div class="phone">
-  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
-  <!-- 상단바: 뒤로가기 + 여행톡 -->
   <div class="topbar">
     <button class="back-btn" onclick="window.location.href='heka_home_v5.html'">←</button>
     <span class="topbar-title">여행톡</span>
   </div>
 
-  <!-- 실시간 인원 -->
   <div class="live-bar">
     <div class="live-dot"></div>
     <span class="live-txt">지금 여행톡 사용중 86,277명</span>
   </div>
 
-  <!-- 검색바 -->
   <div class="search-wrap">
     <div class="search-box">
       <div class="city-chip" onclick="openPanel()">
@@ -132,12 +110,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
   </div>
 
-  <!-- 검색결과 안내 -->
   <div class="search-result-bar" id="search-result-bar">
     "<span id="search-keyword"></span>" 검색 결과
   </div>
 
-  <!-- 카테고리 필터 -->
   <div class="filt">
     <button class="fb on" onclick="toggleF(this)">전체</button>
     <button class="fb" onclick="toggleF(this)">동행</button>
@@ -146,7 +122,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <button class="fb" onclick="toggleF(this)">정보</button>
   </div>
 
-  <!-- 글쓰기 버튼 -->
   <div style="display:flex;justify-content:flex-end;padding:6px 16px 0">
     <button onclick="window.location.href='heka_write.html'" style="background:none;border:none;font-size:11px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -154,10 +129,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </button>
   </div>
 
-  <!-- 게시글 목록 -->
   <div class="post-list" id="post-list"></div>
 
-  <!-- 글쓰기 팝업 -->
   <div class="side-overlay" id="write-overlay" onclick="closeWrite()" style="z-index:40"></div>
   <div id="write-popup" style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:41;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);padding:16px">
     <div style="width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px"></div>
@@ -173,6 +146,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <button onclick="submitWrite()" style="width:100%;padding:12px;border-radius:12px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">등록하기</button>
     <button onclick="closeWrite()" style="width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit">취소</button>
   </div>
+
   <div class="side-overlay" id="side-overlay" onclick="closePanel()"></div>
   <div class="side-panel" id="side-panel">
     <div class="panel-header">
@@ -191,9 +165,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="ni" onclick="showToast('찜 목록 준비 중이에요!')"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
+
+  <div class="toast" id="toast" style="position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99"></div>
 </div>
 </div>
 
@@ -229,6 +205,7 @@ function toggleF(el){ document.querySelectorAll('.fb').forEach(function(b){b.cla
 
 var countries=[{flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},{flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},{flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},{flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'}];
 var cities={'일본':[{name:'도쿄'},{name:'오사카'},{name:'교토'},{name:'삿포로'},{name:'후쿠오카'}],'프랑스':[{name:'파리'},{name:'리옹'},{name:'니스'}],'미국':[{name:'뉴욕'},{name:'로스앤젤레스'},{name:'라스베가스'}],'태국':[{name:'방콕'},{name:'치앙마이'},{name:'푸켓'}],'베트남':[{name:'하노이'},{name:'호치민'},{name:'다낭'}],'스페인':[{name:'바르셀로나'},{name:'마드리드'},{name:'세비야'}],'이탈리아':[{name:'로마'},{name:'밀라노'},{name:'베네치아'}],'독일':[{name:'베를린'},{name:'뮌헨'},{name:'함부르크'}],'크로아티아':[{name:'자그레브'},{name:'두브로브니크'},{name:'스플리트'}]};
+
 function openPanel(){ renderCountries(); document.getElementById('side-overlay').classList.add('open'); document.getElementById('side-panel').classList.add('open'); }
 function closePanel(){ document.getElementById('side-overlay').classList.remove('open'); document.getElementById('side-panel').classList.remove('open'); }
 function renderCountries(){
@@ -244,16 +221,11 @@ function renderCities(country,flag){
   var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
   (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+flag+' '+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
 }
-function select(name,flag){ 
-  var chipIcon = document.querySelector('.city-chip-icon');
-  if(name==='전 세계'){ 
-    chipIcon.textContent='🌏'; 
-    document.getElementById('city-chip-txt').textContent='전 세계'; 
-  } else { 
-    chipIcon.textContent=flag; 
-    document.getElementById('city-chip-txt').textContent=name; 
-  } 
-  closePanel(); 
+function select(name,flag){
+  var chipIcon=document.querySelector('.city-chip-icon');
+  if(name==='전 세계'){ chipIcon.textContent='🌏'; document.getElementById('city-chip-txt').textContent='전 세계'; }
+  else { chipIcon.textContent=flag; document.getElementById('city-chip-txt').textContent=name; }
+  closePanel();
 }
 function openWrite(){
   document.getElementById('write-overlay').classList.add('open');
@@ -274,6 +246,11 @@ function submitWrite(){
   closeWrite();
   document.getElementById('write-title').value='';
   document.getElementById('write-body').value='';
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; },2200);
 }
 
 renderPosts(posts);

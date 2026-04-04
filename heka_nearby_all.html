@@ -480,6 +480,28 @@ function getChosung(str){
 }
 
 // 검색 매칭: 한글 입력 → 영어 상호명도 매칭
+function korToPhonetic(str) {
+  var map = [
+    ['울프강','wolfgang'],['스타벅스','starbucks'],['맥도날드','mcdonald'],
+    ['버거킹','burger king'],['써브웨이','subway'],['피자헛','pizza hut'],
+    ['이케아','ikea'],['나이키','nike'],['아디다스','adidas'],
+    ['샤넬','chanel'],['구찌','gucci'],['프라다','prada'],
+    ['루이비통','louis vuitton'],['에르메스','hermes'],
+    ['돈키호테','don quijote'],['유니클로','uniqlo'],
+    ['패밀리마트','familymart'],['세븐일레븐','7-eleven'],
+    ['로손','lawson'],['미니스톱','ministop'],
+    ['이치란','ichiran'],['이치죠','ichijo'],
+    ['라멘','ramen'],['스시','sushi'],['사케','sake'],
+    ['빌라인','villain'],['인커먼','in common'],
+  ];
+  var lower = str.toLowerCase();
+  var results = [];
+  for (var i = 0; i < map.length; i++) {
+    if (lower.indexOf(map[i][0]) > -1) results.push(map[i][1]);
+  }
+  return results.length > 0 ? results : null;
+}
+
 function searchMatch(name, addr, kw, nameEn){
   var nameLow=(name||'').toLowerCase();
   var nameEnLow=(nameEn||'').toLowerCase();
@@ -488,14 +510,24 @@ function searchMatch(name, addr, kw, nameEn){
   if(nameLow.indexOf(kw)>-1) return true;
   if(nameEnLow.indexOf(kw)>-1) return true;
   if(addrLow.indexOf(kw)>-1) return true;
-  // 2) 특수문자 제거 후 비교 (Wolfgang's → wolfgangs)
-  var nameClean=nameLow.replace(/['\-_.,!?]/g,'');
-  var kwClean=kw.replace(/['\-_.,!?]/g,'');
+  // 2) 특수문자 제거 후 비교
+  var nameClean=nameLow.replace(/['\-_.,!?\s]/g,'');
+  var kwClean=kw.replace(/['\-_.,!?\s]/g,'');
   if(nameClean.indexOf(kwClean)>-1) return true;
-  if(nameEnLow.replace(/['\-_.,!?]/g,'').indexOf(kwClean)>-1) return true;
-  // 3) 한글 키워드 → 로마자 변환 후 영어 이름과 비교
+  if(nameEnLow.replace(/['\-_.,!?\s]/g,'').indexOf(kwClean)>-1) return true;
+  // 3) 한글 → 외래어 음역 매핑
   var hasKorean=/[가-힣]/.test(kw);
   if(hasKorean){
+    var phonetics = korToPhonetic(kw);
+    if(phonetics){
+      for(var pi=0;pi<phonetics.length;pi++){
+        var phonetic = phonetics[pi];
+        if(nameLow.indexOf(phonetic)>-1) return true;
+        if(nameEnLow.indexOf(phonetic)>-1) return true;
+        if(nameLow.replace(/['\-_.,!?\s]/g,'').indexOf(phonetic.replace(/\s/g,''))>-1) return true;
+      }
+    }
+    // 4) 로마자 변환
     var romaja=korToRomaja(kw);
     if(romaja&&nameLow.indexOf(romaja)>-1) return true;
     var words=nameLow.split(/[\s\-_']+/);
