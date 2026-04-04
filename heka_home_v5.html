@@ -310,6 +310,16 @@ window.openFirebaseDetail = async function(store) {
   // 현재 매장 ID 저장
   window._currentStoreId = store.id || null;
 
+  // 최근 본 항목 저장
+  try {
+    var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
+    recent = recent.filter(function(s){ return s.id !== store.id; });
+    var slim = { id: store.id, name: store.name, category: store.category, payOk: store.payOk, images: store.images, lat: store.lat, lng: store.lng, address: store.address, createdAt: store.createdAt ? (store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt) : null };
+    recent.unshift(slim);
+    if (recent.length > 10) recent = recent.slice(0, 10);
+    localStorage.setItem('haeka_recent', JSON.stringify(recent));
+  } catch(e) {}
+
   document.getElementById('dp-name').textContent = store.name;
   document.getElementById('dp-cat').textContent = store.category || '';  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
