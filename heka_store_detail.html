@@ -225,9 +225,13 @@ async function renderStore(store) {
   var noCards = (store.payNo || []);
   if (noCards.length) {
     document.getElementById('cards-no-section').style.display = 'block';
-    document.getElementById('cards-no').innerHTML = noCards.map(function(c){
-      return '<div class="card-chip-no">⚠️ '+c+' 결제 실패 사례 있음</div>';
-    }).join('');
+var specialCards = ['모르겠어요','현금불가','카드불가'];
+document.getElementById('cards-no').innerHTML = noCards.map(function(c){
+  if(specialCards.indexOf(c) > -1){
+    return '<div class="card-chip-no">'+c+'</div>';
+  }
+  return '<div class="card-chip-no">⚠️ '+c+' 결제 실패 사례 있음</div>';
+}).join('');
   }
 
   // 결제 후기 + 해카 평점
