@@ -244,8 +244,17 @@ function renderCities(country,flag){
   var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
   (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+flag+' '+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
 }
-function select(name,flag){ document.getElementById('city-chip-txt').textContent=(name==='전 세계'?'전 세계':flag+' '+name); closePanel(); }
-
+function select(name,flag){ 
+  var chipIcon = document.querySelector('.city-chip-icon');
+  if(name==='전 세계'){ 
+    chipIcon.textContent='🌏'; 
+    document.getElementById('city-chip-txt').textContent='전 세계'; 
+  } else { 
+    chipIcon.textContent=flag; 
+    document.getElementById('city-chip-txt').textContent=name; 
+  } 
+  closePanel(); 
+}
 function openWrite(){
   document.getElementById('write-overlay').classList.add('open');
   document.getElementById('write-popup').style.transform='translateY(0)';
