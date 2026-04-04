@@ -420,6 +420,8 @@ var usedNicks = ['여행마스터','해카고수','도쿄탐험가','김철수']
 
 function init() {
   try { var saved = localStorage.getItem('haeka_user'); if(saved) userData = Object.assign(userData, JSON.parse(saved)); } catch(e){}
+  // 아바타 복원
+  try { var savedAvatar = localStorage.getItem('haeka_avatar'); if(savedAvatar) document.getElementById('avatar').innerHTML = '<img src="'+savedAvatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; } catch(e){}
   document.getElementById('nick-txt').textContent = userData.nick;
   document.getElementById('bio-txt').textContent = userData.bio || '아직 소개글이 없어요';
   document.getElementById('stat-report').textContent = userData.reportCount;
@@ -520,7 +522,20 @@ function changeAvatar(input) {
   if (!input.files[0]) return;
   var r = new FileReader();
   r.onload = function(e) {
-    document.getElementById('avatar').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var MAX = 200;
+      var w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+      else { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.7);
+      document.getElementById('avatar').innerHTML = '<img src="'+compressed+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      try { localStorage.setItem('haeka_avatar', compressed); } catch(e) { showToast('사진 용량이 너무 커요!'); }
+    };
+    img.src = e.target.result;
   };
   r.readAsDataURL(input.files[0]);
 }
