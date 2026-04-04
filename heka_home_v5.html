@@ -324,13 +324,13 @@ function renderNearby(stores) {
     var distTxt = '';
     if (userLat && userLng && store.lat && store.lng) {
       var m = calcDist(userLat, userLng, store.lat, store.lng);
-      distTxt = '<div class="nm-dist">'+distLbl(m)+'</div>';
+      distTxt = ' · <span style="color:#1A5D1A;font-weight:600">'+distLbl(m)+'</span>';
     }
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
       + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div class="nn">'+store.name+'</div>'+distTxt+'<div class="nm-time">'+timeAgo(store.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     row.appendChild(card);
   });
