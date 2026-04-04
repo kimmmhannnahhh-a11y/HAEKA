@@ -97,9 +97,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nbody{padding:5px 7px 7px}
 .nn{font-size:11px;font-weight:500;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm-time{font-size:10px;color:#bbb;white-space:nowrap;margin-bottom:2px}
-.nm-dist{font-size:10px;color:#1A5D1A;font-weight:600;margin-bottom:1px}
-.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
-.nm-cards::-webkit-scrollbar{display:none}
+.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden}
 .cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
 .zzim{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .zzim svg{width:11px;height:11px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
@@ -232,57 +230,33 @@ function timeAgo(ts) {
 }
 
 var allStores = [];
-var userLat = null, userLng = null;
-
-function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
-function distLbl(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
-
-function sortByDistance(stores) {
-  if (!userLat || !userLng) return stores;
-  return stores.slice().sort(function(a, b) {
-    var da = (a.lat && a.lng) ? calcDist(userLat, userLng, a.lat, a.lng) : 99999;
-    var db2 = (b.lat && b.lng) ? calcDist(userLat, userLng, b.lat, b.lng) : 99999;
-    return da - db2;
-  });
-}
 
 async function loadStores() {
   try {
-    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(100));
+    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
     const snapshot = await getDocs(q);
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
       renderHotpl(allStores[0]);
-      renderNearby(sortByDistance(allStores));
+      renderNearby(allStores);
     }
   } catch(e) { console.error('로드 오류:', e); }
 }
 
-function initGPS() {
-  if (!navigator.geolocation) { loadStores(); return; }
-  navigator.geolocation.getCurrentPosition(
-    function(p) {
-      userLat = p.coords.latitude;
-      userLng = p.coords.longitude;
-      loadStores();
-    },
-    function() { loadStores(); },
-    { timeout: 5000 }
-  );
-}
-
 window.applyFilters = function() {
   var filtered = allStores.filter(function(store) {
+    // 카드사 필터 - _cardSelected 없거나 'all'이면 전체 허용
     var cardOk = !window._cardSelected || window._cardSelected.has('all') ? true
       : (store.payOk || []).some(function(c){ 
           return window._cardSelected.has(c) || window._cardSelected.has(c.toLowerCase());
         });
+    // 업종 필터 - _selected 없거나 size 0이면 전체 허용
     var catOk = !window._selected || window._selected.size === 0 ? true
       : window._selected.has(store.category);
     return cardOk && catOk;
   });
-  renderNearby(sortByDistance(filtered));
+  renderNearby(filtered);
 };
 
 function renderHotpl(store) {
@@ -312,30 +286,24 @@ function renderNearby(stores) {
     return;
   }
   stores.slice(0, 6).forEach(function(store) {
-    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
-    cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
-    var pillsHtml = cards.map(function(c){
+    var pillsHtml = cards.slice(0, 2).map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
     }).join('');
+    if (cards.length > 2) {
+      pillsHtml += '<span style="font-size:9px;color:#aaa;letter-spacing:1px;margin-left:1px">···</span>';
+    }
     var imgHtml = store.images && store.images[0]
       ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
-    var distTxt = '';
-    if (userLat && userLng && store.lat && store.lng) {
-      var m = calcDist(userLat, userLng, store.lat, store.lng);
-      distTxt = ' · <span style="color:#1A5D1A;font-weight:600">'+distLbl(m)+'</span>';
-    }
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
       + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     row.appendChild(card);
   });
-  // nm-cards PC 드래그 적용
-  row.querySelectorAll('.nm-cards').forEach(addDragScroll);
 }
 
 window.openFirebaseDetail = async function(store) {
@@ -351,7 +319,10 @@ window.openFirebaseDetail = async function(store) {
   // 결제 카드
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
-
+  var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
+  var noPills = noCards.map(function(c){
+    return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
+  }).join('');
 
   // Google Places API
   var placesInfo = { hours: null, phone: null, isOpen: null };
@@ -427,7 +398,7 @@ window.openFirebaseDetail = async function(store) {
   }
 };
 
-window.addEventListener('DOMContentLoaded', initGPS);
+window.addEventListener('DOMContentLoaded', loadStores);
 </script>
 </head>
 <body>
@@ -577,7 +548,7 @@ window.addEventListener('DOMContentLoaded', initGPS);
     <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
   <!-- 매장 상세 슬라이드 패널 -->
@@ -607,14 +578,13 @@ window.addEventListener('DOMContentLoaded', initGPS);
 
 <script>
 // PC 마우스 드래그 스크롤
-function addDragScroll(el){
-  var isDown=false,startX,scrollLeft;
-  el.addEventListener('mousedown',function(e){isDown=true;startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;el.style.cursor='grabbing';});
-  el.addEventListener('mouseleave',function(){isDown=false;el.style.cursor='grab';});
-  el.addEventListener('mouseup',function(){isDown=false;el.style.cursor='grab';});
-  el.addEventListener('mousemove',function(e){if(!isDown)return;e.preventDefault();el.scrollLeft=scrollLeft-(e.pageX-el.offsetLeft-startX);});
-}
-document.querySelectorAll('.chip-row, .cat-wrap, .nrow').forEach(addDragScroll);
+document.querySelectorAll('.chip-row, .cat-wrap, .nrow').forEach(function(el) {
+  var isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown', function(e) { isDown=true; startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
+  el.addEventListener('mouseleave', function() { isDown=false; });
+  el.addEventListener('mouseup', function() { isDown=false; });
+  el.addEventListener('mousemove', function(e) { if(!isDown) return; e.preventDefault(); var x=e.pageX-el.offsetLeft; el.scrollLeft=scrollLeft-(x-startX); });
+});
 
 var cardSelected = new Set(['all']);
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1])||(cardSelected.has('all')&&m[1]==='all'));});}
