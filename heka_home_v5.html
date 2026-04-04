@@ -290,6 +290,9 @@ function renderNearby(stores) {
     var pillsHtml = cards.slice(0, 2).map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
     }).join('');
+    if (cards.length > 2) {
+      pillsHtml += '<span style="font-size:9px;color:#aaa;letter-spacing:1px;margin-left:1px">···</span>';
+    }
     var imgHtml = store.images && store.images[0]
       ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
