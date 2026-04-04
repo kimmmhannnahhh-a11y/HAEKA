@@ -258,7 +258,9 @@ function renderList(stores){
   document.getElementById('count-bar').textContent='전체 '+stores.length+'개';
   if(!stores.length){el.innerHTML='<div class="empty-state"><div class="empty-emoji">🔍</div><div class="empty-txt">해당 조건의 매장이 없어요</div></div>';return;}
   el.innerHTML=stores.map(function(s){
+    var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+    cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);ai=ai<0?99:ai;bi=bi<0?99:bi;return ai-bi;});
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
@@ -267,13 +269,71 @@ function renderList(stores){
   }).join('');
 }
 
+// ── 한글→로마자 변환 (검색용) ──
+var KO_CONSONANTS='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+var KO_VOWELS='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+var ROMAJA_CHO=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+var ROMAJA_JUNG=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+var ROMAJA_JONG=['','g','kk','gs','n','nj','nh','d','r','rg','rm','rb','rs','rt','rp','rh','m','b','bs','s','ss','ng','j','ch','k','t','p','h'];
+
+function korToRomaja(str){
+  var result='';
+  for(var i=0;i<str.length;i++){
+    var code=str.charCodeAt(i);
+    if(code>=0xAC00&&code<=0xD7A3){
+      var idx=code-0xAC00;
+      var cho=Math.floor(idx/588);
+      var jung=Math.floor((idx%588)/28);
+      var jong=idx%28;
+      result+=ROMAJA_CHO[cho]+ROMAJA_JUNG[jung]+ROMAJA_JONG[jong];
+    } else {
+      result+=str[i];
+    }
+  }
+  return result.toLowerCase();
+}
+
+// 한글 초성 추출
+function getChosung(str){
+  var result='';
+  for(var i=0;i<str.length;i++){
+    var code=str.charCodeAt(i);
+    if(code>=0xAC00&&code<=0xD7A3){
+      result+=KO_CONSONANTS[Math.floor((code-0xAC00)/588)];
+    }
+  }
+  return result;
+}
+
+// 검색 매칭: 한글 입력 → 영어 상호명도 매칭
+function searchMatch(name, addr, kw){
+  var nameLow=(name||'').toLowerCase();
+  var addrLow=(addr||'').toLowerCase();
+  // 1) 기본: 이름/주소에 직접 포함
+  if(nameLow.indexOf(kw)>-1) return true;
+  if(addrLow.indexOf(kw)>-1) return true;
+  // 2) 한글 키워드 → 로마자 변환 후 영어 이름과 비교
+  var hasKorean=/[가-힣]/.test(kw);
+  if(hasKorean){
+    var romaja=korToRomaja(kw);
+    if(romaja&&nameLow.indexOf(romaja)>-1) return true;
+    // 부분 매칭: romaja가 name의 단어 시작부분과 일치하는지
+    var words=nameLow.split(/[\s\-_']+/);
+    for(var w=0;w<words.length;w++){
+      if(words[w].indexOf(romaja)===0) return true;
+    }
+  }
+  // 3) 영어 키워드 → 그대로 이름과 비교 (이미 1에서 처리됨)
+  return false;
+}
+
 // ── 필터+정렬 ──
 function doFilter(){
   var kw=(document.getElementById('search-input-el').value||'').trim().toLowerCase();
   var list=(window.allStores||[]).filter(function(s){
     var cOk=cardSel.has('all')?true:(s.payOk||[]).some(function(c){return cardSel.has(c);});
     var tOk=catSel.size===0?true:catSel.has(s.category);
-    var kOk=!kw?true:(s.name||'').toLowerCase().indexOf(kw)>-1||(s.address||'').toLowerCase().indexOf(kw)>-1;
+    var kOk=!kw?true:searchMatch(s.name, s.address, kw);
     return cOk&&tOk&&kOk;
   });
   if(sortOrder==='distance'&&userLat&&userLng) list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);});
@@ -316,7 +376,11 @@ function closeSortSheet(){document.getElementById('sort-overlay').classList.remo
 function selectSort(order,label){sortOrder=order;document.getElementById('sort-btn').textContent=label+' ▾';document.querySelectorAll('.sort-item').forEach(function(el){el.classList.remove('on');});document.getElementById('sort-'+order).classList.add('on');closeSortSheet();doFilter();}
 
 // ── PC 드래그 ──
-document.querySelectorAll('.chip-row,.cat-wrap').forEach(function(el){var dn=false,sx,sl;el.addEventListener('mousedown',function(e){dn=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;});el.addEventListener('mouseleave',function(){dn=false;});el.addEventListener('mouseup',function(){dn=false;});el.addEventListener('mousemove',function(e){if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx);});});
+function addDragScroll(el){var dn=false,sx,sl;el.addEventListener('mousedown',function(e){dn=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.cursor='grabbing';});el.addEventListener('mouseleave',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mouseup',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mousemove',function(e){if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx);});}
+document.querySelectorAll('.chip-row,.cat-wrap').forEach(addDragScroll);
+// 매장 카드사 배지도 PC 드래그 가능하게 (동적 렌더링 후 적용)
+var _origRender=renderList;
+renderList=function(stores){_origRender(stores);document.querySelectorAll('.store-cards').forEach(addDragScroll);};
 
 window.addEventListener('DOMContentLoaded', init);
 </script>
