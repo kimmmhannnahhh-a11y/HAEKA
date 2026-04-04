@@ -410,13 +410,21 @@ var cardSel=new Set(['all']), catSel=new Set();
 
 // ── 로드 ──
 function init(){
+  // 매장 즉시 로드
+  window._fetchStores && window._fetchStores();
+  // GPS는 백그라운드로 받아서 거리만 업데이트
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
-      function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;window._fetchStores&&window._fetchStores();},
-      function(){window._fetchStores&&window._fetchStores();},
+      function(p){
+        userLat=p.coords.latitude;
+        userLng=p.coords.longitude;
+        // 이미 로드된 데이터로 거리 재표시
+        if(window.allStores && window.allStores.length) window.doFilter();
+      },
+      function(){},
       {timeout:5000}
     );
-  } else { window._fetchStores&&window._fetchStores(); }
+  }
 }
 
 // ── 렌더 ──
