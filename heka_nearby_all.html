@@ -215,7 +215,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni on" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni" onclick="showToast('찜 목록 준비 중이에요!')"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -276,7 +276,32 @@ function calcIsOpenSlide(hours, todayIdx) {
   } catch(e) { return null; }
 }
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
-function toggleDpZzim(){var btn=document.getElementById('dp-zzim');if(btn)btn.classList.toggle('on');}
+function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
+function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
+function toggleZzimStore(e, btn, idx){
+  e.stopPropagation();
+  var store = _renderedStores[idx];
+  if(!store) return;
+  var list = getZzimList();
+  var found = list.findIndex(function(s){ return s.id===store.id; });
+  if(found > -1){ list.splice(found,1); btn.classList.remove('on'); }
+  else { list.unshift(store); btn.classList.add('on'); }
+  saveZzimList(list);
+}
+function toggleDpZzim(){
+  var id = window._currentStoreId;
+  var list = getZzimList();
+  var found = list.findIndex(function(s){ return s.id===id; });
+  var btn = document.getElementById('dp-zzim');
+  if(found > -1){ list.splice(found,1); if(btn) btn.classList.remove('on'); }
+  else {
+    // 슬라이드에서 찜할 때 store 데이터 필요
+    var store = _renderedStores.find(function(s){ return s.id===id; });
+    if(store) list.unshift(store);
+    if(btn) btn.classList.add('on');
+  }
+  saveZzimList(list);
+}
 function goToDetail(){var id=window._currentStoreId;if(id)window.location.href='heka_store_detail.html?id='+id;else window.location.href='heka_store_detail.html';}
 function toggleHours(){var el=document.getElementById('hours-full');var arrow=document.getElementById('hours-arrow');if(!el)return;window._hoursOpen=!window._hoursOpen;el.style.display=window._hoursOpen?'block':'none';arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';}
 </script>
@@ -442,7 +467,8 @@ function renderList(stores){
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
     var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
-    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim" onclick="event.stopPropagation();this.classList.toggle(\'on\')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    var isOn = getZzimList().some(function(z){ return z.id===s.id; });
+    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){

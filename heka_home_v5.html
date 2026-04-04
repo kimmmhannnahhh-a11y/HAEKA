@@ -333,12 +333,16 @@ function renderNearby(stores) {
     var imgHtml = store.images && store.images[0]
       ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
+    var isZzimed = getZzimList().some(function(s){ return s.id === store.id; });
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
-      + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
+      + '<button class="zzim'+(isZzimed?' on':'')+'" onclick="toggleZzim(event,this,_zzimStore_'+card+')" id="zzim-'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
       + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
+    // 하트 버튼에 store 데이터 바인딩
+    var zzimBtn = card.querySelector('.zzim');
+    (function(s){ zzimBtn.onclick = function(e){ toggleZzim(e, zzimBtn, s); }; })(store);
     row.appendChild(card);
   });
   row.querySelectorAll('.nm-cards').forEach(addDragScroll);
@@ -595,7 +599,7 @@ window.addEventListener('DOMContentLoaded', initGPS);
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni" onclick="showToast('찜 목록 준비 중이에요!')"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -661,7 +665,21 @@ var catSO=false;
 function toggleSheet(){catSO?closeSheet():openSheet();}
 function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▴';b.classList.add('open');}
 function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
-function toggleZzim(e,el){e.stopPropagation();el.classList.toggle('on');}
+function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
+function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
+function toggleZzim(e, el, store){
+  e.stopPropagation();
+  var list = getZzimList();
+  var idx = list.findIndex(function(s){ return s.id === store.id; });
+  if(idx > -1){
+    list.splice(idx, 1);
+    el.classList.remove('on');
+  } else {
+    list.unshift(store);
+    el.classList.add('on');
+  }
+  saveZzimList(list);
+}
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
 function toggleDpZzim(){var btn=document.getElementById('dp-zzim');if(btn)btn.classList.toggle('on');}
 function calcIsOpenSlide(hours, todayIdx) {

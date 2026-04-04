@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.back-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:#fff;flex:1}
+.count-bar{padding:6px 14px;font-size:11px;color:#999;flex-shrink:0}
+.store-list{flex:1;overflow-y:auto}
+.store-list::-webkit-scrollbar{display:none}
+.store-item{display:flex;gap:10px;padding:10px 14px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.12s;align-items:flex-start}
+.store-item:hover{background:#fafafa}
+.store-item:last-child{border-bottom:none}
+.store-thumb{width:62px;height:62px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;background:#f5f5f5}
+.store-thumb img{width:100%;height:100%;object-fit:cover}
+.store-info{flex:1;min-width:0}
+.store-name{font-size:13px;font-weight:700;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-meta{display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+.store-cat{font-size:10px;color:#999}
+.store-addr{font-size:10px;color:#bbb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.store-cards{display:flex;gap:4px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
+.store-cards::-webkit-scrollbar{display:none}
+.cpill{font-size:8px;padding:2px 5px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
+.store-zzim{flex-shrink:0;background:none;border:none;cursor:pointer;padding:4px;align-self:center}
+.store-zzim svg{width:18px;height:18px;fill:#e53935;stroke:#e53935;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.store-zzim:hover svg{fill:#ff6b6b;stroke:#ff6b6b}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 20px;text-align:center;gap:12px}
+.empty-emoji{font-size:40px}
+.empty-txt{font-size:14px;font-weight:600;color:#333}
+.empty-sub{font-size:12px;color:#bbb;line-height:1.6}
+.empty-btn{margin-top:8px;padding:11px 24px;border-radius:24px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+/* 슬라이드 패널 */
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
+.detail-overlay.open{display:block}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-panel.open{transform:translateY(0)}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
+.dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
+.dp-name{font-size:15px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.dp-cat{font-size:11px;color:#999;white-space:nowrap;flex-shrink:0}
+.dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
+.dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
+.dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+/* 하단 네비 */
+.bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
+.ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ni.on{color:#1A5D1A;font-weight:600}
+.ni svg{width:17px;height:17px}
+.nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+
+.toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="topbar-title">찜목록</span>
+  </div>
+
+  <div class="count-bar" id="count-bar">불러오는 중...</div>
+  <div class="store-list" id="store-list"></div>
+
+  <!-- 슬라이드 패널 -->
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-cat" id="dp-cat"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#e53935" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dp-zzim-svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="dp-close" onclick="closeDetail()">✕</button>
+      </div>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
+    </div>
+  </div>
+
+  <!-- 하단 네비 -->
+  <div class="bnav">
+    <div class="ni" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="#1A5D1A" stroke="#1A5D1A"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
+function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
+function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
+
+// ── 찜 데이터 ──
+function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
+function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
+function isZzimed(id){ return getZzimList().some(function(s){ return s.id===id; }); }
+function removeZzim(id){
+  var list = getZzimList().filter(function(s){ return s.id!==id; });
+  saveZzimList(list);
+  renderZzimList();
+  showToast('찜 목록에서 삭제됐어요');
+}
+
+// ── 렌더 ──
+var _stores = [];
+function renderZzimList(){
+  var list = getZzimList();
+  _stores = list;
+  var el = document.getElementById('store-list');
+  document.getElementById('count-bar').textContent = '전체 '+list.length+'개';
+  if(!list.length){
+    el.innerHTML = '<div class="empty-state">'
+      +'<div class="empty-emoji">🤍</div>'
+      +'<div class="empty-txt">아직 찜한 매장이 없어요</div>'
+      +'<div class="empty-sub">마음에 드는 매장을<br>하트를 눌러 저장해보세요!</div>'
+      +'<button class="empty-btn" onclick="location.href=\'heka_nearby_all.html\'">주변 매장 보러가기</button>'
+      +'</div>';
+    return;
+  }
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  el.innerHTML = list.map(function(s, idx){
+    var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+    cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+    var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
+    var thumb = s.images&&s.images[0]
+      ? '<div class="store-thumb"><img src="'+s.images[0]+'" loading="eager" alt=""/></div>'
+      : '<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
+    return '<div class="store-item" data-idx="'+idx+'" onclick="openDetail('+idx+')">'
+      +thumb
+      +'<div class="store-info">'
+      +'<div class="store-name">'+s.name+'</div>'
+      +'<div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span>'
+      +(s.address?'<span class="store-addr"> · '+s.address+'</span>':'')
+      +'</div>'
+      +'<div class="store-cards">'+pills+'</div>'
+      +'</div>'
+      +'<button class="store-zzim" onclick="event.stopPropagation();removeZzim(\''+s.id+'\')">'
+      +'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
+      +'</button>'
+      +'</div>';
+  }).join('');
+}
+
+// ── 슬라이드 패널 ──
+function openDetail(idx){
+  var store = _stores[idx];
+  if(!store) return;
+  window._currentStoreId = store.id || null;
+  document.getElementById('dp-name').textContent = store.name;
+  document.getElementById('dp-cat').textContent = store.category || '';
+  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">불러오는 중...</div>';
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  var cards=(store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+  cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+  var pills=cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
+
+  var mapHtml='';
+  if(store.lat&&store.lng){
+    var mapUrl='https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;
+    mapHtml='<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')">'
+      +'<div id="dp-gmap" style="width:100%;height:100%"></div></div>';
+  }
+
+  document.getElementById('dp-scroll').innerHTML=
+    '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div></div>'
+    +(store.address?'<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>':'')
+    +mapHtml;
+
+  if(store.lat&&store.lng&&typeof google!=='undefined'){
+    setTimeout(function(){
+      var el=document.getElementById('dp-gmap');if(!el)return;
+      var map=new google.maps.Map(el,{center:{lat:store.lat,lng:store.lng},zoom:16,disableDefaultUI:true,gestureHandling:'none'});
+      new google.maps.Marker({position:{lat:store.lat,lng:store.lng},map:map,title:store.name});
+    },150);
+  }
+}
+function closeDetail(){
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+}
+function toggleDpZzim(){
+  var id = window._currentStoreId;
+  if(!id) return;
+  removeZzim(id);
+  closeDetail();
+}
+function goToDetail(){
+  var id=window._currentStoreId;
+  window.location.href='heka_store_detail.html'+(id?'?id='+id:'');
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+window.addEventListener('DOMContentLoaded', renderZzimList);
+</script>
+</body>
+</html>
