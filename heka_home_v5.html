@@ -247,8 +247,7 @@ function sortByDistance(stores) {
 
 async function loadStores() {
   try {
-    // 먼저 6개만 빠르게 로드
-    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(6));
+    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
     const snapshot = await getDocs(q);
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
@@ -256,12 +255,6 @@ async function loadStores() {
       renderHotpl(allStores[0]);
       renderNearby(sortByDistance(allStores));
     }
-    // 백그라운드로 나머지 로드
-    const q2 = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(100));
-    const snapshot2 = await getDocs(q2);
-    allStores = [];
-    snapshot2.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
-    renderNearby(sortByDistance(allStores));
   } catch(e) { console.error('로드 오류:', e); }
 }
 
