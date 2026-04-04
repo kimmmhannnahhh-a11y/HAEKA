@@ -259,10 +259,18 @@ async function loadStores() {
 }
 
 function initGPS() {
-  if (!navigator.geolocation) { loadStores(); return; }
+  // Firebase 즉시 로드 (GPS 기다리지 않음)
+  loadStores();
+  // GPS는 백그라운드로 받아서 거리 정렬만 업데이트
+  if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
-    function(p) { userLat = p.coords.latitude; userLng = p.coords.longitude; loadStores(); },
-    function() { loadStores(); },
+    function(p) {
+      userLat = p.coords.latitude;
+      userLng = p.coords.longitude;
+      // 이미 로드된 데이터로 거리 재정렬
+      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    },
+    function() {},
     { timeout: 5000 }
   );
 }
