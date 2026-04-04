@@ -97,7 +97,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nbody{padding:5px 7px 7px}
 .nn{font-size:11px;font-weight:500;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm-time{font-size:10px;color:#bbb;white-space:nowrap;margin-bottom:2px}
-.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden}
+.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
+.nm-cards::-webkit-scrollbar{display:none}
 .cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
 .zzim{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.92);border:none;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .zzim svg{width:11px;height:11px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
@@ -286,13 +287,12 @@ function renderNearby(stores) {
     return;
   }
   stores.slice(0, 6).forEach(function(store) {
+    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
-    var pillsHtml = cards.slice(0, 2).map(function(c){
+    cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
+    var pillsHtml = cards.map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
     }).join('');
-    if (cards.length > 2) {
-      pillsHtml += '<span style="font-size:9px;color:#aaa;letter-spacing:1px;margin-left:1px">···</span>';
-    }
     var imgHtml = store.images && store.images[0]
       ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
@@ -304,6 +304,8 @@ function renderNearby(stores) {
     card.onclick = function() { openFirebaseDetail(store); };
     row.appendChild(card);
   });
+  // nm-cards PC 드래그 적용
+  row.querySelectorAll('.nm-cards').forEach(addDragScroll);
 }
 
 window.openFirebaseDetail = async function(store) {
@@ -578,13 +580,14 @@ window.addEventListener('DOMContentLoaded', loadStores);
 
 <script>
 // PC 마우스 드래그 스크롤
-document.querySelectorAll('.chip-row, .cat-wrap, .nrow').forEach(function(el) {
-  var isDown = false, startX, scrollLeft;
-  el.addEventListener('mousedown', function(e) { isDown=true; startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
-  el.addEventListener('mouseleave', function() { isDown=false; });
-  el.addEventListener('mouseup', function() { isDown=false; });
-  el.addEventListener('mousemove', function(e) { if(!isDown) return; e.preventDefault(); var x=e.pageX-el.offsetLeft; el.scrollLeft=scrollLeft-(x-startX); });
-});
+function addDragScroll(el){
+  var isDown=false,startX,scrollLeft;
+  el.addEventListener('mousedown',function(e){isDown=true;startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;el.style.cursor='grabbing';});
+  el.addEventListener('mouseleave',function(){isDown=false;el.style.cursor='grab';});
+  el.addEventListener('mouseup',function(){isDown=false;el.style.cursor='grab';});
+  el.addEventListener('mousemove',function(e){if(!isDown)return;e.preventDefault();el.scrollLeft=scrollLeft-(e.pageX-el.offsetLeft-startX);});
+}
+document.querySelectorAll('.chip-row, .cat-wrap, .nrow').forEach(addDragScroll);
 
 var cardSelected = new Set(['all']);
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1])||(cardSelected.has('all')&&m[1]==='all'));});}
