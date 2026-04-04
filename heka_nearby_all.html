@@ -122,7 +122,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 </head>
 <body>
 <div class="phone">
-  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
@@ -215,8 +215,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni on" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="ni" onclick="showToast('찜 목록 준비 중이에요!')"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
   <!-- 매장 상세 슬라이드 패널 (홈화면과 동일) -->
@@ -480,24 +480,29 @@ function getChosung(str){
 }
 
 // 검색 매칭: 한글 입력 → 영어 상호명도 매칭
-function searchMatch(name, addr, kw){
+function searchMatch(name, addr, kw, nameEn){
   var nameLow=(name||'').toLowerCase();
+  var nameEnLow=(nameEn||'').toLowerCase();
   var addrLow=(addr||'').toLowerCase();
   // 1) 기본: 이름/주소에 직접 포함
   if(nameLow.indexOf(kw)>-1) return true;
+  if(nameEnLow.indexOf(kw)>-1) return true;
   if(addrLow.indexOf(kw)>-1) return true;
-  // 2) 한글 키워드 → 로마자 변환 후 영어 이름과 비교
+  // 2) 특수문자 제거 후 비교 (Wolfgang's → wolfgangs)
+  var nameClean=nameLow.replace(/['\-_.,!?]/g,'');
+  var kwClean=kw.replace(/['\-_.,!?]/g,'');
+  if(nameClean.indexOf(kwClean)>-1) return true;
+  if(nameEnLow.replace(/['\-_.,!?]/g,'').indexOf(kwClean)>-1) return true;
+  // 3) 한글 키워드 → 로마자 변환 후 영어 이름과 비교
   var hasKorean=/[가-힣]/.test(kw);
   if(hasKorean){
     var romaja=korToRomaja(kw);
     if(romaja&&nameLow.indexOf(romaja)>-1) return true;
-    // 부분 매칭: romaja가 name의 단어 시작부분과 일치하는지
     var words=nameLow.split(/[\s\-_']+/);
     for(var w=0;w<words.length;w++){
       if(words[w].indexOf(romaja)===0) return true;
     }
   }
-  // 3) 영어 키워드 → 그대로 이름과 비교 (이미 1에서 처리됨)
   return false;
 }
 
@@ -507,7 +512,7 @@ function doFilter(){
   var list=(window.allStores||[]).filter(function(s){
     var cOk=cardSel.has('all')?true:(s.payOk||[]).some(function(c){return cardSel.has(c);});
     var tOk=catSel.size===0?true:catSel.has(s.category);
-    var kOk=!kw?true:searchMatch(s.name, s.address, kw);
+    var kOk=!kw?true:searchMatch(s.name, s.address, kw, s.nameEn);
     return cOk&&tOk&&kOk;
   });
   if(sortOrder==='distance'&&userLat&&userLng) list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);});

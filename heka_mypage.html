@@ -138,7 +138,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 </head>
 <body>
 <div class="phone" id="phone">
-  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
   <!-- 상단바 -->
   <div class="topbar">
@@ -170,6 +170,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
           </div>
           <div class="badge-row">
             <span class="badge-txt" id="badge-txt">🌱 여행 새싹</span>
+            <button onclick="openBadgeInfo()" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;opacity:0.5;display:flex;align-items:center">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </button>
           </div>
           <div class="bio-txt" id="bio-txt" onclick="openBioEdit()">한줄소개</div>
         </div>
@@ -195,6 +198,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
     <!-- 고객센터 -->
     <div class="sec-gap" style="margin-top:10px"></div>
+    <div class="menu-item" onclick="openInvite()">
+      <div class="menu-txt"><div class="menu-title">친구 초대하기</div><div class="menu-sub">초대 링크를 공유해보세요</div></div>
+      <span class="menu-arr">›</span>
+    </div>
+    <div class="sec-gap"></div>
     <div class="menu-item" onclick="toggleAccordion('acc-support')" style="border-bottom:.5px solid #f5f5f5">
       <div class="menu-txt"><div class="menu-title" style="font-weight:600">고객센터</div></div>
       <span class="menu-arr" id="acc-support-arrow">›</span>
@@ -221,7 +229,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
+    <div class="ni" onclick="showToast('찜 목록 준비 중이에요!')"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -381,6 +389,49 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
   </div>
 
+  <!-- 뱃지 설명 팝업 -->
+  <div class="overlay" id="badge-info-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🏅 뱃지 등급 안내</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px">제보 승인 건수 기준으로 자동 부여돼요</div>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🌱 여행 새싹</span><span style="color:#bbb">1 ~ 3건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🎒 여행 루키</span><span style="color:#bbb">4 ~ 8건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>✈️ 여행자</span><span style="color:#bbb">9 ~ 15건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🗺️ 여행 탐험가</span><span style="color:#bbb">16 ~ 25건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>⭐ 여행 스타</span><span style="color:#bbb">26 ~ 40건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🧭 여행 베테랑</span><span style="color:#bbb">41 ~ 60건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🥇 여행 달인</span><span style="color:#bbb">61 ~ 90건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>💎 여행 고수</span><span style="color:#bbb">91 ~ 130건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>👑 여행 레전드</span><span style="color:#bbb">131 ~ 170건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span>🔥 여행 마스터</span><span style="color:#bbb">171 ~ 200건</span></div>
+      </div>
+      <button class="sheet-cancel" onclick="closeBadgeInfo()" style="margin-top:12px">닫기</button>
+    </div>
+  </div>
+
+  <!-- 친구 초대 시트 -->
+  <div class="overlay" id="invite-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">친구 초대하기 👋</div>
+      <div style="font-size:12px;color:#888;margin-bottom:14px">해카를 친구에게 공유해보세요!</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="inviteKakao()" style="width:100%;padding:13px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span style="font-size:16px">💬</span> 카카오톡으로 초대링크 보내기
+        </button>
+        <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#f0f9f0;color:#1A5D1A;font-size:13px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span style="font-size:16px">🔗</span> 초대 링크 복사하기
+        </button>
+        <button onclick="shareInvite()" style="width:100%;padding:13px;border-radius:12px;background:#f5f5f5;color:#555;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span style="font-size:16px">···</span> 더보기
+        </button>
+      </div>
+      <button class="sheet-cancel" onclick="closeInvite()">취소</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -420,8 +471,10 @@ var usedNicks = ['여행마스터','해카고수','도쿄탐험가','김철수']
 
 function init() {
   try { var saved = localStorage.getItem('haeka_user'); if(saved) userData = Object.assign(userData, JSON.parse(saved)); } catch(e){}
-  // 아바타 복원
-  try { var savedAvatar = localStorage.getItem('haeka_avatar'); if(savedAvatar) document.getElementById('avatar').innerHTML = '<img src="'+savedAvatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'; } catch(e){}
+  // 아바타 복원 (IndexedDB)
+  loadAvatar(function(src) {
+    document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  });
   document.getElementById('nick-txt').textContent = userData.nick;
   document.getElementById('bio-txt').textContent = userData.bio || '아직 소개글이 없어요';
   document.getElementById('stat-report').textContent = userData.reportCount;
@@ -461,7 +514,10 @@ function renderRecent() {
       if(typeof store.createdAt==='number') fakeStore.createdAt={toMillis:function(){return store.createdAt;}};
       var card = document.createElement('div');
       card.className = 'ncard';
-      card.innerHTML = imgHtml+'<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(fakeStore.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      card.style.position = 'relative';
+      card.innerHTML = imgHtml
+        +'<button onclick="event.stopPropagation();removeRecent(\''+store.id+'\')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;padding:0"><svg width="9" height="9" viewBox="0 0 10 10" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>'
+        +'<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(fakeStore.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
       card.onclick = function(){ openRecentDetail(fakeStore); };
       row.appendChild(card);
     });
@@ -472,6 +528,53 @@ function clearRecent() {
   localStorage.removeItem('haeka_recent');
   document.getElementById('recent-head').style.display = 'none';
   document.getElementById('recent-row').style.display = 'none';
+}
+
+function removeRecent(id) {
+  try {
+    var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
+    recent = recent.filter(function(s){ return s.id !== id; });
+    localStorage.setItem('haeka_recent', JSON.stringify(recent));
+    renderRecent();
+  } catch(e) {}
+}
+
+// ── 뱃지 설명 ──
+function openBadgeInfo() {
+  document.getElementById('badge-info-overlay').classList.add('open');
+}
+function closeBadgeInfo() {
+  document.getElementById('badge-info-overlay').classList.remove('open');
+}
+
+// ── 친구 초대 ──
+function openInvite() {
+  document.getElementById('invite-overlay').classList.add('open');
+}
+function closeInvite() {
+  document.getElementById('invite-overlay').classList.remove('open');
+}
+function inviteKakao() {
+  showToast('카카오톡 연동 후 이용 가능해요!');
+  closeInvite();
+}
+function copyInviteLink() {
+  var link = 'https://kimmmhannnahhh-a11y.github.io/HAEKA/heka_home_v5.html';
+  navigator.clipboard.writeText(link).then(function(){
+    showToast('🔗 초대 링크가 복사됐어요!');
+  }).catch(function(){
+    showToast('링크: ' + link);
+  });
+  closeInvite();
+}
+function shareInvite() {
+  var link = 'https://kimmmhannnahhh-a11y.github.io/HAEKA/heka_home_v5.html';
+  if (navigator.share) {
+    navigator.share({ title: '해카 - 해외 카드결제 매장 찾기', text: '해외에서 카드 결제 가능한 매장을 찾아보세요!', url: link });
+  } else {
+    showToast('공유 기능은 모바일에서 지원해요!');
+  }
+  closeInvite();
 }
 
 // ── 슬라이드 패널 ──
@@ -517,25 +620,35 @@ function toggleAccordion(id) {
   if(arrow) arrow.textContent = isOpen ? '›' : '∨';
 }
 
-// ── 아바타 ──
+// ── 아바타 (IndexedDB - 용량 제한 없음) ──
+function openAvatarDB(callback) {
+  var req = indexedDB.open('haeka_db', 1);
+  req.onupgradeneeded = function(e) { e.target.result.createObjectStore('avatar'); };
+  req.onsuccess = function(e) { callback(e.target.result); };
+  req.onerror = function() { callback(null); };
+}
+function saveAvatar(src) {
+  openAvatarDB(function(db) {
+    if (!db) return;
+    var tx = db.transaction('avatar', 'readwrite');
+    tx.objectStore('avatar').put(src, 'profile');
+  });
+}
+function loadAvatar(callback) {
+  openAvatarDB(function(db) {
+    if (!db) return;
+    var tx = db.transaction('avatar', 'readonly');
+    var req = tx.objectStore('avatar').get('profile');
+    req.onsuccess = function(e) { if (e.target.result) callback(e.target.result); };
+  });
+}
 function changeAvatar(input) {
   if (!input.files[0]) return;
   var r = new FileReader();
   r.onload = function(e) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var MAX = 200;
-      var w = img.width, h = img.height;
-      if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
-      else { if (h > MAX) { w = w * MAX / h; h = MAX; } }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      var compressed = canvas.toDataURL('image/jpeg', 0.7);
-      document.getElementById('avatar').innerHTML = '<img src="'+compressed+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-      try { localStorage.setItem('haeka_avatar', compressed); } catch(e) { showToast('사진 용량이 너무 커요!'); }
-    };
-    img.src = e.target.result;
+    var src = e.target.result;
+    document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    saveAvatar(src);
   };
   r.readAsDataURL(input.files[0]);
 }
