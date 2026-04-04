@@ -97,6 +97,27 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
 .nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+
+/* 매장 상세 슬라이드 패널 (홈화면과 동일) */
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
+.detail-overlay.open{display:block}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-panel.open{transform:translateY(0)}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
+.dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
+.dp-name{font-size:15px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.dp-cat{font-size:11px;color:#999;white-space:nowrap;flex-shrink:0}
+.dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
+.dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
+.dp-section{font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 6px}
+.dp-row{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#444;margin-bottom:6px;line-height:1.5}
+.dp-ico{font-size:12px;width:16px;text-align:center;flex-shrink:0;margin-top:1px}
+.dp-divider{height:1px;background:#f0f0f0;margin:10px 0}
+.dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
+.dp-btn-report{flex:1;padding:11px;border-radius:10px;background:#f0f7f0;color:#1A5D1A;font-size:12px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+#dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
 </style>
 </head>
 <body>
@@ -197,7 +218,68 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
+
+  <!-- 매장 상세 슬라이드 패널 (홈화면과 동일) -->
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-cat" id="dp-cat"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dp-zzim-svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="dp-close" onclick="closeDetail()">✕</button>
+      </div>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-more" id="dp-btn-more" onclick="goToDetail()" style="flex:1">매장 상세보기 →</button>
+    </div>
+  </div>
 </div>
+
+<!-- Google Maps API (슬라이드 패널 지도용) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+
+<script>
+function calcIsOpenSlide(hours, todayIdx) {
+  try {
+    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
+    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
+    if (todayHours.includes('24시간')) return true;
+    var parts = todayHours.split('~');
+    if (parts.length < 2) return null;
+    function parseTime(s) {
+      s = s.trim();
+      var isPM = s.includes('오후') || s.includes('PM');
+      var isAM = s.includes('오전') || s.includes('AM');
+      var m = s.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      var h = parseInt(m[1]), min = parseInt(m[2]);
+      if (isPM && h < 12) h += 12;
+      if (isAM && h === 12) h = 0;
+      return h * 60 + min;
+    }
+    var now = new Date();
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    var openMins = parseTime(parts[0]);
+    var closeMins = parseTime(parts[1]);
+    if (openMins === null || closeMins === null) return null;
+    if (closeMins <= openMins) closeMins += 24 * 60;
+    return nowMins >= openMins && nowMins < closeMins;
+  } catch(e) { return null; }
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleDpZzim(){var btn=document.getElementById('dp-zzim');if(btn)btn.classList.toggle('on');}
+function goToDetail(){var id=window._currentStoreId;if(id)window.location.href='heka_store_detail.html?id='+id;else window.location.href='heka_store_detail.html';}
+function toggleHours(){var el=document.getElementById('hours-full');var arrow=document.getElementById('hours-arrow');if(!el)return;window._hoursOpen=!window._hoursOpen;el.style.display=window._hoursOpen?'block':'none';arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';}
+</script>
 
 <!-- Firebase module (홈화면과 동일 방식) -->
 <script type="module">
@@ -224,6 +306,81 @@ window._fetchStores = async function() {
   } catch(e) {
     console.error(e);
     document.getElementById('count-bar').textContent = '불러오기 실패';
+  }
+};
+
+window.openFirebaseDetail = async function(store) {
+  window._currentStoreId = store.id || null;
+
+  document.getElementById('dp-name').textContent = store.name;
+  document.getElementById('dp-cat').textContent = store.category || '';
+  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('dp-scroll').scrollTop = 0;
+
+  var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+  var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
+
+  var placesInfo = { hours: null, phone: null, isOpen: null };
+  try {
+    if (typeof google !== 'undefined' && store.lat && store.lng) {
+      const { Place } = await google.maps.importLibrary('places');
+      const { places } = await Place.searchByText({
+        textQuery: store.name + ' ' + (store.address || ''),
+        fields: ['regularOpeningHours','nationalPhoneNumber'],
+        maxResultCount: 1,
+      });
+      if (places && places[0]) {
+        var p = places[0];
+        placesInfo.phone = p.nationalPhoneNumber || null;
+        if (p.regularOpeningHours) {
+          placesInfo.hours = p.regularOpeningHours.weekdayDescriptions || null;
+          try { placesInfo.isOpen = p.regularOpeningHours.isOpen(); } catch(e) { placesInfo.isOpen = null; }
+        }
+      }
+    }
+  } catch(e) { console.log('Places 오류:', e); }
+
+  var mapHtml = '';
+  if (store.lat && store.lng) {
+    var mapUrl = 'https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;
+    mapHtml = '<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')">'
+      + '<div id="dp-gmap" style="width:100%;height:100%"></div>'
+      + '</div>';
+  }
+
+  var hoursHtml = '';
+  if (placesInfo.hours && placesInfo.hours.length) {
+    var dayNames = ['월','화','수','목','금','토','일'];
+    var today = new Date().getDay();
+    var todayGIdx = today === 0 ? 6 : today - 1;
+    var todayTime = (placesInfo.hours[todayGIdx] || '').replace(/^[^:]+:\s*/, '');
+    var todayDayName = dayNames[todayGIdx];
+    var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
+    var openBadge = isOpenCalc === true
+      ? '<span style="color:#1A5D1A;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
+      : isOpenCalc === false
+      ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
+    hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'+openBadge+'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span></div>';
+  }
+
+  document.getElementById('dp-scroll').innerHTML =
+    '<div style="margin-bottom:8px">'
+    +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
+    +'</div>'
+    +hoursHtml
+    +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
+    +mapHtml;
+
+  if (store.lat && store.lng && typeof google !== 'undefined') {
+    setTimeout(function() {
+      var el = document.getElementById('dp-gmap');
+      if (!el) return;
+      var map = new google.maps.Map(el, { center:{lat:store.lat,lng:store.lng}, zoom:16, disableDefaultUI:true, gestureHandling:'none' });
+      new google.maps.Marker({ position:{lat:store.lat,lng:store.lng}, map:map, title:store.name });
+    }, 150);
   }
 };
 </script>
@@ -253,11 +410,13 @@ function init(){
 }
 
 // ── 렌더 ──
+var _renderedStores = [];
 function renderList(stores){
+  _renderedStores = stores;
   var el=document.getElementById('store-list');
   document.getElementById('count-bar').textContent='전체 '+stores.length+'개';
   if(!stores.length){el.innerHTML='<div class="empty-state"><div class="empty-emoji">🔍</div><div class="empty-txt">해당 조건의 매장이 없어요</div></div>';return;}
-  el.innerHTML=stores.map(function(s){
+  el.innerHTML=stores.map(function(s,idx){
     var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);ai=ai<0?99:ai;bi=bi<0?99:bi;return ai-bi;});
@@ -265,8 +424,13 @@ function renderList(stores){
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
     var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
-    return'<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim" onclick="event.stopPropagation();this.classList.toggle(\'on\')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim" onclick="event.stopPropagation();this.classList.toggle(\'on\')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
+}
+function openStoreByIdx(el){
+  var idx=parseInt(el.getAttribute('data-idx'));
+  var store=_renderedStores[idx];
+  if(store&&window.openFirebaseDetail) window.openFirebaseDetail(store);
 }
 
 // ── 한글→로마자 변환 (검색용) ──
@@ -378,7 +542,7 @@ function selectSort(order,label){sortOrder=order;document.getElementById('sort-b
 // ── PC 드래그 ──
 function addDragScroll(el){var dn=false,sx,sl;el.addEventListener('mousedown',function(e){dn=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.cursor='grabbing';});el.addEventListener('mouseleave',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mouseup',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mousemove',function(e){if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx);});}
 document.querySelectorAll('.chip-row,.cat-wrap').forEach(addDragScroll);
-// 매장 카드사 배지도 PC 드래그 가능하게 (동적 렌더링 후 적용)
+document.querySelectorAll('.store-cards').forEach(addDragScroll);
 var _origRender=renderList;
 renderList=function(stores){_origRender(stores);document.querySelectorAll('.store-cards').forEach(addDragScroll);};
 
