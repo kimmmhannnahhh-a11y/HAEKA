@@ -252,6 +252,13 @@ async function loadStores() {
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
+      // 이미지 미리 로드 시작 (브라우저 캐시에 올림)
+      allStores.slice(0, 6).forEach(function(store) {
+        if (store.images && store.images[0]) {
+          var img = new Image();
+          img.src = store.images[0];
+        }
+      });
       renderHotpl(allStores[0]);
       renderNearby(sortByDistance(allStores));
     }
@@ -289,13 +296,12 @@ window.applyFilters = function() {
 function renderHotpl(store) {
   var el = document.getElementById('hotpl-dynamic');
   if (!el) return;
-  var imgStyle = store.images && store.images[0]
-    ? 'background:url('+store.images[0]+') center/cover no-repeat'
-    : 'background:#1a0e00';
-  var emoji = store.images && store.images[0] ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
+  var imgContent = store.images && store.images[0]
+    ? '<img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
+    : '<div style="position:absolute;inset:0;background:#1a0e00;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
   el.innerHTML =
-    '<div class="hotpl-img" style="'+imgStyle+';cursor:pointer" onclick="window.location.href=\'heka_store_detail.html?id='+(store.id||'')+'\'">'
-    + emoji
+    '<div class="hotpl-img" style="position:relative;cursor:pointer" onclick="window.location.href=\'heka_store_detail.html?id='+(store.id||'')+'\'">'
+    + imgContent
     + '<div class="hotpl-overlay">'
     + '<div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>'
     + '<div class="hotpl-title">"'+store.name+',<br>'+timeAgo(store.createdAt)+' 등록됐어요!"</div>'
@@ -325,7 +331,7 @@ function renderNearby(stores) {
       distTxt = ' · <span style="color:#1A5D1A;font-weight:600">'+distLbl(m)+'</span>';
     }
     var imgHtml = store.images && store.images[0]
-      ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
+      ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
     var card = document.createElement('div');
     card.className = 'ncard';
