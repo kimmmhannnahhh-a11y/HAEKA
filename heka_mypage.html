@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:#fff}
+.back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
+.gear-btn{position:absolute;right:14px;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center}
+.gear-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* 스크롤 */
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:60px}
+.scroll-wrap::-webkit-scrollbar{display:none}
+
+/* 프로필 카드 */
+.profile-card{background:#1A5D1A;margin:14px 14px 0;border-radius:18px;padding:16px;position:relative;overflow:hidden}
+.profile-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar-wrap{position:relative;flex-shrink:0}
+.avatar{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar-cam{position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #1A5D1A;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.avatar-cam svg{width:11px;height:11px;stroke:#1A5D1A;fill:none;stroke-width:2;stroke-linecap:round}
+.profile-info{flex:1;min-width:0}
+.nick-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.nick{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nick-edit-btn{background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;display:flex;align-items:center}
+.nick-edit-btn svg{width:13px;height:13px;stroke:rgba(255,255,255,.7);fill:none;stroke-width:2;stroke-linecap:round}
+.badge-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.badge-txt{font-size:11px;color:rgba(255,255,255,.9);font-weight:500}
+.bio-txt{font-size:10px;color:rgba(255,255,255,.65);cursor:pointer}
+.stats-row{display:flex;gap:6px}
+.stat-box{flex:1;background:rgba(255,255,255,.15);border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;transition:.15s}
+.stat-box:hover{background:rgba(255,255,255,.22)}
+.stat-num{font-size:15px;font-weight:800;color:#fff}
+.stat-lbl{font-size:9px;color:rgba(255,255,255,.7);margin-top:1px}
+
+/* 섹션 */
+.sec-gap{height:10px;background:#f5f5f5}
+.sec-title{font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase;padding:12px 16px 6px}
+.menu-item{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:hover{background:#fafafa}
+.menu-ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.menu-txt{flex:1}
+.menu-title{font-size:13px;font-weight:500;color:#111}
+.menu-sub{font-size:10px;color:#bbb;margin-top:1px}
+.menu-arr{font-size:14px;color:#ccc}
+.menu-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#1A5D1A;color:#fff}
+.menu-toggle{width:36px;height:20px;border-radius:10px;background:#e0e0e0;position:relative;cursor:pointer;transition:.2s;flex-shrink:0;border:none}
+.menu-toggle.on{background:#1A5D1A}
+.menu-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.menu-toggle.on::after{left:18px}
+
+/* 가봤던 나라 */
+.countries-wrap{padding:6px 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.country-chip{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1.5px solid #e0e0e0;font-size:11px;color:#555;cursor:pointer;transition:.15s;background:#fff}
+.country-chip.on{border-color:#1A5D1A;background:#f0f9f0;color:#1A5D1A;font-weight:600}
+.country-chip-add{border-style:dashed;color:#bbb}
+.country-chip-add:hover{border-color:#1A5D1A;color:#1A5D1A}
+
+/* 찜 목록 미리보기 */
+.zzim-preview{display:flex;gap:7px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
+.zzim-preview::-webkit-scrollbar{display:none}
+.zzim-card{flex:0 0 80px;border-radius:10px;overflow:hidden;border:.5px solid #eee;cursor:pointer}
+.zzim-thumb{width:80px;height:56px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:22px}
+.zzim-name{font-size:9px;font-weight:500;color:#333;padding:4px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* 소셜 연동 */
+.social-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:.5px solid #f5f5f5}
+.social-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.social-name{flex:1;font-size:12px;font-weight:500;color:#333}
+.social-connected{font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px}
+.social-on{background:#e8f5e8;color:#1A5D1A}
+.social-off{background:#f5f5f5;color:#bbb}
+
+/* 하단 네비 */
+.bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
+.ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ni.on{color:#1A5D1A;font-weight:600}
+.ni svg{width:17px;height:17px}
+.nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+
+/* 오버레이 공통 */
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:30;display:none;align-items:flex-end;border-radius:26px}
+.overlay.open{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;padding:16px}
+.sheet-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px}
+.sheet-title{font-size:14px;font-weight:700;color:#111;margin-bottom:12px}
+.sheet-inp{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #e0e0e0;font-size:13px;font-family:inherit;outline:none;transition:.15s}
+.sheet-inp:focus{border-color:#1A5D1A}
+.sheet-err{font-size:11px;color:#dc2626;font-weight:500;margin-top:5px;display:none}
+.sheet-err.show{display:block}
+.sheet-btn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.sheet-cancel{width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+
+/* 최근 본 항목 카드 */
+.ncard{position:relative;flex:0 0 106px;border-radius:10px;overflow:hidden;border:0.5px solid #eee;background:#fff;cursor:pointer;transition:box-shadow .2s,transform .2s}
+.ncard:hover{box-shadow:0 4px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
+.nimg{width:100%;height:60px;display:flex;align-items:center;justify-content:center;font-size:30px;line-height:1;overflow:hidden}
+.nbody{padding:5px 7px 7px}
+.nn{font-size:11px;font-weight:500;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm-time{font-size:10px;color:#bbb;white-space:nowrap;margin-bottom:2px}
+.nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.nm-cards::-webkit-scrollbar{display:none}
+.cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
+
+/* 슬라이드 패널 */
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
+.detail-overlay.open{display:block}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-panel.open{transform:translateY(0)}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
+.dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
+.dp-name{font-size:15px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.dp-cat{font-size:11px;color:#999;white-space:nowrap;flex-shrink:0}
+.dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
+.dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
+.dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+#dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
+.toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 로그아웃 버튼 */
+.logout-btn{margin:4px 16px 16px;padding:12px;border-radius:12px;background:#fff5f5;color:#dc2626;font-size:13px;font-weight:700;border:1.5px solid #fecaca;cursor:pointer;width:calc(100% - 32px);font-family:inherit;transition:.15s}
+.logout-btn:hover{background:#fee2e2}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+</head>
+<body>
+<div class="phone" id="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+
+  <!-- 상단바 -->
+  <div class="topbar">
+    <button class="back-btn" onclick="window.location.href='heka_home_v5.html'">←</button>
+    <span class="topbar-title">마이페이지</span>
+    <button class="gear-btn" onclick="openSettings()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    </button>
+  </div>
+
+  <div class="scroll-wrap">
+
+    <!-- 프로필 카드 -->
+    <div class="profile-card">
+      <div class="profile-top">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatar" onclick="document.getElementById('avatar-input').click()">🧳</div>
+          <div class="avatar-cam" onclick="document.getElementById('avatar-input').click()">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="changeAvatar(this)"/>
+        </div>
+        <div class="profile-info">
+          <div class="nick-row">
+            <span class="nick" id="nick-txt">김한아</span>
+            <button class="nick-edit-btn" onclick="openNickEdit()">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+          <div class="badge-row">
+            <span class="badge-txt" id="badge-txt">🌱 여행 새싹</span>
+          </div>
+          <div class="bio-txt" id="bio-txt" onclick="openBioEdit()">한줄소개</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box" onclick="showToast('내가 등록한 장소 목록')">
+          <div class="stat-num" id="stat-report">3</div>
+          <div class="stat-lbl">결제 제보</div>
+        </div>
+        <div class="stat-box" onclick="showToast('내가 등록한 장소 목록')">
+          <div class="stat-num" id="stat-place">5</div>
+          <div class="stat-lbl">등록한 장소</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 최근 본 항목 -->
+    <div id="recent-head" style="display:none;justify-content:space-between;align-items:center;padding:12px 14px 7px;margin-top:10px">
+      <span style="font-size:13px;font-weight:500;color:#111">최근 본 항목</span>
+      <span style="font-size:11px;color:#999;cursor:pointer" onclick="clearRecent()">전체 삭제</span>
+    </div>
+    <div id="recent-row" style="display:none;flex-direction:row;gap:6px;overflow-x:auto;padding:0 14px 10px;scrollbar-width:none"></div>
+
+    <!-- 고객센터 -->
+    <div class="sec-gap" style="margin-top:10px"></div>
+    <div class="menu-item" onclick="toggleAccordion('acc-support')" style="border-bottom:.5px solid #f5f5f5">
+      <div class="menu-txt"><div class="menu-title" style="font-weight:600">고객센터</div></div>
+      <span class="menu-arr" id="acc-support-arrow">›</span>
+    </div>
+    <div id="acc-support" style="display:none;background:#fafafa">
+      <div class="menu-item" onclick="showToast('1:1 문의 준비 중이에요!')" style="padding-left:24px">
+        <div class="menu-txt"><div class="menu-title">1:1 문의 / 제안</div><div class="menu-sub">카테고리 추가·서비스 불편 접수</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('공지사항 준비 중이에요!')" style="padding-left:24px">
+        <div class="menu-txt"><div class="menu-title">공지사항</div><div class="menu-sub">업데이트·점검·이벤트 안내</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('오류 제보 준비 중이에요!')" style="padding-left:24px;border-bottom:none">
+        <div class="menu-txt"><div class="menu-title">오류 제보</div><div class="menu-sub">지도 위치 오류·잘못된 결제 정보</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 하단 네비 -->
+  <div class="bnav">
+    <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+
+  <!-- 닉네임 수정 시트 -->
+  <div class="overlay" id="nick-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">닉네임 변경</div>
+      <input class="sheet-inp" id="nick-inp" placeholder="새 닉네임을 입력해주세요" maxlength="12" oninput="checkNick()"/>
+      <div class="sheet-err" id="nick-err">이미 사용 중인 닉네임이에요</div>
+      <button class="sheet-btn" onclick="saveNick()">저장하기</button>
+      <button class="sheet-cancel" onclick="closeNickEdit()">취소</button>
+    </div>
+  </div>
+
+  <!-- 한줄소개 수정 시트 -->
+  <div class="overlay" id="bio-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">한줄 소개</div>
+      <input class="sheet-inp" id="bio-inp" placeholder="나를 한 줄로 소개해보세요 (선택)" maxlength="30"/>
+      <button class="sheet-btn" onclick="saveBio()">저장하기</button>
+      <button class="sheet-cancel" onclick="closeBioEdit()">취소</button>
+    </div>
+  </div>
+
+  <!-- 언어/통화 시트 -->
+  <div class="overlay" id="lang-overlay">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">언어 / 통화 설정</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">언어</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="lang-list">
+          <button onclick="selectLang(this,'한국어')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">한국어</button>
+          <button onclick="selectLang(this,'English')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">English</button>
+          <button onclick="selectLang(this,'日本語')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">日本語</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">통화</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="currency-list">
+          <button onclick="selectCurrency(this,'KRW')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">KRW</button>
+          <button onclick="selectCurrency(this,'USD')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">USD</button>
+          <button onclick="selectCurrency(this,'JPY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">JPY</button>
+          <button onclick="selectCurrency(this,'EUR')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">EUR</button>
+        </div>
+      </div>
+      <button class="sheet-btn" style="margin-top:14px" onclick="saveLang()">저장하기</button>
+      <button class="sheet-cancel" onclick="closeLangSheet()">취소</button>
+    </div>
+  </div>
+
+  <!-- 설정 패널 (톱니바퀴) -->
+  <div class="overlay" id="settings-overlay" onclick="closeSettings()" style="align-items:stretch;background:rgba(0,0,0,0)"></div>
+  <div id="settings-panel" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
+    <!-- 설정 상단바 -->
+    <div style="background:#1A5D1A;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
+    <div style="background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <button onclick="closeSettings()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1">←</button>
+      <span style="font-size:15px;font-weight:600;color:#fff">설정</span>
+    </div>
+    <!-- 설정 내용 -->
+    <div style="flex:1;overflow-y:auto">
+
+      <!-- 알림 설정 -->
+      <div style="height:10px;background:#f5f5f5"></div>
+      <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">알림 설정</div>
+      <div class="menu-item">
+        <div class="menu-txt"><div class="menu-title">제보 매장 승인 알림</div></div>
+        <button class="menu-toggle on" id="toggle-approve" onclick="toggleSwitch(this)"></button>
+      </div>
+      <div class="menu-item">
+        <div class="menu-txt"><div class="menu-title">이벤트 푸시 알림</div></div>
+        <button class="menu-toggle" id="toggle-event" onclick="toggleSwitch(this)"></button>
+      </div>
+
+      <!-- 계정 연동 -->
+      <div style="height:10px;background:#f5f5f5"></div>
+      <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">계정 연동 관리</div>
+      <div class="menu-item" onclick="showToast('Google 계정이 연결되어 있어요')">
+        <div class="menu-txt"><div class="menu-title">Google</div><div class="menu-sub">연결됨</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('Apple 연동 준비 중이에요!')">
+        <div class="menu-txt"><div class="menu-title">Apple</div><div class="menu-sub">연결하기</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('카카오 연동 준비 중이에요!')">
+        <div class="menu-txt"><div class="menu-title">카카오</div><div class="menu-sub">연결하기</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+
+      <!-- 환경설정 -->
+      <div style="height:10px;background:#f5f5f5"></div>
+      <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">환경설정</div>
+      <div class="menu-item" onclick="openLangSheet()">
+        <div class="menu-txt"><div class="menu-title">언어 / 통화 설정</div><div class="menu-sub" id="lang-sub">한국어 · KRW</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('생체인증 설정은 앱 출시 후 지원 예정이에요!')">
+        <div class="menu-txt"><div class="menu-title">자동 로그인 / 생체 인증</div><div class="menu-sub">Face ID · 지문 인식</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="clearCache()">
+        <div class="menu-txt"><div class="menu-title">데이터 관리</div><div class="menu-sub" id="cache-sub">캐시 삭제 · 버전 1.0.0</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+
+      <!-- 약관 -->
+      <div style="height:10px;background:#f5f5f5"></div>
+      <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">약관 및 정책</div>
+      <div class="menu-item" onclick="showToast('서비스 이용약관 준비 중이에요!')">
+        <div class="menu-txt"><div class="menu-title" style="color:#555">서비스 이용약관</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('개인정보처리방침 준비 중이에요!')">
+        <div class="menu-txt"><div class="menu-title" style="color:#555">개인정보처리방침</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('위치기반서비스 이용약관 준비 중이에요!')">
+        <div class="menu-txt"><div class="menu-title" style="color:#555">위치기반서비스 이용약관</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+
+      <!-- 계정 탈퇴 / 로그아웃 -->
+      <div style="height:10px;background:#f5f5f5"></div>
+      <div class="menu-item" onclick="confirmWithdraw()">
+        <div class="menu-txt"><div class="menu-title" style="color:#dc2626">계정 탈퇴</div><div class="menu-sub">서비스 이용 해지 및 개인정보 삭제</div></div>
+        <span class="menu-arr" style="color:#fca5a5">›</span>
+      </div>
+      <button class="logout-btn" onclick="logout()" style="margin:8px 16px 20px;width:calc(100% - 32px)">로그아웃</button>
+    </div>
+  </div>
+
+  <!-- 매장 슬라이드 패널 -->
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-cat" id="dp-cat"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dp-zzim-svg"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="dp-close" onclick="closeDetail()">✕</button>
+      </div>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ── 뱃지 계산 ──
+var BADGES = [
+  {min:1,  max:3,   txt:'🌱 여행 새싹'},
+  {min:4,  max:8,   txt:'🎒 여행 루키'},
+  {min:9,  max:15,  txt:'✈️ 여행자'},
+  {min:16, max:25,  txt:'🗺️ 여행 탐험가'},
+  {min:26, max:40,  txt:'⭐ 여행 스타'},
+  {min:41, max:60,  txt:'🧭 여행 베테랑'},
+  {min:61, max:90,  txt:'🥇 여행 달인'},
+  {min:91, max:130, txt:'💎 여행 고수'},
+  {min:131,max:170, txt:'👑 여행 레전드'},
+  {min:171,max:200, txt:'🔥 여행 마스터'},
+];
+function getBadge(count) {
+  if (count < 1) return '🌱 여행 새싹';
+  for (var i = 0; i < BADGES.length; i++) {
+    if (count >= BADGES[i].min && count <= BADGES[i].max) return BADGES[i].txt;
+  }
+  return '🔥 여행 마스터';
+}
+
+// ── 상태 ──
+var userData = {
+  nick: '김한아',
+  bio: '',
+  reportCount: 3,
+  placeCount: 5,
+  lang: '한국어',
+  currency: 'KRW',
+};
+
+var usedNicks = ['여행마스터','해카고수','도쿄탐험가','김철수'];
+
+function init() {
+  try { var saved = localStorage.getItem('haeka_user'); if(saved) userData = Object.assign(userData, JSON.parse(saved)); } catch(e){}
+  document.getElementById('nick-txt').textContent = userData.nick;
+  document.getElementById('bio-txt').textContent = userData.bio || '아직 소개글이 없어요';
+  document.getElementById('stat-report').textContent = userData.reportCount;
+  document.getElementById('stat-place').textContent = userData.placeCount;
+  document.getElementById('badge-txt').textContent = getBadge(userData.reportCount);
+  renderRecent();
+}
+
+function saveData() {
+  try { localStorage.setItem('haeka_user', JSON.stringify(userData)); } catch(e){}
+}
+
+// ── 최근 본 항목 ──
+function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
+function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
+function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
+function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(typeof ts==='number'?ts:Date.now());var d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
+
+function renderRecent() {
+  try {
+    var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
+    var row = document.getElementById('recent-row');
+    var head = document.getElementById('recent-head');
+    if (!recent.length) { head.style.display='none'; row.style.display='none'; return; }
+    head.style.display = 'flex';
+    row.style.display = 'flex';
+    row.innerHTML = '';
+    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+    recent.forEach(function(store) {
+      var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+      cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+      var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
+      var imgHtml = store.images&&store.images[0]
+        ?'<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
+        :'<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
+      var fakeStore = Object.assign({},store);
+      if(typeof store.createdAt==='number') fakeStore.createdAt={toMillis:function(){return store.createdAt;}};
+      var card = document.createElement('div');
+      card.className = 'ncard';
+      card.innerHTML = imgHtml+'<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(fakeStore.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      card.onclick = function(){ openRecentDetail(fakeStore); };
+      row.appendChild(card);
+    });
+  } catch(e) {}
+}
+
+function clearRecent() {
+  localStorage.removeItem('haeka_recent');
+  document.getElementById('recent-head').style.display = 'none';
+  document.getElementById('recent-row').style.display = 'none';
+}
+
+// ── 슬라이드 패널 ──
+function openRecentDetail(store) {
+  window._currentStoreId = store.id || null;
+  document.getElementById('dp-name').textContent = store.name;
+  document.getElementById('dp-cat').textContent = store.category || '';
+  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('dp-scroll').scrollTop = 0;
+  var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+  var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+  var pills = cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
+  var mapHtml = '';
+  if(store.lat&&store.lng){
+    var mapUrl='https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;
+    mapHtml='<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')"><div id="dp-gmap" style="width:100%;height:100%"></div></div>';
+  }
+  document.getElementById('dp-scroll').innerHTML=
+    '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div></div>'
+    +(store.address?'<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>':'')
+    +mapHtml;
+  if(store.lat&&store.lng&&typeof google!=='undefined'){
+    setTimeout(function(){
+      var el=document.getElementById('dp-gmap');if(!el)return;
+      var map=new google.maps.Map(el,{center:{lat:store.lat,lng:store.lng},zoom:16,disableDefaultUI:true,gestureHandling:'none'});
+      new google.maps.Marker({position:{lat:store.lat,lng:store.lng},map:map,title:store.name});
+    },150);
+  }
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleDpZzim(){document.getElementById('dp-zzim').classList.toggle('on');}
+function goToDetail(){var id=window._currentStoreId;window.location.href='heka_store_detail.html'+(id?'?id='+id:'');}
+
+// ── 아코디언 ──
+function toggleAccordion(id) {
+  var content = document.getElementById(id);
+  var arrow = document.getElementById(id+'-arrow');
+  var isOpen = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'block';
+  if(arrow) arrow.textContent = isOpen ? '›' : '∨';
+}
+
+// ── 아바타 ──
+function changeAvatar(input) {
+  if (!input.files[0]) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    document.getElementById('avatar').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+// ── 닉네임 ──
+function openNickEdit() {
+  document.getElementById('nick-inp').value = userData.nick;
+  document.getElementById('nick-err').classList.remove('show');
+  document.getElementById('nick-overlay').classList.add('open');
+}
+function closeNickEdit() { document.getElementById('nick-overlay').classList.remove('open'); }
+function checkNick() {
+  var val = document.getElementById('nick-inp').value.trim();
+  var isDup = usedNicks.indexOf(val) > -1 && val !== userData.nick;
+  document.getElementById('nick-err').classList.toggle('show', isDup);
+}
+function saveNick() {
+  var val = document.getElementById('nick-inp').value.trim();
+  if (!val) { showToast('닉네임을 입력해주세요'); return; }
+  if (usedNicks.indexOf(val) > -1 && val !== userData.nick) { return; }
+  userData.nick = val;
+  document.getElementById('nick-txt').textContent = val;
+  saveData();
+  closeNickEdit();
+  showToast('✅ 닉네임이 변경됐어요!');
+}
+
+// ── 한줄소개 ──
+function openBioEdit() {
+  document.getElementById('bio-inp').value = userData.bio === '아직 소개글이 없어요' ? '' : userData.bio;
+  document.getElementById('bio-overlay').classList.add('open');
+}
+function closeBioEdit() { document.getElementById('bio-overlay').classList.remove('open'); }
+function saveBio() {
+  var val = document.getElementById('bio-inp').value.trim();
+  userData.bio = val || '';
+  document.getElementById('bio-txt').textContent = val || '아직 소개글이 없어요';
+  saveData();
+  closeBioEdit();
+  showToast('✅ 소개글이 저장됐어요!');
+}
+
+// ── 설정 패널 ──
+function openSettings() {
+  document.getElementById('settings-overlay').classList.add('open');
+  document.getElementById('settings-panel').style.transform = 'translateX(0)';
+}
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.getElementById('settings-panel').style.transform = 'translateX(100%)';
+}
+
+// ── 토글 ──
+function toggleSwitch(btn) { btn.classList.toggle('on'); }
+
+// ── 언어/통화 ──
+var curLang = '한국어', curCurrency = 'KRW';
+function openLangSheet() { document.getElementById('lang-overlay').classList.add('open'); }
+function closeLangSheet() { document.getElementById('lang-overlay').classList.remove('open'); }
+function selectLang(btn, val) {
+  curLang = val;
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='#e0e0e0'; b.style.fontWeight='400'; });
+  btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; btn.style.fontWeight='600';
+}
+function selectCurrency(btn, val) {
+  curCurrency = val;
+  document.querySelectorAll('.curr-btn').forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='#e0e0e0'; b.style.fontWeight='400'; });
+  btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; btn.style.fontWeight='600';
+}
+function saveLang() {
+  document.getElementById('lang-sub').textContent = curLang + ' · ' + curCurrency;
+  closeLangSheet();
+  showToast('✅ 언어/통화 설정이 저장됐어요!');
+}
+
+// ── 기타 ──
+function clearCache() { showToast('캐시가 삭제됐어요!'); }
+function confirmWithdraw() {
+  if (confirm('정말 탈퇴하시겠어요?\n등록한 모든 정보가 삭제되며 복구가 불가능해요.')) {
+    showToast('탈퇴 처리는 로그인 연동 후 지원 예정이에요');
+  }
+}
+function logout() {
+  showToast('로그아웃 되었습니다');
+  setTimeout(function(){ window.location.href='heka_home_v5.html'; }, 1500);
+}
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
