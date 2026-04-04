@@ -97,6 +97,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nbody{padding:5px 7px 7px}
 .nn{font-size:11px;font-weight:500;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm-time{font-size:10px;color:#bbb;white-space:nowrap;margin-bottom:2px}
+.nm-dist{font-size:10px;color:#1A5D1A;font-weight:600;margin-bottom:1px}
 .nm-cards{display:flex;gap:3px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
 .nm-cards::-webkit-scrollbar{display:none}
 .cpill{font-size:7px;padding:1px 4px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
@@ -231,33 +232,57 @@ function timeAgo(ts) {
 }
 
 var allStores = [];
+var userLat = null, userLng = null;
+
+function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
+function distLbl(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
+
+function sortByDistance(stores) {
+  if (!userLat || !userLng) return stores;
+  return stores.slice().sort(function(a, b) {
+    var da = (a.lat && a.lng) ? calcDist(userLat, userLng, a.lat, a.lng) : 99999;
+    var db2 = (b.lat && b.lng) ? calcDist(userLat, userLng, b.lat, b.lng) : 99999;
+    return da - db2;
+  });
+}
 
 async function loadStores() {
   try {
-    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
+    const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(100));
     const snapshot = await getDocs(q);
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
       renderHotpl(allStores[0]);
-      renderNearby(allStores);
+      renderNearby(sortByDistance(allStores));
     }
   } catch(e) { console.error('로드 오류:', e); }
 }
 
+function initGPS() {
+  if (!navigator.geolocation) { loadStores(); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(p) {
+      userLat = p.coords.latitude;
+      userLng = p.coords.longitude;
+      loadStores();
+    },
+    function() { loadStores(); },
+    { timeout: 5000 }
+  );
+}
+
 window.applyFilters = function() {
   var filtered = allStores.filter(function(store) {
-    // 카드사 필터 - _cardSelected 없거나 'all'이면 전체 허용
     var cardOk = !window._cardSelected || window._cardSelected.has('all') ? true
       : (store.payOk || []).some(function(c){ 
           return window._cardSelected.has(c) || window._cardSelected.has(c.toLowerCase());
         });
-    // 업종 필터 - _selected 없거나 size 0이면 전체 허용
     var catOk = !window._selected || window._selected.size === 0 ? true
       : window._selected.has(store.category);
     return cardOk && catOk;
   });
-  renderNearby(filtered);
+  renderNearby(sortByDistance(filtered));
 };
 
 function renderHotpl(store) {
@@ -296,11 +321,16 @@ function renderNearby(stores) {
     var imgHtml = store.images && store.images[0]
       ? '<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
+    var distTxt = '';
+    if (userLat && userLng && store.lat && store.lng) {
+      var m = calcDist(userLat, userLng, store.lat, store.lng);
+      distTxt = '<div class="nm-dist">'+distLbl(m)+'</div>';
+    }
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
       + '<button class="zzim" onclick="toggleZzim(event,this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div class="nn">'+store.name+'</div>'+distTxt+'<div class="nm-time">'+timeAgo(store.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     row.appendChild(card);
   });
@@ -400,7 +430,7 @@ window.openFirebaseDetail = async function(store) {
   }
 };
 
-window.addEventListener('DOMContentLoaded', loadStores);
+window.addEventListener('DOMContentLoaded', initGPS);
 </script>
 </head>
 <body>
