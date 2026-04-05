@@ -214,10 +214,15 @@ function openAllDropdown(el){
   var dd = document.getElementById('city-dropdown');
   var html = '<div class="city-dropdown-item'+(_selectedCountry==='전체'&&_selectedCity==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체</div>';
   Object.keys(_countryMap).sort().forEach(function(cn){
-    html += '<div class="city-dropdown-item'+(_selectedCountry===cn&&_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\')" style="font-weight:700">'+cn+'</div>';
-    Object.keys(_countryMap[cn].cities).sort().forEach(function(c){
-      html += '<div class="city-dropdown-item'+(_selectedCity===c?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\')" style="padding-left:22px">'+c+'</div>';
-    });
+    var isOn = _selectedCountry===cn;
+    html += '<div class="city-dropdown-item'+(isOn?' on':'')+'" onclick="event.stopPropagation();toggleCountryInDrop(\''+cn+'\')" style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span>'+cn+'</span><span style="color:#1A5D1A;font-weight:700;font-size:11px">'+_countryMap[cn].count+' '+(isOn?'▴':'▾')+'</span></div>';
+    if(isOn){
+      html += '<div class="city-dropdown-item'+(_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\')" style="padding-left:18px;color:#1A5D1A;font-weight:600">'+cn+' 전체</div>';
+      Object.keys(_countryMap[cn].cities).sort().forEach(function(c){
+        html += '<div class="city-dropdown-item'+(_selectedCity===c?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\')" style="padding-left:18px">'+c+'</div>';
+      });
+    }
   });
   dd.innerHTML = html;
   var phone = document.querySelector('.phone');
@@ -225,7 +230,14 @@ function openAllDropdown(el){
   dd.style.left = (er.left - pr.left - 10) + 'px';
   dd.style.top = (er.bottom - pr.top + 4) + 'px';
   dd.style.display = 'block';
+  window._allDropdownEl = el;
   setTimeout(function(){ document.addEventListener('click', function h(){ dd.style.display='none'; document.removeEventListener('click',h); }); }, 50);
+}
+
+function toggleCountryInDrop(country){
+  if(_selectedCountry === country){ selectCountry('전체'); }
+  else { _selectedCountry = country; _selectedCity = '전체'; renderCountryChips(_allStores); doFilter(); }
+  if(window._allDropdownEl) setTimeout(function(){ openAllDropdown(window._allDropdownEl); }, 10);
 }
 
 function openCityDropdown(country, el){
