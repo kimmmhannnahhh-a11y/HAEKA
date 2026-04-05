@@ -132,17 +132,26 @@ function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','
 function calcDist(la1,ln1,la2,ln2){var R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(ln2-ln1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
 function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
 
-function extractCountry(addr){
-  if(!addr)return'기타';
-  var parts=addr.split(',');
-  var last=parts[parts.length-1].trim();
-  if(/^\d+$/.test(last)&&parts.length>1)last=parts[parts.length-2].trim();
-  return last||'기타';
+function extractCity(addr){
+  if(!addr) return '기타';
+  var countries = ['일본','미국','한국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','중국','호주','캐나다','USA','Japan','Korea','France','UK','Germany','Italy','Spain','Thailand','Vietnam','China','Australia','Canada'];
+  var parts = addr.split(',').map(function(s){ return s.trim(); });
+  parts = parts.filter(function(p){
+    if(!p || p.length < 2) return false;
+    if(/^\d/.test(p)) return false; // 번지수로 시작
+    if(/\d{3,}/.test(p)) return false; // 우편번호 포함
+    if(/^[A-Z]{2}\s*\d/.test(p)) return false; // 주 코드+번호
+    if(countries.indexOf(p) > -1) return false; // 국가명
+    return true;
+  });
+  if(!parts.length) return '기타';
+  // 마지막 파트가 도시일 가능성이 높음
+  return parts[parts.length - 1] || '기타';
 }
 
 function renderCountryChips(stores){
   var counts={};
-  stores.forEach(function(s){var c=extractCountry(s.address);counts[c]=(counts[c]||0)+1;});
+  stores.forEach(function(s){ var c=extractCity(s.address); counts[c]=(counts[c]||0)+1; });
   var row=document.getElementById('country-row');
   var html='<div class="country-chip'+(_selectedCountry==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체 '+stores.length+'</div>';
   Object.keys(counts).sort().forEach(function(c){
@@ -168,7 +177,7 @@ function removeZzim(id){
 function doFilter(){
   var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
   var list=_allStores.filter(function(s){
-    var cOk=_selectedCountry==='전체'||extractCountry(s.address)===_selectedCountry;
+    var cOk=_selectedCountry==='전체'||extractCity(s.address)===_selectedCountry;
     var kOk=!kw||(s.name||'').toLowerCase().indexOf(kw)>-1||(s.address||'').toLowerCase().indexOf(kw)>-1;
     return cOk&&kOk;
   });
