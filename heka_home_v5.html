@@ -366,7 +366,9 @@ function renderHotplSlide() {
 
   var store = _hotplStores[_hotplIdx];
   var nick = store.nickname || store.nick || '해카마왕';
-  var imgContent = store.images && store.images[0]
+  var imgContent = store.videoUrl
+    ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>'
+    : store.images && store.images[0]
     ? '<img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
     : '<div style="position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
 
