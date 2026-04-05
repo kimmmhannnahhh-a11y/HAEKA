@@ -390,7 +390,7 @@ window.saveToFirestore = async function(data) {
   </div>
 
   <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)"/>
-  <input type="file" id="gallery-input" accept="image/*,video/*" multiple style="display:none" onchange="handleMediaFile(this)"/>
+  <input type="file" id="gallery-input" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/heic,image/heif,video/mp4,video/quicktime,video/x-msvideo,video/3gpp" multiple style="display:none" onchange="handleMediaFile(this)"/>
 </div>
 
 <script>
