@@ -20,8 +20,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .country-row{padding:6px 14px 8px;overflow-x:auto;scrollbar-width:none;display:flex;gap:5px;flex-shrink:0;border-bottom:.5px solid #f0f0f0;cursor:grab;-webkit-overflow-scrolling:touch}
 .country-row::-webkit-scrollbar{display:none}
 .country-row.dragging{cursor:grabbing}
-.country-chip{flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s}
+.country-chip{flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;display:flex;align-items:center;gap:4px}
 .country-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
+.chip-arrow{font-size:8px;opacity:.7;cursor:pointer;padding:2px 3px;border-radius:4px;transition:.12s}
+.chip-arrow:hover{background:rgba(0,0,0,.1)}
+.city-dropdown{position:absolute;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:50;min-width:110px;overflow:hidden;border:.5px solid #eee}
+.city-dropdown-item{padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:.5px solid #f5f5f5;white-space:nowrap}
+.city-dropdown-item:last-child{border-bottom:none}
+.city-dropdown-item:hover{background:#f0f9f0;color:#1A5D1A}
+.city-dropdown-item.on{color:#1A5D1A;font-weight:700}
 .count-bar{padding:6px 14px;font-size:11px;color:#999;flex-shrink:0}
 .store-list{flex:1;overflow-y:auto}
 .store-list::-webkit-scrollbar{display:none}
@@ -86,6 +93,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
   </div>
   <div class="country-row" id="country-row"></div>
+  <div class="city-dropdown" id="city-dropdown" style="display:none;position:absolute;top:0;left:0"></div>
   <div class="count-bar" id="count-bar"></div>
   <div class="store-list" id="store-list"></div>
 
@@ -135,54 +143,99 @@ function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
 
 var CITY_KO = {
   'Tokyo':'도쿄','Osaka':'오사카','Kyoto':'교토','Fukuoka':'후쿠오카','Sapporo':'삿포로','Nagoya':'나고야','Yokohama':'요코하마','Hiroshima':'히로시마','Nara':'나라','Kobe':'고베',
+  'Hakata Ward':'하카타','Hakata':'하카타','Chuo Ward':'주오','Bunkyo City':'분쿄','Minato City':'미나토','Shinjuku':'신주쿠','Shibuya':'시부야','Tenjin':'텐진','Namba':'난바','Higashishinsaibashi':'히가시신사이바시',
   'New York':'뉴욕','Los Angeles':'로스앤젤레스','Las Vegas':'라스베가스','San Francisco':'샌프란시스코','Chicago':'시카고','Seattle':'시애틀','Boston':'보스턴','Miami':'마이애미',
   'Paris':'파리','London':'런던','Rome':'로마','Milan':'밀라노','Barcelona':'바르셀로나','Madrid':'마드리드','Berlin':'베를린','Amsterdam':'암스테르담','Vienna':'빈','Prague':'프라하','Budapest':'부다페스트',
-  'Bangkok':'방콕','Phuket':'푸켓','Chiang Mai':'치앙마이','Singapore':'싱가포르','Kuala Lumpur':'쿠알라룸푸르','Ho Chi Minh City':'호치민','Hanoi':'하노이','Da Nang':'다낭','Bali':'발리','Jakarta':'자카르타',
+  'Bangkok':'방콕','Phuket':'푸켓','Chiang Mai':'치앙마이','Singapore':'싱가포르','Ho Chi Minh City':'호치민','Hanoi':'하노이','Da Nang':'다낭','Bali':'발리',
   'Beijing':'베이징','Shanghai':'상하이','Hong Kong':'홍콩','Taipei':'타이베이','Seoul':'서울','Busan':'부산','Sydney':'시드니','Melbourne':'멜버른','Toronto':'토론토','Vancouver':'밴쿠버',
-  'Higashishinsaibashi':'히가시신사이바시','Shinjuku':'신주쿠','Shibuya':'시부야','Hakata Ward':'하카타','Hakata':'하카타','Chuo Ward':'주오','Bunkyo City':'분쿄','Minato City':'미나토',
-  'Tenjin':'텐진','Namba':'난바','Dotonbori':'도톤보리',
 };
-function cityToKo(name){return CITY_KO[name]||name;}
+var COUNTRY_KO = {
+  '일본':'일본','미국':'미국','한국':'한국','프랑스':'프랑스','영국':'영국','독일':'독일','이탈리아':'이탈리아','스페인':'스페인','태국':'태국','베트남':'베트남','중국':'중국','호주':'호주','캐나다':'캐나다','헝가리':'헝가리','크로아티아':'크로아티아','싱가포르':'싱가포르',
+  'Japan':'일본','USA':'미국','Korea':'한국','France':'프랑스','UK':'영국','Germany':'독일','Italy':'이탈리아','Spain':'스페인','Thailand':'태국','Vietnam':'베트남','China':'중국','Australia':'호주','Canada':'캐나다','Hungary':'헝가리','Croatia':'크로아티아','Singapore':'싱가포르',
+};
 
-function extractCity(addr){
-  if(!addr) return '기타';
-  var countries = ['일본','미국','한국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','중국','호주','캐나다','USA','Japan','Korea','France','UK','Germany','Italy','Spain','Thailand','Vietnam','China','Australia','Canada'];
+function extractCountryCity(addr){
+  if(!addr) return {country:'기타', city:'기타'};
   var parts = addr.split(',').map(function(s){ return s.trim(); });
-  parts = parts.filter(function(p){
+  var country = '기타';
+  for(var i=parts.length-1; i>=0; i--){
+    var p = parts[i].replace(/[\d\-]/g,'').trim();
+    if(COUNTRY_KO[p]){ country = COUNTRY_KO[p]; break; }
+    if(COUNTRY_KO[parts[i].trim()]){ country = COUNTRY_KO[parts[i].trim()]; break; }
+  }
+  var cityParts = parts.filter(function(p){
     if(!p || p.length < 2) return false;
-    if(/^\d/.test(p)) return false; // 번지수로 시작
-    if(/\d{3,}/.test(p)) return false; // 우편번호 포함
-    if(/^[A-Z]{2}\s*\d/.test(p)) return false; // 주 코드+번호
-    if(countries.indexOf(p) > -1) return false; // 국가명
+    if(/^\d/.test(p)) return false;
+    if(/\d{3,}/.test(p)) return false;
+    if(/^[A-Z]{2}\s*\d/.test(p)) return false;
+    var clean = p.replace(/[\d\-]/g,'').trim();
+    if(COUNTRY_KO[clean] || COUNTRY_KO[p]) return false;
     return true;
   });
-  if(!parts.length) return '기타';
-  // 마지막 파트가 도시일 가능성이 높음
-  return parts[parts.length - 1] || '기타';
+  var rawCity = cityParts.length ? cityParts[cityParts.length-1] : '기타';
+  return { country: country, city: CITY_KO[rawCity] || rawCity };
 }
+
+var _selectedCountry = '전체';
+var _selectedCity = '전체';
+var _countryMap = {};
 
 function renderCountryChips(stores){
-  var counts={};
-  stores.forEach(function(s){ var c=cityToKo(extractCity(s.address)); counts[c]=(counts[c]||0)+1; });
-  var row=document.getElementById('country-row');
-  var html='<div class="country-chip'+(_selectedCountry==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체 '+stores.length+'</div>';
-  Object.keys(counts).sort().forEach(function(c){
-    html+='<div class="country-chip'+(_selectedCountry===c?' on':'')+'" onclick="selectCountry(\''+c+'\')">'+c+' '+counts[c]+'</div>';
+  _countryMap = {};
+  stores.forEach(function(s){
+    var cc = extractCountryCity(s.address);
+    if(!_countryMap[cc.country]) _countryMap[cc.country] = {count:0, cities:{}};
+    _countryMap[cc.country].count++;
+    _countryMap[cc.country].cities[cc.city] = (_countryMap[cc.country].cities[cc.city]||0)+1;
   });
-  row.innerHTML=html;
+  var row = document.getElementById('country-row');
+  var html = '<div class="country-chip'+(_selectedCountry==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체 '+stores.length+'</div>';
+  Object.keys(_countryMap).sort().forEach(function(cn){
+    var isOn = _selectedCountry===cn;
+    html += '<div class="country-chip'+(isOn?' on':'')+'" onclick="selectCountry(\''+cn+'\')">'+cn+' '+_countryMap[cn].count
+      +'<span class="chip-arrow" onclick="event.stopPropagation();openCityDropdown(\''+cn+'\',this)">▽</span></div>';
+  });
+  row.innerHTML = html;
 }
 
-function selectCountry(name){_selectedCountry=name;doFilter();}
+function openCityDropdown(country, el){
+  var dd = document.getElementById('city-dropdown');
+  var info = _countryMap[country];
+  if(!info){ dd.style.display='none'; return; }
+  var cities = Object.keys(info.cities).sort();
+  var html = '<div class="city-dropdown-item'+(_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+country+'\',\'전체\')">'+country+' 전체</div>';
+  cities.forEach(function(c){
+    html += '<div class="city-dropdown-item'+(_selectedCity===c?' on':'')+'" onclick="selectCity(\''+country+'\',\''+c+'\')">'+c+'</div>';
+  });
+  dd.innerHTML = html;
+  var phone = document.querySelector('.phone');
+  var pr = phone.getBoundingClientRect(), er = el.getBoundingClientRect();
+  dd.style.left = (er.left - pr.left - 10) + 'px';
+  dd.style.top = (er.bottom - pr.top + 4) + 'px';
+  dd.style.display = 'block';
+  setTimeout(function(){ document.addEventListener('click', function h(){ dd.style.display='none'; document.removeEventListener('click',h); }); }, 50);
+}
 
-// 국가 칩 드래그 스크롤
+function selectCountry(name){
+  _selectedCountry = name; _selectedCity = '전체';
+  document.getElementById('city-dropdown').style.display='none';
+  renderCountryChips(_allStores); doFilter();
+}
+function selectCity(country, city){
+  _selectedCountry = country; _selectedCity = city;
+  document.getElementById('city-dropdown').style.display='none';
+  renderCountryChips(_allStores); doFilter();
+}
+
+// 드래그 스크롤
 (function(){
-  var el, isDown=false, startX, scrollLeft;
+  var isDown=false, startX, scrollLeft, el;
   document.addEventListener('DOMContentLoaded', function(){
     el = document.getElementById('country-row');
     el.addEventListener('mousedown', function(e){ isDown=true; el.classList.add('dragging'); startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
     el.addEventListener('mouseleave', function(){ isDown=false; el.classList.remove('dragging'); });
     el.addEventListener('mouseup', function(){ isDown=false; el.classList.remove('dragging'); });
-    el.addEventListener('mousemove', function(e){ if(!isDown)return; e.preventDefault(); var x=e.pageX-el.offsetLeft; el.scrollLeft=scrollLeft-(x-startX); });
+    el.addEventListener('mousemove', function(e){ if(!isDown)return; e.preventDefault(); el.scrollLeft=scrollLeft-(e.pageX-el.offsetLeft-startX); });
   });
 })();
 
@@ -191,22 +244,21 @@ function saveZzimList(list){try{localStorage.setItem('haeka_zzim',JSON.stringify
 
 function removeZzim(id){
   var list=getZzimList().filter(function(s){return s.id!==id;});
-  saveZzimList(list);
-  _allStores=list;
-  renderCountryChips(_allStores);
-  doFilter();
+  saveZzimList(list); _allStores=list;
+  renderCountryChips(_allStores); doFilter();
   showToast('찜 목록에서 삭제됐어요');
 }
 
 function doFilter(){
   var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
   var list=_allStores.filter(function(s){
-    var cOk=_selectedCountry==='전체'||cityToKo(extractCity(s.address))===_selectedCountry;
+    var cc=extractCountryCity(s.address);
+    var cOk=_selectedCountry==='전체'||cc.country===_selectedCountry;
+    var cityOk=_selectedCity==='전체'||cc.city===_selectedCity;
     var kOk=!kw||(s.name||'').toLowerCase().indexOf(kw)>-1||(s.address||'').toLowerCase().indexOf(kw)>-1;
-    return cOk&&kOk;
+    return cOk&&cityOk&&kOk;
   });
-  renderCountryChips(_allStores);
-  renderList(list);
+  renderCountryChips(_allStores); renderList(list);
 }
 
 function renderList(list){
