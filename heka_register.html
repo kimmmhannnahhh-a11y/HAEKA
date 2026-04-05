@@ -662,19 +662,37 @@ function renderImgs(){
   if(!a) return;
   a.innerHTML='';
   uploadedVideos.forEach(function(v,i){
-    a.innerHTML+='<div class="img-preview-wrap" style="position:relative">'
-      +'<video class="img-preview" src="'+v.objUrl+'" autoplay muted loop playsinline></video>'
-      +'<div style="position:absolute;top:2px;left:4px;background:rgba(0,0,0,.55);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700">▶</div>'
-      +'<button class="img-del" onclick="delVideo('+i+')">✕</button></div>';
+    var wrap=document.createElement('div');
+    wrap.className='img-preview-wrap';
+    wrap.style.position='relative';
+    var vid=document.createElement('video');
+    vid.className='img-preview';
+    vid.src=v.objUrl;
+    vid.muted=true;
+    vid.loop=true;
+    vid.setAttribute('playsinline','');
+    vid.setAttribute('preload','metadata');
+    vid.style.cssText='display:block';
+    vid.addEventListener('loadedmetadata',function(){
+      vid.currentTime=Math.min(1, vid.duration*0.1);
+      vid.play();
+    });
+    var badge=document.createElement('div');
+    badge.style.cssText='position:absolute;top:2px;left:4px;background:rgba(0,0,0,.55);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700';
+    badge.textContent='▶';
+    var del=document.createElement('button');
+    del.className='img-del';
+    del.textContent='✕';
+    del.onclick=(function(idx){return function(){delVideo(idx);};})(i);
+    wrap.appendChild(vid); wrap.appendChild(badge); wrap.appendChild(del);
+    a.appendChild(wrap);
   });
   uploadedImgs.forEach(function(src,i){
     a.innerHTML+='<div class="img-preview-wrap"><img class="img-preview" src="'+src+'"/><button class="img-del" onclick="delImg('+i+')">✕</button></div>';
   });
-  if(true){
-    a.innerHTML+='<div class="img-add-btn" onclick="openMedia()">'
-      +'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#bbb" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>'
-      +'<span style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600">사진 추가</span></div>';
-  }
+  a.innerHTML+='<div class="img-add-btn" onclick="openMedia()">'
+    +'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#bbb" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+    +'<span style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600">사진 추가</span></div>';
 }
 function delImg(i){uploadedImgs.splice(i,1);renderImgs();}
 function delVideo(i){URL.revokeObjectURL(uploadedVideos[i].objUrl);uploadedVideos.splice(i,1);renderImgs();}
