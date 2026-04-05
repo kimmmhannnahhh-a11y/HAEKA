@@ -255,14 +255,7 @@ async function loadStores() {
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
-      // 이미지 미리 로드 시작 (브라우저 캐시에 올림)
-      allStores.slice(0, 6).forEach(function(store) {
-        if (store.images && store.images[0]) {
-          var img = new Image();
-          img.src = store.images[0];
-        }
-      });
-      renderHotpl(allStores[0]);
+      initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
     }
   } catch(e) { console.error('로드 오류:', e); }
@@ -325,21 +318,84 @@ window.applyFilters = function() {
   renderNearby(sortByDistance(filtered));
 };
 
+var _hotplStores = [];
+var _hotplIdx = 0;
+var _hotplTimer = null;
+
 function renderHotpl(store) {
+  // 단일 매장 → 배열로 전환 (loadStores에서 첫번째 매장 전달)
+  // 실제로는 allStores에서 24시간 이내 최신순으로 필터
+}
+
+function initHotpl(stores) {
+  var now = Date.now();
+  _hotplStores = stores.filter(function(s){
+    if(!s.createdAt) return false;
+    var t = s.createdAt.toMillis ? s.createdAt.toMillis() : s.createdAt;
+    return (now - t) < 24 * 60 * 60 * 1000; // 24시간 이내
+  }).slice(0, 10);
+
+  if(!_hotplStores.length){
+    // 24시간 이내 없으면 최신 3개
+    _hotplStores = stores.slice(0, 3);
+  }
+
+  _hotplIdx = 0;
+  renderHotplSlide();
+  if(_hotplTimer) clearInterval(_hotplTimer);
+  if(_hotplStores.length > 1){
+    _hotplTimer = setInterval(function(){
+      _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
+      renderHotplSlide();
+    }, 4000);
+  }
+}
+
+function renderHotplSlide() {
   var el = document.getElementById('hotpl-dynamic');
   if (!el) return;
+
+  if(!_hotplStores.length){
+    el.innerHTML = '<div style="height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:#f9f9f9;border-radius:12px">'
+      +'<div style="font-size:24px">🏬</div>'
+      +'<div style="font-size:12px;color:#bbb">아직 제보된 매장이 없어요</div>'
+      +'<div style="font-size:11px;color:#1A5D1A;cursor:pointer;font-weight:600" onclick="window.location.href=\'heka_register.html\'">첫 번째로 등록해보세요 →</div>'
+      +'</div>';
+    return;
+  }
+
+  var store = _hotplStores[_hotplIdx];
+  var nick = store.nickname || store.nick || '해카마왕';
   var imgContent = store.images && store.images[0]
     ? '<img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
-    : '<div style="position:absolute;inset:0;background:#1a0e00;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
+    : '<div style="position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
+
+  // 도트 인디케이터
+  var dots = _hotplStores.map(function(_, i){
+    return '<div class="dot-i'+(i===_hotplIdx?' on':'')+'" onclick="hotplGoTo('+i+')" style="cursor:pointer"></div>';
+  }).join('');
+
   el.innerHTML =
     '<div class="hotpl-img" style="position:relative;cursor:pointer" onclick="window.location.href=\'heka_store_detail.html?id='+(store.id||'')+'\'">'
     + imgContent
     + '<div class="hotpl-overlay">'
     + '<div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>'
-    + '<div class="hotpl-title">"'+store.name+',<br>'+timeAgo(store.createdAt)+' 등록됐어요!"</div>'
-    + '<div class="hotpl-reporter"><div class="rep-av">'+getCountryFlag(store.address)+'</div><span class="rep-txt">등록 <span class="rep-name">'+timeAgo(store.createdAt)+'</span></span></div>'
-    + '<div class="hotpl-dots"><div class="dot-i on"></div><div class="dot-i"></div><div class="dot-i"></div></div>'
+    + '<div class="hotpl-title">"'+store.name+', '+timeAgo(store.createdAt)+' 결제 성공!"</div>'
+    + '<div class="hotpl-reporter"><div class="rep-av">'+getCountryFlag(store.address)+'</div><span class="rep-txt">제보 <span class="rep-name">'+nick+'</span></span></div>'
+    + '<div class="hotpl-dots">'+dots+'</div>'
     + '</div></div>';
+}
+
+function hotplGoTo(idx){
+  _hotplIdx = idx;
+  renderHotplSlide();
+  if(_hotplTimer) clearInterval(_hotplTimer);
+  if(_hotplStores.length > 1){
+    _hotplTimer = setInterval(function(){
+      _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
+      renderHotplSlide();
+    }, 4000);
+  }
 }
 
 function renderNearby(stores) {
