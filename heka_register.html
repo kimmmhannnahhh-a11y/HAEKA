@@ -386,7 +386,8 @@ window.saveToFirestore = async function(data) {
   </div>
 
   <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)"/>
-  <input type="file" id="gallery-input" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/heic,image/heif,video/mp4,video/quicktime,video/3gpp,video/x-msvideo" multiple style="display:none" onchange="handleMediaFile(this)"/>
+  <input type="file" id="gallery-input" accept="image/*" multiple style="display:none" onchange="handleFile(this)"/>
+  <input type="file" id="video-input" accept="video/*" style="display:none" onchange="handleVideoFile(this)"/>
 
   <!-- 카메라/갤러리 팝업 -->
   <div class="media-overlay" id="media-overlay" onclick="closeMedia()">
@@ -398,7 +399,10 @@ window.saveToFirestore = async function(data) {
           <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>카메라
         </button>
         <button class="media-btn media-gal" onclick="openGallery()">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>갤러리
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>사진
+        </button>
+        <button class="media-btn" onclick="openVideo()" style="background:#f0f0f0;color:#555">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>동영상
         </button>
       </div>
       <button class="media-cancel" onclick="closeMedia()">취소</button>
@@ -632,21 +636,23 @@ function openMedia(){document.getElementById('media-overlay').classList.add('ope
 function closeMedia(){document.getElementById('media-overlay').classList.remove('open');}
 function openCamera(){closeMedia();document.getElementById('camera-input').click();}
 function openGallery(){closeMedia();document.getElementById('gallery-input').click();}
+function openVideo(){closeMedia();document.getElementById('video-input').click();}
 function handleFile(input){
   Array.from(input.files).forEach(function(f){
-    
     var r=new FileReader();r.onload=function(e){uploadedImgs.push(e.target.result);renderImgs();};r.readAsDataURL(f);
   });input.value='';
+}
+function handleVideoFile(input){
+  var f=input.files[0]; if(!f) return;
+  uploadedVideos.push({objUrl:URL.createObjectURL(f),file:f});
+  renderImgs(); input.value='';
 }
 function handleMediaFile(input){
   Array.from(input.files).forEach(function(f){
     if(f.type.indexOf('video')===0){
-      
-      
       uploadedVideos.push({objUrl:URL.createObjectURL(f),file:f});
       renderImgs();
     } else {
-      
       var r=new FileReader();r.onload=function(e){uploadedImgs.push(e.target.result);renderImgs();};r.readAsDataURL(f);
     }
   });input.value='';
