@@ -236,8 +236,8 @@ function openAllDropdown(el){
   }
 
   dd.innerHTML = '<div style="display:flex;height:100%">'
-    +'<div id="dd-left" style="width:80px;border-right:.5px solid #eee;overflow-y:auto;flex-shrink:0">'+leftHtml+'</div>'
-    +'<div id="dd-right" style="flex:1;overflow-y:auto">'+rightHtml+'</div>'
+    +'<div id="dd-left" style="width:'+(_expandedCountry?'80px':'100%')+';border-right:'+(_expandedCountry?'.5px solid #eee':'none')+';overflow-y:auto;flex-shrink:0">'+leftHtml+'</div>'
+    +(_expandedCountry?'<div id="dd-right" style="flex:1;overflow-y:auto">'+rightHtml+'</div>':'')
     +'</div>';
 
   var phone = document.querySelector('.phone');
