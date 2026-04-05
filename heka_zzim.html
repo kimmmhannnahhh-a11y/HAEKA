@@ -95,6 +95,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="search-box">
       <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       <input class="search-input" id="search-input" placeholder="매장명, 주소 검색" oninput="doFilter()"/>
+      <button onclick="doFilter()" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      </button>
     </div>
   </div>
   <div class="country-row" id="country-row"></div>
@@ -320,7 +323,7 @@ var _EQUIV={'p':['f','b'],'f':['p','b'],'b':['p','v'],'k':['c','g','q'],'c':['k'
 function _getSyllPron(str){var r='';for(var i=0;i<str.length;i++){var code=str.charCodeAt(i)-0xAC00;if(code<0||code>11171){r+=str[i];continue;}var cho=Math.floor(code/588),jung=Math.floor((code%588)/28),jong=code%28;var p=_CHO2[cho]+_JUNG2[jung]+_JONG2[jong];p=p.replace(/eu/g,'').replace(/eo/g,'o').replace(/ae/g,'e');r+=p;}return r.toLowerCase();}
 function _cons(s){return s.replace(/[aeiou]/g,'');}
 function _consMatch(ec,kc){if(ec===kc)return true;var e1=_EQUIV[ec]||[];for(var i=0;i<e1.length;i++)if(e1[i]===kc)return true;var e2=_EQUIV[kc]||[];for(var i=0;i<e2.length;i++)if(e2[i]===ec)return true;return false;}
-function _korMatchEng(kor,eng){var korCons=_cons(_getSyllPron(kor));if(!korCons)return false;var engClean=eng.toLowerCase().replace(/['\s\-.,!?]/g,'');var engCons=_cons(engClean);var ki=0;for(var ei=0;ei<engCons.length&&ki<korCons.length;ei++){if(_consMatch(engCons[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;if(ki>=Math.ceil(korCons.length*0.6)&&korCons.length>=2)return true;var words=eng.toLowerCase().split(/[\s'\-]+/);for(var w=0;w<words.length;w++){var wc=_cons(words[w]);ki=0;for(var ei=0;ei<wc.length&&ki<korCons.length;ei++){if(_consMatch(wc[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;if(ki>=Math.ceil(korCons.length*0.6)&&korCons.length>=2)return true;}return false;}
+function _korMatchEng(kor,eng){var korCons=_cons(_getSyllPron(kor));if(!korCons||korCons.length<2)return false;var engClean=eng.toLowerCase().replace(/['\s\-.,!?]/g,'');var engCons=_cons(engClean);var ki=0;for(var ei=0;ei<engCons.length&&ki<korCons.length;ei++){if(_consMatch(engCons[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;var words=eng.toLowerCase().split(/[\s'\-]+/);for(var w=0;w<words.length;w++){var wc=_cons(words[w]);ki=0;for(var ei=0;ei<wc.length&&ki<korCons.length;ei++){if(_consMatch(wc[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;}return false;}
 
 function zzimSearchMatch(s, kw){
   var name=(s.name||'').toLowerCase();
