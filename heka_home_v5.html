@@ -327,19 +327,6 @@ function renderHotpl(store) {
   // 실제로는 allStores에서 24시간 이내 최신순으로 필터
 }
 
-function initHotpl(stores) {
-  _hotplStores = stores.slice(0, 10);
-  _hotplIdx = 0;
-  renderHotplSlide();
-  if(_hotplTimer) clearInterval(_hotplTimer);
-  if(_hotplStores.length > 1){
-    _hotplTimer = setInterval(function(){
-      _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
-      renderHotplSlide();
-    }, 3000);
-  }
-}
-
 function renderHotplSlide() {
   var el = document.getElementById('hotpl-dynamic');
   if (!el) return;
@@ -377,16 +364,45 @@ function renderHotplSlide() {
     + '</div></div>';
 }
 
+function _startHotplTimer(){
+  if(_hotplTimer) clearInterval(_hotplTimer);
+  if(_hotplStores.length <= 1) return;
+  var store = _hotplStores[_hotplIdx];
+  if(store.videoUrl){
+    // 동영상: 실제 길이 확인 후 최대 5초
+    var vid = document.querySelector('#hotpl-dynamic video');
+    if(vid){
+      var onMeta = function(){
+        var dur = Math.min(vid.duration || 5, 5) * 1000;
+        _hotplTimer = setTimeout(function(){
+          _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
+          renderHotplSlide();
+          _startHotplTimer();
+        }, dur);
+      };
+      if(vid.readyState >= 1) onMeta();
+      else vid.addEventListener('loadedmetadata', onMeta, {once:true});
+    } else {
+      _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, 5000);
+    }
+  } else {
+    // 사진: 3초
+    _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, 3000);
+  }
+}
+
+function initHotpl(stores) {
+  _hotplStores = stores.slice(0, 10);
+  _hotplIdx = 0;
+  renderHotplSlide();
+  _startHotplTimer();
+}
+
 function hotplGoTo(idx){
+  if(_hotplTimer){ clearInterval(_hotplTimer); clearTimeout(_hotplTimer); }
   _hotplIdx = idx;
   renderHotplSlide();
-  if(_hotplTimer) clearInterval(_hotplTimer);
-  if(_hotplStores.length > 1){
-    _hotplTimer = setInterval(function(){
-      _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
-      renderHotplSlide();
-    }, 3000);
-  }
+  _startHotplTimer();
 }
 
 // 핫플 배너 스와이프
