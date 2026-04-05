@@ -490,6 +490,12 @@ window.openFirebaseDetail = async function(store) {
 };
 
 window.addEventListener('DOMContentLoaded', initGPS);
+// PC 브라우저 뒤로가기 캐시 대응 - 페이지 다시 보일 때 하트 상태 재동기화
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted && allStores.length > 0) {
+    renderNearby(sortByDistance(allStores));
+  }
+});
 </script>
 </head>
 <body>
