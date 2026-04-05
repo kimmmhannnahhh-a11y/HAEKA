@@ -231,7 +231,7 @@ function openAllDropdown(el){
     var cn = _expandedCountry;
     rightHtml += '<div class="dd-item dd-city'+(_selectedCountry===cn&&_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\');dd_close()">전체보기</div>';
     Object.keys(_countryMap[cn].cities).sort().forEach(function(c){
-      rightHtml += '<div class="dd-item dd-city"+(_selectedCountry===cn&&_selectedCity===c?" on":"")+'" onclick="selectCity(\''+cn+'\',\''+c+'\');dd_close()">'+c+'</div>';
+      rightHtml += '<div class="dd-item dd-city'+(_selectedCountry===cn&&_selectedCity===c?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\');dd_close()">' + c + '</div>';
     });
   }
 
