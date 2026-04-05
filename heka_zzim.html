@@ -6,7 +6,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:visible;color:#111;position:relative;display:flex;flex-direction:column;height:680px;clip-path:inset(0 round 26px)}
 .sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
 .topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .back-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
@@ -210,17 +210,20 @@ function renderCountryChips(stores){
   row.innerHTML = html;
 }
 
+var _expandedCountry = null;
+
 function openAllDropdown(el){
   var dd = document.getElementById('city-dropdown');
-  var html = '<div class="city-dropdown-item'+(_selectedCountry==='전체'&&_selectedCity==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체</div>';
+  var html = '<div class="city-dropdown-item'+(_selectedCountry==='전체'&&_selectedCity==='전체'?' on':'')+'" onclick="selectCountry(\'전체\');document.getElementById(\'city-dropdown\').style.display=\'none\'">전체</div>';
   Object.keys(_countryMap).sort().forEach(function(cn){
-    var isOn = _selectedCountry===cn;
-    html += '<div class="city-dropdown-item'+(isOn?' on':'')+'" onclick="event.stopPropagation();toggleCountryInDrop(\''+cn+'\')" style="display:flex;justify-content:space-between;align-items:center">'
-      +'<span>'+cn+'</span><span style="color:#1A5D1A;font-weight:700;font-size:11px">'+_countryMap[cn].count+' '+(isOn?'▴':'▾')+'</span></div>';
-    if(isOn){
-      html += '<div class="city-dropdown-item'+(_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\')" style="padding-left:18px;color:#1A5D1A;font-weight:600">'+cn+' 전체</div>';
+    var isSelected = _selectedCountry===cn;
+    var isExpanded = _expandedCountry===cn;
+    html += '<div class="city-dropdown-item'+(isSelected?' on':'')+'" onclick="event.stopPropagation();toggleCountryInDrop(\''+cn+'\')" style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span>'+cn+'</span><span style="color:#1A5D1A;font-weight:700;font-size:11px">'+_countryMap[cn].count+' '+(isExpanded?'▴':'▾')+'</span></div>';
+    if(isExpanded){
+      html += '<div class="city-dropdown-item'+(isSelected&&_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\');document.getElementById(\'city-dropdown\').style.display=\'none\'" style="padding-left:18px;font-weight:600">'+cn+' 전체</div>';
       Object.keys(_countryMap[cn].cities).sort().forEach(function(c){
-        html += '<div class="city-dropdown-item'+(_selectedCity===c?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\')" style="padding-left:18px">'+c+'</div>';
+        html += '<div class="city-dropdown-item'+(_selectedCity===c&&_selectedCountry===cn?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\');document.getElementById(\'city-dropdown\').style.display=\'none\'" style="padding-left:18px">'+c+'</div>';
       });
     }
   });
@@ -231,13 +234,12 @@ function openAllDropdown(el){
   dd.style.top = (er.bottom - pr.top + 4) + 'px';
   dd.style.display = 'block';
   window._allDropdownEl = el;
-  setTimeout(function(){ document.addEventListener('click', function h(){ dd.style.display='none'; document.removeEventListener('click',h); }); }, 50);
+  setTimeout(function(){ document.addEventListener('click', function h(){ dd.style.display='none'; _expandedCountry=null; document.removeEventListener('click',h); }); }, 50);
 }
 
 function toggleCountryInDrop(country){
-  if(_selectedCountry === country){ selectCountry('전체'); }
-  else { _selectedCountry = country; _selectedCity = '전체'; renderCountryChips(_allStores); doFilter(); }
-  if(window._allDropdownEl) setTimeout(function(){ openAllDropdown(window._allDropdownEl); }, 10);
+  _expandedCountry = (_expandedCountry===country) ? null : country;
+  openAllDropdown(window._allDropdownEl);
 }
 
 function openCityDropdown(country, el){
