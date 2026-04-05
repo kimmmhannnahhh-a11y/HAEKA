@@ -389,26 +389,33 @@ function hotplGoTo(idx){
   }
 }
 
-// 핫플 배너 스와이프
+// 핫플 배너 스와이프 - 상위 컨테이너에 이벤트 위임
 (function(){
-  var startX=0, isDrag=false;
+  var startX=0, startY=0, isDrag=false;
   document.addEventListener('DOMContentLoaded', function(){
-    var el = document.getElementById('hotpl-dynamic');
-    if(!el) return;
-    el.addEventListener('touchstart', function(e){ startX=e.touches[0].clientX; isDrag=true; }, {passive:true});
-    el.addEventListener('touchend', function(e){
-      if(!isDrag) return; isDrag=false;
-      var diff = e.changedTouches[0].clientX - startX;
-      if(Math.abs(diff) < 30) return;
-      if(diff < 0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
+    var section = document.querySelector('.hotpl-section');
+    if(!section) return;
+    section.addEventListener('touchstart', function(e){
+      if(!e.target.closest('#hotpl-dynamic')) return;
+      startX=e.touches[0].clientX; startY=e.touches[0].clientY; isDrag=true;
+    }, {passive:true});
+    section.addEventListener('touchend', function(e){
+      if(!isDrag||!e.target.closest('#hotpl-dynamic')) return; isDrag=false;
+      var diffX=e.changedTouches[0].clientX-startX;
+      var diffY=e.changedTouches[0].clientY-startY;
+      if(Math.abs(diffX)<30||Math.abs(diffY)>Math.abs(diffX)) return;
+      if(diffX<0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
       else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
     });
-    el.addEventListener('mousedown', function(e){ startX=e.clientX; isDrag=true; });
-    el.addEventListener('mouseup', function(e){
-      if(!isDrag) return; isDrag=false;
-      var diff = e.clientX - startX;
-      if(Math.abs(diff) < 30) return;
-      if(diff < 0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
+    section.addEventListener('mousedown', function(e){
+      if(!e.target.closest('#hotpl-dynamic')) return;
+      startX=e.clientX; isDrag=true;
+    });
+    section.addEventListener('mouseup', function(e){
+      if(!isDrag||!e.target.closest('#hotpl-dynamic')) return; isDrag=false;
+      var diff=e.clientX-startX;
+      if(Math.abs(diff)<30) return;
+      if(diff<0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
       else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
     });
   });
