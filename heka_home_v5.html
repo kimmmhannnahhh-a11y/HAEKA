@@ -255,6 +255,15 @@ async function loadStores() {
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
+      // 동영상 미리 로드
+      var firstVideoStore = allStores.find(function(s){ return s.videoUrl; });
+      if(firstVideoStore){
+        var preloadVid = document.createElement('video');
+        preloadVid.src = firstVideoStore.videoUrl;
+        preloadVid.preload = 'auto';
+        preloadVid.muted = true;
+        preloadVid.load();
+      }
       initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
     }
@@ -353,15 +362,42 @@ function renderHotplSlide() {
     return '<div class="dot-i'+(i===_hotplIdx?' on':'')+'" onclick="hotplGoTo('+i+')" style="cursor:pointer"></div>';
   }).join('');
 
-  el.innerHTML =
-    '<div class="hotpl-img" style="position:relative;cursor:pointer" onclick="window.location.href=\'heka_store_detail.html?id='+(store.id||'')+'\'">'
-    + imgContent
-    + '<div class="hotpl-overlay">'
-    + '<div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>'
-    + '<div class="hotpl-title">"'+store.name+', '+timeAgo(store.createdAt)+' 결제 성공!"</div>'
-    + '<div class="hotpl-reporter"><div class="rep-av">'+getCountryFlag(store.address)+'</div><span class="rep-txt">제보 <span class="rep-name">'+nick+'</span></span></div>'
-    + '<div class="hotpl-dots">'+dots+'</div>'
-    + '</div></div>';
+  var imgEl = el.querySelector('.hotpl-img') || el;
+  // 이미지/비디오 교체
+  var existing = imgEl.querySelector('img, video, .ramen-scene');
+  if(existing) existing.remove();
+
+  var media;
+  if(store.videoUrl){
+    media = document.createElement('video');
+    media.src = store.videoUrl;
+    media.autoplay = true;
+    media.muted = true;
+    media.loop = true;
+    media.setAttribute('playsinline','');
+    media.setAttribute('preload','auto');
+    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer';
+    media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
+  } else if(store.images && store.images[0]){
+    media = document.createElement('img');
+    media.src = store.images[0];
+    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer';
+    media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
+  } else {
+    media = document.createElement('div');
+    media.style.cssText = 'position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer';
+    media.textContent = catEmoji(store.category);
+    media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
+  }
+  imgEl.insertBefore(media, imgEl.firstChild);
+
+  // 오버레이 텍스트 업데이트
+  var overlay = imgEl.querySelector('.hotpl-overlay');
+  if(overlay){
+    overlay.querySelector('.hotpl-title').innerHTML = '"'+store.name+', '+timeAgo(store.createdAt)+' 결제 성공!"';
+    overlay.querySelector('.rep-name').textContent = nick;
+    overlay.querySelector('.hotpl-dots').innerHTML = dots;
+  }
 }
 
 function _startHotplTimer(){
@@ -460,10 +496,13 @@ function renderNearby(stores) {
       var m = calcDist(userLat, userLng, store.lat, store.lng);
       distTxt = ' · <span style="color:#1A5D1A;font-weight:600">'+distLbl(m)+'</span>';
     }
-    var imgHtml = store.videoUrl
+    var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
+    var imgHtml = firstIsVideo
       ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : store.images && store.images[0]
       ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
+      : store.videoUrl
+      ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
     var isZzimed = getZzimList().some(function(s){ return s.id === store.id; });
     var card = document.createElement('div');
