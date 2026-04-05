@@ -128,9 +128,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
 .nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
-.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
-.detail-overlay.open{display:block}
-.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px;pointer-events:none}
+.detail-overlay.open{display:block;pointer-events:auto}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:32;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%;pointer-events:auto}
 .detail-panel.open{transform:translateY(0)}
 .dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
 .dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
@@ -267,27 +267,48 @@ async function loadStores() {
 }
 
 function initGPS() {
-  // 세션에 캐싱된 GPS 있으면 즉시 사용
+  // 캐싱된 GPS 있으면 즉시 사용 후 바로 로드
   try {
     var cached = sessionStorage.getItem('haeka_gps');
     if (cached) {
       var c = JSON.parse(cached);
       userLat = c.lat; userLng = c.lng;
+      loadStores();
+      // 백그라운드로 GPS 갱신
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(
+        function(p) {
+          userLat = p.coords.latitude; userLng = p.coords.longitude;
+          try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
+          if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+        },
+        function() {},
+        { timeout: 5000, maximumAge: 60000 }
+      );
+      return;
     }
   } catch(e) {}
-  // Firebase 즉시 로드
-  loadStores();
-  // GPS 백그라운드 수신
-  if (!navigator.geolocation) return;
+
+  // 캐시 없으면 GPS 먼저 받고 로드 (최대 3초 대기)
+  if (!navigator.geolocation) { loadStores(); return; }
+  var gpsReceived = false;
+  var timer = setTimeout(function() {
+    if (!gpsReceived) loadStores();
+  }, 3000);
   navigator.geolocation.getCurrentPosition(
     function(p) {
-      userLat = p.coords.latitude;
-      userLng = p.coords.longitude;
+      gpsReceived = true;
+      clearTimeout(timer);
+      userLat = p.coords.latitude; userLng = p.coords.longitude;
       try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
-      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+      loadStores();
     },
-    function() {},
-    { timeout: 5000, maximumAge: 60000 }
+    function() {
+      gpsReceived = true;
+      clearTimeout(timer);
+      loadStores();
+    },
+    { timeout: 3000, maximumAge: 60000 }
   );
 }
 
