@@ -17,8 +17,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit}
 .search-input::placeholder{color:#bbb}
 .search-icon{width:13px;height:13px;stroke:#bbb;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
-.country-row{padding:6px 14px 8px;overflow-x:auto;scrollbar-width:none;display:flex;gap:5px;flex-shrink:0;border-bottom:.5px solid #f0f0f0}
+.country-row{padding:6px 14px 8px;overflow-x:auto;scrollbar-width:none;display:flex;gap:5px;flex-shrink:0;border-bottom:.5px solid #f0f0f0;cursor:grab;-webkit-overflow-scrolling:touch}
 .country-row::-webkit-scrollbar{display:none}
+.country-row.dragging{cursor:grabbing}
 .country-chip{flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s}
 .country-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
 .count-bar{padding:6px 14px;font-size:11px;color:#999;flex-shrink:0}
@@ -161,6 +162,18 @@ function renderCountryChips(stores){
 }
 
 function selectCountry(name){_selectedCountry=name;doFilter();}
+
+// 국가 칩 드래그 스크롤
+(function(){
+  var el, isDown=false, startX, scrollLeft;
+  document.addEventListener('DOMContentLoaded', function(){
+    el = document.getElementById('country-row');
+    el.addEventListener('mousedown', function(e){ isDown=true; el.classList.add('dragging'); startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
+    el.addEventListener('mouseleave', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseup', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mousemove', function(e){ if(!isDown)return; e.preventDefault(); var x=e.pageX-el.offsetLeft; el.scrollLeft=scrollLeft-(x-startX); });
+  });
+})();
 
 function getZzimList(){try{return JSON.parse(localStorage.getItem('haeka_zzim')||'[]');}catch(e){return[];}}
 function saveZzimList(list){try{localStorage.setItem('haeka_zzim',JSON.stringify(list));}catch(e){}}
