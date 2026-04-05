@@ -143,7 +143,6 @@ function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
 
 var CITY_KO = {
   'Tokyo':'도쿄','Osaka':'오사카','Kyoto':'교토','Fukuoka':'후쿠오카','Sapporo':'삿포로','Nagoya':'나고야','Yokohama':'요코하마','Hiroshima':'히로시마','Nara':'나라','Kobe':'고베',
-  'Hakata Ward':'하카타','Hakata':'하카타','Chuo Ward':'주오','Bunkyo City':'분쿄','Minato City':'미나토','Shinjuku':'신주쿠','Shibuya':'시부야','Tenjin':'텐진','Namba':'난바','Higashishinsaibashi':'히가시신사이바시',
   'New York':'뉴욕','Los Angeles':'로스앤젤레스','Las Vegas':'라스베가스','San Francisco':'샌프란시스코','Chicago':'시카고','Seattle':'시애틀','Boston':'보스턴','Miami':'마이애미',
   'Paris':'파리','London':'런던','Rome':'로마','Milan':'밀라노','Barcelona':'바르셀로나','Madrid':'마드리드','Berlin':'베를린','Amsterdam':'암스테르담','Vienna':'빈','Prague':'프라하','Budapest':'부다페스트',
   'Bangkok':'방콕','Phuket':'푸켓','Chiang Mai':'치앙마이','Singapore':'싱가포르','Ho Chi Minh City':'호치민','Hanoi':'하노이','Da Nang':'다낭','Bali':'발리',
@@ -151,29 +150,43 @@ var CITY_KO = {
 };
 var COUNTRY_KO = {
   '일본':'일본','미국':'미국','한국':'한국','프랑스':'프랑스','영국':'영국','독일':'독일','이탈리아':'이탈리아','스페인':'스페인','태국':'태국','베트남':'베트남','중국':'중국','호주':'호주','캐나다':'캐나다','헝가리':'헝가리','크로아티아':'크로아티아','싱가포르':'싱가포르',
-  'Japan':'일본','USA':'미국','Korea':'한국','France':'프랑스','UK':'영국','Germany':'독일','Italy':'이탈리아','Spain':'스페인','Thailand':'태국','Vietnam':'베트남','China':'중국','Australia':'호주','Canada':'캐나다','Hungary':'헝가리','Croatia':'크로아티아','Singapore':'싱가포르',
+  'Japan':'일본','USA':'미국','Korea':'한국','France':'프랑스','UK':'영국','Germany':'독일','Italy':'이탈리아','Spain':'스페인','Thailand':'태국','Vietnam':'베트남','China':'중국','Australia':'호주','Canada':'캐나다','Hungary':'헝가리','Croatia':'크로아티아',
+};
+// 주소 파트 → 상위 도시 매핑 (구/동/지역명 → 도시)
+var AREA_TO_CITY = {
+  'Hakata Ward':'Fukuoka','Chuo Ward':'Osaka','Bunkyo City':'Tokyo','Minato City':'Tokyo',
+  'Shinjuku':'Tokyo','Shibuya':'Tokyo','Tenjin':'Fukuoka','Namba':'Osaka',
+  'Higashishinsaibashi':'Osaka','Dotonbori':'Osaka','Nishi Ward':'Osaka',
+  'Manhattan':'New York','Brooklyn':'New York','Queens':'New York',
 };
 
 function extractCountryCity(addr){
   if(!addr) return {country:'기타', city:'기타'};
   var parts = addr.split(',').map(function(s){ return s.trim(); });
+
+  // 국가: 마지막 파트에서 한글 국가명 찾기
   var country = '기타';
   for(var i=parts.length-1; i>=0; i--){
-    var p = parts[i].replace(/[\d\-]/g,'').trim();
-    if(COUNTRY_KO[p]){ country = COUNTRY_KO[p]; break; }
-    if(COUNTRY_KO[parts[i].trim()]){ country = COUNTRY_KO[parts[i].trim()]; break; }
+    var ko = parts[i].replace(/[\d\s\-]/g,'');
+    if(COUNTRY_KO[ko]){ country = COUNTRY_KO[ko]; break; }
+    if(COUNTRY_KO[parts[i]]){ country = COUNTRY_KO[parts[i]]; break; }
+    var words = parts[i].split(/\s+/);
+    var found = false;
+    for(var w=0; w<words.length; w++){ if(COUNTRY_KO[words[w]]){ country=COUNTRY_KO[words[w]]; found=true; break; } }
+    if(found) break;
   }
-  var cityParts = parts.filter(function(p){
-    if(!p || p.length < 2) return false;
-    if(/^\d/.test(p)) return false;
-    if(/\d{3,}/.test(p)) return false;
-    if(/^[A-Z]{2}\s*\d/.test(p)) return false;
-    var clean = p.replace(/[\d\-]/g,'').trim();
-    if(COUNTRY_KO[clean] || COUNTRY_KO[p]) return false;
-    return true;
-  });
-  var rawCity = cityParts.length ? cityParts[cityParts.length-1] : '기타';
-  return { country: country, city: CITY_KO[rawCity] || rawCity };
+
+  // 도시: CITY_KO 키워드가 파트에 있으면 우선, 없으면 AREA_TO_CITY로 상위 도시 찾기
+  var city = null;
+  for(var j=0; j<parts.length; j++){
+    if(CITY_KO[parts[j]]){ city = CITY_KO[parts[j]]; break; }
+  }
+  if(!city){
+    for(var k=0; k<parts.length; k++){
+      if(AREA_TO_CITY[parts[k]]){ city = CITY_KO[AREA_TO_CITY[parts[k]]] || AREA_TO_CITY[parts[k]]; break; }
+    }
+  }
+  return { country: country, city: city || country };
 }
 
 var _selectedCountry = '전체';
