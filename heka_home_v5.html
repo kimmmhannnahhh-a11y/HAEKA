@@ -389,32 +389,37 @@ function hotplGoTo(idx){
   }
 }
 
-// 핫플 배너 스와이프 - 상위 컨테이너에 이벤트 위임
+// 핫플 배너 스와이프
 (function(){
   var startX=0, startY=0, isDrag=false;
   document.addEventListener('DOMContentLoaded', function(){
     var section = document.querySelector('.hotpl-section');
     if(!section) return;
+
     section.addEventListener('touchstart', function(e){
       if(!e.target.closest('#hotpl-dynamic')) return;
       startX=e.touches[0].clientX; startY=e.touches[0].clientY; isDrag=true;
     }, {passive:true});
+
     section.addEventListener('touchend', function(e){
-      if(!isDrag||!e.target.closest('#hotpl-dynamic')) return; isDrag=false;
+      if(!isDrag) return; isDrag=false;
       var diffX=e.changedTouches[0].clientX-startX;
       var diffY=e.changedTouches[0].clientY-startY;
-      if(Math.abs(diffX)<30||Math.abs(diffY)>Math.abs(diffX)) return;
+      if(Math.abs(diffX)<20||Math.abs(diffY)>Math.abs(diffX)) return;
       if(diffX<0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
       else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
-    });
+    }, {passive:true});
+
     section.addEventListener('mousedown', function(e){
       if(!e.target.closest('#hotpl-dynamic')) return;
-      startX=e.clientX; isDrag=true;
+      startX=e.clientX; isDrag=true; e.preventDefault();
     });
-    section.addEventListener('mouseup', function(e){
-      if(!isDrag||!e.target.closest('#hotpl-dynamic')) return; isDrag=false;
+
+    // mouseup은 document에 붙여야 드래그 중 밖으로 나가도 감지
+    document.addEventListener('mouseup', function(e){
+      if(!isDrag) return; isDrag=false;
       var diff=e.clientX-startX;
-      if(Math.abs(diff)<30) return;
+      if(Math.abs(diff)<20) return;
       if(diff<0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
       else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
     });
