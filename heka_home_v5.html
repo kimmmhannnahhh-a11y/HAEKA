@@ -345,12 +345,11 @@ function renderNearby(stores) {
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
-      + '<button class="zzim'+(isZzimed?' on':'')+'" onclick="toggleZzim(event,this,_zzimStore_'+card+')" id="zzim-'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
+      + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
       + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
-    // 하트 버튼에 store 데이터 바인딩
     var zzimBtn = card.querySelector('.zzim');
-    (function(s){ zzimBtn.onclick = function(e){ toggleZzim(e, zzimBtn, s); }; })(store);
+    (function(s){ zzimBtn.onclick = function(e){ e.stopPropagation(); toggleZzim(e, zzimBtn, s); }; })(store);
     row.appendChild(card);
   });
   row.querySelectorAll('.nm-cards').forEach(addDragScroll);
@@ -683,40 +682,46 @@ function openSheet(){catSO=true;document.getElementById('overlay').classList.add
 function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
 function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
 function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
+
+// 전체 UI 동기화 (카드 하트 + 슬라이드 패널 하트)
+function _syncAllZzimUI(storeId, isOn){
+  // ncard 하트 (data-store-id로 찾기)
+  document.querySelectorAll('.zzim[data-store-id="'+storeId+'"]').forEach(function(btn){
+    if(isOn) btn.classList.add('on'); else btn.classList.remove('on');
+  });
+  // 슬라이드 패널 하트
+  if(window._currentDpStore && window._currentDpStore.id === storeId){
+    var dpBtn = document.getElementById('dp-zzim');
+    if(dpBtn){ if(isOn) dpBtn.classList.add('on'); else dpBtn.classList.remove('on'); }
+  }
+}
+
 function toggleZzim(e, el, store){
   e.stopPropagation();
   var list = getZzimList();
   var idx = list.findIndex(function(s){ return s.id === store.id; });
   var nowOn;
-  if(idx > -1){ list.splice(idx, 1); el.classList.remove('on'); nowOn = false; }
-  else { list.unshift(store); el.classList.add('on'); nowOn = true; }
+  if(idx > -1){ list.splice(idx,1); nowOn=false; }
+  else { list.unshift(store); nowOn=true; }
   saveZzimList(list);
-  // 슬라이드 패널 하트도 동기화
-  if(window._currentDpStore && window._currentDpStore.id === store.id){
-    var dpBtn = document.getElementById('dp-zzim');
-    if(dpBtn){ if(nowOn) dpBtn.classList.add('on'); else dpBtn.classList.remove('on'); }
-  }
+  _syncAllZzimUI(store.id, nowOn);
 }
+
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+
 function toggleDpZzim(){
-  var btn=document.getElementById('dp-zzim');
-  if(!btn) return;
   var store = window._currentDpStore;
   if(!store) return;
   var list = getZzimList();
   var idx = list.findIndex(function(s){ return s.id===store.id; });
   var nowOn;
-  if(idx > -1){ list.splice(idx,1); btn.classList.remove('on'); nowOn=false; showToast('찜 목록에서 제거됐어요'); }
-  else { list.unshift(store); btn.classList.add('on'); nowOn=true; showToast('❤️ 찜 목록에 추가됐어요!'); }
+  if(idx > -1){ list.splice(idx,1); nowOn=false; showToast('찜 목록에서 제거됐어요'); }
+  else { list.unshift(store); nowOn=true; showToast('❤️ 찜 목록에 추가됐어요!'); }
   saveZzimList(list);
-  // ncard 하트 동기화 (id로 직접 찾기)
-  var cardBtn = document.getElementById('zzim-'+store.id);
-  if(cardBtn){ if(nowOn) cardBtn.classList.add('on'); else cardBtn.classList.remove('on'); }
+  _syncAllZzimUI(store.id, nowOn);
 }
-function syncNcardZzim(id, isOn){
-  var cardBtn = document.getElementById('zzim-'+id);
-  if(cardBtn){ if(isOn) cardBtn.classList.add('on'); else cardBtn.classList.remove('on'); }
-}
+
+function syncNcardZzim(id, isOn){ _syncAllZzimUI(id, isOn); }
 function calcIsOpenSlide(hours, todayIdx) {
   try {
     var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
