@@ -343,7 +343,7 @@ function renderHotplSlide() {
   var store = _hotplStores[_hotplIdx];
   var nick = store.nickname || store.nick || '해카마왕';
   var imgContent = store.videoUrl
-    ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>'
+    ? '<video src="'+store.videoUrl+'" autoplay muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;position:absolute;inset:0;background:#000"></video>'
     : store.images && store.images[0]
     ? '<img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
     : '<div style="position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
@@ -369,22 +369,20 @@ function _startHotplTimer(){
   if(_hotplStores.length <= 1) return;
   var store = _hotplStores[_hotplIdx];
   if(store.videoUrl){
-    // 동영상: 실제 길이 확인 후 최대 5초
-    var vid = document.querySelector('#hotpl-dynamic video');
-    if(vid){
-      var onMeta = function(){
-        var dur = Math.min(vid.duration || 5, 5) * 1000;
-        _hotplTimer = setTimeout(function(){
-          _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
-          renderHotplSlide();
-          _startHotplTimer();
-        }, dur);
-      };
-      if(vid.readyState >= 1) onMeta();
-      else vid.addEventListener('loadedmetadata', onMeta, {once:true});
-    } else {
-      _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, 5000);
-    }
+    // 동영상: DOM 업데이트 후 실제 길이 확인, 최대 5초
+    setTimeout(function(){
+      var vid = document.querySelector('#hotpl-dynamic video');
+      if(vid){
+        var onMeta = function(){
+          var dur = Math.min(vid.duration||5, 5) * 1000;
+          _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, dur);
+        };
+        if(vid.readyState >= 1) onMeta();
+        else vid.addEventListener('loadedmetadata', onMeta, {once:true});
+      } else {
+        _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, 5000);
+      }
+    }, 100);
   } else {
     // 사진: 3초
     _hotplTimer = setTimeout(function(){ _hotplIdx=(_hotplIdx+1)%_hotplStores.length; renderHotplSlide(); _startHotplTimer(); }, 3000);
