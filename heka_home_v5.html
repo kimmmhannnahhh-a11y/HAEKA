@@ -218,7 +218,7 @@ function catBg(cat) {
 }
 
 function cardColor(card) {
-  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836','카드가능':'#1A5D1A','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};
   return map[card] || '#888';
 }
 
@@ -410,7 +410,7 @@ function renderNearby(stores) {
   }
   stores.slice(0, 6).forEach(function(store) {
     var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
-    var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+    var cards = (store.payOk || []);
     cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
     var pillsHtml = cards.map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
@@ -466,7 +466,7 @@ window.openFirebaseDetail = async function(store) {
   }
 
   // 결제 카드
-  var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+  var cards = (store.payOk || []);
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
   var noPills = noCards.map(function(c){
