@@ -266,19 +266,27 @@ async function loadStores() {
 }
 
 function initGPS() {
-  // Firebase 즉시 로드 (GPS 기다리지 않음)
+  // 세션에 캐싱된 GPS 있으면 즉시 사용
+  try {
+    var cached = sessionStorage.getItem('haeka_gps');
+    if (cached) {
+      var c = JSON.parse(cached);
+      userLat = c.lat; userLng = c.lng;
+    }
+  } catch(e) {}
+  // Firebase 즉시 로드
   loadStores();
-  // GPS는 백그라운드로 받아서 거리 정렬만 업데이트
+  // GPS 백그라운드 수신
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(
     function(p) {
       userLat = p.coords.latitude;
       userLng = p.coords.longitude;
-      // 이미 로드된 데이터로 거리 재정렬
+      try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
       if (allStores.length > 0) renderNearby(sortByDistance(allStores));
     },
     function() {},
-    { timeout: 5000 }
+    { timeout: 5000, maximumAge: 60000 }
   );
 }
 
@@ -349,8 +357,9 @@ function renderNearby(stores) {
 }
 
 window.openFirebaseDetail = async function(store) {
-  // 현재 매장 ID 저장
+  // 현재 매장 ID + store 저장
   window._currentStoreId = store.id || null;
+  window._currentDpStore = store;
 
   // 최근 본 항목 저장
   try {
@@ -367,6 +376,13 @@ window.openFirebaseDetail = async function(store) {
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('dp-scroll').scrollTop = 0;
+
+  // 찜 상태 복원
+  var dpZzim = document.getElementById('dp-zzim');
+  if(dpZzim){
+    var isZzimed = getZzimList().some(function(s){ return s.id===store.id; });
+    if(isZzimed) dpZzim.classList.add('on'); else dpZzim.classList.remove('on');
+  }
 
   // 결제 카드
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
@@ -681,7 +697,36 @@ function toggleZzim(e, el, store){
   saveZzimList(list);
 }
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
-function toggleDpZzim(){var btn=document.getElementById('dp-zzim');if(btn)btn.classList.toggle('on');}
+function toggleDpZzim(){
+  var btn=document.getElementById('dp-zzim');
+  if(!btn) return;
+  var store = window._currentDpStore;
+  if(!store) return;
+  var list = getZzimList();
+  var idx = list.findIndex(function(s){ return s.id===store.id; });
+  if(idx > -1){
+    list.splice(idx,1);
+    btn.classList.remove('on');
+    showToast('찜 목록에서 제거됐어요');
+  } else {
+    list.unshift(store);
+    btn.classList.add('on');
+    showToast('❤️ 찜 목록에 추가됐어요!');
+  }
+  saveZzimList(list);
+  // ncard 하트도 동기화
+  syncNcardZzim(store.id, idx === -1);
+}
+function syncNcardZzim(id, isOn){
+  var cards = document.querySelectorAll('.ncard');
+  // store id로 카드 찾기 어려우므로 allStores에서 찾아 인덱스 매칭
+  allStores.forEach(function(s, i){
+    if(s.id === id){
+      var btn = cards[i] && cards[i].querySelector('.zzim');
+      if(btn){ if(isOn) btn.classList.add('on'); else btn.classList.remove('on'); }
+    }
+  });
+}
 function calcIsOpenSlide(hours, todayIdx) {
   try {
     var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
