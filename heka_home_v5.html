@@ -687,14 +687,15 @@ function toggleZzim(e, el, store){
   e.stopPropagation();
   var list = getZzimList();
   var idx = list.findIndex(function(s){ return s.id === store.id; });
-  if(idx > -1){
-    list.splice(idx, 1);
-    el.classList.remove('on');
-  } else {
-    list.unshift(store);
-    el.classList.add('on');
-  }
+  var nowOn;
+  if(idx > -1){ list.splice(idx, 1); el.classList.remove('on'); nowOn = false; }
+  else { list.unshift(store); el.classList.add('on'); nowOn = true; }
   saveZzimList(list);
+  // 슬라이드 패널 하트도 동기화
+  if(window._currentDpStore && window._currentDpStore.id === store.id){
+    var dpBtn = document.getElementById('dp-zzim');
+    if(dpBtn){ if(nowOn) dpBtn.classList.add('on'); else dpBtn.classList.remove('on'); }
+  }
 }
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
 function toggleDpZzim(){
@@ -704,28 +705,17 @@ function toggleDpZzim(){
   if(!store) return;
   var list = getZzimList();
   var idx = list.findIndex(function(s){ return s.id===store.id; });
-  if(idx > -1){
-    list.splice(idx,1);
-    btn.classList.remove('on');
-    showToast('찜 목록에서 제거됐어요');
-  } else {
-    list.unshift(store);
-    btn.classList.add('on');
-    showToast('❤️ 찜 목록에 추가됐어요!');
-  }
+  var nowOn;
+  if(idx > -1){ list.splice(idx,1); btn.classList.remove('on'); nowOn=false; showToast('찜 목록에서 제거됐어요'); }
+  else { list.unshift(store); btn.classList.add('on'); nowOn=true; showToast('❤️ 찜 목록에 추가됐어요!'); }
   saveZzimList(list);
-  // ncard 하트도 동기화
-  syncNcardZzim(store.id, idx === -1);
+  // ncard 하트 동기화 (id로 직접 찾기)
+  var cardBtn = document.getElementById('zzim-'+store.id);
+  if(cardBtn){ if(nowOn) cardBtn.classList.add('on'); else cardBtn.classList.remove('on'); }
 }
 function syncNcardZzim(id, isOn){
-  var cards = document.querySelectorAll('.ncard');
-  // store id로 카드 찾기 어려우므로 allStores에서 찾아 인덱스 매칭
-  allStores.forEach(function(s, i){
-    if(s.id === id){
-      var btn = cards[i] && cards[i].querySelector('.zzim');
-      if(btn){ if(isOn) btn.classList.add('on'); else btn.classList.remove('on'); }
-    }
-  });
+  var cardBtn = document.getElementById('zzim-'+id);
+  if(cardBtn){ if(isOn) cardBtn.classList.add('on'); else cardBtn.classList.remove('on'); }
 }
 function calcIsOpenSlide(hours, todayIdx) {
   try {
