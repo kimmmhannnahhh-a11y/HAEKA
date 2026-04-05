@@ -242,7 +242,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       <button class="dp-btn-more" id="dp-btn-more" onclick="goToDetail()" style="flex:1">매장 상세보기 →</button>
     </div>
   </div>
-  <div id="toast" style="position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99"></div>
 </div>
 
 <!-- Google Maps API (슬라이드 패널 지도용) -->
@@ -279,48 +278,45 @@ function calcIsOpenSlide(hours, todayIdx) {
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
 function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
 function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
+
+function _doZzimToggle(store){
+  var list = getZzimList();
+  var idx = list.findIndex(function(s){ return s.id === store.id; });
+  var nowOn;
+  if(idx > -1){ list.splice(idx,1); nowOn=false; }
+  else { list.unshift(store); nowOn=true; }
+  saveZzimList(list);
+  _syncAllZzimUI(store.id, nowOn);
+  return nowOn;
+}
+
+function _syncAllZzimUI(storeId, isOn){
+  // 리스트 아이템 하트
+  document.querySelectorAll('.store-zzim[data-store-id="'+storeId+'"]').forEach(function(btn){
+    if(isOn) btn.classList.add('on'); else btn.classList.remove('on');
+  });
+  // 슬라이드 패널 하트
+  var dpZzim = document.getElementById('dp-zzim');
+  if(dpZzim && window._currentStoreId === storeId){
+    if(isOn) dpZzim.classList.add('on'); else dpZzim.classList.remove('on');
+  }
+}
+
 function toggleZzimStore(e, btn, idx){
   e.stopPropagation();
   var store = _renderedStores[idx];
   if(!store) return;
-  var list = getZzimList();
-  var found = list.findIndex(function(s){ return s.id===store.id; });
-  var nowOn;
-  if(found > -1){ list.splice(found,1); btn.classList.remove('on'); nowOn=false; }
-  else { list.unshift(store); btn.classList.add('on'); nowOn=true; }
-  saveZzimList(list);
-  // 슬라이드 패널 하트 동기화
-  if(window._currentStoreId === store.id){
-    var dpBtn = document.getElementById('dp-zzim');
-    if(dpBtn){ if(nowOn) dpBtn.classList.add('on'); else dpBtn.classList.remove('on'); }
-  }
+  _doZzimToggle(store);
 }
 function toggleDpZzim(){
   var id = window._currentStoreId;
-  var list = getZzimList();
-  var found = list.findIndex(function(s){ return s.id===id; });
-  var dpBtn = document.getElementById('dp-zzim');
-  var nowOn;
-  if(found > -1){
-    list.splice(found,1);
-    if(dpBtn) dpBtn.classList.remove('on');
-    nowOn=false;
-    showToast('찜 목록에서 제거됐어요');
-  } else {
-    var store = _renderedStores.find(function(s){ return s.id===id; });
-    if(store) list.unshift(store);
-    if(dpBtn) dpBtn.classList.add('on');
-    nowOn=true;
-    showToast('❤️ 찜 목록에 추가됐어요!');
-  }
-  saveZzimList(list);
-  // 리스트 하트 동기화 (id로 직접)
-  var listBtn = document.getElementById('zzim-'+id);
-  if(listBtn){ if(nowOn) listBtn.classList.add('on'); else listBtn.classList.remove('on'); }
+  var store = _renderedStores.find(function(s){ return s.id===id; });
+  if(!store) return;
+  var nowOn = _doZzimToggle(store);
+  showToast(nowOn ? '❤️ 찜 목록에 추가됐어요!' : '찜 목록에서 제거됐어요');
 }
 function goToDetail(){var id=window._currentStoreId;if(id)window.location.href='heka_store_detail.html?id='+id;else window.location.href='heka_store_detail.html';}
 function toggleHours(){var el=document.getElementById('hours-full');var arrow=document.getElementById('hours-arrow');if(!el)return;window._hoursOpen=!window._hoursOpen;el.style.display=window._hoursOpen?'block':'none';arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';}
-function showToast(msg){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';},2200);}
 </script>
 
 <!-- Firebase module (홈화면과 동일 방식) -->
@@ -370,6 +366,13 @@ window.openFirebaseDetail = async function(store) {
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('dp-scroll').scrollTop = 0;
+
+  // 찜 상태 복원
+  var dpZzim = document.getElementById('dp-zzim');
+  if(dpZzim){
+    var isZzimed = getZzimList().some(function(s){ return s.id===store.id; });
+    if(isZzimed) dpZzim.classList.add('on'); else dpZzim.classList.remove('on');
+  }
 
   var cards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
@@ -451,22 +454,45 @@ var userLat=null, userLng=null, sortOrder='distance';
 var cardSel=new Set(['all']), catSel=new Set();
 
 // ── 로드 ──
+var DEFAULT_RADIUS_M = 1000; // 기본 반경 1km
+var gpsGranted = false;
+
+function showGpsBanner(){
+  var existing = document.getElementById('gps-banner');
+  if(existing) return;
+  var banner = document.createElement('div');
+  banner.id = 'gps-banner';
+  banner.style.cssText = 'background:#fff8e1;border-bottom:.5px solid #ffe082;padding:8px 14px;font-size:11px;color:#7a5c00;display:flex;align-items:center;justify-content:space-between;flex-shrink:0';
+  banner.innerHTML = '<span>📍 위치 권한이 없어 거리 표시가 제한돼요</span>'
+    +'<button onclick="document.getElementById(\'gps-banner\').remove()" style="background:none;border:none;font-size:14px;cursor:pointer;color:#aaa;padding:0">✕</button>';
+  var countBar = document.getElementById('count-bar');
+  countBar.parentNode.insertBefore(banner, countBar);
+}
+
 function init(){
-  // 매장 즉시 로드
+  // 캐시된 GPS 있으면 즉시 사용
+  try {
+    var cached = sessionStorage.getItem('haeka_gps');
+    if(cached){ var c=JSON.parse(cached); userLat=c.lat; userLng=c.lng; gpsGranted=true; }
+  } catch(e){}
+
   window._fetchStores && window._fetchStores();
-  // GPS는 백그라운드로 받아서 거리만 업데이트
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(
-      function(p){
-        userLat=p.coords.latitude;
-        userLng=p.coords.longitude;
-        // 이미 로드된 데이터로 거리 재표시
-        if(window.allStores && window.allStores.length) window.doFilter();
-      },
-      function(){},
-      {timeout:5000}
-    );
-  }
+
+  if(!navigator.geolocation){ showGpsBanner(); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(p){
+      gpsGranted = true;
+      userLat=p.coords.latitude; userLng=p.coords.longitude;
+      try{ sessionStorage.setItem('haeka_gps',JSON.stringify({lat:userLat,lng:userLng})); }catch(e){}
+      var banner = document.getElementById('gps-banner');
+      if(banner) banner.remove();
+      if(window.allStores && window.allStores.length) window.doFilter();
+    },
+    function(){
+      if(!gpsGranted) showGpsBanner();
+    },
+    {timeout:5000, maximumAge:60000}
+  );
 }
 
 // ── 렌더 ──
@@ -485,7 +511,7 @@ function renderList(stores){
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
     var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
-    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button id="zzim-'+s.id+'" class="store-zzim'+(isOn?' on':'')+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
