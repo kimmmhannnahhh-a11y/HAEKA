@@ -312,13 +312,34 @@ function removeZzim(id){
   showToast('찜 목록에서 삭제됐어요');
 }
 
+// 한글 발음 → 영어 매칭
+var _CHO2=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+var _JUNG2=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+var _JONG2=['','g','kk','gs','n','nj','nh','d','l','lg','lm','lb','ls','lt','lp','lh','m','b','bs','s','ss','ng','j','ch','k','t','p','h'];
+var _EQUIV={'p':['f','b'],'f':['p','b'],'b':['p','v'],'k':['c','g','q'],'c':['k','g'],'g':['k'],'r':['l'],'l':['r'],'t':['d'],'d':['t'],'s':['z'],'n':['ng'],'w':[''],'':['w']};
+function _getSyllPron(str){var r='';for(var i=0;i<str.length;i++){var code=str.charCodeAt(i)-0xAC00;if(code<0||code>11171){r+=str[i];continue;}var cho=Math.floor(code/588),jung=Math.floor((code%588)/28),jong=code%28;var p=_CHO2[cho]+_JUNG2[jung]+_JONG2[jong];p=p.replace(/eu/g,'').replace(/eo/g,'o').replace(/ae/g,'e');r+=p;}return r.toLowerCase();}
+function _cons(s){return s.replace(/[aeiou]/g,'');}
+function _consMatch(ec,kc){if(ec===kc)return true;var e1=_EQUIV[ec]||[];for(var i=0;i<e1.length;i++)if(e1[i]===kc)return true;var e2=_EQUIV[kc]||[];for(var i=0;i<e2.length;i++)if(e2[i]===ec)return true;return false;}
+function _korMatchEng(kor,eng){var korCons=_cons(_getSyllPron(kor));if(!korCons)return false;var engClean=eng.toLowerCase().replace(/['\s\-.,!?]/g,'');var engCons=_cons(engClean);var ki=0;for(var ei=0;ei<engCons.length&&ki<korCons.length;ei++){if(_consMatch(engCons[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;if(ki>=Math.ceil(korCons.length*0.6)&&korCons.length>=2)return true;var words=eng.toLowerCase().split(/[\s'\-]+/);for(var w=0;w<words.length;w++){var wc=_cons(words[w]);ki=0;for(var ei=0;ei<wc.length&&ki<korCons.length;ei++){if(_consMatch(wc[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;if(ki>=Math.ceil(korCons.length*0.6)&&korCons.length>=2)return true;}return false;}
+
+function zzimSearchMatch(s, kw){
+  var name=(s.name||'').toLowerCase();
+  var addr=(s.address||'').toLowerCase();
+  if(name.indexOf(kw)>-1||addr.indexOf(kw)>-1)return true;
+  if(/[가-힣]/.test(kw)){
+    if(_korMatchEng(kw,s.name||''))return true;
+    if(_korMatchEng(kw,s.address||''))return true;
+  }
+  return false;
+}
+
 function doFilter(){
   var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
   var list=_allStores.filter(function(s){
     var cc=extractCountryCity(s.address);
     var cOk=_selectedCountry==='전체'||cc.country===_selectedCountry;
     var cityOk=_selectedCity==='전체'||cc.city===_selectedCity;
-    var kOk=!kw||(s.name||'').toLowerCase().indexOf(kw)>-1||(s.address||'').toLowerCase().indexOf(kw)>-1;
+    var kOk=!kw||zzimSearchMatch(s,kw);
     return cOk&&cityOk&&kOk;
   });
   renderCountryChips(_allStores); renderList(list);
