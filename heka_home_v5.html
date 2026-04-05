@@ -328,18 +328,7 @@ function renderHotpl(store) {
 }
 
 function initHotpl(stores) {
-  var now = Date.now();
-  _hotplStores = stores.filter(function(s){
-    if(!s.createdAt) return false;
-    var t = s.createdAt.toMillis ? s.createdAt.toMillis() : s.createdAt;
-    return (now - t) < 24 * 60 * 60 * 1000; // 24시간 이내
-  }).slice(0, 10);
-
-  if(!_hotplStores.length){
-    // 24시간 이내 없으면 최신 3개
-    _hotplStores = stores.slice(0, 3);
-  }
-
+  _hotplStores = stores.slice(0, 10);
   _hotplIdx = 0;
   renderHotplSlide();
   if(_hotplTimer) clearInterval(_hotplTimer);
@@ -347,7 +336,7 @@ function initHotpl(stores) {
     _hotplTimer = setInterval(function(){
       _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
       renderHotplSlide();
-    }, 4000);
+    }, 3000);
   }
 }
 
@@ -396,9 +385,34 @@ function hotplGoTo(idx){
     _hotplTimer = setInterval(function(){
       _hotplIdx = (_hotplIdx + 1) % _hotplStores.length;
       renderHotplSlide();
-    }, 4000);
+    }, 3000);
   }
 }
+
+// 핫플 배너 스와이프
+(function(){
+  var startX=0, isDrag=false;
+  document.addEventListener('DOMContentLoaded', function(){
+    var el = document.getElementById('hotpl-dynamic');
+    if(!el) return;
+    el.addEventListener('touchstart', function(e){ startX=e.touches[0].clientX; isDrag=true; }, {passive:true});
+    el.addEventListener('touchend', function(e){
+      if(!isDrag) return; isDrag=false;
+      var diff = e.changedTouches[0].clientX - startX;
+      if(Math.abs(diff) < 30) return;
+      if(diff < 0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
+      else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
+    });
+    el.addEventListener('mousedown', function(e){ startX=e.clientX; isDrag=true; });
+    el.addEventListener('mouseup', function(e){
+      if(!isDrag) return; isDrag=false;
+      var diff = e.clientX - startX;
+      if(Math.abs(diff) < 30) return;
+      if(diff < 0) hotplGoTo((_hotplIdx+1)%_hotplStores.length);
+      else hotplGoTo((_hotplIdx-1+_hotplStores.length)%_hotplStores.length);
+    });
+  });
+})();
 
 function renderNearby(stores) {
   var row = document.getElementById('nearby-row');
