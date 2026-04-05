@@ -189,14 +189,60 @@ async function renderStore(store) {
 
   var signal = getSignal(store);
 
-  // 사진
+  // 사진 슬라이드
   var heroEl = document.getElementById('hero-img');
-  if (store.images && store.images[0]) {
-    heroEl.style.background = 'url('+store.images[0]+') center/cover no-repeat';
-  } else {
-    var catEmojis = {'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🍶','편의점':'🏪','마트':'🛒','호텔':'🏨'};
-    heroEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px">'+(catEmojis[store.category]||'🏬')+'</div>';
+  var dotsEl = document.getElementById('hero-dots');
+  var images = store.images && store.images.length ? store.images : [];
+  if(store.videoUrl) images = [store.videoUrl].concat(images); // 동영상 첫번째
+  var _slideIdx = 0;
+
+  function renderSlide(){
+    heroEl.innerHTML = '';
+    dotsEl.innerHTML = '';
+    if(!images.length){
+      var catEmojis = {'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🍶','편의점':'🏪','마트':'🛒','호텔':'🏨'};
+      heroEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px">'+(catEmojis[store.category]||'🏬')+'</div>';
+      return;
+    }
+    var src = images[_slideIdx];
+    var isVideo = store.videoUrl && _slideIdx === 0 && src === store.videoUrl;
+    if(isVideo){
+      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>';
+    } else {
+      heroEl.style.background = 'url('+src+') center/cover no-repeat';
+      heroEl.innerHTML = '';
+    }
+    // 점 인디케이터
+    if(images.length > 1){
+      dotsEl.innerHTML = images.map(function(_,i){
+        return '<div style="width:'+(i===_slideIdx?'16':'6')+'px;height:6px;border-radius:3px;background:'+(i===_slideIdx?'#fff':'rgba(255,255,255,.5)')+';transition:.2s;cursor:pointer" onclick="heroGoTo('+i+')"></div>';
+      }).join('');
+    }
   }
+
+  window.heroGoTo = function(idx){ _slideIdx=idx; renderSlide(); };
+
+  // 스와이프
+  var _hStartX=0;
+  heroEl.addEventListener('touchstart',function(e){_hStartX=e.touches[0].clientX;},{passive:true});
+  heroEl.addEventListener('touchend',function(e){
+    var diff=e.changedTouches[0].clientX-_hStartX;
+    if(Math.abs(diff)<30)return;
+    if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
+    else _slideIdx=(_slideIdx-1+images.length)%images.length;
+    renderSlide();
+  },{passive:true});
+  heroEl.addEventListener('mousedown',function(e){_hStartX=e.clientX;});
+  document.addEventListener('mouseup',function(e){
+    if(!_hStartX)return;
+    var diff=e.clientX-_hStartX; _hStartX=0;
+    if(Math.abs(diff)<30||!heroEl.contains(e.target))return;
+    if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
+    else _slideIdx=(_slideIdx-1+images.length)%images.length;
+    renderSlide();
+  });
+
+  renderSlide();
 
   // 상호명, 업종, 신호등
   document.getElementById('hero-name').textContent = store.name;
@@ -376,9 +422,13 @@ window.addEventListener('DOMContentLoaded', loadStore);
 <div class="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
-  <!-- 히어로 이미지 -->
+  <!-- 히어로 이미지 슬라이드 -->
   <div class="hero">
-    <div id="hero-img" style="width:100%;height:100%;position:relative;background:#1a2e1a"></div>
+    <div id="hero-img" style="width:100%;height:100%;position:relative;background:#1a2e1a;overflow:hidden">
+      <!-- 슬라이드 이미지들이 JS로 주입됨 -->
+    </div>
+    <!-- 점 인디케이터 -->
+    <div id="hero-dots" style="position:absolute;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5"></div>
     <div class="hero-overlay"></div>
     <div class="hero-top">
       <button class="back-btn" onclick="goBack()">←</button>
