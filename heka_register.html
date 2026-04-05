@@ -657,8 +657,8 @@ function renderImgs(){
   a.innerHTML='';
   uploadedVideos.forEach(function(v,i){
     a.innerHTML+='<div class="img-preview-wrap" style="position:relative">'
-      +'<video class="img-preview" src="'+v.objUrl+'" autoplay muted loop playsinline style="object-fit:cover;width:100%;height:100%;border-radius:8px;display:block"></video>'
-      +'<div style="position:absolute;top:2px;left:4px;background:rgba(0,0,0,.55);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700">▶ 동영상</div>'
+      +'<video class="img-preview" src="'+v.objUrl+'" autoplay muted loop playsinline></video>'
+      +'<div style="position:absolute;top:2px;left:4px;background:rgba(0,0,0,.55);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700">▶</div>'
       +'<button class="img-del" onclick="delVideo('+i+')">✕</button></div>';
   });
   uploadedImgs.forEach(function(src,i){
