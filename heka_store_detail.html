@@ -198,6 +198,7 @@ async function renderStore(store) {
 
   function renderSlide(){
     heroEl.innerHTML = '';
+    heroEl.style.background = '';
     dotsEl.innerHTML = '';
     if(!images.length){
       var catEmojis = {'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🍶','편의점':'🏪','마트':'🛒','호텔':'🏨'};
@@ -205,12 +206,11 @@ async function renderStore(store) {
       return;
     }
     var src = images[_slideIdx];
-    var isVideo = store.videoUrl && _slideIdx === 0 && src === store.videoUrl;
+    var isVideo = store.videoUrl && src === store.videoUrl;
     if(isVideo){
-      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>';
+      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>';
     } else {
-      heroEl.style.background = 'url('+src+') center/cover no-repeat';
-      heroEl.innerHTML = '';
+      heroEl.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>';
     }
     // 점 인디케이터
     if(images.length > 1){
