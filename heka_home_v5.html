@@ -653,7 +653,7 @@ window.addEventListener('pageshow', function(e) {
   <div class="filterbar">
     <div>
       <div class="chip-row">
-        <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드사 전체 ▾</div>
+        <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드사 ▾</div>
         <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')">VISA</div>
         <div class="sq-chip cc-master" onclick="toggleCardMain(this,'master')">MASTER</div>
         <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'jcb')">JCB</div>
@@ -665,7 +665,7 @@ window.addEventListener('pageshow', function(e) {
     </div>
     <div>
       <div class="cat-wrap" id="cat-wrap">
-        <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleSheet()">업종 전체 ▾</div>
+        <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleSheet()">업종 ▾</div>
       </div>
     </div>
   </div>
@@ -824,26 +824,27 @@ function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var fn=c.getAttribute('onclick')||'';var m=fn.match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSelected.has(m[1]));});}
 function toggleCardMain(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardChips();syncCardSheet();updateCardCount();if(window.applyFilters)window.applyFilters();}
 function toggleCardChip(el,card){if(card==='all'){cardSelected.clear();cardSelected.add('all');}else{cardSelected.delete('all');if(cardSelected.has(card))cardSelected.delete(card);else cardSelected.add(card);if(cardSelected.size===0)cardSelected.add('all');}window._cardSelected=cardSelected;syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
-function updateCardCount(){var cnt=cardSelected.has('all')?0:cardSelected.size;var el=document.getElementById('card-count');if(el)el.textContent=cnt>0?'('+cnt+'개 선택)':'';var btn=document.getElementById('card-all-btn');if(btn){if(cardSelected.has('all')){btn.classList.add('on');btn.textContent=(btn.textContent.indexOf('▴')>-1?'카드사 전체 ▴':'카드사 전체 ▾');}else{btn.classList.remove('on');btn.textContent=(btn.textContent.indexOf('▴')>-1?'카드사 ▴':'카드사 ▾');}}}function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
+function updateCardCount(){var cnt=cardSelected.has('all')?0:cardSelected.size;var el=document.getElementById('card-count');if(el)el.textContent=cnt>0?'('+cnt+'개 선택)':'';var btn=document.getElementById('card-all-btn');if(btn){if(cardSelected.has('all')){btn.classList.add('on');btn.textContent=(btn.textContent.indexOf('▴')>-1?'카드사 ▴':'카드사 ▾');}else{btn.classList.remove('on');btn.textContent=(btn.textContent.indexOf('▴')>-1?'카드사 ▴':'카드사 ▾');}}}function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
 var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
-function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 전체 ▴';b.classList.add('open');b.classList.remove('on');}
-function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 전체 ▾';b.classList.remove('open');if(cardSelected.has('all'))b.classList.add('on');else b.classList.remove('on');}
+function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 ▴';b.classList.add('open');b.classList.remove('on');}
+function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 ▾';b.classList.remove('open');if(cardSelected.has('all'))b.classList.add('on');else b.classList.remove('on');}
 var cats=['식당','카페','펍','패스트푸드','이자카야','편의점','마트','호텔','입장권','전철 티켓','버스','ATM기','기타'];
 var selected=new Set();
 var wrap=document.getElementById('cat-wrap');
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);});
 var sw=document.getElementById('sheet-wrap');
+var allChip=document.createElement('div');allChip.className='sheet-chip on';allChip.textContent='전체';allChip.id='cat-all-select';allChip.onclick=function(){catSelectAll();};sw.appendChild(allChip);
 cats.forEach(function(lbl){var d=document.createElement('div');d.className='sheet-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d);});
-function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);document.getElementById('cat-all-select').classList.remove('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
-function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});}
-function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});document.querySelectorAll('#sheet-wrap .sheet-chip').forEach(function(c){c.classList.remove('on');});var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
-function resetCats(){selected.clear();syncAll();updateCatCount();document.getElementById('cat-all-select').classList.add('on');}
+function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);var as=document.getElementById('cat-all-select');if(as)as.classList.remove('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.remove('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
+function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){if(c.id==='cat-all-select')return;c.classList.toggle('on',selected.has(c.dataset.lbl));});}
+function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.remove('on');});var as=document.getElementById('cat-all-select');if(as)as.classList.add('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
+function resetCats(){selected.clear();syncAll();updateCatCount();var as=document.getElementById('cat-all-select');if(as)as.classList.add('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.add('on');}
 function updateCatCount(){var el=document.getElementById('cat-count');if(el)el.textContent=selected.size>0?'('+selected.size+'개 선택)':'';}
 var catSO=false;
 function toggleSheet(){catSO?closeSheet():openSheet();}
-function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 전체 ▴';b.classList.add('open');b.classList.remove('on');}
-function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 전체 ▾';b.classList.remove('open');}
+function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▴';b.classList.add('open');b.classList.remove('on');}
+function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▾';b.classList.remove('open');}
 function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
 function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
 
