@@ -14,7 +14,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .topbar-right{display:flex;align-items:center;gap:10px}
 .search-icon-btn{width:32px;height:32px;border-radius:50%;border:0.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.15)}
 .search-icon-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-.filterbar{padding:10px 0 10px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.filterbar{padding:6px 0 6px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:5px;overflow:hidden}
 .filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
 .chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:24px;cursor:grab}
 .chip-row::-webkit-scrollbar{display:none}
@@ -652,9 +652,8 @@ window.addEventListener('pageshow', function(e) {
 
   <div class="filterbar">
     <div>
-      <div class="filter-label">카드사</div>
       <div class="chip-row">
-        <div class="sq-chip-all" id="card-all-btn" onclick="toggleCardSheet()">모두보기 ▾</div>
+        <div class="sq-chip-all" id="card-all-btn" onclick="toggleCardSheet()">카드사 ▾</div>
         <div class="sq-chip on" onclick="toggleCardMain(this,'all')">전체</div>
         <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')">VISA</div>
         <div class="sq-chip cc-master" onclick="toggleCardMain(this,'master')">MASTER</div>
@@ -666,9 +665,8 @@ window.addEventListener('pageshow', function(e) {
       </div>
     </div>
     <div>
-      <div class="filter-label">업종</div>
       <div class="cat-wrap" id="cat-wrap">
-        <div class="sq-chip-all" id="cat-all-btn" onclick="toggleSheet()">모두보기 ▾</div>
+        <div class="sq-chip-all" id="cat-all-btn" onclick="toggleSheet()">업종 ▾</div>
         <div class="sq-chip-all on" id="cat-all-select" onclick="catSelectAll()">전체</div>
       </div>
     </div>
@@ -832,8 +830,8 @@ function updateCardCount(){var cnt=cardSelected.has('all')?0:cardSelected.size;v
 function cardReset(){cardSelected.clear();cardSelected.add('all');syncCardSheet();syncCardChips();updateCardCount();if(window.applyFilters)window.applyFilters();}
 var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
-function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='모두보기 ▴';b.classList.add('open');}
-function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
+function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 ▴';b.classList.add('open');}
+function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='카드사 ▾';b.classList.remove('open');}
 var cats=['식당','카페','펍','패스트푸드','이자카야','편의점','마트','호텔','입장권','전철 티켓','버스','ATM기','기타'];
 var selected=new Set();
 var wrap=document.getElementById('cat-wrap');
@@ -847,8 +845,8 @@ function resetCats(){selected.clear();syncAll();updateCatCount();document.getEle
 function updateCatCount(){var el=document.getElementById('cat-count');if(el)el.textContent=selected.size>0?'('+selected.size+'개 선택)':'';}
 var catSO=false;
 function toggleSheet(){catSO?closeSheet():openSheet();}
-function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▴';b.classList.add('open');}
-function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='모두보기 ▾';b.classList.remove('open');}
+function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▴';b.classList.add('open');}
+function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▾';b.classList.remove('open');}
 function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
 function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
 
