@@ -201,7 +201,39 @@ function doSearch(){
   document.getElementById('search-input').blur();
 }
 
-function toggleF(el){ document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');}); el.classList.add('on'); }
+var _selectedTags = new Set();
+
+function toggleF(el){
+  var tag = el.textContent.trim();
+  if(tag === '전체'){
+    _selectedTags.clear();
+    document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
+    el.classList.add('on');
+  } else {
+    document.querySelector('.fb').classList.remove('on'); // 전체 버튼 off
+    if(el.classList.contains('on')){
+      el.classList.remove('on');
+      _selectedTags.delete(tag);
+      if(_selectedTags.size === 0){
+        document.querySelector('.fb').classList.add('on'); // 다 해제되면 전체로
+      }
+    } else {
+      el.classList.add('on');
+      _selectedTags.add(tag);
+    }
+  }
+  filterByTag();
+}
+
+function filterByTag(){
+  if(_selectedTags.size === 0){
+    renderPosts(posts);
+  } else {
+    renderPosts(posts.filter(function(p){
+      return _selectedTags.has(p.tagTxt);
+    }));
+  }
+}
 
 var countries=[{flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},{flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},{flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},{flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'}];
 var cities={'일본':[{name:'도쿄'},{name:'오사카'},{name:'교토'},{name:'삿포로'},{name:'후쿠오카'}],'프랑스':[{name:'파리'},{name:'리옹'},{name:'니스'}],'미국':[{name:'뉴욕'},{name:'로스앤젤레스'},{name:'라스베가스'}],'태국':[{name:'방콕'},{name:'치앙마이'},{name:'푸켓'}],'베트남':[{name:'하노이'},{name:'호치민'},{name:'다낭'}],'스페인':[{name:'바르셀로나'},{name:'마드리드'},{name:'세비야'}],'이탈리아':[{name:'로마'},{name:'밀라노'},{name:'베네치아'}],'독일':[{name:'베를린'},{name:'뮌헨'},{name:'함부르크'}],'크로아티아':[{name:'자그레브'},{name:'두브로브니크'},{name:'스플리트'}]};
