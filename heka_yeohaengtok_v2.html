@@ -251,7 +251,11 @@ function renderCities(country,flag){
   document.getElementById('panel-ph').textContent='도시를 검색해보세요';
   var list=document.getElementById('panel-list'); list.innerHTML='';
   var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
-  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+flag+' '+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
+  // 나라 전체보기 버튼
+  var allDiv=document.createElement('div'); allDiv.className='panel-item'; allDiv.style.cssText='background:#f0f9f0;font-weight:700;color:#1A5D1A';
+  allDiv.innerHTML='<div>'+flag+' '+country+' 전체보기</div><span class="panel-arr" style="color:#1A5D1A">›</span>';
+  allDiv.onclick=function(){ select(country+' 전체',flag); }; list.appendChild(allDiv);
+  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
 }
 function select(name,flag){
   var chipIcon=document.querySelector('.city-chip-icon');
