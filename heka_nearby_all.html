@@ -13,7 +13,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .topbar-title{font-size:15px;font-weight:600;color:#fff;flex:1}
 
 /* 필터바 */
-.filterbar{padding:8px 0 8px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:7px;flex-shrink:0;overflow:hidden}
+.filterbar{padding:6px 0 6px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:5px;flex-shrink:0;overflow:hidden}
 .filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
 .chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:20px;cursor:grab}
 .chip-row::-webkit-scrollbar{display:none}
@@ -132,10 +132,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <!-- 필터바 -->
   <div class="filterbar">
     <div>
-      <div class="filter-label">카드사</div>
       <div class="chip-row">
-        <div class="sq-chip-all" id="card-all-btn" onclick="toggleCardSheet()">모두보기 ▾</div>
-        <div class="sq-chip on" onclick="toggleCardMain(this,'all')">전체</div>
+        <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드 ▾</div>
         <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'VISA')">VISA</div>
         <div class="sq-chip cc-master" onclick="toggleCardMain(this,'MASTER')">MASTER</div>
         <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'JCB')">JCB</div>
@@ -146,10 +144,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       </div>
     </div>
     <div>
-      <div class="filter-label">업종</div>
       <div class="cat-wrap" id="cat-wrap">
-        <div class="sq-chip-all" id="cat-all-btn" onclick="toggleCatSheet()">모두보기 ▾</div>
-        <div class="sq-chip-all on" id="cat-all-select" onclick="catSelectAll()">전체</div>
+        <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleCatSheet()">업종 ▾</div>
       </div>
     </div>
   </div>
@@ -642,31 +638,33 @@ function doFilter(){
 window.doFilter = doFilter;
 
 // ── 카드사 필터 ──
-function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1])||(cardSel.has('all')&&m[1]==='all'));});}
+function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1])||(cardSel.has('all')&&m[1]==='all'));});var cb=document.getElementById('card-all-btn');if(cb){if(cardSel.has('all'))cb.classList.add('on');else cb.classList.remove('on');}}
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1]));});}
 function toggleCardMain(el,v){if(v==='all'){cardSel.clear();cardSel.add('all');}else{cardSel.delete('all');cardSel.has(v)?cardSel.delete(v):cardSel.add(v);if(!cardSel.size)cardSel.add('all');}syncCardChips();syncCardSheet();doFilter();}
 function toggleCardChip(el,v){if(v==='all'){cardSel.clear();cardSel.add('all');}else{cardSel.delete('all');cardSel.has(v)?cardSel.delete(v):cardSel.add(v);if(!cardSel.size)cardSel.add('all');}syncCardSheet();syncCardChips();doFilter();}
 function cardReset(){cardSel.clear();cardSel.add('all');syncCardSheet();syncCardChips();doFilter();}
 var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
-function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');document.getElementById('card-all-btn').textContent='모두보기 ▴';}
-function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');document.getElementById('card-all-btn').textContent='모두보기 ▾';}
+function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var cb=document.getElementById('card-all-btn');cb.textContent='카드 ▴';cb.classList.remove('on');}
+function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var cb=document.getElementById('card-all-btn');cb.textContent='카드 ▾';if(cardSel.has('all'))cb.classList.add('on');else cb.classList.remove('on');}
 
 // ── 업종 필터 ──
 var cats=['식당','카페','펍','패스트푸드','이자카야','편의점','마트','호텔','입장권','전철 티켓','버스','ATM기','기타'];
 var catWrap=document.getElementById('cat-wrap'), sw=document.getElementById('sheet-wrap');
+// 시트에 전체 버튼 추가
+var allSheetChip=document.createElement('div');allSheetChip.className='sheet-chip on';allSheetChip.textContent='전체';allSheetChip.id='cat-sheet-all';allSheetChip.onclick=function(){catSelectAll();};sw.appendChild(allSheetChip);
 cats.forEach(function(l){
   var d=document.createElement('div');d.className='sq-chip';d.textContent=l;d.dataset.l=l;d.onclick=function(){toggleCat(l);};catWrap.appendChild(d);
   var s=document.createElement('div');s.className='sheet-chip';s.textContent=l;s.dataset.l=l;s.onclick=function(){toggleCat(l);};sw.appendChild(s);
 });
-function toggleCat(l){catSel.has(l)?catSel.delete(l):catSel.add(l);document.getElementById('cat-all-select').classList.toggle('on',catSel.size===0);syncCatChips();doFilter();}
-function syncCatChips(){catWrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',catSel.has(c.dataset.l));});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.toggle('on',catSel.has(c.dataset.l));});}
-function catSelectAll(){catSel.clear();syncCatChips();document.getElementById('cat-all-select').classList.add('on');doFilter();}
-function catReset(){catSel.clear();syncCatChips();document.getElementById('cat-all-select').classList.add('on');}
+function toggleCat(l){catSel.has(l)?catSel.delete(l):catSel.add(l);if(catSel.size===0)catSelectAll();else{var catb=document.getElementById('cat-all-btn');if(catb)catb.classList.remove('on');syncCatChips();doFilter();}}
+function syncCatChips(){catWrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',catSel.has(c.dataset.l));});sw.querySelectorAll('.sheet-chip').forEach(function(c){if(c.id==='cat-sheet-all')return;c.classList.toggle('on',catSel.has(c.dataset.l));});var sa=document.getElementById('cat-sheet-all');if(sa)sa.classList.toggle('on',catSel.size===0);}
+function catSelectAll(){catSel.clear();syncCatChips();var catb=document.getElementById('cat-all-btn');if(catb)catb.classList.add('on');doFilter();}
+function catReset(){catSel.clear();syncCatChips();var catb=document.getElementById('cat-all-btn');if(catb)catb.classList.add('on');}
 var catSO=false;
 function toggleCatSheet(){catSO?closeCatSheet():openCatSheet();}
-function openCatSheet(){catSO=true;document.getElementById('cat-overlay').classList.add('open');document.getElementById('cat-sheet').classList.add('open');document.getElementById('cat-all-btn').textContent='모두보기 ▴';}
-function closeCatSheet(){catSO=false;document.getElementById('cat-overlay').classList.remove('open');document.getElementById('cat-sheet').classList.remove('open');document.getElementById('cat-all-btn').textContent='모두보기 ▾';}
+function openCatSheet(){catSO=true;document.getElementById('cat-overlay').classList.add('open');document.getElementById('cat-sheet').classList.add('open');var catb=document.getElementById('cat-all-btn');catb.textContent='업종 ▴';catb.classList.remove('on');}
+function closeCatSheet(){catSO=false;document.getElementById('cat-overlay').classList.remove('open');document.getElementById('cat-sheet').classList.remove('open');var catb=document.getElementById('cat-all-btn');catb.textContent='업종 ▾';if(catSel.size===0)catb.classList.add('on');else catb.classList.remove('on');}
 
 // ── 정렬 ──
 function openSortSheet(){document.getElementById('sort-overlay').classList.add('open');document.getElementById('sort-sheet').classList.add('open');}
