@@ -844,7 +844,7 @@ function updateCatCount(){var el=document.getElementById('cat-count');if(el)el.t
 var catSO=false;
 function toggleSheet(){catSO?closeSheet():openSheet();}
 function openSheet(){catSO=true;document.getElementById('overlay').classList.add('open');document.getElementById('sheet').classList.add('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▴';b.classList.add('open');b.classList.remove('on');}
-function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▾';b.classList.remove('open');}
+function closeSheet(){catSO=false;document.getElementById('overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');var b=document.getElementById('cat-all-btn');b.textContent='업종 ▾';b.classList.remove('open');if(selected.size===0)b.classList.add('on');else b.classList.remove('on');}
 function getZzimList(){ try{ return JSON.parse(localStorage.getItem('haeka_zzim')||'[]'); }catch(e){ return []; } }
 function saveZzimList(list){ try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){} }
 
