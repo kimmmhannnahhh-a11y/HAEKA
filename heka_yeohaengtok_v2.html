@@ -246,7 +246,8 @@ function renderPosts(list){
   el.innerHTML = list.map(function(p){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':'fptag-info';
     var thumbContent = p.fromFirebase && p.thumb && p.thumb.indexOf('<img')===0 ? p.thumb : p.thumb;
-    return '<div class="fpost"><div class="fpav">'+p.av+'</div><div class="fpmain"><div class="fphead"><span class="fpu">'+p.user+'</span><span class="fpd">'+p.date+' · '+p.city+'</span></div><div class="fptitle">'+p.title+'</div><div class="fpbody">'+p.body+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><div class="fpfooter-info"><span>💬 '+(p.cmts||0)+'</span><span>❤ '+(p.likes||0)+'</span><span>'+p.time+'</span></div></div></div><div class="fpthumb" style="background:'+p.thumbBg+';overflow:hidden">'+thumbContent+'</div></div>';
+    var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
+    return '<div class="fpost" onclick="location.href=\''+detailUrl+'\'" style="cursor:pointer"><div class="fpav">'+p.av+'</div><div class="fpmain"><div class="fphead"><span class="fpu">'+p.user+'</span><span class="fpd">'+p.date+' · '+p.city+'</span></div><div class="fptitle">'+p.title+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><div class="fpfooter-info"><span>💬 '+(p.cmts||0)+'</span><span>❤ '+(p.likes||0)+'</span><span>'+p.time+'</span></div></div></div><div class="fpthumb" style="background:'+p.thumbBg+';overflow:hidden">'+thumbContent+'</div></div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
