@@ -193,7 +193,7 @@ function getCountryFlag(address) {
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
@@ -269,6 +269,41 @@ async function loadStores() {
     }
   } catch(e) { console.error('로드 오류:', e); }
 }
+
+// 여행톡 실시간 불러오기
+const catBadgeMap = {'동행':'yb-mate','맛집':'yb-food','날씨':'yb-info','정보':'yb-info'};
+const catEmojiMap2 = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
+const catBgMap2 = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f5ff','정보':'#f0f5ee'};
+
+const postsQ = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(5));
+onSnapshot(postsQ, function(snapshot){
+  if(snapshot.empty) return;
+  var wrap = document.querySelector('.ytok-wrap');
+  if(!wrap) return;
+  var head = wrap.querySelector('.ytok-head');
+  var html = '';
+  snapshot.docs.forEach(function(doc){
+    var p = doc.data();
+    var badge = catBadgeMap[p.category]||'yb-info';
+    var emoji = catEmojiMap2[p.category]||'✈️';
+    var bg = catBgMap2[p.category]||'#f5f5f5';
+    var ago = timeAgo(p.createdAt);
+    var thumb = p.images&&p.images[0]
+      ? '<div class="ythumb-r" style="background:#f0f0f0;padding:0;overflow:hidden"><img src="'+p.images[0]+'" style="width:100%;height:100%;object-fit:cover"/></div>'
+      : '<div class="ythumb-r" style="background:'+bg+'">'+emoji+'</div>';
+    html += '<div class="ycard" onclick="window.location.href=\'heka_yeohaengtok_v2.html\'">'
+      +'<div class="ythumb" style="background:'+bg+'">'+emoji+'</div>'
+      +'<div class="ycontent">'
+      +'<div class="ytop"><span class="ybadge '+badge+'">'+(p.category||'정보')+'</span><span class="ycity">'+(p.city||'')+'</span></div>'
+      +'<div class="ytitle">'+p.title+'</div>'
+      +'<div class="ybody">'+p.body+'</div>'
+      +'<div class="yfoot"><span>💬 0</span><span>❤ 0</span><span>'+ago+'</span></div>'
+      +'</div>'+thumb+'</div>';
+  });
+  wrap.innerHTML = '';
+  wrap.appendChild(head);
+  wrap.insertAdjacentHTML('beforeend', html);
+});
 
 function initGPS() {
   // 캐싱된 GPS 있으면 즉시 사용 후 바로 로드
