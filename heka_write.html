@@ -105,6 +105,43 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   </div>
   <div class="toast" id="toast"></div>
 </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+window._savePost = async function(postData, photos) {
+  // 사진 업로드
+  var imageUrls = [];
+  for(var i=0; i<photos.length; i++){
+    try{
+      var imgRef = ref(storage, 'posts/' + Date.now() + '_' + i + '.jpg');
+      await uploadString(imgRef, photos[i], 'data_url');
+      var url = await getDownloadURL(imgRef);
+      imageUrls.push(url);
+    }catch(e){ console.error('사진 업로드 오류:', e); }
+  }
+  // Firestore 저장
+  await addDoc(collection(db, 'posts'), {
+    ...postData,
+    images: imageUrls,
+    createdAt: serverTimestamp()
+  });
+};
+</script>
+
 <script>
 var _selectedCity='', _selectedCat='', _photos=[];
 var COUNTRIES=[
@@ -233,13 +270,34 @@ function renderPhotos(){
 }
 function delPhoto(i){_photos.splice(i,1);renderPhotos();}
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
-function submitPost(){
+async function submitPost(){
   if(!_selectedCity){showToast('도시를 선택해주세요');return;}
   if(!_selectedCat){showToast('카테고리를 선택해주세요');return;}
-  if(!document.getElementById('title-input').value.trim()){showToast('제목을 입력해주세요');return;}
-  if(!document.getElementById('body-input').value.trim()){showToast('내용을 입력해주세요');return;}
-  showToast('등록됐어요! 🎉');
-  setTimeout(function(){location.href='heka_yeohaengtok_v2.html';},1500);
+  var title=document.getElementById('title-input').value.trim();
+  var body=document.getElementById('body-input').value.trim();
+  if(!title){showToast('제목을 입력해주세요');return;}
+  if(!body){showToast('내용을 입력해주세요');return;}
+
+  var btn=document.querySelector('.submit-btn');
+  btn.disabled=true; btn.textContent='등록 중...';
+
+  try{
+    if(window._savePost){
+      await window._savePost({
+        city: _selectedCity,
+        category: _selectedCat,
+        title: title,
+        body: body,
+        nickname: '해카마왕',
+      }, _photos);
+    }
+    showToast('등록됐어요! 🎉');
+    setTimeout(function(){location.href='heka_yeohaengtok_v2.html';},1500);
+  }catch(e){
+    console.error(e);
+    showToast('등록에 실패했어요. 다시 시도해주세요.');
+    btn.disabled=false; btn.textContent='등록';
+  }
 }
 </script>
 </body>
