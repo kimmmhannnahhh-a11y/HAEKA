@@ -237,7 +237,7 @@ window.renderPost=function(p){
   var delWrap = document.getElementById('post-del-btn');
   if(delWrap){
     if(p.nickname==='해카마왕'){
-      delWrap.innerHTML='<button onclick="deletePost()" style="width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#e53935">✕</button>';
+      delWrap.innerHTML='<button onclick="deletePost()" style="background:none;border:none;font-size:11px;font-weight:600;color:#bbb;cursor:pointer;font-family:inherit;padding:4px">삭제하기</button>';
     } else {
       delWrap.innerHTML='<div style="width:30px"></div>';
     }
@@ -267,7 +267,7 @@ window.renderComments=function(cmts){
       +'<div class="cmt-txt">'+c.text+'</div>'
       +'<div style="display:flex;gap:8px;margin-top:5px">'
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+c.id+'\')">답글 달기</button>'
-      +(isMyComment?'<button class="cmt-reply-btn" style="color:#ff6b6b" onclick="deleteCmt(\''+c.id+'\')">삭제</button>':'')
+      +(isMyComment?'<button class="cmt-reply-btn" style="color:#bbb" onclick="deleteCmt(\''+c.id+'\')">삭제</button>':'')
       +'</div>'
       +'</div></div>'
       +'<div id="replies-'+c.id+'"></div>'
@@ -298,12 +298,16 @@ function renderReplies(cmtId, replies){
   if(!replies.length){ el.innerHTML=''; return; }
   el.innerHTML=replies.map(function(r){
     var letter=(r.nickname||'여').charAt(0);
+    var isMyReply=(r.nickname==='해카마왕');
     return '<div class="reply-item">'
       +'<div class="reply-av">'+letter+'</div>'
       +'<div class="reply-body">'
       +'<span class="reply-nick">'+(r.nickname||'여행자')+'</span><span class="reply-date">'+timeAgo(r.createdAt)+'</span>'
       +'<div class="reply-txt">'+r.text+'</div>'
-      +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')">답글 달기</button>'
+      +'<div style="display:flex;gap:8px;margin-top:4px">'
+      +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')" >답글 달기</button>'
+      +(isMyReply?'<button class="cmt-reply-btn" style="color:#bbb" onclick="deleteReply(\''+cmtId+'\',\''+r.id+'\')" >삭제</button>':'')
+      +'</div>'
       +'</div></div>';
   }).join('');
 }
