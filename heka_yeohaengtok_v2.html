@@ -251,7 +251,7 @@ function renderPosts(list){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
     var hasImg = p.fromFirebase && p.images && p.images[0];
     var thumbHtml = hasImg
-      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:60px;height:60px;object-fit:cover;display:block;border-radius:6px"/></div>'
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:60px;height:60px;object-fit:cover;display:block;border-radius:6px" loading="eager" decoding="async"/></div>'
       : '';
     var isNew = p.id && !readSet.has(p.id);
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '<div style="width:7px;flex-shrink:0"></div>';

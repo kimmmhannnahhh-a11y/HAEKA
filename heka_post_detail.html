@@ -242,9 +242,15 @@ window.renderPost=function(p){
     _liked=likedPosts.indexOf(window._postId)>-1;
   }catch(e){}
 
+  // 이미지 프리로드
+  if(p.images && p.images.length){
+    p.images.forEach(function(src){
+      var img=new Image(); img.src=src;
+    });
+  }
   var slideHtml='';
   if(_images.length){
-    var imgs=_images.map(function(src){return '<img class="slide-img" src="'+src+'" loading="lazy"/>';}).join('');
+    var imgs=_images.map(function(src){return '<img class="slide-img" src="'+src+'" loading="eager" decoding="async"/>';}).join('');
     var dots=_images.length>1?'<div class="slide-dots" id="slide-dots">'+_images.map(function(_,i){
       return '<div class="slide-dot'+(i===0?' on':'')+'" onclick="slideTo('+i+')"></div>';
     }).join('')+'</div>':'';
