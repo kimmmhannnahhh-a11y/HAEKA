@@ -298,12 +298,11 @@ onSnapshot(postsQ, function(snapshot){
     var thumb = (p.images && p.images[0])
       ? '<div class="ythumb-r"><img src="'+p.images[0]+'" style="width:52px;height:52px;object-fit:cover;display:block" loading="eager" decoding="async"/></div>'
       : '';
+    var nick = p.nickname||p.nick||'';
     html += '<div class="ycard" onclick="window.location.href=\'heka_post_detail.html?id='+doc.id+'\'">'
-      +avatarHtml
       +'<div class="ycontent">'
-      +'<div class="ytop"><span class="ybadge '+badge+'">'+(p.category||'정보')+'</span><span class="ycity">'+(p.city||'')+'</span></div>'
       +'<div class="ytitle">'+p.title+'</div>'
-      +'<div class="yfoot"><span>❤ '+(p.likeCount||0)+'</span><span>💬 '+(p.commentCount||0)+'</span><span>'+ago+'</span></div>'
+      +'<div class="yfoot"><span class="ybadge '+badge+'">'+(p.category||'정보')+'</span><span class="ycity">'+(p.city||'')+'</span><span>♥ '+(p.likeCount||0)+'</span><span>💬 '+(p.commentCount||0)+'</span><span>'+ago+'</span>'+avatarHtml+'<span style="font-size:10px;color:#bbb">'+nick+'</span></div>'
       +'</div>'+thumb+'</div>';
   });
   listEl.innerHTML = html;
