@@ -209,12 +209,13 @@ function formatDate(ts){
   if(!ts) return '';
   var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
   var d=new Date(t);
-  var yyyy=d.getFullYear();
+  var curYear=new Date().getFullYear();
   var mm=String(d.getMonth()+1).padStart(2,'0');
   var dd=String(d.getDate()).padStart(2,'0');
   var hh=String(d.getHours()).padStart(2,'0');
   var min=String(d.getMinutes()).padStart(2,'0');
-  return yyyy+'.'+mm+'.'+dd+' '+hh+':'+min;
+  if(d.getFullYear()===curYear) return mm+'.'+dd+' '+hh+':'+min;
+  return String(d.getFullYear()).slice(2)+'.'+mm+'.'+dd+' '+hh+':'+min;
 }
 
 var _liked=false, _saved=false;
