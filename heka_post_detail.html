@@ -316,8 +316,8 @@ async function deletePost(){
   if(!confirm('정말 삭제하시겠습니까?')) return;
   try{
     if(window._deletePost) await window._deletePost();
-    alert('삭제됐어요!');
-    window.location.href='heka_yeohaengtok_v2.html';
+    showToast('삭제되었습니다');
+    setTimeout(function(){ window.location.href='heka_yeohaengtok_v2.html'; }, 800);
   }catch(e){ showToast('삭제에 실패했어요'); }
 }
 
