@@ -250,6 +250,7 @@ window.renderComments=function(cmts){
   }
   el.innerHTML=cmts.map(function(c){
     var letter=(c.nickname||'여').charAt(0);
+    var isMyComment=(c.nickname==='해카마왕');
     return '<div id="cmt-wrap-'+c.id+'">'
       +'<div class="cmt-item">'
       +'<div class="cmt-av">'+letter+'</div>'
