@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+
+/* 상단바 */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0}
+.back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111;line-height:1}
+
+/* 스크롤 */
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:70px}
+.scroll-wrap::-webkit-scrollbar{display:none}
+
+/* 사진 슬라이드 */
+.slide-wrap{position:relative;width:100%;height:200px;background:#1a2e1a;flex-shrink:0;overflow:hidden}
+.slide-inner{display:flex;height:100%;transition:transform .3s ease}
+.slide-img{flex:0 0 100%;height:100%;object-fit:cover;display:block}
+.slide-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.slide-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}
+.slide-dot.on{background:#fff;width:14px;border-radius:3px}
+.slide-none{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px}
+
+/* 본문 */
+.post-head{padding:14px 16px 10px;border-bottom:.5px solid #f5f5f5}
+.post-tag-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.post-tag{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700}
+.tag-mate{background:#1A5D1A;color:#fff}
+.tag-food{background:#f5c800;color:#333}
+.tag-weather{background:#60a5fa;color:#fff}
+.tag-info{background:#007bc1;color:#fff}
+.post-city{font-size:11px;color:#999}
+.post-title{font-size:16px;font-weight:700;color:#111;line-height:1.4;margin-bottom:10px}
+.post-meta{display:flex;align-items:center;gap:8px}
+.post-av{width:28px;height:28px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#555;flex-shrink:0}
+.post-nick{font-size:12px;font-weight:600;color:#333}
+.post-date{font-size:11px;color:#bbb}
+
+/* 내용 */
+.post-body{padding:14px 16px;font-size:13px;color:#333;line-height:1.8;border-bottom:.5px solid #f5f5f5;white-space:pre-wrap;word-break:break-all}
+
+/* 좋아요/공유 */
+.action-row{display:flex;align-items:center;gap:14px;padding:11px 16px;border-bottom:.5px solid #f5f5f5}
+.act-btn{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-size:12px;color:#888;font-family:inherit;padding:4px 0;transition:.12s}
+.act-btn.liked{color:#e53935}
+.act-btn svg{width:16px;height:16px;flex-shrink:0;transition:.15s}
+.act-btn.liked svg{fill:#e53935;stroke:#e53935}
+
+/* 댓글 */
+.cmt-head{padding:12px 16px 6px;font-size:12px;font-weight:700;color:#333;display:flex;align-items:center;gap:5px}
+.cmt-count{font-size:11px;color:#1A5D1A;font-weight:700}
+.cmt-item{padding:10px 16px;border-bottom:.5px solid #f8f8f8;display:flex;gap:9px}
+.cmt-av{width:26px;height:26px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#555;flex-shrink:0;margin-top:1px}
+.cmt-body{flex:1;min-width:0}
+.cmt-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.cmt-nick{font-size:11px;font-weight:700;color:#333}
+.cmt-date{font-size:10px;color:#bbb}
+.cmt-txt{font-size:12px;color:#444;line-height:1.5;word-break:break-all}
+.cmt-like{display:flex;align-items:center;gap:3px;font-size:10px;color:#bbb;margin-top:4px;cursor:pointer;width:fit-content}
+.cmt-empty{padding:24px 16px;text-align:center;font-size:12px;color:#bbb}
+
+/* 댓글 입력 */
+.cmt-input-bar{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px;align-items:center}
+.cmt-input{flex:1;padding:8px 12px;border-radius:20px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;background:#f8f8f8;color:#111;transition:.15s}
+.cmt-input:focus{border-color:#1A5D1A;background:#fff}
+.cmt-submit{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.cmt-submit:disabled{background:#ccc}
+.cmt-submit svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* 로딩 */
+.loading{padding:40px 16px;text-align:center;font-size:12px;color:#bbb}
+
+/* 토스트 */
+.toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span style="font-size:13px;font-weight:700;color:#111">여행톡</span>
+    <div style="width:30px"></div>
+  </div>
+
+  <div class="scroll-wrap" id="scroll-wrap">
+    <div class="loading" id="loading">불러오는 중...</div>
+  </div>
+
+  <!-- 댓글 입력창 -->
+  <div class="cmt-input-bar">
+    <input class="cmt-input" id="cmt-input" placeholder="댓글을 입력해주세요" maxlength="300" oninput="syncSubmitBtn()"/>
+    <button class="cmt-submit" id="cmt-submit" onclick="submitComment()" disabled>
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(location.search);
+const postId = params.get('id');
+
+window._db = db;
+window._postId = postId;
+
+// 게시글 불러오기
+async function loadPost(){
+  if(!postId){ document.getElementById('loading').textContent='게시글을 찾을 수 없어요'; return; }
+  try{
+    const snap = await getDoc(doc(db,'posts',postId));
+    if(!snap.exists()){ document.getElementById('loading').textContent='게시글을 찾을 수 없어요'; return; }
+    window._post = { id: snap.id, ...snap.data() };
+    if(window.renderPost) window.renderPost(window._post);
+  }catch(e){ document.getElementById('loading').textContent='불러오기 실패'; }
+}
+
+// 댓글 실시간
+function listenComments(){
+  if(!postId) return;
+  const q = query(collection(db,'posts',postId,'comments'), orderBy('createdAt','asc'));
+  onSnapshot(q, function(snapshot){
+    var cmts = [];
+    snapshot.forEach(function(d){ cmts.push({id:d.id,...d.data()}); });
+    if(window.renderComments) window.renderComments(cmts);
+  });
+}
+
+// 댓글 저장
+window._addComment = async function(text){
+  await addDoc(collection(db,'posts',postId,'comments'),{
+    text: text,
+    nickname: '해카마왕',
+    createdAt: new Date()
+  });
+  // 댓글수 업데이트
+  try{ await updateDoc(doc(db,'posts',postId),{ commentCount: increment(1) }); }catch(e){}
+};
+
+// 좋아요
+window._toggleLike = async function(){
+  try{ await updateDoc(doc(db,'posts',postId),{ likeCount: increment(1) }); }catch(e){}
+};
+
+loadPost();
+listenComments();
+</script>
+
+<script>
+function timeAgo(ts){
+  if(!ts) return '방금 전';
+  var t = ts.toMillis ? ts.toMillis() : (ts.seconds ? ts.seconds*1000 : ts);
+  var diff = Math.floor((Date.now()-t)/60000);
+  if(diff<1) return '방금 전';
+  if(diff<60) return diff+'분 전';
+  if(diff<1440) return Math.floor(diff/60)+'시간 전';
+  return Math.floor(diff/1440)+'일 전';
+}
+
+var _liked = false;
+var _slideIdx = 0;
+var _images = [];
+
+var tagMap = {
+  '동행':'tag-mate','맛집':'tag-food','날씨':'tag-weather','정보':'tag-info'
+};
+var emojiMap = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
+
+window.renderPost = function(p){
+  _images = p.images || [];
+  var tagClass = tagMap[p.category]||'tag-info';
+  var emoji = emojiMap[p.category]||'✈️';
+  var avatarLetter = (p.nickname||'여').charAt(0);
+  var date = p.createdAt ? timeAgo(p.createdAt) : '';
+  var likes = p.likeCount || 0;
+
+  // 슬라이드
+  var slideHtml = '';
+  if(_images.length){
+    var imgs = _images.map(function(src){
+      return '<img class="slide-img" src="'+src+'" loading="lazy"/>';
+    }).join('');
+    var dots = _images.length > 1 ? '<div class="slide-dots" id="slide-dots">'+_images.map(function(_,i){
+      return '<div class="slide-dot'+(i===0?' on':'')+'" onclick="slideTo('+i+')"></div>';
+    }).join('')+'</div>' : '';
+    slideHtml = '<div class="slide-wrap" id="slide-wrap"><div class="slide-inner" id="slide-inner">'+imgs+'</div>'+dots+'</div>';
+  }
+
+  var html = slideHtml
+    + '<div class="post-head">'
+    + '<div class="post-tag-row"><span class="post-tag '+tagClass+'">'+(p.category||'정보')+'</span><span class="post-city">'+( p.city||'')+'</span></div>'
+    + '<div class="post-title">'+p.title+'</div>'
+    + '<div class="post-meta"><div class="post-av">'+avatarLetter+'</div><span class="post-nick">'+(p.nickname||'여행자')+'</span><span class="post-date">'+date+'</span></div>'
+    + '</div>'
+    + '<div class="post-body">'+(p.body||'')+'</div>'
+    + '<div class="action-row">'
+    + '<button class="act-btn" id="like-btn" onclick="toggleLike()">'
+    + '<svg viewBox="0 0 24 24" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
+    + '<span id="like-count">'+likes+'</span></div>'
+    + '<button class="act-btn" onclick="sharePost()">'
+    + '<svg viewBox="0 0 24 24" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
+    + '공유</button>'
+    + '</div>'
+    + '<div class="cmt-head">댓글 <span class="cmt-count" id="cmt-count">0</span></div>'
+    + '<div id="cmt-list"><div class="cmt-empty">아직 댓글이 없어요<br>첫 댓글을 남겨보세요 💬</div></div>';
+
+  document.getElementById('loading').style.display='none';
+  var wrap = document.getElementById('scroll-wrap');
+  wrap.innerHTML = html;
+
+  // 슬라이드 터치
+  if(_images.length > 1) initSlideSwipe();
+};
+
+window.renderComments = function(cmts){
+  var el = document.getElementById('cmt-list');
+  if(!el) return;
+  var countEl = document.getElementById('cmt-count');
+  if(countEl) countEl.textContent = cmts.length;
+  if(!cmts.length){
+    el.innerHTML='<div class="cmt-empty">아직 댓글이 없어요<br>첫 댓글을 남겨보세요 💬</div>';
+    return;
+  }
+  el.innerHTML = cmts.map(function(c){
+    var letter = (c.nickname||'여').charAt(0);
+    return '<div class="cmt-item">'
+      +'<div class="cmt-av">'+letter+'</div>'
+      +'<div class="cmt-body">'
+      +'<div class="cmt-top"><span class="cmt-nick">'+(c.nickname||'여행자')+'</span><span class="cmt-date">'+timeAgo(c.createdAt)+'</span></div>'
+      +'<div class="cmt-txt">'+c.text+'</div>'
+      +'</div></div>';
+  }).join('');
+};
+
+function toggleLike(){
+  if(_liked) return;
+  _liked = true;
+  var btn = document.getElementById('like-btn');
+  if(btn) btn.classList.add('liked');
+  var cnt = document.getElementById('like-count');
+  if(cnt) cnt.textContent = parseInt(cnt.textContent||0)+1;
+  if(window._toggleLike) window._toggleLike();
+}
+
+async function submitComment(){
+  var input = document.getElementById('cmt-input');
+  var text = input.value.trim();
+  if(!text) return;
+  var btn = document.getElementById('cmt-submit');
+  btn.disabled = true;
+  try{
+    if(window._addComment) await window._addComment(text);
+    input.value = '';
+    syncSubmitBtn();
+  }catch(e){ showToast('댓글 등록에 실패했어요'); btn.disabled=false; }
+}
+
+function syncSubmitBtn(){
+  var input = document.getElementById('cmt-input');
+  var btn = document.getElementById('cmt-submit');
+  if(btn) btn.disabled = !input.value.trim();
+}
+
+function sharePost(){
+  if(navigator.share){
+    navigator.share({title:'HAEKA 여행톡', url: location.href});
+  } else {
+    navigator.clipboard.writeText(location.href).then(function(){ showToast('링크가 복사됐어요!'); });
+  }
+}
+
+function slideTo(idx){
+  _slideIdx = idx;
+  var inner = document.getElementById('slide-inner');
+  if(inner) inner.style.transform='translateX(-'+(idx*100)+'%)';
+  document.querySelectorAll('.slide-dot').forEach(function(d,i){ d.classList.toggle('on',i===idx); });
+}
+
+function initSlideSwipe(){
+  var startX=0, isDrag=false;
+  var wrap = document.getElementById('slide-wrap');
+  if(!wrap) return;
+  wrap.addEventListener('touchstart',function(e){ startX=e.touches[0].clientX; isDrag=true; },{passive:true});
+  wrap.addEventListener('touchend',function(e){
+    if(!isDrag) return; isDrag=false;
+    var diff = e.changedTouches[0].clientX - startX;
+    if(Math.abs(diff)<30) return;
+    if(diff<0 && _slideIdx<_images.length-1) slideTo(_slideIdx+1);
+    else if(diff>0 && _slideIdx>0) slideTo(_slideIdx-1);
+  },{passive:true});
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },2000);
+}
+
+// 엔터로 댓글 제출
+document.getElementById('cmt-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); submitComment(); }
+});
+</script>
+</body>
+</html>
