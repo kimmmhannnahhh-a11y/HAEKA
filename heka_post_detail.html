@@ -99,7 +99,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -158,6 +158,15 @@ window._listenReplies = function(cmtId, callback){
     snap.forEach(function(d){ replies.push({id:d.id,...d.data()}); });
     callback(replies);
   });
+};
+
+window._deleteComment = async function(cmtId){
+  await deleteDoc(doc(db,"posts",postId,"comments",cmtId));
+  try{ await updateDoc(doc(db,"posts",postId),{commentCount:increment(-1)}); }catch(e){}
+};
+
+window._deleteReply = async function(cmtId, replyId){
+  await deleteDoc(doc(db,"posts",postId,"comments",cmtId,"replies",replyId));
 };
 
 loadPost();
@@ -242,7 +251,10 @@ window.renderComments=function(cmts){
       +'<div class="cmt-body">'
       +'<div class="cmt-top"><span class="cmt-nick">'+(c.nickname||'여행자')+'</span><span class="cmt-date">'+timeAgo(c.createdAt)+'</span></div>'
       +'<div class="cmt-txt">'+c.text+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:5px">'
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+c.id+'\')">답글 달기</button>'
+      +(isMyComment?'<button class="cmt-reply-btn" style="color:#ff6b6b" onclick="deleteCmt(\''+c.id+'\')">삭제</button>':'')
+      +'</div>'
       +'</div></div>'
       +'<div id="replies-'+c.id+'"></div>'
       +'<div id="reply-input-'+c.id+'" style="display:none">'
@@ -280,6 +292,22 @@ function renderReplies(cmtId, replies){
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')">답글 달기</button>'
       +'</div></div>';
   }).join('');
+}
+
+async function deleteCmt(cmtId){
+  if(!confirm('댓글을 삭제할까요?')) return;
+  try{
+    if(window._deleteComment) await window._deleteComment(cmtId);
+    var el=document.getElementById('cmt-wrap-'+cmtId);
+    if(el) el.remove();
+  }catch(e){ showToast('삭제에 실패했어요'); }
+}
+
+async function deleteReply(cmtId, replyId){
+  if(!confirm('답글을 삭제할까요?')) return;
+  try{
+    if(window._deleteReply) await window._deleteReply(cmtId, replyId);
+  }catch(e){ showToast('삭제에 실패했어요'); }
 }
 
 function toggleReplyInput(cmtId){
