@@ -92,7 +92,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="city-search-wrap">
       <div class="city-search-box">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
-        <input class="city-search-input" id="city-search-input" placeholder="도시명 검색" oninput="filterCities(this.value)"/>
+        <input class="city-search-input" id="city-search-input" placeholder="나라명, 도시명으로 검색" oninput="filterCities(this.value)"/>
       </div>
     </div>
     <!-- 검색 결과 -->
@@ -326,18 +326,38 @@ function filterCities(q){
   twoCol.style.display='none';
   searchList.classList.add('show');
   var results=[];
+  var countryResults=[];
   COUNTRIES.forEach(function(c){
     var countryMatch=c.name.indexOf(q)>-1;
+    if(countryMatch) countryResults.push(c);
     c.cities.forEach(function(city){
-      if(city.indexOf(q)>-1||countryMatch) results.push({flag:c.flag,country:c.name,city:city});
+      if(city.indexOf(q)>-1) results.push({flag:c.flag,country:c.name,city:city});
     });
   });
-  if(!results.length){searchList.innerHTML='<div class="city-empty">검색 결과가 없어요</div>';return;}
-  searchList.innerHTML=results.map(function(r){
-    return '<div style="padding:11px 4px;font-size:13px;color:#333;border-bottom:.5px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;gap:8px" onclick="selectCity(\''+r.city+'\')">'
+  if(!countryResults.length&&!results.length){searchList.innerHTML='<div class="city-empty">검색 결과가 없어요</div>';return;}
+  var html='';
+  // 나라 결과: 탭하면 2단 목록으로 이동
+  countryResults.forEach(function(c){
+    html+='<div style="padding:11px 4px;font-size:13px;color:#1A5D1A;font-weight:700;border-bottom:.5px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;gap:8px" onclick="selectCountryFromSearch(\''+c.name+'\')">'
+      +'<span style="font-size:15px">'+c.flag+'</span><span>'+c.name+'</span>'
+      +'<span style="font-size:11px;color:#bbb;font-weight:400;margin-left:auto">도시 선택 →</span></div>';
+  });
+  // 도시 결과
+  results.forEach(function(r){
+    html+='<div style="padding:11px 4px;font-size:13px;color:#333;border-bottom:.5px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;gap:8px" onclick="selectCity(\''+r.city+'\')">'
       +'<span style="font-size:15px">'+r.flag+'</span><span>'+r.city+'</span>'
       +'<span style="font-size:11px;color:#bbb;margin-left:2px">'+r.country+'</span></div>';
-  }).join('');
+  });
+  searchList.innerHTML=html;
+}
+function selectCountryFromSearch(name){
+  _selectedCountry=COUNTRIES.find(function(c){return c.name===name;});
+  document.getElementById('city-search-input').value='';
+  document.getElementById('city-search-list').classList.remove('show');
+  document.getElementById('city-2col').style.display='flex';
+  renderCountryCol();
+  renderCityCol();
+  document.getElementById('city-col').scrollTop=0;
 }
 function selectCity(name){
   _selectedCity=name;
