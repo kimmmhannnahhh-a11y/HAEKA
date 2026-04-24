@@ -302,7 +302,7 @@ onSnapshot(postsQ, function(snapshot){
       +'<div class="ycontent">'
       +'<div class="ytop"><span class="ybadge '+badge+'">'+(p.category||'정보')+'</span><span class="ycity">'+(p.city||'')+'</span></div>'
       +'<div class="ytitle">'+p.title+'</div>'
-      +'<div class="yfoot"><span>💬 '+(p.commentCount||0)+'</span><span>❤ '+(p.likeCount||0)+'</span><span>'+ago+'</span></div>'
+      +'<div class="yfoot"><span>❤ '+(p.likeCount||0)+'</span><span>💬 '+(p.commentCount||0)+'</span><span>'+ago+'</span></div>'
       +'</div>'+thumb+'</div>';
   });
   listEl.innerHTML = html;
