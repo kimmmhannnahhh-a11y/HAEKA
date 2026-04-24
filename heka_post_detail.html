@@ -83,7 +83,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
     <span style="font-size:13px;font-weight:700;color:#111">여행톡</span>
-    <div style="width:30px"></div>
+    <div id="post-del-btn" style="width:30px"></div>
   </div>
   <div class="scroll-wrap" id="scroll-wrap">
     <div class="loading" id="loading">불러오는 중...</div>
@@ -224,7 +224,6 @@ window.renderPost=function(p){
     +'<div class="post-meta"><div class="post-av">'+avatarLetter+'</div><span class="post-nick">'+(p.nickname||'여행자')+'</span><span class="post-date">'+timeAgo(p.createdAt)+'</span></div>'
     +'</div>'
     +'<div class="post-body">'+(p.body||'')+'</div>'
-    +(p.nickname==='해카마왕'?'<div style="display:flex;justify-content:flex-end;padding:6px 16px 0"><button onclick="deletePost()" style="font-size:11px;color:#e53935;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600">🗑️ 글 삭제</button></div>':'')
     +'<div class="action-row">'
     +'<div class="act-left"><button class="act-btn" id="like-btn" onclick="toggleLike()">'+heartSvg+'<span id="like-count">'+likes+'</span></button></div>'
     +'<div class="act-right">'
@@ -234,6 +233,15 @@ window.renderPost=function(p){
     +'<div class="cmt-head">댓글 <span class="cmt-count" id="cmt-count">0</span></div>'
     +'<div id="cmt-list"><div class="cmt-empty">아직 댓글이 없어요<br>첫 댓글을 남겨보세요 💬</div></div>';
 
+  // 본인 글이면 topbar에 X 삭제 버튼
+  var delWrap = document.getElementById('post-del-btn');
+  if(delWrap){
+    if(p.nickname==='해카마왕'){
+      delWrap.innerHTML='<button onclick="deletePost()" style="width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#e53935">✕</button>';
+    } else {
+      delWrap.innerHTML='<div style="width:30px"></div>';
+    }
+  }
   document.getElementById('loading').style.display='none';
   document.getElementById('scroll-wrap').innerHTML=html;
   if(_images.length>1) initSlideSwipe();
@@ -301,7 +309,7 @@ function renderReplies(cmtId, replies){
 }
 
 async function deletePost(){
-  if(!confirm('정말 이 글을 삭제할까요?')) return;
+  if(!confirm('정말 삭제하시겠습니까?')) return;
   try{
     if(window._deletePost) await window._deletePost();
     alert('삭제됐어요!');
