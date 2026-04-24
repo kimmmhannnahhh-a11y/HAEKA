@@ -188,6 +188,18 @@ function timeAgo(ts){
   return Math.floor(diff/1440)+'일 전';
 }
 
+function formatDate(ts){
+  if(!ts) return '';
+  var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
+  var d=new Date(t);
+  var yyyy=d.getFullYear();
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var dd=String(d.getDate()).padStart(2,'0');
+  var hh=String(d.getHours()).padStart(2,'0');
+  var min=String(d.getMinutes()).padStart(2,'0');
+  return yyyy+'.'+mm+'.'+dd+' '+hh+':'+min;
+}
+
 var _liked=false, _saved=false;
 var _slideIdx=0, _images=[];
 var _activeReplyId=null, _replyUnsubs={};
@@ -221,7 +233,7 @@ window.renderPost=function(p){
     +'<div class="post-head">'
     +'<div class="post-tag-row"><span class="post-tag '+tagClass+'">'+(p.category||'정보')+'</span><span class="post-city">'+(p.city||'')+'</span></div>'
     +'<div class="post-title">'+p.title+'</div>'
-    +'<div class="post-meta"><div class="post-av">'+avatarLetter+'</div><span class="post-nick">'+(p.nickname||'여행자')+'</span><span class="post-date">'+timeAgo(p.createdAt)+'</span></div>'
+    +'<div class="post-meta"><div class="post-av">'+avatarLetter+'</div><span class="post-nick">'+(p.nickname||'여행자')+'</span><span class="post-date">'+formatDate(p.createdAt)+'</span></div>'
     +'</div>'
     +'<div class="post-body">'+(p.body||'')+'</div>'
     +'<div class="action-row">'
@@ -263,7 +275,7 @@ window.renderComments=function(cmts){
       +'<div class="cmt-item">'
       +'<div class="cmt-av">'+letter+'</div>'
       +'<div class="cmt-body">'
-      +'<div class="cmt-top"><span class="cmt-nick">'+(c.nickname||'여행자')+'</span><span class="cmt-date">'+timeAgo(c.createdAt)+'</span></div>'
+      +'<div class="cmt-top"><span class="cmt-nick">'+(c.nickname||'여행자')+'</span><span class="cmt-date">'+formatDate(c.createdAt)+'</span></div>'
       +'<div class="cmt-txt">'+c.text+'</div>'
       +'<div style="display:flex;gap:8px;margin-top:5px">'
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+c.id+'\')">답글 달기</button>'
@@ -302,7 +314,7 @@ function renderReplies(cmtId, replies){
     return '<div class="reply-item">'
       +'<div class="reply-av">'+letter+'</div>'
       +'<div class="reply-body">'
-      +'<span class="reply-nick">'+(r.nickname||'여행자')+'</span><span class="reply-date">'+timeAgo(r.createdAt)+'</span>'
+      +'<span class="reply-nick">'+(r.nickname||'여행자')+'</span><span class="reply-date">'+formatDate(r.createdAt)+'</span>'
       +'<div class="reply-txt">'+r.text+'</div>'
       +'<div style="display:flex;gap:8px;margin-top:4px">'
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')" >답글 달기</button>'
