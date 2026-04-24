@@ -423,10 +423,13 @@ function toggleSave(){
 
 function sharePost(){
   var shareData = {title:'HAEKA 여행톡', text:'해외 카드결제 정보를 확인해보세요!', url:location.href};
-  if(navigator.share && navigator.canShare && navigator.canShare(shareData)){
-    navigator.share(shareData).catch(function(){});
-  } else if(navigator.share){
-    navigator.share({title:'HAEKA 여행톡', url:location.href}).catch(function(){});
+  if(typeof navigator.share === 'function'){
+    navigator.share(shareData).catch(function(e){
+      // 사용자가 취소한 경우 무시
+      if(e.name !== 'AbortError'){
+        navigator.clipboard.writeText(location.href).then(function(){ showToast('링크가 복사됐어요!'); });
+      }
+    });
   } else {
     navigator.clipboard.writeText(location.href).then(function(){
       showToast('링크가 복사됐어요!');
