@@ -230,19 +230,13 @@ onSnapshot(q, function(snapshot){
   });
   // Firebase 글 + 더미 데이터 합치기
   window._fbPosts = fbPosts;
-  window.posts = fbPosts.concat(window._dummyPosts || []);
+  window.posts = fbPosts;
   if(window.renderPosts) window.renderPosts(window.posts);
 });
 </script>
 
 <script>
-var _dummyPosts = [
-  {av:'🌅', user:'rlagksdk', date:'26.03', city:'도쿄', title:'3월 27-28일 도쿄 동행 구해요', body:'20대 중반 여자고 서로 사진도 찍어주고 같이 맛집가요!', tag:'mate', tagTxt:'동행', thumb:'🎒', thumbBg:'#eef0f8', cmts:0, likes:1, time:'1시간 전'},
-  {av:'🌊', user:'한치', date:'26.03', city:'오사카', title:'3/30~4/2 오사카 놀러가실분', body:'오사카 처음인데 같이 다닐 분 찾아요! 도톤보리 맛집도 같이 찾고 싶어요', tag:'mate', tagTxt:'동행', thumb:'🌸', thumbBg:'#f0f5ee', cmts:5, likes:3, time:'3시간 전'},
-  {av:'🍜', user:'Choi', date:'26.03', city:'자그레브', title:'자그레브 숨은 라멘집 발견', body:'웨이팅 없고 가격도 착해요. 위치 댓글로 공유할게요', tag:'food', tagTxt:'맛집', thumb:'🍜', thumbBg:'#f5f0e8', cmts:11, likes:24, time:'5시간 전'},
-];
-window._dummyPosts = _dummyPosts;
-var posts = _dummyPosts.slice();
+var posts = [];
 
 function renderPosts(list){
   var el = document.getElementById('post-list');
