@@ -277,6 +277,7 @@ function renderReplies(cmtId, replies){
       +'<div class="reply-body">'
       +'<span class="reply-nick">'+(r.nickname||'여행자')+'</span><span class="reply-date">'+timeAgo(r.createdAt)+'</span>'
       +'<div class="reply-txt">'+r.text+'</div>'
+      +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')">답글 달기</button>'
       +'</div></div>';
   }).join('');
 }
