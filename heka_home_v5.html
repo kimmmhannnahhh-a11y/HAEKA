@@ -122,7 +122,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .ytitle{font-size:11px;font-weight:600;color:#111;line-height:1.4;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ybody{font-size:10px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .yfoot{display:flex;gap:7px;margin-top:3px;font-size:10px;color:#bbb}
-.ythumb-r{width:60px;height:60px;border-radius:6px;overflow:hidden;margin-top:4px;display:inline-block}
+.ythumb-r{width:52px;height:52px;border-radius:6px;overflow:hidden;flex-shrink:0;align-self:flex-end}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#1A5D1A;font-weight:500}
@@ -296,7 +296,7 @@ onSnapshot(postsQ, function(snapshot){
     // 좌측: 프사(아바타 이니셜), 우측: 사진 첨부된 글만 썸네일
     var avatarHtml = '<div class="ythumb" style="background:#e8e8e8">'+emoji+'</div>';
     var thumb = (p.images && p.images[0])
-      ? '<div class="ythumb-r"><img src="'+p.images[0]+'" style="width:60px;height:60px;object-fit:cover;display:block;border-radius:6px"/></div>'
+      ? '<div class="ythumb-r"><img src="'+p.images[0]+'" style="width:52px;height:52px;object-fit:cover;display:block"/></div>'
       : '';
     html += '<div class="ycard" onclick="window.location.href=\'heka_post_detail.html?id='+doc.id+'\'">'
       +avatarHtml
