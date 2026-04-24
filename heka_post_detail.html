@@ -322,7 +322,11 @@ window.renderComments=function(cmts){
   }).join('');
 
   cmts.forEach(function(c){
-    if(_replyUnsubs[c.id]) return;
+    // DOM이 새로 그려졌으니 기존 구독 해제 후 재구독
+    if(_replyUnsubs[c.id]){
+      _replyUnsubs[c.id](); // unsubscribe
+      delete _replyUnsubs[c.id];
+    }
     if(window._listenReplies){
       _replyUnsubs[c.id]=window._listenReplies(c.id, function(replies){
         renderReplies(c.id, replies);
