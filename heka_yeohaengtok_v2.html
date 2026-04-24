@@ -257,7 +257,7 @@ function renderPosts(list){
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer">'+dotHtml+'<div class="fpmain"><div class="fptitle">'+p.title+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><span class="fpd" style="margin-left:2px">'+(p.city||'')+'</span><span>❤ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span>'+p.time+'</span><div class="fpav" style="margin-left:2px">'+p.av+'</div><span class="fpu">'+p.user+'</span></div></div>'+thumbHtml+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer">'+dotHtml+'<div class="fpmain"><div class="fptitle">'+p.title+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><span class="fpd">'+(p.city||'')+'</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span>'+p.time+'</span><div class="fpav">'+p.av+'</div><span style="font-size:10px;color:#bbb">'+p.user+'</span></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
