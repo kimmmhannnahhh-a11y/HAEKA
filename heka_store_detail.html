@@ -108,7 +108,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+window._deleteStore = async function(storeId){
+  await deleteDoc(doc(db,"stores",storeId));
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
@@ -169,7 +173,7 @@ async function loadStore() {
   if (storeId) {
     try {
       var snap = await getDoc(doc(db, 'stores', storeId));
-      if (snap.exists()) store = { id: snap.id, ...snap.data() };
+      if (snap.exists()) { store = { id: snap.id, ...snap.data() }; window._storeLoaded = store; }
     } catch(e) { console.log('Firebase 오류:', e); }
   }
 
@@ -258,7 +262,27 @@ async function renderStore(store) {
     var d = new Date(store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt);
     dateEl.textContent = d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
   }
-  nickEl.textContent = '등록자 ' + (store.nickname || store.nick || '해카마왕');
+  var storeNick = store.nickname || store.nick || '해카마왕';
+  nickEl.textContent = '등록자 ' + storeNick;
+  // 본인 글이면 삭제 버튼 추가
+  var MY_NICK = '해카마왕';
+  if(storeNick === MY_NICK && store.id){
+    var btns = document.getElementById('bottom-btns');
+    if(btns){
+      var delBtn = document.createElement('button');
+      delBtn.style.cssText = 'flex:1;padding:12px;border-radius:12px;background:#fff0f0;color:#e53935;font-size:12px;font-weight:700;border:1.5px solid #e53935;cursor:pointer;font-family:inherit';
+      delBtn.textContent = '🗑️ 매장 삭제';
+      delBtn.onclick = async function(){
+        if(!confirm('정말 이 매장을 삭제할까요?')) return;
+        try{
+          if(window._deleteStore) await window._deleteStore(store.id);
+          alert('삭제됐어요!');
+          window.location.href = 'heka_home_v5.html';
+        }catch(e){ alert('삭제에 실패했어요'); }
+      };
+      btns.appendChild(delBtn);
+    }
+  }
 
   // 등록 정보 (몇분전 제거)
   // document.getElementById('meta-date').textContent = timeAgo(store.createdAt);
@@ -524,7 +548,7 @@ window.addEventListener('DOMContentLoaded', loadStore);
   </div>
 
   <!-- 하단 버튼 -->
-  <div class="bottom-btns">
+  <div class="bottom-btns" id="bottom-btns">
     <button class="btn-report" onclick="window.location.href='heka_register.html'">✍️ 결제 제보하기</button>
   </div>
 

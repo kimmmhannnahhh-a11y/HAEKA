@@ -160,6 +160,10 @@ window._listenReplies = function(cmtId, callback){
   });
 };
 
+window._deletePost = async function(){
+  await deleteDoc(doc(db,"posts",postId));
+};
+
 window._deleteComment = async function(cmtId){
   await deleteDoc(doc(db,"posts",postId,"comments",cmtId));
   try{ await updateDoc(doc(db,"posts",postId),{commentCount:increment(-1)}); }catch(e){}
@@ -220,6 +224,7 @@ window.renderPost=function(p){
     +'<div class="post-meta"><div class="post-av">'+avatarLetter+'</div><span class="post-nick">'+(p.nickname||'여행자')+'</span><span class="post-date">'+timeAgo(p.createdAt)+'</span></div>'
     +'</div>'
     +'<div class="post-body">'+(p.body||'')+'</div>'
+    +(p.nickname==='해카마왕'?'<div style="display:flex;justify-content:flex-end;padding:6px 16px 0"><button onclick="deletePost()" style="font-size:11px;color:#e53935;background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600">🗑️ 글 삭제</button></div>':'')
     +'<div class="action-row">'
     +'<div class="act-left"><button class="act-btn" id="like-btn" onclick="toggleLike()">'+heartSvg+'<span id="like-count">'+likes+'</span></button></div>'
     +'<div class="act-right">'
@@ -292,6 +297,15 @@ function renderReplies(cmtId, replies){
       +'<button class="cmt-reply-btn" onclick="toggleReplyInput(\''+cmtId+'\')">답글 달기</button>'
       +'</div></div>';
   }).join('');
+}
+
+async function deletePost(){
+  if(!confirm('정말 이 글을 삭제할까요?')) return;
+  try{
+    if(window._deletePost) await window._deletePost();
+    alert('삭제됐어요!');
+    window.location.href='heka_yeohaengtok_v2.html';
+  }catch(e){ showToast('삭제에 실패했어요'); }
 }
 
 async function deleteCmt(cmtId){
