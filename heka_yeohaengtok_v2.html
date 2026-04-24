@@ -52,6 +52,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fptag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:600;flex-shrink:0}
 .fptag-mate{background:#1A5D1A;color:#fff}
 .fptag-food{background:#f5c800;color:#333}
+.fptag-weather{background:#60a5fa;color:#fff}
 .fptag-info{background:#007bc1;color:#fff}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
 .fpthumb{width:64px;height:72px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;align-self:center}
@@ -247,7 +248,7 @@ function renderPosts(list){
   var el = document.getElementById('post-list');
   if(!list.length){ el.innerHTML='<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">검색 결과가 없어요</div>'; return; }
   el.innerHTML = list.map(function(p){
-    var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':'fptag-info';
+    var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
     // 사진 첨부된 글만 우측 썸네일 표시
     var hasImg = p.fromFirebase && p.images && p.images[0];
     var thumbHtml = hasImg
