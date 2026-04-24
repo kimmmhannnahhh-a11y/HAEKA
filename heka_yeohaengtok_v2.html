@@ -41,6 +41,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpost{padding:12px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:.12s}
 .fpost:last-child{border-bottom:none}
 .fpost:hover{background:#fafafa}
+.new-dot{width:7px;height:7px;border-radius:50%;background:#e53935;flex-shrink:0;margin-top:5px}
 .fpav{width:28px;height:28px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
 .fpmain{flex:1;min-width:0}
 .fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
@@ -238,18 +239,24 @@ onSnapshot(q, function(snapshot){
 <script>
 var posts = [];
 
+function getReadSet(){ try{ return new Set(JSON.parse(localStorage.getItem('haeka_read_posts')||'[]')); }catch(e){ return new Set(); } }
+function markRead(id){ try{ var s=getReadSet(); s.add(id); localStorage.setItem('haeka_read_posts',JSON.stringify([...s])); }catch(e){} }
+
 function renderPosts(list){
   var el = document.getElementById('post-list');
   if(!list.length){ el.innerHTML='<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">검색 결과가 없어요</div>'; return; }
+  var readSet = getReadSet();
   el.innerHTML = list.map(function(p){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
-    // 사진 첨부된 글만 우측 썸네일 표시
     var hasImg = p.fromFirebase && p.images && p.images[0];
     var thumbHtml = hasImg
       ? '<div class="fpthumb" style="background:#f0f0f0;overflow:hidden;padding:0"><img src="'+p.images[0]+'" style="width:100%;height:100%;object-fit:cover"/></div>'
       : '';
+    var isNew = p.id && !readSet.has(p.id);
+    var dotHtml = isNew ? '<div class="new-dot"></div>' : '<div style="width:7px;flex-shrink:0"></div>';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
-    return '<div class="fpost" onclick="location.href=\''+detailUrl+'\'" style="cursor:pointer"><div class="fpav">'+p.av+'</div><div class="fpmain"><div class="fphead"><span class="fpu">'+p.user+'</span><span class="fpd">'+p.date+' · '+p.city+'</span></div><div class="fptitle">'+p.title+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><div class="fpfooter-info"><span>❤ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span>'+p.time+'</span></div></div></div>'+thumbHtml+'</div>';
+    var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer">'+dotHtml+'<div class="fpav">'+p.av+'</div><div class="fpmain"><div class="fphead"><span class="fpu">'+p.user+'</span><span class="fpd">'+p.date+' · '+p.city+'</span></div><div class="fptitle">'+p.title+'</div><div class="fpbottom"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span><div class="fpfooter-info"><span>❤ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span>'+p.time+'</span></div></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
