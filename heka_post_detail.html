@@ -12,9 +12,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111;line-height:1}
 .scroll-wrap{flex:1;overflow-y:auto;padding-bottom:70px}
 .scroll-wrap::-webkit-scrollbar{display:none}
-.slide-wrap{position:relative;width:100%;height:200px;background:#1a2e1a;overflow:hidden}
-.slide-inner{display:flex;height:100%;transition:transform .3s ease}
-.slide-img{flex:0 0 100%;height:100%;object-fit:cover;display:block}
+.slide-wrap{position:relative;width:100%;background:#000;overflow:hidden}
+.slide-inner{display:flex;transition:transform .3s ease}
+.slide-img{flex:0 0 100%;width:100%;max-height:320px;object-fit:contain;display:block;background:#000}
 .slide-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
 .slide-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}
 .slide-dot.on{background:#fff;width:14px;border-radius:3px}
