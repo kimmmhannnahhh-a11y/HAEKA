@@ -22,9 +22,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .post-tag-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
 .post-tag{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700}
 .tag-mate{background:#1A5D1A;color:#fff}
-.tag-food{background:#f5c800;color:#333}
-.tag-weather{background:#60a5fa;color:#fff}
-.tag-info{background:#007bc1;color:#fff}
+.tag-food{background:#ea6500;color:#fff}
+.tag-weather{background:#3b82f6;color:#fff}
+.tag-info{background:#eab308;color:#fff}
 .post-city{font-size:11px;color:#999}
 .post-title{font-size:16px;font-weight:700;color:#111;line-height:1.4;margin-bottom:10px}
 .post-meta{display:flex;align-items:center;gap:8px}
@@ -139,6 +139,7 @@ window._addComment = async function(text, parentId){
     await addDoc(collection(db,'posts',postId,'comments',parentId,'replies'),{
       text:text, nickname:'해카마왕', createdAt:new Date()
     });
+    try{ await updateDoc(doc(db,'posts',postId),{commentCount:increment(1)}); }catch(e){}
   } else {
     await addDoc(collection(db,'posts',postId,'comments'),{
       text:text, nickname:'해카마왕', createdAt:new Date()
@@ -171,6 +172,7 @@ window._deleteComment = async function(cmtId){
 
 window._deleteReply = async function(cmtId, replyId){
   await deleteDoc(doc(db,"posts",postId,"comments",cmtId,"replies",replyId));
+  try{ await updateDoc(doc(db,"posts",postId),{commentCount:increment(-1)}); }catch(e){}
 };
 
 loadPost();
