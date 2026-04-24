@@ -99,7 +99,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -127,9 +127,20 @@ async function loadPost(){
 function listenComments(){
   if(!postId) return;
   const q = query(collection(db,'posts',postId,'comments'), orderBy('createdAt','asc'));
-  onSnapshot(q, function(snapshot){
+  onSnapshot(q, async function(snapshot){
     var cmts=[];
     snapshot.forEach(function(d){ cmts.push({id:d.id,...d.data()}); });
+
+    // 각 댓글의 대댓글 수 합산해서 실제 총 댓글수 계산 후 Firebase 업데이트
+    try{
+      var total = cmts.length;
+      for(var i=0; i<cmts.length; i++){
+        var rsnap = await getDocs(collection(db,'posts',postId,'comments',cmts[i].id,'replies'));
+        total += rsnap.size;
+      }
+      await updateDoc(doc(db,'posts',postId),{commentCount: total});
+    }catch(e){}
+
     if(window.renderComments) window.renderComments(cmts);
   });
 }
@@ -172,7 +183,11 @@ window._deleteComment = async function(cmtId){
 
 window._deleteReply = async function(cmtId, replyId){
   await deleteDoc(doc(db,"posts",postId,"comments",cmtId,"replies",replyId));
-  try{ await updateDoc(doc(db,"posts",postId),{commentCount:increment(-1)}); }catch(e){}
+  try{
+    var snap=await getDoc(doc(db,"posts",postId));
+    var cur=(snap.data().commentCount||0);
+    await updateDoc(doc(db,"posts",postId),{commentCount:Math.max(0,cur-1)});
+  }catch(e){}
 };
 
 loadPost();
@@ -221,6 +236,11 @@ window.renderPost=function(p){
     var saved=JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]');
     _saved=saved.some(function(s){return s.id===window._postId;});
   }catch(e){}
+  // 좋아요 상태 복원
+  try{
+    var likedPosts=JSON.parse(localStorage.getItem('haeka_liked_posts')||'[]');
+    _liked=likedPosts.indexOf(window._postId)>-1;
+  }catch(e){}
 
   var slideHtml='';
   if(_images.length){
@@ -256,6 +276,11 @@ window.renderPost=function(p){
       delWrap.innerHTML='<div style="width:30px"></div>';
     }
   }
+  // 좋아요 버튼 상태 반영
+  setTimeout(function(){
+    var likeBtn=document.getElementById('like-btn');
+    if(likeBtn && _liked) likeBtn.classList.add('liked');
+  },0);
   document.getElementById('loading').style.display='none';
   document.getElementById('scroll-wrap').innerHTML=html;
   if(_images.length>1) initSlideSwipe();
@@ -394,6 +419,16 @@ function toggleLike(){
   _liked=!_liked;
   var btn=document.getElementById('like-btn');
   var cnt=document.getElementById('like-count');
+  // localStorage에 좋아요 상태 저장
+  try{
+    var likedPosts=JSON.parse(localStorage.getItem('haeka_liked_posts')||'[]');
+    if(_liked){
+      if(likedPosts.indexOf(window._postId)===-1) likedPosts.push(window._postId);
+    } else {
+      likedPosts=likedPosts.filter(function(id){return id!==window._postId;});
+    }
+    localStorage.setItem('haeka_liked_posts',JSON.stringify(likedPosts));
+  }catch(e){}
   if(_liked){
     if(btn) btn.classList.add('liked');
     if(cnt) cnt.textContent=parseInt(cnt.textContent||0)+1;
