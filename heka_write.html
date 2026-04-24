@@ -327,8 +327,9 @@ function filterCities(q){
   searchList.classList.add('show');
   var results=[];
   COUNTRIES.forEach(function(c){
+    var countryMatch=c.name.indexOf(q)>-1;
     c.cities.forEach(function(city){
-      if(city.indexOf(q)>-1) results.push({flag:c.flag,country:c.name,city:city});
+      if(city.indexOf(q)>-1||countryMatch) results.push({flag:c.flag,country:c.name,city:city});
     });
   });
   if(!results.length){searchList.innerHTML='<div class="city-empty">검색 결과가 없어요</div>';return;}
