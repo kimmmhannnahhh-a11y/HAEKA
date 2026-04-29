@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0}
+.back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111;line-height:1}
+
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:16px}
+.scroll-wrap::-webkit-scrollbar{display:none}
+
+/* 카드 */
+.hotpl-card{margin:12px 14px 0;border-radius:12px;overflow:hidden;border:.5px solid #e8e8e8;cursor:pointer;background:#fff}
+.hotpl-card:first-child{margin-top:14px}
+.hotpl-media{width:100%;aspect-ratio:4/3;position:relative;overflow:hidden;background:#1a2e1a}
+.hotpl-media img,.hotpl-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.hotpl-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:8px 12px 10px}
+.live-badge{display:inline-flex;align-items:center;gap:3px;background:#e53935;color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:3px;margin-bottom:4px;letter-spacing:.05em}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hotpl-title{font-size:12px;font-weight:500;color:#fff;line-height:1.4;margin-bottom:4px}
+.hotpl-reporter{display:flex;align-items:center;gap:4px}
+.rep-av{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff}
+.rep-name{font-size:10px;color:rgba(255,255,255,.85)}
+
+/* 정보 영역 */
+.hotpl-info{padding:10px 12px}
+.hotpl-name{font-size:13px;font-weight:700;color:#111;margin-bottom:4px}
+.hotpl-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hotpl-cat{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700}
+.cat-restaurant{background:#ea6500;color:#fff}
+.cat-cafe{background:#6f4e37;color:#fff}
+.cat-pub{background:#3b5bdb;color:#fff}
+.cat-etc{background:#555;color:#fff}
+.hotpl-city{font-size:10px;color:#999}
+.hotpl-cards{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.card-badge{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:700;color:#fff}
+.cb-visa{background:#1a1f71}
+.cb-master{background:#eb001b}
+.cb-jcb{background:#007b40}
+.cb-amex{background:#007bc1}
+.cb-tlog{background:#FF6B00}
+.cb-twallet{background:#FFD600;color:#333}
+.cb-union{background:#e21836}
+.hotpl-time{font-size:10px;color:#bbb;margin-left:auto}
+
+.empty{padding:60px 16px;text-align:center;font-size:13px;color:#bbb}
+.loading{padding:40px 16px;text-align:center;font-size:12px;color:#bbb}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span style="font-size:13px;font-weight:700;color:#111">지금 여기! 실시간 결제 핫플</span>
+    <div style="width:30px"></div>
+  </div>
+  <div class="scroll-wrap" id="scroll-wrap">
+    <div class="loading" id="loading">불러오는 중...</div>
+    <div id="hotpl-list"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app",
+  messagingSenderId:"340038449458",
+  appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const q = query(collection(db,'stores'), orderBy('createdAt','desc'), limit(50));
+onSnapshot(q, function(snapshot){
+  var stores = [];
+  snapshot.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
+  document.getElementById('loading').style.display='none';
+  if(window.renderHotpl) window.renderHotpl(stores);
+});
+</script>
+
+<script>
+function timeAgo(ts){
+  if(!ts) return '방금 전';
+  var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
+  var diff=Math.floor((Date.now()-t)/60000);
+  if(diff<1) return '방금 전';
+  if(diff<60) return diff+'분 전';
+  if(diff<1440) return Math.floor(diff/60)+'시간 전';
+  var d=new Date(t);
+  var curYear=new Date().getFullYear();
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var dd=String(d.getDate()).padStart(2,'0');
+  var hh=String(d.getHours()).padStart(2,'0');
+  var min=String(d.getMinutes()).padStart(2,'0');
+  if(d.getFullYear()===curYear) return mm+'.'+dd+' '+hh+':'+min;
+  return String(d.getFullYear()).slice(2)+'.'+mm+'.'+dd+' '+hh+':'+min;
+}
+
+function catClass(cat){
+  if(!cat) return 'cat-etc';
+  if(cat.includes('식당')||cat.includes('레스토랑')||cat.includes('맛집')) return 'cat-restaurant';
+  if(cat.includes('카페')||cat.includes('커피')) return 'cat-cafe';
+  if(cat.includes('펍')||cat.includes('바')) return 'cat-pub';
+  return 'cat-etc';
+}
+
+function cardBadges(store){
+  var cards = store.cards || store.acceptedCards || [];
+  var map = {
+    'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb',
+    'AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union'
+  };
+  return cards.map(function(c){
+    var cls = map[c]||'cb-etc';
+    return '<span class="card-badge '+cls+'">'+c+'</span>';
+  }).join('');
+}
+
+window.renderHotpl = function(stores){
+  var el = document.getElementById('hotpl-list');
+  if(!stores.length){
+    el.innerHTML='<div class="empty">등록된 핫플이 없어요</div>';
+    return;
+  }
+  el.innerHTML = stores.map(function(s){
+    var nick = s.nickname||s.nick||'해카마왕';
+    var letter = nick.charAt(0);
+    var ago = timeAgo(s.createdAt);
+    var catTxt = s.category||'기타';
+
+    // 미디어
+    var media = '';
+    if(s.videoUrl){
+      media = '<video src="'+s.videoUrl+'" autoplay muted loop playsinline preload="auto" loading="eager" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></video>';
+    } else if(s.images && s.images[0]){
+      media = '<img src="'+s.images[0]+'" loading="eager" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>';
+    }
+
+    return '<div class="hotpl-card" onclick="window.location.href=\'heka_store_detail.html?id='+s.id+'\'">'
+      +'<div class="hotpl-media">'
+      +media
+      +'<div class="hotpl-overlay">'
+      +'<div class="live-badge"><div class="live-dot"></div>LIVE</div>'
+      +'<div class="hotpl-title">"'+s.name+', '+ago+' 결제 성공!"</div>'
+      +'<div class="hotpl-reporter"><div class="rep-av">'+letter+'</div><span class="rep-name">제보자 '+nick+'</span></div>'
+      +'</div></div>'
+      +'<div class="hotpl-info">'
+      +'<div class="hotpl-name">'+s.name+'</div>'
+      +'<div class="hotpl-meta">'
+      +'<span class="hotpl-cat '+catClass(catTxt)+'">'+catTxt+'</span>'
+      +'<span class="hotpl-city">'+(s.city||s.location||'')+'</span>'
+      +'<span class="hotpl-time">'+ago+'</span>'
+      +'</div>'
+      +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
+      +'</div></div>';
+  }).join('');
+};
+</script>
+</body>
+</html>
