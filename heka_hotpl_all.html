@@ -17,7 +17,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 카드 */
 .hotpl-card{margin:12px 14px 0;border-radius:12px;overflow:hidden;border:.5px solid #e8e8e8;cursor:pointer;background:#fff}
 .hotpl-card:first-child{margin-top:14px}
-.hotpl-media{width:100%;height:180px;position:relative;overflow:hidden;background:#1a2e1a}
+.hotpl-media{width:100%;height:161px;position:relative;overflow:hidden;background:#1a2e1a}
 .hotpl-media img,.hotpl-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .hotpl-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:8px 12px 10px}
 .live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;margin-bottom:4px}
@@ -29,8 +29,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .rep-name{font-size:10px;color:rgba(255,255,255,.85)}
 
 /* 정보 영역 */
-.hotpl-info{padding:10px 12px}
-.hotpl-name{font-size:13px;font-weight:700;color:#111;margin-bottom:4px}
+.hotpl-info{padding:7px 12px 10px}
+.hotpl-name{font-size:12px;font-weight:700;color:#111;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center}
 .hotpl-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .hotpl-cat{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700}
 .cat-restaurant{background:#ea6500;color:#fff}
@@ -158,10 +158,9 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-reporter"><div class="rep-av">'+letter+'</div><span class="rep-name">제보자 '+nick+'</span></div>'
       +'</div></div>'
       +'<div class="hotpl-info">'
-      +'<div class="hotpl-name">'+s.name+'</div>'
+      +'<div class="hotpl-name"><span>'+s.name+'</span><span style="font-size:10px;font-weight:400;color:#999">'+(s.city||s.location||'')+'</span></div>'
       +'<div class="hotpl-meta">'
       +'<span class="hotpl-cat '+catClass(catTxt)+'">'+catTxt+'</span>'
-      +'<span class="hotpl-city">'+(s.city||s.location||'')+'</span>'
       +'<span class="hotpl-time">'+ago+'</span>'
       +'</div>'
       +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
