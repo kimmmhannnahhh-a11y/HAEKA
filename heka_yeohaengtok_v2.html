@@ -16,8 +16,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .live-txt{font-size:11px;color:#4ADE80;font-weight:500}
-.search-wrap{padding:8px 16px 0}
-.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:7px 12px;gap:8px;transition:.15s}
+.search-wrap{padding:6px 16px 0}
+.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:5px 10px;gap:6px;transition:.15s}
 .search-box:focus-within{border-color:#1A5D1A;background:#fff}
 .city-chip{display:flex;align-items:center;gap:3px;background:#fff;border:1px solid #ddd;border-radius:20px;padding:3px 8px 3px 6px;font-size:10px;font-weight:600;color:#333;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:.12s}
 .city-chip:hover{border-color:#1A5D1A;color:#1A5D1A}
@@ -26,13 +26,13 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-divider{width:1px;height:14px;background:#ddd;flex-shrink:0}
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit;min-width:0}
 .search-input::placeholder{color:#bbb}
-.search-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
 .search-btn:hover{background:#145014}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
 .search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
 .search-result-bar.show{display:block}
 .search-result-bar span{color:#1A5D1A;font-weight:600}
-.filt{display:flex;align-items:center;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
+.filt{display:flex;align-items:center;gap:6px;padding:6px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filt::-webkit-scrollbar{display:none}
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
 .fb:hover{border-color:#1A5D1A;color:#1A5D1A}
@@ -91,11 +91,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <span class="topbar-title">여행톡</span>
   </div>
 
-  <div class="live-bar">
-    <div class="live-dot"></div>
-    <span class="live-txt">지금 여행톡 사용중 86,277명</span>
-  </div>
-
   <div class="search-wrap">
     <div class="search-box">
       <div class="city-chip" onclick="openPanel()">
@@ -104,12 +99,17 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         <span class="city-chip-arrow">∨</span>
       </div>
       <div class="search-divider"></div>
-      <input class="search-input" id="search-input" placeholder="지역, 일정, 여행 키워드 입력" type="text"
+      <input class="search-input" id="search-input" placeholder="지역, 일정, 여행 키워드" type="text"
         onkeydown="if(event.key==='Enter'||event.keyCode===13) doSearch()"/>
       <button class="search-btn" onclick="doSearch()">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       </button>
     </div>
+  </div>
+
+  <div class="live-bar" style="margin:5px 16px 0">
+    <div class="live-dot"></div>
+    <span class="live-txt">지금 여행톡 사용중 86,277명</span>
   </div>
 
   <div class="search-result-bar" id="search-result-bar">
