@@ -16,40 +16,40 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .live-txt{font-size:11px;color:#4ADE80;font-weight:500}
-.search-wrap{padding:6px 16px 0}
-.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:5px 10px;gap:6px;transition:.15s}
+.search-wrap{padding:8px 16px 0}
+.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:7px 12px;gap:8px;transition:.15s}
 .search-box:focus-within{border-color:#1A5D1A;background:#fff}
 .city-chip{display:flex;align-items:center;gap:3px;background:#fff;border:1px solid #ddd;border-radius:20px;padding:3px 8px 3px 6px;font-size:10px;font-weight:600;color:#333;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:.12s}
 .city-chip:hover{border-color:#1A5D1A;color:#1A5D1A}
 .city-chip-icon{font-size:11px}
 .city-chip-arrow{font-size:8px;color:#aaa}
 .search-divider{width:1px;height:14px;background:#ddd;flex-shrink:0}
-.search-input{flex:1;border:none;background:transparent;font-size:11px;color:#333;outline:none;font-family:inherit;min-width:0}
+.search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit;min-width:0}
 .search-input::placeholder{color:#bbb}
-.search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.search-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
 .search-btn:hover{background:#145014}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
 .search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
 .search-result-bar.show{display:block}
 .search-result-bar span{color:#1A5D1A;font-weight:600}
-.filt{display:flex;align-items:center;gap:6px;padding:6px 16px 0;overflow-x:auto;scrollbar-width:none}
+.filt{display:flex;align-items:center;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filt::-webkit-scrollbar{display:none}
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
 .fb:hover{border-color:#1A5D1A;color:#1A5D1A}
 .fb.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A;font-weight:600}
 .post-list{padding:8px 0}
-.fpost{padding:12px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;transition:.12s}
+.fpost{padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:7px;transition:.12s}
 .fpost:last-child{border-bottom:none}
 .fpost:hover{background:#fafafa}
 .new-dot{width:5px;height:5px;border-radius:50%;background:#e53935;display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0}
 .fpav{width:20px;height:20px;border-radius:50%;background:#c8c8c8;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .fpmain{flex:1;min-width:0}
 .fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.fpu{font-size:11px;color:#555;font-weight:500}
-.fpd{font-size:11px;color:#aaa;flex-shrink:0}
-.fptitle{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:5px;color:#111;white-space:normal;word-break:keep-all}
+.fpu{font-size:10px;color:#bbb}
+.fpd{font-size:10px;color:#999;flex-shrink:0}
+.fptitle{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111;white-space:normal;word-break:keep-all}
 .fpbody{font-size:11px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
-.fpbottom{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:10px;color:#aaa}
+.fpbottom{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:10px;color:#bbb}
 .fptag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;flex-shrink:0}
 .fptag-mate{background:#1A5D1A;color:#fff}
 .fptag-food{background:#ea6500;color:#fff}
@@ -91,6 +91,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <span class="topbar-title">여행톡</span>
   </div>
 
+  <div class="live-bar">
+    <div class="live-dot"></div>
+    <span class="live-txt">지금 여행톡 사용중 86,277명</span>
+  </div>
+
   <div class="search-wrap">
     <div class="search-box">
       <div class="city-chip" onclick="openPanel()">
@@ -105,11 +110,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       </button>
     </div>
-  </div>
-
-  <div class="live-bar" style="margin:6px 16px 0">
-    <div class="live-dot"></div>
-    <span class="live-txt">지금 여행톡 사용중 86,277명</span>
   </div>
 
   <div class="search-result-bar" id="search-result-bar">
@@ -200,16 +200,13 @@ function timeAgo(ts){
   var now=Date.now();
   var diff=Math.floor((now-t)/60000);
   if(diff<1) return '방금 전';
-  // 당일: 시간으로 표기
   var today=new Date(); today.setHours(0,0,0,0);
   if(t>=today.getTime()){
     if(diff<60) return diff+'분 전';
     return Math.floor(diff/60)+'시간 전';
   }
-  // 2주(14일) 이내: 며칠 전
   var days=Math.floor((now-t)/86400000);
   if(days<=14) return days+'일 전';
-  // 이후: 상세 날짜+시간
   var d=new Date(t);
   var curYear=new Date().getFullYear();
   var mm=String(d.getMonth()+1).padStart(2,'0');
@@ -266,10 +263,136 @@ function renderPosts(list){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
     var hasImg = p.fromFirebase && p.images && p.images[0];
     var thumbHtml = hasImg
-      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block" loading="eager" decoding="async"/></div>'
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block;border-radius:8px" loading="eager" decoding="async"/></div>'
       : '';
     var isNew = p.id && !readSet.has(p.id);
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle">'+dotHtml+'<span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">&middot;</span><span>&#9829; '+(p.likes||0)+'</span><span>&#128172; '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">&middot;</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle">'+dotHtml+'<span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
+  }).join('');
+}
+window.renderPosts = renderPosts;
+
+function openAvatarDB(cb){var req=indexedDB.open('haeka_db',1);req.onupgradeneeded=function(e){e.target.result.createObjectStore('avatar');};req.onsuccess=function(e){cb(e.target.result);};req.onerror=function(){cb(null);};}
+function applyMyAvatar(){
+  openAvatarDB(function(db){
+    if(!db){setDefaultAv();return;}
+    var tx=db.transaction('avatar','readonly');
+    var r=tx.objectStore('avatar').get('profile');
+    r.onsuccess=function(e){
+      var src=e.target.result;
+      document.querySelectorAll('.fpav').forEach(function(el){
+        if(src) el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
+        else el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      });
+    };
+    r.onerror=function(){setDefaultAv();};
+  });
+}
+function setDefaultAv(){document.querySelectorAll('.fpav').forEach(function(el){el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';});}
+
+function doSearch(){
+  var kw=document.getElementById('search-input').value.trim();
+  var bar=document.getElementById('search-result-bar');
+  if(kw){
+    document.getElementById('search-keyword').textContent=kw;
+    bar.classList.add('show');
+    var lower=kw.toLowerCase();
+    renderPosts(posts.filter(function(p){ return p.title.toLowerCase().indexOf(lower)>-1||p.body.toLowerCase().indexOf(lower)>-1||p.city.toLowerCase().indexOf(lower)>-1; }));
+  } else { bar.classList.remove('show'); renderPosts(posts); }
+  document.getElementById('search-input').blur();
+}
+
+var _selectedTags = new Set();
+
+function toggleF(el){
+  var tag = el.textContent.trim();
+  if(tag === '전체'){
+    _selectedTags.clear();
+    document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
+    el.classList.add('on');
+  } else {
+    document.querySelector('.fb').classList.remove('on'); // 전체 버튼 off
+    if(el.classList.contains('on')){
+      el.classList.remove('on');
+      _selectedTags.delete(tag);
+      if(_selectedTags.size === 0){
+        document.querySelector('.fb').classList.add('on'); // 다 해제되면 전체로
+      }
+    } else {
+      el.classList.add('on');
+      _selectedTags.add(tag);
+    }
+  }
+  filterByTag();
+}
+
+function filterByTag(){
+  if(_selectedTags.size === 0){
+    renderPosts(posts);
+  } else {
+    renderPosts(posts.filter(function(p){
+      return _selectedTags.has(p.tagTxt);
+    }));
+  }
+}
+
+var countries=[{flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},{flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},{flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},{flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'}];
+var cities={'일본':[{name:'도쿄'},{name:'오사카'},{name:'교토'},{name:'삿포로'},{name:'후쿠오카'}],'프랑스':[{name:'파리'},{name:'리옹'},{name:'니스'}],'미국':[{name:'뉴욕'},{name:'로스앤젤레스'},{name:'라스베가스'}],'태국':[{name:'방콕'},{name:'치앙마이'},{name:'푸켓'}],'베트남':[{name:'하노이'},{name:'호치민'},{name:'다낭'}],'스페인':[{name:'바르셀로나'},{name:'마드리드'},{name:'세비야'}],'이탈리아':[{name:'로마'},{name:'밀라노'},{name:'베네치아'}],'독일':[{name:'베를린'},{name:'뮌헨'},{name:'함부르크'}],'크로아티아':[{name:'자그레브'},{name:'두브로브니크'},{name:'스플리트'}]};
+
+function openPanel(){ renderCountries(); document.getElementById('side-overlay').classList.add('open'); document.getElementById('side-panel').classList.add('open'); }
+function closePanel(){ document.getElementById('side-overlay').classList.remove('open'); document.getElementById('side-panel').classList.remove('open'); }
+function renderCountries(){
+  document.getElementById('panel-title').textContent='나라 선택';
+  document.getElementById('panel-ph').textContent='나라를 검색해보세요';
+  var list=document.getElementById('panel-list'); list.innerHTML='';
+  countries.forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div><span class="panel-flag">'+c.flag+'</span>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ if(c.name==='전 세계') select('전 세계','🌍'); else if(cities[c.name]) renderCities(c.name,c.flag); else select(c.name,c.flag); }; list.appendChild(div); });
+}
+function renderCities(country,flag){
+  document.getElementById('panel-title').textContent=flag+' '+country;
+  document.getElementById('panel-ph').textContent='도시를 검색해보세요';
+  var list=document.getElementById('panel-list'); list.innerHTML='';
+  var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
+  // 나라 전체보기 버튼
+  var allDiv=document.createElement('div'); allDiv.className='panel-item'; allDiv.style.cssText='background:#f0f9f0;font-weight:700;color:#1A5D1A';
+  allDiv.innerHTML='<div>'+flag+' '+country+' 전체보기</div><span class="panel-arr" style="color:#1A5D1A">›</span>';
+  allDiv.onclick=function(){ select(country+' 전체',flag); }; list.appendChild(allDiv);
+  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
+}
+function select(name,flag){
+  var chipIcon=document.querySelector('.city-chip-icon');
+  if(name==='전 세계'){ chipIcon.textContent='🌏'; document.getElementById('city-chip-txt').textContent='전 세계'; }
+  else { chipIcon.textContent=flag; document.getElementById('city-chip-txt').textContent=name; }
+  closePanel();
+}
+function openWrite(){
+  document.getElementById('write-overlay').classList.add('open');
+  document.getElementById('write-popup').style.transform='translateY(0)';
+}
+function closeWrite(){
+  document.getElementById('write-overlay').classList.remove('open');
+  document.getElementById('write-popup').style.transform='translateY(100%)';
+}
+function selectTag(el){
+  document.querySelectorAll('.write-tag').forEach(function(b){b.style.background='#fff';b.style.color='#555';b.style.borderColor='#ddd';});
+  el.style.background='#1A5D1A';el.style.color='#fff';el.style.borderColor='#1A5D1A';
+}
+function submitWrite(){
+  var title=document.getElementById('write-title').value.trim();
+  var body=document.getElementById('write-body').value.trim();
+  if(!title||!body){ alert('제목과 내용을 입력해주세요'); return; }
+  closeWrite();
+  document.getElementById('write-title').value='';
+  document.getElementById('write-body').value='';
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; },2200);
+}
+
+renderPosts(posts);
+</script>
+</body>
+</html>
