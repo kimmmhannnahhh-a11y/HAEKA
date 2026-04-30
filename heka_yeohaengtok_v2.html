@@ -9,18 +9,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .phone-wrap{position:relative;width:300px}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
 .sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
-.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15)}
+.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15);position:relative}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
-
-/* 상단 타이틀 + 연필 */
-.ftopbar{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
-.ftitle{font-size:18px;font-weight:700;color:#111}
-.fedit-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.fedit-btn svg{width:16px;height:16px;stroke:#555;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* 검색바 */
-.search-wrap{padding:10px 16px 0}
-.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:7px 12px;gap:8px;transition:.15s}
+.back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
+.live-bar{margin:10px 16px 0;display:flex;align-items:center;gap:5px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-txt{font-size:11px;color:#4ADE80;font-weight:500}
+.search-wrap{padding:6px 16px 0}
+.search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:5px 10px;gap:6px;transition:.15s}
 .search-box:focus-within{border-color:#1A5D1A;background:#fff}
 .city-chip{display:flex;align-items:center;gap:3px;background:#fff;border:1px solid #ddd;border-radius:20px;padding:3px 8px 3px 6px;font-size:10px;font-weight:600;color:#333;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:.12s}
 .city-chip:hover{border-color:#1A5D1A;color:#1A5D1A}
@@ -29,49 +26,37 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-divider{width:1px;height:14px;background:#ddd;flex-shrink:0}
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit;min-width:0}
 .search-input::placeholder{color:#bbb}
-.search-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
 .search-btn:hover{background:#145014}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
-
-/* 실시간 인원 */
-.live-bar{margin:8px 16px 0;display:flex;align-items:center;gap:5px}
-.live-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.live-txt{font-size:11px;color:#4ADE80;font-weight:500}
-
-/* 카테고리 필터 */
-.filt{display:flex;align-items:center;gap:6px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
+.search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
+.search-result-bar.show{display:block}
+.search-result-bar span{color:#1A5D1A;font-weight:600}
+.filt{display:flex;align-items:center;gap:6px;padding:6px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filt::-webkit-scrollbar{display:none}
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
 .fb:hover{border-color:#1A5D1A;color:#1A5D1A}
 .fb.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A;font-weight:600}
-
-/* 검색 결과 안내 */
-.search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
-.search-result-bar.show{display:block}
-.search-result-bar span{color:#1A5D1A;font-weight:600}
-
-/* 게시글 목록 */
 .post-list{padding:8px 0}
-.fpost{padding:12px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:.12s}
+.fpost{padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:7px;transition:.12s}
 .fpost:last-child{border-bottom:none}
 .fpost:hover{background:#fafafa}
-.fpav{width:28px;height:28px;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.new-dot{width:5px;height:5px;border-radius:50%;background:#e53935;display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0}
+.fpav{width:20px;height:20px;border-radius:50%;background:#c8c8c8;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .fpmain{flex:1;min-width:0}
 .fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.fpu{font-size:11px;font-weight:600;color:#333}
-.fpd{font-size:10px;color:#bbb}
-.fptitle{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111}
+.fpu{font-size:10px;color:#bbb}
+.fpd{font-size:10px;color:#999;flex-shrink:0}
+.fptitle{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fpbody{font-size:11px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
-.fpbottom{display:flex;align-items:center;gap:6px}
-.fptag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:600;flex-shrink:0}
+.fpbottom{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:10px;color:#bbb}
+.fptag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;flex-shrink:0}
 .fptag-mate{background:#1A5D1A;color:#fff}
-.fptag-food{background:#f5c800;color:#333}
-.fptag-info{background:#007bc1;color:#fff}
+.fptag-food{background:#ea6500;color:#fff}
+.fptag-weather{background:#3b82f6;color:#fff}
+.fptag-info{background:#eab308;color:#fff}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
-.fpthumb{width:64px;height:72px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;align-self:center}
-
-/* 하단 네비 */
+.fpthumb{width:40px;height:40px;min-width:40px;border-radius:8px;overflow:hidden;flex-shrink:0;align-self:center}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#1A5D1A;font-weight:600}
@@ -79,8 +64,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
 .npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
 .nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
-
-/* 도시 사이드 패널 */
 .side-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:20;display:none;border-radius:26px}
 .side-overlay.open{display:block}
 .side-panel{position:absolute;top:0;right:0;width:200px;height:100%;background:#fff;border-left:0.5px solid #eee;z-index:21;display:flex;flex-direction:column;border-radius:0 26px 26px 0;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
@@ -101,49 +84,38 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <body>
 <div class="phone-wrap">
 <div class="phone">
-  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
-  <div class="topbar"><span class="topbar-title">여행톡</span></div>
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
-  <!-- 타이틀 + 연필 -->
-  <div class="ftopbar">
-    <span class="ftitle">여행톡</span>
-    <div class="fedit-btn">
-      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-    </div>
+  <div class="topbar">
+    <button class="back-btn" onclick="window.location.href='heka_home_v5.html'">←</button>
+    <span class="topbar-title">여행톡</span>
   </div>
 
-  <!-- 검색바 -->
   <div class="search-wrap">
     <div class="search-box">
-      <!-- 도시검색 칩 -->
       <div class="city-chip" onclick="openPanel()">
         <span class="city-chip-icon">🌏</span>
         <span id="city-chip-txt">도시검색</span>
         <span class="city-chip-arrow">∨</span>
       </div>
       <div class="search-divider"></div>
-      <!-- 텍스트 입력 (엔터/검색 버튼 모두 작동) -->
       <input class="search-input" id="search-input" placeholder="지역, 일정, 여행 키워드 입력" type="text"
         onkeydown="if(event.key==='Enter'||event.keyCode===13) doSearch()"/>
-      <!-- 돋보기 버튼 (우측 끝) -->
       <button class="search-btn" onclick="doSearch()">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- 실시간 인원 -->
-  <div class="live-bar">
+  <div class="live-bar" style="margin:5px 16px 0">
     <div class="live-dot"></div>
     <span class="live-txt">지금 여행톡 사용중 86,277명</span>
   </div>
 
-  <!-- 검색결과 안내 -->
   <div class="search-result-bar" id="search-result-bar">
     "<span id="search-keyword"></span>" 검색 결과
   </div>
 
-  <!-- 카테고리 필터 -->
   <div class="filt">
     <button class="fb on" onclick="toggleF(this)">전체</button>
     <button class="fb" onclick="toggleF(this)">동행</button>
@@ -152,190 +124,274 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <button class="fb" onclick="toggleF(this)">정보</button>
   </div>
 
-  <!-- 게시글 목록 -->
-  <div class="post-list" id="post-list">
-    <div class="fpost">
-      <div class="fpav">🌅</div>
-      <div class="fpmain">
-        <div class="fphead"><span class="fpu">rlagksdk</span><span class="fpd">26.03 · 도쿄</span></div>
-        <div class="fptitle">3월 27-28일 도쿄 동행 구해요</div>
-        <div class="fpbody">20대 중반 여자고 서로 사진도 찍어주고 같이 맛집가요!</div>
-        <div class="fpbottom">
-          <span class="fptag fptag-mate">동행</span>
-          <div class="fpfooter-info"><span>💬 0</span><span>❤ 1</span><span>1시간 전</span></div>
-        </div>
-      </div>
-      <div class="fpthumb" style="background:#eef0f8">🎒</div>
-    </div>
-    <div class="fpost">
-      <div class="fpav">🌊</div>
-      <div class="fpmain">
-        <div class="fphead"><span class="fpu">한치</span><span class="fpd">26.03 · 오사카</span></div>
-        <div class="fptitle">3/30~4/2 오사카 놀러가실분</div>
-        <div class="fpbody">오사카 처음인데 같이 다닐 분 찾아요! 도톤보리 맛집도 같이 찾고 싶어요</div>
-        <div class="fpbottom">
-          <span class="fptag fptag-mate">동행</span>
-          <div class="fpfooter-info"><span>💬 5</span><span>❤ 3</span><span>3시간 전</span></div>
-        </div>
-      </div>
-      <div class="fpthumb" style="background:#f0f5ee">🌸</div>
-    </div>
-    <div class="fpost">
-      <div class="fpav">🍜</div>
-      <div class="fpmain">
-        <div class="fphead"><span class="fpu">Choi</span><span class="fpd">26.03 · 자그레브</span></div>
-        <div class="fptitle">자그레브 숨은 라멘집 발견</div>
-        <div class="fpbody">웨이팅 없고 가격도 착해요. 위치 댓글로 공유할게요</div>
-        <div class="fpbottom">
-          <span class="fptag fptag-food">맛집</span>
-          <div class="fpfooter-info"><span>💬 11</span><span>❤ 24</span><span>5시간 전</span></div>
-        </div>
-      </div>
-      <div class="fpthumb" style="background:#f5f0e8">🍜</div>
-    </div>
+  <div style="display:flex;justify-content:flex-end;padding:10px 16px 0">
+    <button onclick="window.location.href='heka_write.html'" style="background:none;border:none;font-size:11px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      글쓰기
+    </button>
   </div>
 
+  <div class="post-list" id="post-list"></div>
 
-
-<!-- 도시 사이드 패널 -->
-<div class="side-overlay" id="side-overlay" onclick="closePanel()"></div>
-<div class="side-panel" id="side-panel">
-  <div class="panel-header">
-    <span class="panel-title" id="panel-title">나라 선택</span>
-    <button class="panel-close" onclick="closePanel()">✕</button>
+  <div class="side-overlay" id="write-overlay" onclick="closeWrite()" style="z-index:40"></div>
+  <div id="write-popup" style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:41;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);padding:16px">
+    <div style="width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px"></div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">여행톡 글쓰기</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+      <button onclick="selectTag(this,'동행')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">동행</button>
+      <button onclick="selectTag(this,'맛집')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">맛집</button>
+      <button onclick="selectTag(this,'날씨')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">날씨</button>
+      <button onclick="selectTag(this,'정보')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">정보</button>
+    </div>
+    <input id="write-title" placeholder="제목을 입력해주세요" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;margin-bottom:8px"/>
+    <textarea id="write-body" placeholder="내용을 입력해주세요" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;resize:none;height:80px;margin-bottom:10px"></textarea>
+    <button onclick="submitWrite()" style="width:100%;padding:12px;border-radius:12px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">등록하기</button>
+    <button onclick="closeWrite()" style="width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit">취소</button>
   </div>
-  <div class="panel-searchbar">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
-    <span id="panel-ph">나라를 검색해보세요</span>
-  </div>
-  <div class="panel-list" id="panel-list"></div>
-</div>
 
+  <div class="side-overlay" id="side-overlay" onclick="closePanel()"></div>
+  <div class="side-panel" id="side-panel">
+    <div class="panel-header">
+      <span class="panel-title" id="panel-title">나라 선택</span>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-searchbar">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      <span id="panel-ph">나라를 검색해보세요</span>
+    </div>
+    <div class="panel-list" id="panel-list"></div>
+  </div>
 
   <!-- 하단 네비 -->
   <div class="bnav">
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
-    <div class="nplus"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni" onclick="location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
+
+  <div class="toast" id="toast" style="position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99"></div>
 </div>
-</div><!-- /phone-wrap -->
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info'};
+const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee'};
+const catEmojiMap = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
+
+function timeAgo(ts){
+  if(!ts) return '방금 전';
+  var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
+  var now=Date.now();
+  var diff=Math.floor((now-t)/60000);
+  if(diff<1) return '방금 전';
+  var today=new Date(); today.setHours(0,0,0,0);
+  if(t>=today.getTime()){
+    if(diff<60) return diff+'분 전';
+    return Math.floor(diff/60)+'시간 전';
+  }
+  var days=Math.floor((now-t)/86400000);
+  if(days<=14) return days+'일 전';
+  var d=new Date(t);
+  var curYear=new Date().getFullYear();
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  var dd=String(d.getDate()).padStart(2,'0');
+  var hh=String(d.getHours()).padStart(2,'0');
+  var min=String(d.getMinutes()).padStart(2,'0');
+  if(d.getFullYear()===curYear) return mm+'.'+dd+' '+hh+':'+min;
+  return String(d.getFullYear()).slice(2)+'.'+mm+'.'+dd+' '+hh+':'+min;
+}
+
+const q = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(50));
+onSnapshot(q, function(snapshot){
+  var fbPosts = [];
+  snapshot.forEach(function(doc){
+    var d = doc.data();
+    var tag = catTagMap[d.category] || 'info';
+    fbPosts.push({
+      id: doc.id,
+      av: catEmojiMap[d.category]||'✈️',
+      user: d.nickname || '여행자',
+      date: d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleDateString('ko',{month:'2-digit',day:'2-digit'}).replace(/\./g,'').replace(' ','') : '',
+      city: d.city || '',
+      title: d.title || '',
+      body: d.body || '',
+      tag: tag,
+      tagTxt: d.category || '정보',
+      images: d.images || [],
+      thumb: d.images&&d.images[0] ? '<img src="'+d.images[0]+'" style="width:100%;height:auto;object-fit:contain;border-radius:8px;display:block">' : (catEmojiMap[d.category]||'✈️'),
+      thumbBg: catBgMap[d.category]||'#f5f5f5',
+      time: timeAgo(d.createdAt),
+      cmts: d.commentCount||0,
+      likes: d.likeCount||0,
+      fromFirebase: true,
+    });
+  });
+  // Firebase 글 + 더미 데이터 합치기
+  window._fbPosts = fbPosts;
+  window.posts = fbPosts;
+  if(window.renderPosts) window.renderPosts(window.posts); if(typeof applyMyAvatar==="function") applyMyAvatar();
+});
+</script>
 
 <script>
-/* ── 검색 ── */
-// 게시글 데이터
-var posts = [
-  {av:'🌅', user:'rlagksdk', date:'26.03', city:'도쿄', title:'3월 27-28일 도쿄 동행 구해요', body:'20대 중반 여자고 서로 사진도 찍어주고 같이 맛집가요!', tag:'mate', tagTxt:'동행', thumb:'🎒', thumbBg:'#eef0f8', cmts:0, likes:1, time:'1시간 전'},
-  {av:'🌊', user:'한치', date:'26.03', city:'오사카', title:'3/30~4/2 오사카 놀러가실분', body:'오사카 처음인데 같이 다닐 분 찾아요! 도톤보리 맛집도 같이 찾고 싶어요', tag:'mate', tagTxt:'동행', thumb:'🌸', thumbBg:'#f0f5ee', cmts:5, likes:3, time:'3시간 전'},
-  {av:'🍜', user:'Choi', date:'26.03', city:'자그레브', title:'자그레브 숨은 라멘집 발견', body:'웨이팅 없고 가격도 착해요. 위치 댓글로 공유할게요', tag:'food', tagTxt:'맛집', thumb:'🍜', thumbBg:'#f5f0e8', cmts:11, likes:24, time:'5시간 전'},
-];
+var posts = [];
+
+function getReadSet(){ try{ return new Set(JSON.parse(localStorage.getItem('haeka_read_posts')||'[]')); }catch(e){ return new Set(); } }
+function markRead(id){ try{ var s=getReadSet(); s.add(id); localStorage.setItem('haeka_read_posts',JSON.stringify([...s])); }catch(e){} }
 
 function renderPosts(list){
   var el = document.getElementById('post-list');
-  if(list.length === 0){
-    el.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">검색 결과가 없어요</div>';
-    return;
-  }
+  if(!list.length){ el.innerHTML='<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">검색 결과가 없어요</div>'; return; }
+  var readSet = getReadSet();
   el.innerHTML = list.map(function(p){
-    var tagClass = p.tag==='mate' ? 'fptag-mate' : p.tag==='food' ? 'fptag-food' : 'fptag-info';
-    return '<div class="fpost">'
-      +'<div class="fpav">'+p.av+'</div>'
-      +'<div class="fpmain">'
-      +'<div class="fphead"><span class="fpu">'+p.user+'</span><span class="fpd">'+p.date+' · '+p.city+'</span></div>'
-      +'<div class="fptitle">'+p.title+'</div>'
-      +'<div class="fpbody">'+p.body+'</div>'
-      +'<div class="fpbottom">'
-      +'<span class="fptag '+tagClass+'">'+p.tagTxt+'</span>'
-      +'<div class="fpfooter-info"><span>💬 '+p.cmts+'</span><span>❤ '+p.likes+'</span><span>'+p.time+'</span></div>'
-      +'</div></div>'
-      +'<div class="fpthumb" style="background:'+p.thumbBg+'">'+p.thumb+'</div>'
-      +'</div>';
+    var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
+    var hasImg = p.fromFirebase && p.images && p.images[0];
+    var thumbHtml = hasImg
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block;border-radius:8px" loading="eager" decoding="async"/></div>'
+      : '';
+    var isNew = p.id && !readSet.has(p.id);
+    var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
+    var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
+    var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
+window.renderPosts = renderPosts;
+
+function openAvatarDB(cb){var req=indexedDB.open('haeka_db',1);req.onupgradeneeded=function(e){e.target.result.createObjectStore('avatar');};req.onsuccess=function(e){cb(e.target.result);};req.onerror=function(){cb(null);};}
+function applyMyAvatar(){
+  openAvatarDB(function(db){
+    if(!db){setDefaultAv();return;}
+    var tx=db.transaction('avatar','readonly');
+    var r=tx.objectStore('avatar').get('profile');
+    r.onsuccess=function(e){
+      var src=e.target.result;
+      document.querySelectorAll('.fpav').forEach(function(el){
+        if(src) el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
+        else el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      });
+    };
+    r.onerror=function(){setDefaultAv();};
+  });
+}
+function setDefaultAv(){document.querySelectorAll('.fpav').forEach(function(el){el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';});}
 
 function doSearch(){
-  var kw = document.getElementById('search-input').value.trim();
-  var bar = document.getElementById('search-result-bar');
-  var kwEl = document.getElementById('search-keyword');
+  var kw=document.getElementById('search-input').value.trim();
+  var bar=document.getElementById('search-result-bar');
   if(kw){
-    kwEl.textContent = kw;
+    document.getElementById('search-keyword').textContent=kw;
     bar.classList.add('show');
-    // 제목, 본문, 도시명에서 키워드 검색 (대소문자 무시)
-    var lower = kw.toLowerCase();
-    var filtered = posts.filter(function(p){
-      return p.title.toLowerCase().indexOf(lower) > -1
-        || p.body.toLowerCase().indexOf(lower) > -1
-        || p.city.toLowerCase().indexOf(lower) > -1
-        || p.user.toLowerCase().indexOf(lower) > -1;
-    });
-    renderPosts(filtered);
-  } else {
-    bar.classList.remove('show');
-    renderPosts(posts); // 검색어 없으면 전체 표시
-  }
+    var lower=kw.toLowerCase();
+    renderPosts(posts.filter(function(p){ return p.title.toLowerCase().indexOf(lower)>-1||p.body.toLowerCase().indexOf(lower)>-1||p.city.toLowerCase().indexOf(lower)>-1; }));
+  } else { bar.classList.remove('show'); renderPosts(posts); }
   document.getElementById('search-input').blur();
 }
 
-/* ── 카테고리 필터 ── */
+var _selectedTags = new Set();
+
 function toggleF(el){
-  document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
+  var tag = el.textContent.trim();
+  if(tag === '전체'){
+    _selectedTags.clear();
+    document.querySelectorAll('.fb').forEach(function(b){ b.classList.remove('on'); });
+    el.classList.add('on');
+  } else {
+    document.querySelector('.fb').classList.remove('on'); // 전체 버튼 off
+    if(el.classList.contains('on')){
+      el.classList.remove('on');
+      _selectedTags.delete(tag);
+      if(_selectedTags.size === 0){
+        document.querySelector('.fb').classList.add('on'); // 다 해제되면 전체로
+      }
+    } else {
+      el.classList.add('on');
+      _selectedTags.add(tag);
+    }
+  }
+  filterByTag();
 }
 
-/* ── 도시 사이드 패널 ── */
-var countries=[
-  {flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},
-  {flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},
-  {flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},
-  {flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'},
-];
-var cities={
-  '일본':[{name:'도쿄'},{name:'오사카'},{name:'교토'},{name:'삿포로'},{name:'후쿠오카'}],
-  '프랑스':[{name:'파리'},{name:'리옹'},{name:'니스'}],
-  '미국':[{name:'뉴욕'},{name:'로스앤젤레스'},{name:'라스베가스'}],
-  '태국':[{name:'방콕'},{name:'치앙마이'},{name:'푸켓'}],
-  '베트남':[{name:'하노이'},{name:'호치민'},{name:'다낭'}],
-  '스페인':[{name:'바르셀로나'},{name:'마드리드'},{name:'세비야'}],
-  '이탈리아':[{name:'로마'},{name:'밀라노'},{name:'베네치아'}],
-  '독일':[{name:'베를린'},{name:'뮌헨'},{name:'함부르크'}],
-  '크로아티아':[{name:'자그레브'},{name:'두브로브니크'},{name:'스플리트'}],
-};
+function filterByTag(){
+  if(_selectedTags.size === 0){
+    renderPosts(posts);
+  } else {
+    renderPosts(posts.filter(function(p){
+      return _selectedTags.has(p.tagTxt);
+    }));
+  }
+}
+
+var countries=[{flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},{flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},{flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},{flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'}];
+var cities={'일본':[{name:'도쿄'},{name:'오사카'},{name:'교토'},{name:'삿포로'},{name:'후쿠오카'}],'프랑스':[{name:'파리'},{name:'리옹'},{name:'니스'}],'미국':[{name:'뉴욕'},{name:'로스앤젤레스'},{name:'라스베가스'}],'태국':[{name:'방콕'},{name:'치앙마이'},{name:'푸켓'}],'베트남':[{name:'하노이'},{name:'호치민'},{name:'다낭'}],'스페인':[{name:'바르셀로나'},{name:'마드리드'},{name:'세비야'}],'이탈리아':[{name:'로마'},{name:'밀라노'},{name:'베네치아'}],'독일':[{name:'베를린'},{name:'뮌헨'},{name:'함부르크'}],'크로아티아':[{name:'자그레브'},{name:'두브로브니크'},{name:'스플리트'}]};
+
 function openPanel(){ renderCountries(); document.getElementById('side-overlay').classList.add('open'); document.getElementById('side-panel').classList.add('open'); }
 function closePanel(){ document.getElementById('side-overlay').classList.remove('open'); document.getElementById('side-panel').classList.remove('open'); }
 function renderCountries(){
   document.getElementById('panel-title').textContent='나라 선택';
   document.getElementById('panel-ph').textContent='나라를 검색해보세요';
   var list=document.getElementById('panel-list'); list.innerHTML='';
-  countries.forEach(function(c){
-    var div=document.createElement('div'); div.className='panel-item';
-    div.innerHTML='<div><span class="panel-flag">'+c.flag+'</span>'+c.name+'</div><span class="panel-arr">›</span>';
-    div.onclick=function(){
-      if(c.name==='전 세계') select('전 세계','🌍');
-      else if(cities[c.name]) renderCities(c.name,c.flag);
-      else select(c.name,c.flag);
-    };
-    list.appendChild(div);
-  });
+  countries.forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div><span class="panel-flag">'+c.flag+'</span>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ if(c.name==='전 세계') select('전 세계','🌍'); else if(cities[c.name]) renderCities(c.name,c.flag); else select(c.name,c.flag); }; list.appendChild(div); });
 }
 function renderCities(country,flag){
   document.getElementById('panel-title').textContent=flag+' '+country;
   document.getElementById('panel-ph').textContent='도시를 검색해보세요';
   var list=document.getElementById('panel-list'); list.innerHTML='';
-  var back=document.createElement('div'); back.className='panel-back';
-  back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
-  (cities[country]||[]).forEach(function(c){
-    var div=document.createElement('div'); div.className='panel-item';
-    div.innerHTML='<div>'+flag+' '+c.name+'</div><span class="panel-arr">›</span>';
-    div.onclick=function(){ select(c.name,flag); }; list.appendChild(div);
-  });
+  var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
+  // 나라 전체보기 버튼
+  var allDiv=document.createElement('div'); allDiv.className='panel-item'; allDiv.style.cssText='background:#f0f9f0;font-weight:700;color:#1A5D1A';
+  allDiv.innerHTML='<div>'+flag+' '+country+' 전체보기</div><span class="panel-arr" style="color:#1A5D1A">›</span>';
+  allDiv.onclick=function(){ select(country+' 전체',flag); }; list.appendChild(allDiv);
+  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
 }
 function select(name,flag){
-  document.getElementById('city-chip-txt').textContent=(name==='전 세계'?'전 세계':flag+' '+name);
+  var chipIcon=document.querySelector('.city-chip-icon');
+  if(name==='전 세계'){ chipIcon.textContent='🌏'; document.getElementById('city-chip-txt').textContent='전 세계'; }
+  else { chipIcon.textContent=flag; document.getElementById('city-chip-txt').textContent=name; }
   closePanel();
 }
-// 초기 렌더링
+function openWrite(){
+  document.getElementById('write-overlay').classList.add('open');
+  document.getElementById('write-popup').style.transform='translateY(0)';
+}
+function closeWrite(){
+  document.getElementById('write-overlay').classList.remove('open');
+  document.getElementById('write-popup').style.transform='translateY(100%)';
+}
+function selectTag(el){
+  document.querySelectorAll('.write-tag').forEach(function(b){b.style.background='#fff';b.style.color='#555';b.style.borderColor='#ddd';});
+  el.style.background='#1A5D1A';el.style.color='#fff';el.style.borderColor='#1A5D1A';
+}
+function submitWrite(){
+  var title=document.getElementById('write-title').value.trim();
+  var body=document.getElementById('write-body').value.trim();
+  if(!title||!body){ alert('제목과 내용을 입력해주세요'); return; }
+  closeWrite();
+  document.getElementById('write-title').value='';
+  document.getElementById('write-body').value='';
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; },2200);
+}
+
 renderPosts(posts);
 </script>
 </body>

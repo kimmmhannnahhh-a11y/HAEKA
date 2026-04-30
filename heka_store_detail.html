@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+
+/* 상단 사진 영역 */
+.hero{position:relative;width:100%;height:180px;background:#1a2e1a;flex-shrink:0}
+.hero-img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,transparent 50%,rgba(0,0,0,.5) 100%)}
+.hero-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.back-btn{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px;line-height:1}
+.share-btn{width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.share-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-bottom{position:absolute;bottom:0;left:0;right:0;padding:10px 14px}
+.signal-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:4px}
+.signal-green{background:rgba(74,222,128,.2);color:#4ade80;border:1px solid rgba(74,222,128,.4)}
+.signal-yellow{background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.signal-red{background:rgba(248,113,113,.2);color:#f87171;border:1px solid rgba(248,113,113,.4)}
+.hero-name{font-size:18px;font-weight:800;color:#fff;line-height:1.2}
+.hero-cat{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
+
+/* 스크롤 영역 */
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:70px}
+.scroll-wrap::-webkit-scrollbar{display:none}
+
+/* 섹션 공통 */
+.section{padding:14px 16px;border-bottom:.5px solid #f5f5f5}
+.sec-title{font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+
+/* 등록정보 */
+.meta-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#888;margin-bottom:4px}
+.meta-row:last-child{margin-bottom:0}
+.meta-ico{font-size:12px;width:16px;text-align:center;flex-shrink:0}
+
+/* 주소 */
+.addr-box{background:#f8f8f8;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.addr-box:hover{background:#f0f0f0}
+.addr-txt{flex:1;font-size:12px;color:#333;line-height:1.5}
+.addr-copy-btn{flex-shrink:0;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center}
+.addr-copy-btn svg{width:15px;height:15px;stroke:#aaa;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* 영업시간 */
+.hours-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.hours-today{font-size:12px;font-weight:600;color:#111}
+.hours-badge-open{background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px}
+.hours-badge-close{background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px}
+.hours-toggle{background:none;border:none;font-size:11px;color:#888;cursor:pointer;padding:2px 4px}
+.hours-all{display:none;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-top:6px}
+.hours-day-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
+
+/* 카드 */
+.card-grid{display:flex;flex-wrap:wrap;gap:6px}
+.card-chip{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;color:#fff}
+.card-chip-no{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;color:#ff3b30;background:#fff5f5;border:1px solid #fecaca}
+.card-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);flex-shrink:0}
+.sec-title-blue{font-size:10px;font-weight:700;color:#2563eb;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.sec-title-red{font-size:10px;font-weight:700;color:#dc2626;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+
+/* 결제 후기 */
+.rev-item{background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:7px}
+.rev-item:last-child{margin-bottom:0}
+.rev-top{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.rev-av{width:22px;height:22px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#666;flex-shrink:0}
+.rev-name{font-size:11px;font-weight:600;color:#333}
+.rev-date{font-size:10px;color:#bbb;margin-left:auto}
+.rev-txt{font-size:11px;color:#555;line-height:1.5}
+.rev-rating-btn{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#f5a623;font-weight:700;cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid #fde68a;background:#fffbeb;transition:.15s}
+.rev-rating-btn:hover{background:#fef3c7}
+
+/* 찜하기 */
+.zzim-btn{position:absolute;top:10px;right:50px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.35);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.zzim-btn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.zzim-btn.on svg{fill:#e53935;stroke:#e53935}
+
+/* 카테고리 추가 요청 */
+.cat-request{background:#f8f8f8;border-radius:8px;padding:7px 12px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px dashed #ddd;transition:.15s;white-space:nowrap}
+.cat-request:hover{border-color:#1A5D1A;background:#f0f9f0}
+.cat-request-txt{font-size:10px;color:#888;white-space:nowrap}
+
+/* 하단 버튼 */
+.bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
+.btn-report{flex:1;padding:12px;border-radius:12px;background:#f0f7f0;color:#1A5D1A;font-size:12px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit}
+.btn-report:hover{background:#e0f0e0}
+
+/* 토스트 */
+.toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 카테고리 요청 팝업 */
+.popup-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:50;display:none;align-items:flex-end;border-radius:26px}
+.popup-overlay.open{display:flex}
+.popup-box{background:#fff;border-radius:18px 18px 0 0;width:100%;padding:16px}
+.popup-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 12px}
+.popup-title{font-size:14px;font-weight:700;margin-bottom:10px}
+.popup-inp{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;resize:none;min-height:80px}
+.popup-inp:focus{border-color:#1A5D1A}
+.popup-btn{width:100%;margin-top:8px;padding:12px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+</style>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+window._deleteStore = async function(storeId){
+  await deleteDoc(doc(db,"stores",storeId));
+};
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function cardColor(card) {
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};
+  return map[card] || '#888';
+}
+
+function timeAgo(ts) {
+  if (!ts) return '방금 전';
+  var now = Date.now();
+  var t = ts.toMillis ? ts.toMillis() : ts;
+  var diff = Math.floor((now - t) / 60000);
+  if (diff < 1) return '방금 전';
+  if (diff < 60) return diff + '분 전';
+  if (diff < 1440) return Math.floor(diff/60) + '시간 전';
+  return Math.floor(diff/1440) + '일 전';
+}
+
+// 신호등 계산 (등록일 기준 임시)
+function getSignal(store) {
+  if (!store.createdAt) return { color: 'red', txt: '🔴 정보 없음', cls: 'signal-red' };
+  var days = Math.floor((Date.now() - store.createdAt.toMillis()) / 86400000);
+  if (days <= 90) return { color: 'green', txt: '🟢 최근 결제 확인', cls: 'signal-green' };
+  if (days <= 180) return { color: 'yellow', txt: '🟡 확인 필요', cls: 'signal-yellow' };
+  return { color: 'red', txt: '🔴 오래된 정보', cls: 'signal-red' };
+}
+
+async function loadStore() {
+  // URL 파라미터에서 store ID 가져오기
+  var params = new URLSearchParams(window.location.search);
+  var storeId = params.get('id');
+
+  // 테스트용 더미 데이터 (실제 사용 시 Firebase에서 불러옴)
+  var store = window._storeData || {
+    name: '멘자 레스토랑',
+    category: '식당',
+    address: 'Budapest, Liszt Ferenc tér 2, 1061 헝가리',
+    lat: 47.5003,
+    lng: 19.0610,
+    payOk: ['VISA', 'MASTER', 'AMEX'],
+    payNo: ['JCB'],
+    review: '분위기 너무 좋고 음식도 맛있어요! 비자카드 결제 잘 됐습니다.',
+    images: [],
+    createdAt: { toMillis: () => Date.now() - 1000*60*30 }
+  };
+
+  if (storeId) {
+    try {
+      var snap = await getDoc(doc(db, 'stores', storeId));
+      if (snap.exists()) { store = { id: snap.id, ...snap.data() }; window._storeLoaded = store; }
+    } catch(e) { console.log('Firebase 오류:', e); }
+  }
+
+  renderStore(store);
+}
+
+async function renderStore(store) {
+  // store 데이터 저장 (찜 버튼에서 사용)
+  window._currentDpStore = store;
+  // 찜 상태 복원
+  try {
+    var list = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
+    if (list.some(function(s){ return s.id === store.id; })) {
+      document.getElementById('zzim-btn').classList.add('on');
+    }
+  } catch(e) {}
+
+  var signal = getSignal(store);
+
+  // 사진 슬라이드
+  var heroEl = document.getElementById('hero-img');
+  var dotsEl = document.getElementById('hero-dots');
+  var images = store.images && store.images.length ? store.images : [];
+  if(store.videoUrl) images = [store.videoUrl].concat(images); // 동영상 첫번째
+  var _slideIdx = 0;
+
+  function renderSlide(){
+    heroEl.innerHTML = '';
+    heroEl.style.background = '';
+    dotsEl.innerHTML = '';
+    if(!images.length){
+      var catEmojis = {'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🍶','편의점':'🏪','마트':'🛒','호텔':'🏨'};
+      heroEl.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px">'+(catEmojis[store.category]||'🏬')+'</div>';
+      return;
+    }
+    var src = images[_slideIdx];
+    var isVideo = store.videoUrl && src === store.videoUrl;
+    if(isVideo){
+      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>';
+    } else {
+      heroEl.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>';
+    }
+    // 점 인디케이터
+    if(images.length > 1){
+      dotsEl.innerHTML = images.map(function(_,i){
+        return '<div style="width:'+(i===_slideIdx?'16':'6')+'px;height:6px;border-radius:3px;background:'+(i===_slideIdx?'#fff':'rgba(255,255,255,.5)')+';transition:.2s;cursor:pointer" onclick="heroGoTo('+i+')"></div>';
+      }).join('');
+    }
+  }
+
+  window.heroGoTo = function(idx){ _slideIdx=idx; renderSlide(); };
+
+  // 스와이프
+  var _hStartX=0;
+  heroEl.addEventListener('touchstart',function(e){_hStartX=e.touches[0].clientX;},{passive:true});
+  heroEl.addEventListener('touchend',function(e){
+    var diff=e.changedTouches[0].clientX-_hStartX;
+    if(Math.abs(diff)<30)return;
+    if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
+    else _slideIdx=(_slideIdx-1+images.length)%images.length;
+    renderSlide();
+  },{passive:true});
+  heroEl.addEventListener('mousedown',function(e){_hStartX=e.clientX;});
+  document.addEventListener('mouseup',function(e){
+    if(!_hStartX)return;
+    var diff=e.clientX-_hStartX; _hStartX=0;
+    if(Math.abs(diff)<30||!heroEl.contains(e.target))return;
+    if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
+    else _slideIdx=(_slideIdx-1+images.length)%images.length;
+    renderSlide();
+  });
+
+  renderSlide();
+
+  // 상호명, 업종, 신호등
+  document.getElementById('hero-name').textContent = store.name;
+  document.getElementById('hero-cat').textContent = store.category || '';
+  var sigEl = document.getElementById('signal-badge');
+  sigEl.textContent = signal.txt;
+  sigEl.className = 'signal-badge ' + signal.cls;
+
+  // 등록일자, 닉네임
+  var dateEl = document.getElementById('hero-date');
+  var nickEl = document.getElementById('hero-nick');
+  if (store.createdAt) {
+    var d = new Date(store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt);
+    dateEl.textContent = d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+  }
+  var storeNick = store.nickname || store.nick || '해카마왕';
+  nickEl.textContent = '등록자 ' + storeNick;
+  // 본인 글이면 삭제 버튼 추가
+  var MY_NICK = '해카마왕';
+  if(storeNick === MY_NICK && store.id){
+    var btns = document.getElementById('bottom-btns');
+    if(btns){
+      var delBtn = document.createElement('button');
+      delBtn.style.cssText = 'flex:1;padding:12px;border-radius:12px;background:#fff0f0;color:#e53935;font-size:12px;font-weight:700;border:1.5px solid #e53935;cursor:pointer;font-family:inherit';
+      delBtn.textContent = '🗑️ 매장 삭제';
+      delBtn.onclick = async function(){
+        if(!confirm('정말 이 매장을 삭제할까요?')) return;
+        try{
+          if(window._deleteStore) await window._deleteStore(store.id);
+          alert('삭제됐어요!');
+          window.location.href = 'heka_home_v5.html';
+        }catch(e){ alert('삭제에 실패했어요'); }
+      };
+      btns.appendChild(delBtn);
+    }
+  }
+
+  // 등록 정보 (몇분전 제거)
+  // document.getElementById('meta-date').textContent = timeAgo(store.createdAt);
+
+  // 주소
+  if (store.address) {
+    document.getElementById('addr-txt').textContent = store.address;
+    document.getElementById('addr-section').style.display = 'block';
+  }
+
+  // 결제 가능 카드
+  var okCards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+  if (okCards.length) {
+    document.getElementById('cards-ok').innerHTML = okCards.map(function(c){
+      return '<div class="card-chip" style="background:'+cardColor(c)+'"><div class="card-dot"></div>'+c+'</div>';
+    }).join('');
+  }
+
+  // 결제 불가 카드
+  var noCards = (store.payNo || []);
+  if (noCards.length) {
+    document.getElementById('cards-no-section').style.display = 'block';
+var specialCards = ['모르겠어요','현금불가','카드불가'];
+document.getElementById('cards-no').innerHTML = noCards.map(function(c){
+  if(specialCards.indexOf(c) > -1){
+    return '<div class="card-chip-no">'+c+'</div>';
+  }
+  return '<div class="card-chip-no">⚠️ '+c+' 결제 실패 사례 있음</div>';
+}).join('');
+  }
+
+  // 결제 후기 + 해카 평점
+  document.getElementById('review-section').style.display = 'block';
+  var haekaRating = store.rating || null;
+  var ratingTxt = haekaRating
+    ? '<button onclick="showToast(\'리뷰 전체보기 준비 중이에요!\')" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:underline;font-family:inherit"> (★'+haekaRating+')</button>'
+    : '<button onclick="showToast(\'리뷰 전체보기 준비 중이에요!\')" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:underline;font-family:inherit"> (★-)</button>';
+  document.getElementById('review-title').innerHTML =
+    '<span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase">결제 후기</span>'
+    + ratingTxt;
+  if (store.review) {
+    document.getElementById('review-list').innerHTML =
+      '<div class="rev-item">'
+      + '<div class="rev-top"><div class="rev-av">🌏</div><span class="rev-name">등록자</span><span class="rev-date">'+timeAgo(store.createdAt)+'</span></div>'
+      + '<div class="rev-txt">'+store.review+'</div>'
+      + '</div>';
+  } else {
+    document.getElementById('review-list').innerHTML = '<div style="font-size:11px;color:#bbb;text-align:center;padding:10px 0">아직 결제 후기가 없어요</div>';
+  }
+
+  // Google Places API로 영업시간 가져오기
+  if (store.lat && store.lng && typeof google !== 'undefined') {
+    try {
+      const { Place } = await google.maps.importLibrary('places');
+      const { places } = await Place.searchByText({
+        textQuery: store.name + ' ' + (store.address || ''),
+        fields: ['regularOpeningHours', 'nationalPhoneNumber'],
+        maxResultCount: 1,
+      });
+      if (places && places[0]) {
+        var p = places[0];
+        if (p.regularOpeningHours) {
+          var hours = p.regularOpeningHours.weekdayDescriptions || [];
+          var isOpen = null;
+          try { isOpen = p.regularOpeningHours.isOpen(); } catch(e) {
+            // 직접 계산
+            isOpen = calcIsOpen(hours);
+          }
+          renderHours(hours, isOpen);
+        }
+        if (p.nationalPhoneNumber) {
+          document.getElementById('meta-phone').textContent = p.nationalPhoneNumber;
+          document.getElementById('meta-phone').href = 'tel:'+p.nationalPhoneNumber;
+          document.getElementById('meta-phone-section').style.display = 'block';
+        }
+      }
+    } catch(e) { console.log('Places 오류:', e); }
+  }
+
+  // 지도
+  if (store.lat && store.lng) {
+    window._storeLat = store.lat;
+    window._storeLng = store.lng;
+    window._storeName = store.name;
+    window._storeAddr = store.address;
+    setTimeout(function() {
+      var mapEl = document.getElementById('detail-map');
+      if (!mapEl || typeof google === 'undefined') return;
+      var map = new google.maps.Map(mapEl, {
+        center: { lat: store.lat, lng: store.lng },
+        zoom: 16,
+        disableDefaultUI: true,
+        gestureHandling: 'none',
+      });
+      new google.maps.Marker({ position: { lat: store.lat, lng: store.lng }, map: map, title: store.name });
+    }, 300);
+  }
+}
+
+function calcIsOpen(hours) {
+  try {
+    var now = new Date();
+    var today = now.getDay();
+    var todayIdx = today === 0 ? 6 : today - 1;
+    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
+    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
+    if (todayHours.includes('24시간')) return true;
+
+    // "오전 10:30 ~ 오후 7:30" 형식 파싱
+    var parts = todayHours.split('~');
+    if (parts.length < 2) return null;
+
+    function parseTime(s) {
+      s = s.trim();
+      var isPM = s.includes('오후') || s.includes('PM');
+      var isAM = s.includes('오전') || s.includes('AM');
+      var m = s.match(/(\d{1,2}):(\d{2})/);
+      if (!m) return null;
+      var h = parseInt(m[1]), min = parseInt(m[2]);
+      if (isPM && h < 12) h += 12;
+      if (isAM && h === 12) h = 0;
+      return h * 60 + min;
+    }
+
+    var openMins = parseTime(parts[0]);
+    var closeMins = parseTime(parts[1]);
+    if (openMins === null || closeMins === null) return null;
+
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+    // 자정 넘기는 경우
+    if (closeMins <= openMins) closeMins += 24 * 60;
+    return nowMins >= openMins && nowMins < closeMins;
+  } catch(e) { return null; }
+}
+
+function renderHours(hours, isOpen) {
+  var section = document.getElementById('hours-section');
+  section.style.display = 'block';
+  var dayNames = ['월','화','수','목','금','토','일'];
+  var today = new Date().getDay();
+  var todayIdx = today === 0 ? 6 : today - 1;
+  var todayDesc = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '');
+  var todayDayName = dayNames[todayIdx];
+  var openBadge = isOpen === true ? '<span class="hours-badge-open">영업중</span>'
+    : isOpen === false ? '<span class="hours-badge-close">영업종료</span>' : '';
+  document.getElementById('hours-today-txt').innerHTML =
+    openBadge + '<span class="hours-today">'+todayDayName+'요일 '+todayDesc+'</span>';
+  var allHtml = hours.map(function(h, i) {
+    var isToday = i === todayIdx;
+    return '<div class="hours-day-row" style="color:'+(isToday?'#1A5D1A':'#555')+';font-weight:'+(isToday?'700':'400')+'">'
+      + '<span>'+dayNames[i]+'요일</span>'
+      + '<span>'+h.replace(/^[^:]+:\s*/, '')+'</span>'
+      + '</div>';
+  }).join('');
+  document.getElementById('hours-all-content').innerHTML = allHtml;
+}
+window.addEventListener('DOMContentLoaded', loadStore);
+</script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+
+  <!-- 히어로 이미지 슬라이드 -->
+  <div class="hero">
+    <div id="hero-img" style="width:100%;height:100%;position:relative;background:#1a2e1a;overflow:hidden">
+      <!-- 슬라이드 이미지들이 JS로 주입됨 -->
+    </div>
+    <!-- 점 인디케이터 -->
+    <div id="hero-dots" style="position:absolute;bottom:52px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:5"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-top">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div style="display:flex;gap:6px">
+        <button class="zzim-btn" id="zzim-btn" onclick="toggleZzim()">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="share-btn" onclick="shareStore()">
+          <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="hero-bottom" style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div id="hero-name" class="hero-name"></div>
+        <div id="hero-cat" class="hero-cat"></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:10px">
+        <div id="signal-badge" class="signal-badge signal-green" style="margin-bottom:3px;justify-content:flex-end">🟢 최근</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.8);margin-bottom:1px" id="hero-date">-</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.6)" id="hero-nick">등록자 -</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-wrap">
+
+    <!-- 전화번호만 표시 (등록 몇분전 제거) -->
+    <div class="section" id="meta-phone-section" style="display:none">
+      <div class="meta-row" id="meta-phone-row">
+        <span class="meta-ico">📞</span>
+        <a id="meta-phone" href="#" style="color:#1A5D1A;text-decoration:none;font-size:11px"></a>
+      </div>
+    </div>
+
+    <!-- 주소 -->
+    <div class="section" id="addr-section" style="display:none">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="display:flex;align-items:baseline;gap:6px;flex:1">
+          <span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;white-space:nowrap">주소</span>
+          <span id="addr-txt" style="font-size:12px;color:#333;line-height:1.5"></span>
+        </div>
+        <button class="addr-copy-btn" onclick="copyAddr()" style="flex-shrink:0;margin-top:1px">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 지도 -->
+    <div class="section" style="padding:0;cursor:pointer" onclick="openMap()">
+      <div id="detail-map" style="width:100%;height:120px;background:#f0f0f0"></div>
+    </div>
+
+    <!-- 영업시간 -->
+    <div class="section" id="hours-section" style="display:none">
+      <div class="sec-title">영업시간</div>
+      <div class="hours-row">
+        <div id="hours-today-txt"></div>
+        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">▼ 전체</button>
+      </div>
+      <div class="hours-all" id="hours-all">
+        <div id="hours-all-content"></div>
+      </div>
+    </div>
+
+    <!-- 결제 가능 카드 -->
+    <div class="section">
+      <div class="sec-title-blue">결제 가능 카드</div>
+      <div class="card-grid" id="cards-ok"></div>
+    </div>
+
+    <!-- 결제 불가 카드 -->
+    <div class="section" id="cards-no-section">
+      <div class="sec-title-red">결제 불가 카드</div>
+      <div id="cards-no"><span style="font-size:11px;color:#bbb">없음</span></div>
+    </div>
+
+    <!-- 결제 후기 -->
+    <div class="section" id="review-section" style="display:none">
+      <div style="display:flex;align-items:center;margin-bottom:10px">
+        <div class="sec-title" id="review-title" style="margin-bottom:0">결제 후기</div>
+      </div>
+      <div id="review-list"></div>
+    </div>
+
+    <!-- 카테고리 추가 요청 -->
+    <div class="section">
+      <div class="cat-request" onclick="openCatRequest()">
+        <div class="cat-request-txt">찾으시는 카테고리가 없나요? 💬 카테고리 추가 제안하기</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 하단 버튼 -->
+  <div class="bottom-btns" id="bottom-btns">
+    <button class="btn-report" onclick="window.location.href='heka_register.html'">✍️ 결제 제보하기</button>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 카테고리 요청 팝업 -->
+  <div class="popup-overlay" id="cat-popup">
+    <div class="popup-box">
+      <div class="popup-handle"></div>
+      <div class="popup-title">카테고리 추가 제안</div>
+      <textarea class="popup-inp" id="cat-input" placeholder="원하시는 카테고리를 입력해주세요"></textarea>
+      <button class="popup-btn" onclick="submitCatRequest()">제안하기</button>
+      <button onclick="closeCatRequest()" style="width:100%;margin-top:6px;padding:10px;border-radius:10px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit">취소</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function goBack() {
+  if (window.history.length > 1) window.history.back();
+  else window.location.href = 'heka_home_v5.html';
+}
+
+function toggleZzim() {
+  var btn = document.getElementById('zzim-btn');
+  var store = window._currentDpStore;
+  if (!store) return;
+  try {
+    var list = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
+    var idx = list.findIndex(function(s){ return s.id === store.id; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      btn.classList.remove('on');
+      showToast('찜 목록에서 제거됐어요');
+    } else {
+      list.unshift(store);
+      btn.classList.add('on');
+      showToast('❤️ 찜 목록에 추가됐어요!');
+    }
+    localStorage.setItem('haeka_zzim', JSON.stringify(list));
+  } catch(e) {}
+}
+
+function shareStore() {
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: document.getElementById('hero-name').textContent, url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      showToast('🔗 링크가 복사됐어요!');
+    });
+  }
+}
+
+function openMap() {
+  var lat = window._storeLat, lng = window._storeLng, name = window._storeName;
+  if (lat && lng) window.open('https://www.google.com/maps/search/?api=1&query='+lat+','+lng, '_blank');
+  else if (window._storeAddr) window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(window._storeAddr), '_blank');
+}
+
+function copyAddr() {
+  var addr = document.getElementById('addr-txt').textContent;
+  navigator.clipboard.writeText(addr).then(function() { showToast('📋 주소가 복사됐어요!'); });
+}
+
+function toggleHours() {
+  var el = document.getElementById('hours-all');
+  var btn = document.getElementById('hours-toggle');
+  var isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? '▼ 전체' : '▲ 접기';
+}
+
+function openCatRequest() { document.getElementById('cat-popup').classList.add('open'); }
+function closeCatRequest() { document.getElementById('cat-popup').classList.remove('open'); }
+function submitCatRequest() {
+  closeCatRequest();
+  document.getElementById('cat-input').value = '';
+  showToast('💬 소중한 의견 감사합니다! 검토 후 반영할게요 😊');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+</script>
+</body>
+</html>

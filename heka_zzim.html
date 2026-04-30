@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:visible;color:#111;position:relative;display:flex;flex-direction:column;height:680px;clip-path:inset(0 round 26px)}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.back-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:#fff;flex:1}
+.search-bar{padding:8px 14px;border-bottom:.5px solid #f0f0f0;display:flex;gap:6px;flex-shrink:0}
+.search-box{flex:1;display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:20px;padding:6px 10px;gap:6px;transition:.15s}
+.search-box:focus-within{border-color:#1A5D1A;background:#fff}
+.search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit}
+.search-input::placeholder{color:#bbb}
+.search-icon{width:13px;height:13px;stroke:#bbb;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.country-row{padding:6px 14px 8px;overflow-x:auto;scrollbar-width:none;display:flex;gap:5px;flex-shrink:0;border-bottom:.5px solid #f0f0f0;cursor:grab;-webkit-overflow-scrolling:touch}
+.country-row::-webkit-scrollbar{display:none}
+.country-row.dragging{cursor:grabbing}
+.country-chip{flex-shrink:0;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;display:flex;align-items:center;gap:4px}
+.country-chip.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A}
+.chip-arrow{font-size:8px;opacity:.8;cursor:pointer;padding:1px 2px;border-radius:3px;transition:.12s;color:inherit}
+.city-dropdown{position:absolute;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:50;overflow:hidden;border:.5px solid #eee}
+.dd-item{padding:9px 10px;font-size:11px;color:#333;cursor:pointer;border-bottom:.5px solid #f5f5f5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dd-item:last-child{border-bottom:none}
+.dd-item:hover{background:#f0f9f0;color:#1A5D1A}
+.dd-item.on{color:#1A5D1A;font-weight:700;background:#f0f9f0}
+.dd-country{font-weight:600}
+.dd-country.exp{color:#1A5D1A;background:#f0f9f0}
+.city-dropdown-item{padding:9px 14px;font-size:12px;color:#333;cursor:pointer;border-bottom:.5px solid #f5f5f5;white-space:nowrap}
+.city-dropdown-item:last-child{border-bottom:none}
+.city-dropdown-item:hover{background:#f0f9f0;color:#1A5D1A}
+.city-dropdown-item.on{color:#1A5D1A;font-weight:700}
+.count-bar{padding:6px 14px;font-size:11px;color:#999;flex-shrink:0}
+.store-list{flex:1;overflow-y:auto}
+.store-list::-webkit-scrollbar{display:none}
+.store-item{display:flex;gap:10px;padding:10px 14px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.12s;align-items:flex-start}
+.store-item:hover{background:#fafafa}
+.store-item:last-child{border-bottom:none}
+.store-thumb{width:62px;height:62px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;background:#f5f5f5}
+.store-thumb img{width:100%;height:100%;object-fit:cover}
+.store-info{flex:1;min-width:0}
+.store-name{font-size:13px;font-weight:700;color:#111;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-meta{display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap}
+.store-cat{font-size:10px;color:#999}
+.store-dist{font-size:10px;color:#1A5D1A;font-weight:600}
+.store-addr{font-size:10px;color:#bbb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.store-cards{display:flex;gap:4px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
+.store-cards::-webkit-scrollbar{display:none}
+.cpill{font-size:8px;padding:2px 5px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
+.store-zzim{flex-shrink:0;background:none;border:none;cursor:pointer;padding:4px;align-self:center}
+.store-zzim svg{width:18px;height:18px;fill:#e53935;stroke:#e53935;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.store-zzim:hover svg{fill:#ffb3b3;stroke:#ffb3b3}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 20px;text-align:center;gap:12px}
+.empty-emoji{font-size:40px}
+.empty-txt{font-size:14px;font-weight:600;color:#333}
+.empty-sub{font-size:12px;color:#bbb;line-height:1.6}
+.empty-btn{margin-top:8px;padding:11px 24px;border-radius:24px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
+.detail-overlay.open{display:block}
+.detail-panel{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:31;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:88%}
+.detail-panel.open{transform:translateY(0)}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0;flex-shrink:0}
+.dp-topbar{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 15px 4px;flex-shrink:0}
+.dp-name{font-size:15px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.dp-cat{font-size:11px;color:#999;white-space:nowrap;flex-shrink:0}
+.dp-close{background:none;border:none;font-size:20px;color:#bbb;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
+.dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
+.dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
+.ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ni.on{color:#1A5D1A;font-weight:600}
+.ni svg{width:17px;height:17px}
+.nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="topbar-title">찜목록</span>
+  </div>
+  <div class="search-bar">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      <input class="search-input" id="search-input" placeholder="매장명, 주소 검색" oninput="doFilter()"/>
+      <button onclick="doFilter()" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;flex-shrink:0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="country-row" id="country-row"></div>
+  <div class="city-dropdown" id="city-dropdown" style="display:none;position:absolute;top:0;left:0"></div>
+  <div class="count-bar" id="count-bar"></div>
+  <div class="store-list" id="store-list"></div>
+
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div style="flex:1;min-width:0;overflow:hidden">
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <div class="dp-name" id="dp-name"></div>
+          <div class="dp-cat" id="dp-cat"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#e53935" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+        <button class="dp-close" onclick="closeDetail()">✕</button>
+      </div>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="#1A5D1A" stroke="#1A5D1A"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6"/></svg>찜목록</div>
+    <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+var userLat=null, userLng=null;
+var _allStores=[];
+var _selectedCountry='전체';
+
+function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
+function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
+function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
+function calcDist(la1,ln1,la2,ln2){var R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(ln2-ln1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
+function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
+
+var CITY_KO = {
+  'Tokyo':'도쿄','Osaka':'오사카','Kyoto':'교토','Fukuoka':'후쿠오카','Sapporo':'삿포로','Nagoya':'나고야','Yokohama':'요코하마','Hiroshima':'히로시마','Nara':'나라','Kobe':'고베',
+  'New York':'뉴욕','Los Angeles':'로스앤젤레스','Las Vegas':'라스베가스','San Francisco':'샌프란시스코','Chicago':'시카고','Seattle':'시애틀','Boston':'보스턴','Miami':'마이애미',
+  'Paris':'파리','London':'런던','Rome':'로마','Milan':'밀라노','Barcelona':'바르셀로나','Madrid':'마드리드','Berlin':'베를린','Amsterdam':'암스테르담','Vienna':'빈','Prague':'프라하','Budapest':'부다페스트',
+  'Bangkok':'방콕','Phuket':'푸켓','Chiang Mai':'치앙마이','Singapore':'싱가포르','Ho Chi Minh City':'호치민','Hanoi':'하노이','Da Nang':'다낭','Bali':'발리',
+  'Beijing':'베이징','Shanghai':'상하이','Hong Kong':'홍콩','Taipei':'타이베이','Seoul':'서울','Busan':'부산','Sydney':'시드니','Melbourne':'멜버른','Toronto':'토론토','Vancouver':'밴쿠버',
+};
+var COUNTRY_KO = {
+  '일본':'일본','미국':'미국','한국':'한국','프랑스':'프랑스','영국':'영국','독일':'독일','이탈리아':'이탈리아','스페인':'스페인','태국':'태국','베트남':'베트남','중국':'중국','호주':'호주','캐나다':'캐나다','헝가리':'헝가리','크로아티아':'크로아티아','싱가포르':'싱가포르',
+  'Japan':'일본','USA':'미국','Korea':'한국','France':'프랑스','UK':'영국','Germany':'독일','Italy':'이탈리아','Spain':'스페인','Thailand':'태국','Vietnam':'베트남','China':'중국','Australia':'호주','Canada':'캐나다','Hungary':'헝가리','Croatia':'크로아티아',
+};
+// 주소 파트 → 상위 도시 매핑 (구/동/지역명 → 도시)
+var AREA_TO_CITY = {
+  'Hakata Ward':'Fukuoka','Chuo Ward':'Osaka','Bunkyo City':'Tokyo','Minato City':'Tokyo',
+  'Shinjuku':'Tokyo','Shibuya':'Tokyo','Tenjin':'Fukuoka','Namba':'Osaka',
+  'Higashishinsaibashi':'Osaka','Dotonbori':'Osaka','Nishi Ward':'Osaka',
+  'Manhattan':'New York','Brooklyn':'New York','Queens':'New York',
+};
+
+function extractCountryCity(addr){
+  if(!addr) return {country:'기타', city:'기타'};
+  var parts = addr.split(',').map(function(s){ return s.trim(); });
+
+  // 국가: 마지막 파트에서 한글 국가명 찾기
+  var country = '기타';
+  for(var i=parts.length-1; i>=0; i--){
+    var ko = parts[i].replace(/[\d\s\-]/g,'');
+    if(COUNTRY_KO[ko]){ country = COUNTRY_KO[ko]; break; }
+    if(COUNTRY_KO[parts[i]]){ country = COUNTRY_KO[parts[i]]; break; }
+    var words = parts[i].split(/\s+/);
+    var found = false;
+    for(var w=0; w<words.length; w++){ if(COUNTRY_KO[words[w]]){ country=COUNTRY_KO[words[w]]; found=true; break; } }
+    if(found) break;
+  }
+
+  // 도시: CITY_KO 키워드가 파트에 있으면 우선, 없으면 AREA_TO_CITY로 상위 도시 찾기
+  var city = null;
+  for(var j=0; j<parts.length; j++){
+    if(CITY_KO[parts[j]]){ city = CITY_KO[parts[j]]; break; }
+  }
+  if(!city){
+    for(var k=0; k<parts.length; k++){
+      if(AREA_TO_CITY[parts[k]]){ city = CITY_KO[AREA_TO_CITY[parts[k]]] || AREA_TO_CITY[parts[k]]; break; }
+    }
+  }
+  return { country: country, city: city || country };
+}
+
+var _selectedCountry = '전체';
+var _selectedCity = '전체';
+var _countryMap = {};
+
+function renderCountryChips(stores){
+  _countryMap = {};
+  stores.forEach(function(s){
+    var cc = extractCountryCity(s.address);
+    if(!_countryMap[cc.country]) _countryMap[cc.country] = {count:0, cities:{}};
+    _countryMap[cc.country].count++;
+    _countryMap[cc.country].cities[cc.city] = (_countryMap[cc.country].cities[cc.city]||0)+1;
+  });
+  var row = document.getElementById('country-row');
+  var html = '<div class="country-chip'+(_selectedCountry==='전체'?' on':'')+'" onclick="selectCountry(\'전체\')">전체 '+stores.length+'<span class="chip-arrow" onclick="event.stopPropagation();openAllDropdown(this)">▾</span></div>';
+  Object.keys(_countryMap).sort().forEach(function(cn){
+    var isOn = _selectedCountry===cn;
+    html += '<div class="country-chip'+(isOn?' on':'')+'" onclick="selectCountry(\''+cn+'\')">'+cn+' '+_countryMap[cn].count
+      +'<span class="chip-arrow" onclick="event.stopPropagation();openCityDropdown(\''+cn+'\',this)">▾</span></div>';
+  });
+  row.innerHTML = html;
+}
+
+var _expandedCountry = null;
+
+function openAllDropdown(el){
+  var dd = document.getElementById('city-dropdown');
+  var leftHtml = '<div class="dd-item'+(_selectedCountry==='전체'?' on':'')+'" onclick="selectCountry(\'전체\');dd_close()">전체</div>';
+  Object.keys(_countryMap).sort().forEach(function(cn){
+    var isExp = _expandedCountry===cn;
+    leftHtml += '<div class="dd-item dd-country'+(isExp?' exp':'')+'" onclick="event.stopPropagation();dd_expand(\''+cn+'\')">'+cn+'<span style="float:right;color:#1A5D1A;font-size:10px">'+_countryMap[cn].count+' ›</span></div>';
+  });
+
+  var rightHtml = '';
+  if(_expandedCountry && _countryMap[_expandedCountry]){
+    var cn = _expandedCountry;
+    rightHtml += '<div class="dd-item dd-city'+(_selectedCountry===cn&&_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+cn+'\',\'전체\');dd_close()">전체보기</div>';
+    Object.keys(_countryMap[cn].cities).sort().forEach(function(c){
+      rightHtml += '<div class="dd-item dd-city'+(_selectedCountry===cn&&_selectedCity===c?' on':'')+'" onclick="selectCity(\''+cn+'\',\''+c+'\');dd_close()">' + c + '</div>';
+    });
+  }
+
+  dd.innerHTML = '<div style="display:flex;height:100%">'
+    +'<div id="dd-left" style="width:'+(_expandedCountry?'80px':'100%')+';border-right:'+(_expandedCountry?'.5px solid #eee':'none')+';overflow-y:auto;flex-shrink:0">'+leftHtml+'</div>'
+    +(_expandedCountry?'<div id="dd-right" style="flex:1;overflow-y:auto">'+rightHtml+'</div>':'')
+    +'</div>';
+
+  var phone = document.querySelector('.phone');
+  var pr = phone.getBoundingClientRect(), er = el.getBoundingClientRect();
+  dd.style.left = (er.left - pr.left - 10) + 'px';
+  dd.style.top = (er.bottom - pr.top + 4) + 'px';
+  dd.style.width = '180px';
+  dd.style.maxHeight = '200px';
+  dd.style.display = 'block';
+  window._allDropdownEl = el;
+  setTimeout(function(){ document.addEventListener('click', function h(){ dd_close(); document.removeEventListener('click',h); }); }, 50);
+}
+
+function dd_expand(country){
+  _expandedCountry = (_expandedCountry===country) ? null : country;
+  openAllDropdown(window._allDropdownEl);
+}
+function dd_close(){
+  document.getElementById('city-dropdown').style.display='none';
+  _expandedCountry = null;
+}
+function toggleCountryInDrop(country){ dd_expand(country); }
+
+function openCityDropdown(country, el){
+  var dd = document.getElementById('city-dropdown');
+  var info = _countryMap[country];
+  if(!info){ dd.style.display='none'; return; }
+  var cities = Object.keys(info.cities).sort();
+  var html = '<div class="city-dropdown-item'+(_selectedCity==='전체'?' on':'')+'" onclick="selectCity(\''+country+'\',\'전체\')">'+country+' 전체</div>';
+  cities.forEach(function(c){
+    html += '<div class="city-dropdown-item'+(_selectedCity===c?' on':'')+'" onclick="selectCity(\''+country+'\',\''+c+'\')">'+c+'</div>';
+  });
+  dd.innerHTML = html;
+  var phone = document.querySelector('.phone');
+  var pr = phone.getBoundingClientRect(), er = el.getBoundingClientRect();
+  dd.style.left = (er.left - pr.left - 10) + 'px';
+  dd.style.top = (er.bottom - pr.top + 4) + 'px';
+  dd.style.display = 'block';
+  setTimeout(function(){ document.addEventListener('click', function h(){ dd.style.display='none'; document.removeEventListener('click',h); }); }, 50);
+}
+
+function selectCountry(name){
+  _selectedCountry = name; _selectedCity = '전체';
+  document.getElementById('city-dropdown').style.display='none';
+  renderCountryChips(_allStores); doFilter();
+}
+function selectCity(country, city){
+  _selectedCountry = country; _selectedCity = city;
+  document.getElementById('city-dropdown').style.display='none';
+  renderCountryChips(_allStores); doFilter();
+}
+
+// 드래그 스크롤
+(function(){
+  var isDown=false, startX, scrollLeft, el;
+  document.addEventListener('DOMContentLoaded', function(){
+    el = document.getElementById('country-row');
+    el.addEventListener('mousedown', function(e){ isDown=true; el.classList.add('dragging'); startX=e.pageX-el.offsetLeft; scrollLeft=el.scrollLeft; });
+    el.addEventListener('mouseleave', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseup', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mousemove', function(e){ if(!isDown)return; e.preventDefault(); el.scrollLeft=scrollLeft-(e.pageX-el.offsetLeft-startX); });
+  });
+})();
+
+function getZzimList(){try{return JSON.parse(localStorage.getItem('haeka_zzim')||'[]');}catch(e){return[];}}
+function saveZzimList(list){try{localStorage.setItem('haeka_zzim',JSON.stringify(list));}catch(e){}}
+
+function removeZzim(id){
+  var list=getZzimList().filter(function(s){return s.id!==id;});
+  saveZzimList(list); _allStores=list;
+  renderCountryChips(_allStores); doFilter();
+  showToast('찜 목록에서 삭제됐어요');
+}
+
+// 한글 발음 → 영어 매칭
+var _CHO2=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+var _JUNG2=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+var _JONG2=['','g','kk','gs','n','nj','nh','d','l','lg','lm','lb','ls','lt','lp','lh','m','b','bs','s','ss','ng','j','ch','k','t','p','h'];
+var _EQUIV={'p':['f','b'],'f':['p','b'],'b':['p','v'],'k':['c','g','q'],'c':['k','g'],'g':['k'],'r':['l'],'l':['r'],'t':['d'],'d':['t'],'s':['z'],'n':['ng'],'w':[''],'':['w']};
+function _getSyllPron(str){var r='';for(var i=0;i<str.length;i++){var code=str.charCodeAt(i)-0xAC00;if(code<0||code>11171){r+=str[i];continue;}var cho=Math.floor(code/588),jung=Math.floor((code%588)/28),jong=code%28;var p=_CHO2[cho]+_JUNG2[jung]+_JONG2[jong];p=p.replace(/eu/g,'').replace(/eo/g,'o').replace(/ae/g,'e');r+=p;}return r.toLowerCase();}
+function _cons(s){return s.replace(/[aeiou]/g,'');}
+function _consMatch(ec,kc){if(ec===kc)return true;var e1=_EQUIV[ec]||[];for(var i=0;i<e1.length;i++)if(e1[i]===kc)return true;var e2=_EQUIV[kc]||[];for(var i=0;i<e2.length;i++)if(e2[i]===ec)return true;return false;}
+function _korMatchEng(kor,eng){var korCons=_cons(_getSyllPron(kor));if(!korCons||korCons.length<2)return false;var engClean=eng.toLowerCase().replace(/['\s\-.,!?]/g,'');var engCons=_cons(engClean);var ki=0;for(var ei=0;ei<engCons.length&&ki<korCons.length;ei++){if(_consMatch(engCons[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;var words=eng.toLowerCase().split(/[\s'\-]+/);for(var w=0;w<words.length;w++){var wc=_cons(words[w]);ki=0;for(var ei=0;ei<wc.length&&ki<korCons.length;ei++){if(_consMatch(wc[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;}return false;}
+
+function zzimSearchMatch(s, kw){
+  var name=(s.name||'').toLowerCase();
+  var addr=(s.address||'').toLowerCase();
+  if(name.indexOf(kw)>-1||addr.indexOf(kw)>-1)return true;
+  if(/[가-힣]/.test(kw)){
+    if(_korMatchEng(kw,s.name||''))return true;
+    if(_korMatchEng(kw,s.address||''))return true;
+  }
+  return false;
+}
+
+function doFilter(){
+  var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
+  var list=_allStores.filter(function(s){
+    var cc=extractCountryCity(s.address);
+    var cOk=_selectedCountry==='전체'||cc.country===_selectedCountry;
+    var cityOk=_selectedCity==='전체'||cc.city===_selectedCity;
+    var kOk=!kw||zzimSearchMatch(s,kw);
+    return cOk&&cityOk&&kOk;
+  });
+  renderCountryChips(_allStores); renderList(list);
+}
+
+function renderList(list){
+  var el=document.getElementById('store-list');
+  document.getElementById('count-bar').textContent='전체 '+list.length+'개';
+  if(!list.length){
+    var isEmpty=_allStores.length===0;
+    el.innerHTML='<div class="empty-state">'
+      +'<div class="empty-emoji">'+(isEmpty?'🤍':'🔍')+'</div>'
+      +'<div class="empty-txt">'+(isEmpty?'아직 찜한 매장이 없어요':'검색 결과가 없어요')+'</div>'
+      +'<div class="empty-sub">'+(isEmpty?'마음에 드는 매장을<br>하트를 눌러 저장해보세요!':'다른 키워드로 검색해보세요')+'</div>'
+      +(isEmpty?'<button class="empty-btn" onclick="location.href=\'heka_nearby_all.html\'">주변 매장 보러가기</button>':'')
+      +'</div>';
+    return;
+  }
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  el.innerHTML=list.map(function(s){
+    var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+    cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+    var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
+    var thumb=s.images&&s.images[0]
+      ?'<div class="store-thumb"><img src="'+s.images[0]+'" loading="eager" alt=""/></div>'
+      :'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
+    var dist='';
+    if(userLat&&userLng&&s.lat&&s.lng){var dm=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist"> · '+distLbl(dm)+'</span>';}
+    var realIdx=_allStores.indexOf(s);
+    return'<div class="store-item" onclick="openDetail('+realIdx+')">'
+      +thumb
+      +'<div class="store-info">'
+      +'<div class="store-name">'+s.name+'</div>'
+      +'<div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span>'
+      +(s.address?'<span class="store-addr"> · '+s.address+'</span>':'')
+      +dist+'</div>'
+      +'<div class="store-cards">'+pills+'</div>'
+      +'</div>'
+      +'<button class="store-zzim" onclick="event.stopPropagation();removeZzim(\''+s.id+'\')">'
+      +'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
+      +'</button>'
+      +'</div>';
+  }).join('');
+}
+
+function openDetail(idx){
+  var store=_allStores[idx];
+  if(!store)return;
+  window._currentStoreId=store.id||null;
+  document.getElementById('dp-name').textContent=store.name;
+  document.getElementById('dp-cat').textContent=store.category||'';
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  var cards=(store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+  cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+  var pills=cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
+  var distHtml='';
+  if(userLat&&userLng&&store.lat&&store.lng){var dm=calcDist(userLat,userLng,store.lat,store.lng);distHtml='<div style="font-size:11px;color:#1A5D1A;font-weight:600;margin-bottom:6px">📍 '+distLbl(dm)+' 거리</div>';}
+  var mapHtml='';
+  if(store.lat&&store.lng){var mapUrl='https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;mapHtml='<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')"><div id="dp-gmap" style="width:100%;height:100%"></div></div>';}
+  document.getElementById('dp-scroll').innerHTML=
+    distHtml
+    +'<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div><div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div></div>'
+    +(store.address?'<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>':'')
+    +mapHtml;
+  if(store.lat&&store.lng&&typeof google!=='undefined'){
+    setTimeout(function(){var el=document.getElementById('dp-gmap');if(!el)return;var map=new google.maps.Map(el,{center:{lat:store.lat,lng:store.lng},zoom:16,disableDefaultUI:true,gestureHandling:'none'});new google.maps.Marker({position:{lat:store.lat,lng:store.lng},map:map,title:store.name});},150);
+  }
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleDpZzim(){var id=window._currentStoreId;if(!id)return;removeZzim(id);closeDetail();}
+function goToDetail(){var id=window._currentStoreId;window.location.href='heka_store_detail.html'+(id?'?id='+id:'');}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+
+function init(){
+  try{var cached=sessionStorage.getItem('haeka_gps');if(cached){var c=JSON.parse(cached);userLat=c.lat;userLng=c.lng;}}catch(e){}
+  _allStores=getZzimList();
+  renderCountryChips(_allStores);
+  doFilter();
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(
+    function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;try{sessionStorage.setItem('haeka_gps',JSON.stringify({lat:userLat,lng:userLng}));}catch(e){}doFilter();},
+    function(){},{timeout:5000,maximumAge:60000}
+  );
+}
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
