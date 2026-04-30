@@ -197,10 +197,19 @@ const catEmojiMap = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정�
 function timeAgo(ts){
   if(!ts) return '방금 전';
   var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
-  var diff=Math.floor((Date.now()-t)/60000);
+  var now=Date.now();
+  var diff=Math.floor((now-t)/60000);
   if(diff<1) return '방금 전';
-  if(diff<60) return diff+'분 전';
-  if(diff<1440) return Math.floor(diff/60)+'시간 전';
+  // 당일: 시간으로 표기
+  var today=new Date(); today.setHours(0,0,0,0);
+  if(t>=today.getTime()){
+    if(diff<60) return diff+'분 전';
+    return Math.floor(diff/60)+'시간 전';
+  }
+  // 2주(14일) 이내: 며칠 전
+  var days=Math.floor((now-t)/86400000);
+  if(days<=14) return days+'일 전';
+  // 이후: 상세 날짜+시간
   var d=new Date(t);
   var curYear=new Date().getFullYear();
   var mm=String(d.getMonth()+1).padStart(2,'0');
