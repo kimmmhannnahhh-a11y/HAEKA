@@ -313,8 +313,7 @@ onSnapshot(postsQ, function(snapshot){
     html += '<div class="ycard" onclick="window.location.href=\'heka_post_detail.html?id='+doc.id+'\'">'
       +'<div class="ycontent">'
       +'<div class="ytitle"><span class="ybadge '+badge+'" style="margin-right:5px;vertical-align:middle">'+(p.category||'정보')+'</span>'+p.title+'</div>'
-      +'<div class="yfoot"><span>♥ '+(p.likeCount||0)+'</span><span>💬 '+(p.commentCount||0)+'</span><span style="margin:0 2px">·</span><span>'+ago+'</span></div>'
-      +'<div style="display:flex;align-items:center;gap:4px;margin-top:3px">'+avatarHtml+'<span style="font-size:10px;color:#bbb">'+nick+'</span></div>'
+      +'<div class="yfoot">'+ avatarHtml +'<span style="font-size:10px;color:#bbb;margin-right:3px">'+nick+'</span><span style="margin:0 2px;color:#ddd">·</span><span>♥ '+(p.likeCount||0)+'</span><span>💬 '+(p.commentCount||0)+'</span><span style="margin:0 2px;color:#ddd">·</span><span>'+ago+'</span></div>'
       +'</div>'+thumb+'</div>';
   });
   listEl.innerHTML = html;
