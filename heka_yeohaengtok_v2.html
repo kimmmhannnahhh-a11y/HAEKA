@@ -56,7 +56,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fptag-weather{background:#3b82f6;color:#fff}
 .fptag-info{background:#eab308;color:#fff}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
-.fpthumb{width:30px;height:30px;min-width:30px;border-radius:50%;overflow:hidden;flex-shrink:0;align-self:center}
+.fpthumb{width:40px;height:40px;min-width:40px;border-radius:8px;overflow:hidden;flex-shrink:0;align-self:center}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#1A5D1A;font-weight:600}
@@ -257,13 +257,13 @@ function renderPosts(list){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
     var hasImg = p.fromFirebase && p.images && p.images[0];
     var thumbHtml = hasImg
-      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:30px;height:30px;object-fit:cover;display:block" loading="eager" decoding="async"/></div>'
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block" loading="eager" decoding="async"/></div>'
       : '';
     var isNew = p.id && !readSet.has(p.id);
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle">'+dotHtml+'<span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 1px">·</span><span class="fpd">'+(p.city||'')+'</span><span class="fpd" style="margin:0 1px">·</span><span class="fpd">'+p.time+'</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px;font-size:10px;color:#bbb"><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span></div></div>'+thumbHtml+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle">'+dotHtml+'<span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
