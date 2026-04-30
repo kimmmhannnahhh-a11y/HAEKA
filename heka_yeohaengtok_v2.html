@@ -42,7 +42,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpost:last-child{border-bottom:none}
 .fpost:hover{background:#fafafa}
 .new-dot{width:5px;height:5px;border-radius:50%;background:#e53935;display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0}
-.fpav{width:18px;height:18px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.fpav{width:20px;height:20px;border-radius:50%;background:#c8c8c8;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .fpmain{flex:1;min-width:0}
 .fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
 .fpu{font-size:11px;color:#555;font-weight:500}
@@ -292,7 +292,7 @@ function applyMyAvatar(){
         el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
       } else {
         // 기본 프사 - 사람 아이콘 (메인색상 배경)
-        el.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+        el.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
       }
     });
   });
