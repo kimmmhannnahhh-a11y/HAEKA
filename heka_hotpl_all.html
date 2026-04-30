@@ -31,7 +31,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 정보 영역 */
 .hotpl-info{padding:7px 12px 10px}
 .hotpl-name{font-size:12px;font-weight:700;color:#111;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center}
-.hotpl-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.hotpl-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .hotpl-cat{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700}
 .cat-restaurant{background:#ea6500;color:#fff}
 .cat-cafe{background:#6f4e37;color:#fff}
@@ -47,7 +47,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cb-tlog{background:#FF6B00}
 .cb-twallet{background:#FFD600;color:#333}
 .cb-union{background:#e21836}
-.hotpl-time{font-size:10px;color:#bbb;margin-left:auto}
+.hotpl-time{font-size:10px;color:#bbb}
 
 .empty{padding:60px 16px;text-align:center;font-size:13px;color:#bbb}
 .loading{padding:40px 16px;text-align:center;font-size:12px;color:#bbb}
@@ -159,7 +159,7 @@ window.renderHotpl = function(stores){
       +'</div></div>'
       +'<div class="hotpl-info">'
       +'<div class="hotpl-name"><span>'+s.name+'</span><span style="font-size:10px;font-weight:400;color:#999;margin-left:5px">'+(s.city||s.location||'')+'</span></div>'
-      +'<div class="hotpl-meta" style="justify-content:space-between">'
+      +'<div class="hotpl-meta">'
       +'<span class="hotpl-cat '+catClass(catTxt)+'">'+catTxt+'</span>'
       +'<span class="hotpl-time">'+ago+'</span>'
       +'</div>'
