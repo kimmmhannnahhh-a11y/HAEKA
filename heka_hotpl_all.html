@@ -157,13 +157,15 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-title">"'+s.name+', '+ago+' 결제 성공!"</div>'
       +'<div class="hotpl-reporter"><div class="rep-av">'+letter+'</div><span class="rep-name">'+nick+'</span></div>'
       +'</div></div>'
-      +'<div class="hotpl-info">'
-      +'<div class="hotpl-name"><span>'+s.name+'</span><span style="font-size:10px;font-weight:400;color:#999;margin-left:5px">'+(s.city||s.location||'')+'</span></div>'
-      +'<div class="hotpl-meta">'
+      +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="hotpl-name">'+(s.name)+'<span style="font-size:10px;font-weight:400;color:#999;margin-left:5px">'+(s.city||s.location||'')+'</span></div>'
+      +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-left:8px;flex-shrink:0">'
       +'<span class="hotpl-cat '+catClass(catTxt)+'">'+catTxt+'</span>'
       +'<span class="hotpl-time">'+ago+'</span>'
       +'</div>'
-      +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
       +'</div></div>';
   }).join('');
 };
