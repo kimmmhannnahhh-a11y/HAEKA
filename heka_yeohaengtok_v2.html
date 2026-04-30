@@ -47,7 +47,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
 .fpu{font-size:10px;color:#bbb}
 .fpd{font-size:10px;color:#999;flex-shrink:0}
-.fptitle{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111;white-space:normal;word-break:keep-all}
+.fptitle{font-size:11px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111}
 .fpbody{font-size:11px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
 .fpbottom{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:10px;color:#bbb}
 .fptag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;flex-shrink:0}
@@ -269,7 +269,7 @@ function renderPosts(list){
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="flex-shrink:0">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
