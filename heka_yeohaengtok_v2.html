@@ -107,11 +107,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
   </div>
 
-  <div class="live-bar" style="margin:5px 16px 0">
-    <div class="live-dot"></div>
-    <span class="live-txt">지금 여행톡 사용중 86,277명</span>
-  </div>
-
   <div class="search-result-bar" id="search-result-bar">
     "<span id="search-keyword"></span>" 검색 결과
   </div>
@@ -124,7 +119,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <button class="fb" onclick="toggleF(this)">정보</button>
   </div>
 
-  <div style="display:flex;justify-content:flex-end;padding:10px 16px 0">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 16px 0">
+    <div class="live-bar" style="margin:0">
+      <div class="live-dot"></div>
+      <span class="live-txt">지금 여행톡 사용중 86,277명</span>
+    </div>
     <button onclick="window.location.href='heka_write.html'" style="background:none;border:none;font-size:11px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       글쓰기
@@ -269,7 +268,7 @@ function renderPosts(list){
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle">'+dotHtml+'<span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="margin-right:5px;vertical-align:middle">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
