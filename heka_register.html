@@ -586,12 +586,33 @@ function showRealMap(lat, lng, name) {
   mapEl.onclick = function() { openMapSearch(); };
 }
 
+// 주소에서 도시명 추출
+function extractCity(addr) {
+  if(!addr) return '';
+  // formattedAddress 예: "2-chōme Hakata, Fukuoka, 812-0011 일본"
+  // 쉼표로 분리해서 우편번호/국가 제외한 도시 부분 추출
+  var parts = addr.split(',').map(function(s){ return s.trim(); });
+  // 뒤에서부터: 국가, 우편번호+국가, 도시 순서
+  // 숫자로 시작하거나 '일본','중국' 등 국가명 제외
+  var countryKw = ['일본','한국','중국','미국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','싱가포르','호주','캐나다','인도네시아','말레이시아','필리핀','인도','포르투갈','네덜란드','벨기에','스위스','오스트리아','체코','폴란드','헝가리','그리스','터키','멕시코','브라질','아르헨티나','페루','콜롬비아'];
+  for(var i=parts.length-1; i>=0; i--){
+    var p=parts[i];
+    if(/^\d/.test(p)) continue; // 우편번호
+    if(countryKw.some(function(k){return p.indexOf(k)>-1;})) continue; // 국가
+    if(p.length > 1) return p;
+  }
+  return parts[0]||'';
+}
+
+var selectedCity = '';
+
 function selectPlace(i) {
   var p = window._r[i];
   var a = document.getElementById('selected-addr');
   a.textContent = '✅ '+p.name+' · '+p.addr;
   a.classList.add('show');
   document.getElementById('inp-name').value = p.name;
+  selectedCity = extractCity(p.addr);
   if (p.cat) selectCat(p.cat);
   selectedLat = p.lat;
   selectedLng = p.lng;
@@ -778,6 +799,7 @@ async function saveStore(){
   var data = {
     name: document.getElementById('inp-name').value,
     category: selectedCat,
+    city: selectedCity || '',
     payOk: payOkList,
     payNo: payNoList,
     review: document.getElementById('review-inp').value,
