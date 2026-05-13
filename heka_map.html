@@ -162,6 +162,9 @@ function initMap(lat,lng){
   // 지도 클릭 시 카드 닫기
   _map.addListener('click',closeCard);
 
+  // 자동완성 초기화
+  initAutocomplete();
+
   // 매장 마커 추가
   loadAndMark();
 }
@@ -341,15 +344,74 @@ function clearCat(btn){
   document.getElementById('sc-zzim').style.display='';
 }
 
+var _searchMarkers=[], _autocomplete=null;
+
+function initAutocomplete(){
+  var inp=document.getElementById('search-inp');
+  _autocomplete=new google.maps.places.Autocomplete(inp,{fields:['geometry','name','place_id','formatted_address','types']});
+  _autocomplete.addListener('place_changed',function(){
+    var place=_autocomplete.getPlace();
+    if(!place.geometry) return;
+    _map.panTo(place.geometry.location);
+    _map.setZoom(16);
+    clearSearchMarkers();
+    // 선택한 장소 핀 표시
+    addSearchPin(place.geometry.location, place.name, place.place_id, place.formatted_address||'');
+  });
+}
+
+function addSearchPin(loc, name, placeId, addr){
+  var label=name.length>8?name.slice(0,8)+'..':name;
+  var w=Math.max(60, label.length*7+16);
+  var svgStr='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+    +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="%234285F4"/>'
+    +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="%234285F4"/>'
+    +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'+label+'</text>'
+    +'</svg>';
+  var m=new google.maps.Marker({
+    position:loc,
+    map:_map,
+    title:name,
+    icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),anchor:new google.maps.Point(w/2,26)},
+    zIndex:200,
+    animation:google.maps.Animation.DROP
+  });
+  m.addListener('click',function(){
+    _selStore=null;
+    document.getElementById('sc-name').textContent=name;
+    document.getElementById('sc-sub').textContent=addr;
+    document.getElementById('sc-cards').innerHTML='<span style="font-size:10px;color:#bbb">HAEKA 미등록 매장</span>';
+    document.getElementById('sc-zzim').style.display='none';
+    document.getElementById('store-card').classList.add('open');
+    document.querySelector('.sc-detail').onclick=function(){
+      window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name)+(placeId?'&query_place_id='+placeId:''),'_blank');
+    };
+  });
+  _searchMarkers.push(m);
+}
+
+function clearSearchMarkers(){
+  _searchMarkers.forEach(function(m){ m.setMap(null); });
+  _searchMarkers=[];
+  document.getElementById('sc-zzim').style.display='';
+  document.querySelector('.sc-detail').onclick=goDetail;
+}
+
 function doSearch(){
   var kw=document.getElementById('search-inp').value.trim();
   if(!kw||!_map) return;
+  clearSearchMarkers();
   var svc=new google.maps.places.PlacesService(_map);
-  svc.textSearch({query:kw,location:_map.getCenter(),radius:5000},function(res,st){
-    if(st===google.maps.places.PlacesServiceStatus.OK&&res[0]){
-      _map.panTo(res[0].geometry.location);
-      _map.setZoom(16);
-    }
+  svc.textSearch({query:kw},function(res,st){
+    if(st!==google.maps.places.PlacesServiceStatus.OK||!res||!res.length) return;
+    // 첫번째 결과로 이동
+    _map.panTo(res[0].geometry.location);
+    _map.setZoom(15);
+    // 모든 결과 핀으로 표시
+    res.forEach(function(place){
+      if(!place.geometry||!place.geometry.location) return;
+      addSearchPin(place.geometry.location, place.name, place.place_id, place.vicinity||'');
+    });
   });
 }
 
