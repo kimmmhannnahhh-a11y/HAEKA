@@ -24,6 +24,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .view::-webkit-scrollbar{display:none}
 
 /* 나라 선택 뷰 */
+.sort-bar{display:flex;gap:6px;padding:4px 14px 0;flex-shrink:0}
+.sort-btn{padding:4px 12px;border-radius:16px;border:1.5px solid #e0e0e0;font-size:11px;font-weight:600;color:#888;background:#fff;cursor:pointer;font-family:inherit;transition:.15s}
+.sort-btn.on{border-color:#1A5D1A;color:#1A5D1A;background:#f0f7f0}
 .country-list{padding:6px 0}
 .country-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
 .country-item:hover{background:#f9f9f9}
@@ -83,6 +86,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
   </div>
 
+  <!-- 정렬 버튼 -->
+  <div class="sort-bar" id="sort-bar">
+    <button class="sort-btn on" id="btn-popular" onclick="setSortMode('popular')">인기순</button>
+    <button class="sort-btn" id="btn-alpha" onclick="setSortMode('alpha')">가나다순</button>
+  </div>
   <!-- 나라 목록 뷰 -->
   <div class="view active" id="view-country">
     <div class="country-list" id="country-list"></div>
@@ -170,10 +178,34 @@ var COUNTRIES=[
 var _currentCountry=null, _currentCity=null;
 var CARD_MAP={'VISA':'sc-visa','MASTER':'sc-master','JCB':'sc-jcb','AMEX':'sc-amex','트래블로그':'sc-tlog','트래블월렛':'sc-twallet','UnionPay':'sc-union'};
 
+// 인기순 나라 순서
+var POPULAR_ORDER=['일본','태국','베트남','싱가포르','홍콩','대만','마카오','중국','미국','프랑스','이탈리아','스페인','영국','독일','포르투갈','오스트리아','체코','그리스','튀르키예','크로아티아','호주','뉴질랜드','말레이시아','인도네시아','필리핀','인도','아랍에미리트','캐나다','멕시코','페루','브라질','모로코','남아프리카공화국','네덜란드'];
+
+var _sortMode='popular';
+function setSortMode(mode){
+  _sortMode=mode;
+  document.getElementById('btn-popular').classList.toggle('on', mode==='popular');
+  document.getElementById('btn-alpha').classList.toggle('on', mode==='alpha');
+  renderCountries(COUNTRIES);
+}
+
+function getSortedCountries(list){
+  if(_sortMode==='alpha'){
+    return list.slice().sort(function(a,b){ return a.name.localeCompare(b.name,'ko'); });
+  }
+  // 인기순
+  return list.slice().sort(function(a,b){
+    var ai=POPULAR_ORDER.indexOf(a.name); var bi=POPULAR_ORDER.indexOf(b.name);
+    if(ai===-1) ai=999; if(bi===-1) bi=999;
+    return ai-bi;
+  });
+}
+
 // 나라 목록 렌더링
 function renderCountries(list){
+  var sorted=getSortedCountries(list);
   var el=document.getElementById('country-list');
-  el.innerHTML=list.map(function(c){
+  el.innerHTML=sorted.map(function(c){
     var citiesPreview=c.cities.slice(0,5).join(', ')+(c.cities.length>5?' 외 '+(c.cities.length-5)+'개':'');
     return '<div class="country-item" onclick="selectCountry(\''+c.name+'\')"><span class="country-flag">'+c.flag+'</span>'
       +'<div class="country-info"><div class="country-name">'+c.name+'</div><div class="country-cities">'+citiesPreview+'</div></div>'
