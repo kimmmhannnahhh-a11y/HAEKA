@@ -632,6 +632,12 @@ function submitCatRequest() {
   showToast('💬 소중한 의견 감사합니다! 검토 후 반영할게요 😊');
 }
 
+function goReviewAll() {
+  var s = window._currentDpStore || {};
+  var id = s.id || new URLSearchParams(location.search).get('id') || '';
+  var name = encodeURIComponent(s.name || '');
+  location.href = 'heka_review_all.html?id=' + id + '&name=' + name;
+}
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
