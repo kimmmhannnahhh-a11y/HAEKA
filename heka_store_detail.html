@@ -322,7 +322,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   try {
     if (storeId) {
       var rSnap = await getDocs(collection(db, 'stores', storeId, 'reviews'));
-      revCount = rSnap.size + (store.review ? 1 : 0);
+      revCount = rSnap.size || (store.review ? 1 : 0);
     }
   } catch(e) { revCount = store.reviewCount || (store.review ? 1 : 0); }
   var ratingLabel = '(★'+revCount+')';
