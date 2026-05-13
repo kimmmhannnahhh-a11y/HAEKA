@@ -194,6 +194,52 @@ function selectCountry(name){
 }
 
 // 도시 선택
+// 한국어 도시명 → 영어 매핑
+var CITY_EN_MAP={
+  '도쿄':'Tokyo','오사카':'Osaka','교토':'Kyoto','후쿠오카':'Fukuoka','삿포로':'Sapporo',
+  '나고야':'Nagoya','히로시마':'Hiroshima','나라':'Nara','고베':'Kobe','오키나와':'Okinawa',
+  '가나자와':'Kanazawa','센다이':'Sendai','하카타':'Hakata','벳푸':'Beppu','유후인':'Yufuin',
+  '상하이':'Shanghai','베이징':'Beijing','청두':'Chengdu','광저우':'Guangzhou','충칭':'Chongqing',
+  '선전':'Shenzhen','항저우':'Hangzhou','시안':'Xian','우한':'Wuhan','난징':'Nanjing',
+  '쿤밍':'Kunming','구이린':'Guilin','하얼빈':'Harbin','샤먼':'Xiamen','칭다오':'Qingdao',
+  '뉴욕':'New York','로스앤젤레스':'Los Angeles','라스베가스':'Las Vegas','샌프란시스코':'San Francisco',
+  '시카고':'Chicago','시애틀':'Seattle','마이애미':'Miami','하와이':'Hawaii','보스턴':'Boston',
+  '워싱턴DC':'Washington','올랜도':'Orlando',
+  '파리':'Paris','니스':'Nice','리옹':'Lyon','마르세유':'Marseille','보르도':'Bordeaux',
+  '런던':'London','맨체스터':'Manchester','에든버러':'Edinburgh','버밍엄':'Birmingham','리버풀':'Liverpool',
+  '로마':'Rome','밀라노':'Milan','피렌체':'Florence','베네치아':'Venice','나폴리':'Naples',
+  '바르셀로나':'Barcelona','마드리드':'Madrid','세비야':'Seville','발렌시아':'Valencia',
+  '베를린':'Berlin','뮌헨':'Munich','함부르크':'Hamburg','쾰른':'Cologne','프랑크푸르트':'Frankfurt',
+  '방콕':'Bangkok','치앙마이':'Chiang Mai','파타야':'Pattaya','푸켓':'Phuket',
+  '호치민':'Ho Chi Minh','하노이':'Hanoi','다낭':'Da Nang','호이안':'Hoi An','나트랑':'Nha Trang',
+  '싱가포르':'Singapore','시드니':'Sydney','멜버른':'Melbourne','브리즈번':'Brisbane','퍼스':'Perth',
+  '토론토':'Toronto','밴쿠버':'Vancouver','몬트리올':'Montreal','캘거리':'Calgary',
+  '리스본':'Lisbon','포르투':'Porto','암스테르담':'Amsterdam','빈':'Vienna','프라하':'Prague',
+  '두바이':'Dubai','아부다비':'Abu Dhabi','홍콩':'Hong Kong','마카오':'Macao','타이페이':'Taipei',
+  '타이중':'Taichung','가오슝':'Kaohsiung','리우데자네이루':'Rio de Janeiro','상파울루':'Sao Paulo',
+  '마라케시':'Marrakesh','케이프타운':'Cape Town','요하네스버그':'Johannesburg',
+  '쿠알라룸푸르':'Kuala Lumpur','페낭':'Penang','코타키나발루':'Kota Kinabalu',
+  '마닐라':'Manila','세부':'Cebu','보라카이':'Boracay',
+  '발리':'Bali','자카르타':'Jakarta','족자카르타':'Yogyakarta',
+  '두브로브니크':'Dubrovnik','자그레브':'Zagreb','스플리트':'Split',
+  '아테네':'Athens','산토리니':'Santorini','미코노스':'Mykonos',
+  '이스탄불':'Istanbul','카파도키아':'Cappadocia','안탈리아':'Antalya',
+  '뭄바이':'Mumbai','델리':'Delhi','아그라':'Agra','바라나시':'Varanasi',
+  '오클랜드':'Auckland','웰링턴':'Wellington','크라이스트처치':'Christchurch','퀸스타운':'Queenstown'
+};
+
+function cityMatches(s, city){
+  var cityLow=city.toLowerCase();
+  var enKeyword=(CITY_EN_MAP[city]||'').toLowerCase();
+  var addr=(s.address||s.addr||'').toLowerCase();
+  var sCity=(s.city||'').toLowerCase();
+  var sName=(s.name||'').toLowerCase();
+  return sCity.indexOf(cityLow)>-1
+    || addr.indexOf(cityLow)>-1
+    || (enKeyword && addr.indexOf(enKeyword)>-1)
+    || (enKeyword && sCity.indexOf(enKeyword)>-1);
+}
+
 function selectCity(city){
   _currentCity=city;
   document.getElementById('store-city-name').textContent=city;
@@ -202,11 +248,8 @@ function selectCity(city){
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
   document.getElementById('store-back-btn').onclick=showCityView;
   showView('view-stores');
-  // 매장 필터링
   waitForStores(function(stores){
-    var filtered=stores.filter(function(s){
-      return (s.city||'').indexOf(city)>-1 || (s.address||'').indexOf(city)>-1;
-    });
+    var filtered=stores.filter(function(s){ return cityMatches(s, city); });
     document.getElementById('store-count').textContent=filtered.length+'개';
     renderStores(filtered, listEl, city);
   });
