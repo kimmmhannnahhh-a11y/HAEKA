@@ -95,7 +95,9 @@ const storeId = params.get('id');
 const storeName = params.get('name') || '';
 
 window._goWrite = function() {
-  alert('후기 쓰기 기능은 준비 중이에요!');
+  var id = new URLSearchParams(location.search).get('id') || '';
+  var name = new URLSearchParams(location.search).get('name') || '';
+  location.href = 'heka_review_write.html?id=' + id + '&name=' + name;
 };
 window.goWrite = window._goWrite;
 
