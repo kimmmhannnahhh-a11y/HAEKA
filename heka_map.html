@@ -24,7 +24,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .loc-btn svg{width:18px;height:18px;fill:none;stroke:#1A5D1A;stroke-width:2;stroke-linecap:round}
 
 /* 하단 카드 */
-.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:12px 16px 18px;box-shadow:0 -3px 16px rgba(0,0,0,.12);z-index:5;transform:translateY(110%);transition:transform .28s ease}
+.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -3px 16px rgba(0,0,0,.12);z-index:5;transform:translateY(110%);transition:transform .28s ease;overflow:hidden}
+.sc-slide-wrap{width:100%;height:160px;position:relative;overflow:hidden;background:#f0f0f0;display:none}
+.sc-slide-wrap.show{display:block}
+.sc-slide-inner{display:flex;height:100%;transition:transform .3s ease}
+.sc-slide-img{flex:0 0 100%;height:100%;object-fit:cover;display:block}
+.sc-slide-dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.sc-slide-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5)}
+.sc-slide-dot.on{background:#fff;width:12px;border-radius:3px}
+.sc-body{padding:12px 16px 18px}
 .store-card.open{transform:translateY(0)}
 .drag-bar{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:0 auto 10px}
 .sc-name{font-size:14px;font-weight:700;color:#111;margin-bottom:2px}
@@ -93,15 +101,22 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
     <!-- 매장 카드 -->
     <div class="store-card" id="store-card">
-      <div class="drag-bar"></div>
-      <div class="sc-name" id="sc-name"></div>
-      <div class="sc-sub" id="sc-sub"></div>
-      <div class="sc-cards" id="sc-cards"></div>
-      <div class="sc-btns">
-        <button class="sc-detail" onclick="goDetail()">상세보기</button>
-        <button class="sc-zzim" id="sc-zzim" onclick="toggleZzim()">
-          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </button>
+      <!-- 사진 슬라이드 -->
+      <div class="sc-slide-wrap" id="sc-slide-wrap">
+        <div class="sc-slide-inner" id="sc-slide-inner"></div>
+        <div class="sc-slide-dots" id="sc-slide-dots"></div>
+      </div>
+      <div class="sc-body">
+        <div class="drag-bar"></div>
+        <div class="sc-name" id="sc-name"></div>
+        <div class="sc-sub" id="sc-sub"></div>
+        <div class="sc-cards" id="sc-cards"></div>
+        <div class="sc-btns">
+          <button class="sc-detail" onclick="goDetail()">상세보기</button>
+          <button class="sc-zzim" id="sc-zzim" onclick="toggleZzim()">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -236,6 +251,7 @@ function drawMarkers(){
   });
 }
 
+var _slideIdx=0, _slideImgs=[];
 function showCard(s){
   _selStore=s;
   document.getElementById('sc-name').textContent=s.name;
@@ -247,7 +263,47 @@ function showCard(s){
   }).join('');
   var zzim=getZzim();
   document.getElementById('sc-zzim').classList.toggle('on',zzim.has(s.id));
+  // 사진 슬라이드
+  _slideImgs=s.images||[];
+  _slideIdx=0;
+  var slideWrap=document.getElementById('sc-slide-wrap');
+  var slideInner=document.getElementById('sc-slide-inner');
+  var slideDots=document.getElementById('sc-slide-dots');
+  if(_slideImgs.length){
+    slideWrap.classList.add('show');
+    slideInner.innerHTML=_slideImgs.map(function(src){
+      return '<img class="sc-slide-img" src="'+src+'" loading="eager"/>';
+    }).join('');
+    slideDots.innerHTML=_slideImgs.length>1?_slideImgs.map(function(_,i){
+      return '<div class="sc-slide-dot'+(i===0?' on':'')+'" onclick="slideTo('+i+')"></div>';
+    }).join(''):'';
+    initSlideSwipe();
+  } else {
+    slideWrap.classList.remove('show');
+    slideInner.innerHTML='';
+    slideDots.innerHTML='';
+  }
   document.getElementById('store-card').classList.add('open');
+}
+
+function slideTo(idx){
+  _slideIdx=idx;
+  var inner=document.getElementById('sc-slide-inner');
+  if(inner) inner.style.transform='translateX(-'+(idx*100)+'%)';
+  document.querySelectorAll('.sc-slide-dot').forEach(function(d,i){d.classList.toggle('on',i===idx);});
+}
+
+function initSlideSwipe(){
+  var wrap=document.getElementById('sc-slide-wrap');
+  if(!wrap) return;
+  var sx=0;
+  wrap.ontouchstart=function(e){sx=e.touches[0].clientX;};
+  wrap.ontouchend=function(e){
+    var diff=e.changedTouches[0].clientX-sx;
+    if(Math.abs(diff)<30) return;
+    if(diff<0&&_slideIdx<_slideImgs.length-1) slideTo(_slideIdx+1);
+    else if(diff>0&&_slideIdx>0) slideTo(_slideIdx-1);
+  };
 }
 
 function closeCard(){
