@@ -126,7 +126,7 @@ function showToast(msg) {
 
 function checkSubmittable() {
   const txt = document.getElementById('rev-text');
-  const ok = selectedStar > 0 && txt && txt.value.trim().length >= 5;
+  const ok = selectedStar > 0 && txt && txt.value.trim().length >= 1;
   document.getElementById('submit-top').disabled = !ok;
   const sb = document.getElementById('submit-bottom');
   if (sb) sb.disabled = !ok;
@@ -190,7 +190,7 @@ window.submitReview = async function() {
   const txt = document.getElementById('rev-text');
   // 테스트용: 비로그인 허용
   if (selectedStar === 0) { showToast('별점을 선택해주세요'); return; }
-  if (!txt || txt.value.trim().length < 5) { showToast('후기를 5자 이상 써주세요'); return; }
+
 
   submitting = true;
   document.getElementById('submit-top').disabled = true;
@@ -265,7 +265,7 @@ function renderForm() {
     </div>
 
     <div class="section">
-      <div class="sec-label">후기<span class="required">*</span> <span style="font-size:10px;color:#aaa;font-weight:400">최소 5자</span></div>
+      <div class="sec-label">후기<span class="required">*</span> </div>
       <textarea id="rev-text" placeholder="결제 경험을 자유롭게 적어주세요 😊" oninput="document.getElementById('char-cnt').textContent=this.value.length+'자';_checkSubmit()"></textarea>
       <div class="char-count" id="char-cnt">0자</div>
     </div>
