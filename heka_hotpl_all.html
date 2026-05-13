@@ -93,6 +93,15 @@ onSnapshot(q, function(snapshot){
 </script>
 
 <script>
+var EN_TO_KO={'Tokyo':'도쿄','Osaka':'오사카','Kyoto':'교토','Fukuoka':'후쿠오카','Sapporo':'삿포로','Nagoya':'나고야','Hiroshima':'히로시마','Nara':'나라','Kobe':'고베','Okinawa':'오키나와','Kanazawa':'가나자와','Sendai':'센다이','Hakata':'하카타','Beppu':'벳푸','Yufuin':'유후인','Shanghai':'상하이','Beijing':'베이징','Chengdu':'청두','Guangzhou':'광저우','Chongqing':'충칭','Shenzhen':'선전','Hangzhou':'항저우','Nanjing':'난징','Kunming':'쿤밍','Guilin':'구이린','Harbin':'하얼빈','Xiamen':'샤먼','Qingdao':'칭다오','New York':'뉴욕','Los Angeles':'로스앤젤레스','Las Vegas':'라스베가스','San Francisco':'샌프란시스코','Chicago':'시카고','Seattle':'시애틀','Miami':'마이애미','Hawaii':'하와이','Boston':'보스턴','Paris':'파리','Nice':'니스','Lyon':'리옹','Marseille':'마르세유','Bordeaux':'보르도','London':'런던','Manchester':'맨체스터','Edinburgh':'에든버러','Birmingham':'버밍엄','Liverpool':'리버풀','Rome':'로마','Milan':'밀라노','Florence':'피렌체','Venice':'베네치아','Naples':'나폴리','Barcelona':'바르셀로나','Madrid':'마드리드','Seville':'세비야','Valencia':'발렌시아','Berlin':'베를린','Munich':'뮌헨','Hamburg':'함부르크','Frankfurt':'프랑크푸르트','Bangkok':'방콕','Chiang Mai':'치앙마이','Pattaya':'파타야','Phuket':'푸켓','Ho Chi Minh':'호치민','Hanoi':'하노이','Da Nang':'다낭','Hoi An':'호이안','Nha Trang':'나트랑','Singapore':'싱가포르','Sydney':'시드니','Melbourne':'멜버른','Brisbane':'브리즈번','Perth':'퍼스','Toronto':'토론토','Vancouver':'밴쿠버','Montreal':'몬트리올','Lisbon':'리스본','Porto':'포르투','Amsterdam':'암스테르담','Vienna':'빈','Prague':'프라하','Dubai':'두바이','Abu Dhabi':'아부다비','Hong Kong':'홍콩','Taipei':'타이페이','Taichung':'타이중','Kaohsiung':'가오슝','Kuala Lumpur':'쿠알라룸푸르','Penang':'페낭','Kota Kinabalu':'코타키나발루','Manila':'마닐라','Cebu':'세부','Bali':'발리','Jakarta':'자카르타','Dubrovnik':'두브로브니크','Zagreb':'자그레브','Athens':'아테네','Santorini':'산토리니','Istanbul':'이스탄불','Cappadocia':'카파도키아','Mumbai':'뭄바이','Delhi':'델리','Auckland':'오클랜드','Queenstown':'퀸스타운','Marrakesh':'마라케시','Cape Town':'케이프타운','Rio de Janeiro':'리우데자네이루','Hakata Ward':'후쿠오카','Chuo Ward':'오사카','Shinjuku':'도쿄','Shibuya':'도쿄'};
+
+function toKoreanCity(str){
+  if(!str) return '';
+  // 직접 매핑
+  for(var en in EN_TO_KO){ if(str.indexOf(en)>-1) return EN_TO_KO[en]; }
+  return str;
+}
+
 function extractCity(addr){
   if(!addr) return '';
   var parts=addr.split(',').map(function(s){return s.trim();});
@@ -109,7 +118,8 @@ function extractCity(addr){
 function getCity(s){
   if(s.city) return s.city;
   if(s.location) return s.location;
-  return extractCity(s.address||'');
+  var raw=extractCity(s.address||'');
+  return toKoreanCity(raw)||raw;
 }
 
 function timeAgo(ts){
