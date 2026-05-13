@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>결제 후기</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:480px;margin:0 auto;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:52px;border-bottom:1px solid #eee}
+.back-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px;border:none;background:none;font-size:18px;color:#222}
+.topbar-title{font-size:16px;font-weight:700;color:#111;flex:1}
+.store-header{background:#fff;padding:14px 16px 12px;border-bottom:1px solid #f0f0f0;margin-bottom:8px}
+.store-name{font-size:14px;font-weight:700;color:#111;margin-bottom:4px}
+.store-rating{display:flex;align-items:center;gap:6px}
+.rating-big{font-size:22px;font-weight:800;color:#111}
+.rating-stars{color:#f5a623;font-size:14px}
+.rating-count{font-size:12px;color:#888}
+.section-bar{padding:10px 16px 6px;font-size:11px;color:#aaa;font-weight:600;letter-spacing:.3px}
+.rev-item{background:#fff;margin:0 0 1px;padding:14px 16px}
+.rev-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rev-av{width:32px;height:32px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1A5D1A;flex-shrink:0;overflow:hidden}
+.rev-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.rev-info{flex:1}
+.rev-name{font-size:12px;font-weight:700;color:#222}
+.rev-meta{font-size:10px;color:#bbb;margin-top:1px}
+.rev-star{font-size:11px;color:#f5a623;font-weight:700}
+.rev-txt{font-size:13px;color:#444;line-height:1.6;margin-bottom:6px}
+.rev-imgs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.rev-img{width:72px;height:72px;border-radius:8px;object-fit:cover;background:#eee}
+.rev-cards{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.rev-card-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:#e8f5e9;color:#1A5D1A}
+.empty{text-align:center;padding:60px 20px;color:#bbb;font-size:13px}
+.empty-icon{font-size:40px;margin-bottom:10px}
+.write-btn{position:fixed;bottom:24px;right:20px;background:#1A5D1A;color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(26,93,26,.35);font-family:inherit;display:flex;align-items:center;gap:6px}
+.loading{text-align:center;padding:40px;color:#bbb;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="topbar-title">결제 후기</div>
+</div>
+
+<div class="store-header" id="store-header" style="display:none">
+  <div class="store-name" id="store-name-txt"></div>
+  <div class="store-rating">
+    <span class="rating-big" id="rating-big">★-</span>
+    <span class="rating-count" id="rating-count"></span>
+  </div>
+</div>
+
+<div id="review-wrap">
+  <div class="loading">불러오는 중...</div>
+</div>
+
+<button class="write-btn" onclick="goWrite()">✏️ 후기 쓰기</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+function timeAgo(ts) {
+  if (!ts) return '방금 전';
+  var now = Date.now();
+  var t = ts.toMillis ? ts.toMillis() : ts;
+  var diff = Math.floor((now - t) / 60000);
+  if (diff < 1) return '방금 전';
+  if (diff < 60) return diff + '분 전';
+  if (diff < 1440) return Math.floor(diff/60) + '시간 전';
+  return Math.floor(diff/1440) + '일 전';
+}
+
+function initials(name) {
+  if (!name) return '?';
+  return name.charAt(0).toUpperCase();
+}
+
+const params = new URLSearchParams(location.search);
+const storeId = params.get('id');
+const storeName = params.get('name') || '';
+
+window._goWrite = function() {
+  alert('후기 쓰기 기능은 준비 중이에요!');
+};
+window.goWrite = window._goWrite;
+
+async function loadAll() {
+  const wrap = document.getElementById('review-wrap');
+
+  // 매장 정보
+  if (storeId) {
+    try {
+      const snap = await getDoc(doc(db, 'stores', storeId));
+      if (snap.exists()) {
+        const s = snap.data();
+        const hdr = document.getElementById('store-header');
+        document.getElementById('store-name-txt').textContent = s.name || storeName;
+        document.getElementById('rating-big').textContent = s.rating ? '★' + s.rating : '★-';
+        hdr.style.display = 'block';
+
+        // store.review (단일 텍스트) 가 있으면 기본 리뷰로 포함
+        const items = [];
+        if (s.review) {
+          items.push({
+            nickname: s.nickname || s.nick || '등록자',
+            photoURL: s.photoURL || null,
+            text: s.review,
+            createdAt: s.createdAt,
+            cards: s.cards || [],
+            rating: null
+          });
+        }
+
+        // reviews 서브컬렉션이 있으면 추가 로드
+        try {
+          const rSnap = await getDocs(
+            query(collection(db, 'stores', storeId, 'reviews'), orderBy('createdAt', 'desc'))
+          );
+          rSnap.forEach(r => items.push({ id: r.id, ...r.data() }));
+        } catch(e) { /* 서브컬렉션 없을 수 있음 */ }
+
+        renderReviews(wrap, items, s.rating);
+      }
+    } catch(e) {
+      console.error(e);
+      wrap.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>불러오기 실패</div>';
+    }
+  } else {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>매장 정보가 없어요</div>';
+  }
+}
+
+function renderReviews(wrap, items, avgRating) {
+  const countEl = document.getElementById('rating-count');
+  if (countEl) countEl.textContent = '후기 ' + items.length + '개';
+
+  if (!items.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">💳</div>아직 결제 후기가 없어요<br><br>첫 번째 후기를 남겨보세요!</div>';
+    return;
+  }
+
+  wrap.innerHTML = '<div class="section-bar">후기 ' + items.length + '개</div>'
+    + items.map(function(r) {
+      var avHtml = r.photoURL
+        ? '<div class="rev-av"><img src="'+r.photoURL+'" onerror="this.parentNode.textContent=\''+initials(r.nickname || '?')+'\'" /></div>'
+        : '<div class="rev-av">'+initials(r.nickname || '등록자')+'</div>';
+
+      var starHtml = r.rating ? '<span class="rev-star">★'.repeat(Math.round(r.rating))+'</span> ' : '';
+
+      var imgHtml = '';
+      if (r.images && r.images.length) {
+        imgHtml = '<div class="rev-imgs">'
+          + r.images.slice(0,4).map(function(u){ return '<img class="rev-img" src="'+u+'" onerror="this.style.display=\'none\'">'; }).join('')
+          + '</div>';
+      }
+
+      var cardHtml = '';
+      if (r.cards && r.cards.length) {
+        cardHtml = '<div class="rev-cards">'
+          + r.cards.map(function(c){ return '<span class="rev-card-badge">'+c+'</span>'; }).join('')
+          + '</div>';
+      }
+
+      return '<div class="rev-item">'
+        + '<div class="rev-top">'
+        + avHtml
+        + '<div class="rev-info"><div class="rev-name">'+(r.nickname||r.nick||'익명')+'</div>'
+        + '<div class="rev-meta">'+timeAgo(r.createdAt)+'</div></div>'
+        + '</div>'
+        + starHtml
+        + '<div class="rev-txt">'+(r.text||r.review||'')+'</div>'
+        + imgHtml
+        + cardHtml
+        + '</div>';
+    }).join('');
+}
+
+loadAll();
+</script>
+</body>
+</html>
