@@ -290,6 +290,11 @@ window.renderPost=function(p){
   },0);
   document.getElementById('loading').style.display='none';
   document.getElementById('scroll-wrap').innerHTML=html;
+  // 좋아요 버튼 상태 반영 (innerHTML 세팅 후)
+  if(_liked){
+    var likeBtn=document.getElementById('like-btn');
+    if(likeBtn) likeBtn.classList.add('liked');
+  }
   if(_images.length>1) initSlideSwipe();
 };
 
