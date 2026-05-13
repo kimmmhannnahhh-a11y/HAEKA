@@ -131,10 +131,10 @@ async function loadAll() {
         // reviews 서브컬렉션이 있으면 추가 로드
         try {
           const rSnap = await getDocs(
-            query(collection(db, 'stores', storeId, 'reviews'), orderBy('createdAt', 'desc'))
+            collection(db, 'stores', storeId, 'reviews')
           );
           rSnap.forEach(r => items.push({ id: r.id, ...r.data() }));
-        } catch(e) { /* 서브컬렉션 없을 수 있음 */ }
+        } catch(e) { console.error('reviews 서브컬렉션 로드 실패:', e); }
 
         renderReviews(wrap, items, s.rating);
       }
