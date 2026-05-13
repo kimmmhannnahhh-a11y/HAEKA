@@ -125,7 +125,7 @@ function showToast(msg) {
 
 function checkSubmittable() {
   const txt = document.getElementById('rev-text');
-  const ok = currentUser && selectedStar > 0 && txt && txt.value.trim().length >= 5;
+  const ok = selectedStar > 0 && txt && txt.value.trim().length >= 5;
   document.getElementById('submit-top').disabled = !ok;
   const sb = document.getElementById('submit-bottom');
   if (sb) sb.disabled = !ok;
@@ -187,7 +187,7 @@ function renderPhotos() {
 window.submitReview = async function() {
   if (submitting) return;
   const txt = document.getElementById('rev-text');
-  if (!currentUser) { showToast('로그인이 필요해요'); return; }
+  // 테스트용: 비로그인 허용
   if (selectedStar === 0) { showToast('별점을 선택해주세요'); return; }
   if (!txt || txt.value.trim().length < 5) { showToast('후기를 5자 이상 써주세요'); return; }
 
@@ -209,9 +209,9 @@ window.submitReview = async function() {
 
     // Firestore 저장
     await addDoc(collection(db, 'stores', storeId, 'reviews'), {
-      uid: currentUser.uid,
-      nickname: currentUser.displayName || currentUser.email?.split('@')[0] || '익명',
-      photoURL: currentUser.photoURL || null,
+      uid: currentUser ? currentUser.uid : 'test',
+      nickname: currentUser ? (currentUser.displayName || currentUser.email?.split('@')[0] || '익명') : '테스터',
+      photoURL: currentUser ? (currentUser.photoURL || null) : null,
       rating: selectedStar,
       text: txt.value.trim(),
       cards: [...selectedCards],
@@ -295,12 +295,8 @@ window._checkSubmit = checkSubmittable;
 
 onAuthStateChanged(auth, user => {
   currentUser = user;
-  if (!user) {
-    renderLoginWall();
-  } else {
-    renderForm();
-    checkSubmittable();
-  }
+  renderForm();
+  checkSubmittable();
 });
 </script>
 </body>
