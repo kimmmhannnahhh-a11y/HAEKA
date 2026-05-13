@@ -324,6 +324,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     if (storeId) {
       var rSnap = await getDocs(collection(db, 'stores', storeId, 'reviews'));
       rSnap.forEach(function(d){ subReviews.push({id:d.id,...d.data()}); });
+      console.log('[HAEKA] 서브컬렉션 리뷰 수:', rSnap.size, '/ store.review:', !!store.review, '/ subReviews:', subReviews);
       revCount = rSnap.size + (store.review ? 1 : 0);
     }
   } catch(e) { revCount = store.reviewCount || (store.review ? 1 : 0); }
