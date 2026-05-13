@@ -285,38 +285,70 @@ function doSearch(val){
   val=val.trim().toLowerCase();
   if(!val){ renderCountries(COUNTRIES); showView('view-country'); return; }
 
-  // 나라명 매칭
-  var countryMatch=COUNTRIES.filter(function(c){ return c.name.indexOf(val)>-1; });
-  // 도시명 매칭
-  var cityMatches=[];
+  // 1. 나라명 매칭
+  var countryMatch=COUNTRIES.filter(function(c){ return c.name.toLowerCase().indexOf(val)>-1; });
+  // 2. 도시명 매칭
+  var cityResults=[];
   COUNTRIES.forEach(function(c){
     c.cities.forEach(function(city){
-      if(city.indexOf(val)>-1) cityMatches.push({country:c, city:city});
+      if(city.toLowerCase().indexOf(val)>-1) cityResults.push({country:c, city:city});
     });
   });
 
-  if(countryMatch.length&&!cityMatches.length){
-    renderCountries(countryMatch);
-    showView('view-country');
-    return;
+  // 3. 가게명 매칭 (Firebase 데이터에서)
+  var storeResults=[];
+  if(window._allStores){
+    storeResults=window._allStores.filter(function(s){
+      var name=(s.name||'').toLowerCase();
+      return name.indexOf(val)>-1;
+    });
   }
 
-  if(cityMatches.length){
-    // 도시 검색 결과 바로 표시
-    var el=document.getElementById('country-list');
-    el.innerHTML='<div style="padding:10px 16px 4px;font-size:11px;color:#aaa;font-weight:600">도시 검색 결과</div>'
-      +cityMatches.map(function(m){
-        return '<div class="country-item" onclick="selectCityDirect(\''+m.country.name+'\',\''+m.city+'\')"><span class="country-flag">'+m.country.flag+'</span>'
-          +'<div class="country-info"><div class="country-name">'+m.city+'</div><div class="country-cities">'+m.country.name+'</div></div>'
-          +'<span class="country-arr">›</span></div>';
-      }).join('');
+  var el=document.getElementById('country-list');
+  var html='';
+
+  if(storeResults.length){
+    html+='<div style="padding:10px 16px 4px;font-size:11px;color:#aaa;font-weight:600">매장 검색 결과 '+storeResults.length+'개</div>';
+    html+=storeResults.map(function(s){
+      var thumb=s.images&&s.images[0]?'<img src="'+s.images[0]+'" style="width:100%;height:100%;object-fit:cover"/>':'';
+      return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
+        +'<div class="store-thumb">'+thumb+'</div>'
+        +'<div class="store-info">'
+        +'<div class="store-name">'+s.name+'</div>'
+        +'<div class="store-sub">'+(s.category||'')+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  if(cityResults.length){
+    html+='<div style="padding:10px 16px 4px;font-size:11px;color:#aaa;font-weight:600">도시 검색 결과</div>';
+    html+=cityResults.map(function(m){
+      return '<div class="country-item" onclick="selectCityDirect(\''+m.country.name+'\',\''+m.city+'\')"><span class="country-flag">'+m.country.flag+'</span>'
+        +'<div class="country-info"><div class="country-name">'+m.city+'</div><div class="country-cities">'+m.country.name+'</div></div>'
+        +'<span class="country-arr">›</span></div>';
+    }).join('');
+  } else if(countryMatch.length&&!storeResults.length){
+    html=''; // 나라만 있으면 기존 방식
+    el.innerHTML=''; showView('view-country');
+    renderCountries(countryMatch); return;
+  }
+
+  if(html){
+    el.innerHTML=html;
     showView('view-country');
   } else if(countryMatch.length){
     renderCountries(countryMatch);
     showView('view-country');
   } else {
-    document.getElementById('country-list').innerHTML='<div class="search-empty">검색 결과가 없어요</div>';
-    showView('view-country');
+    // Firebase 아직 로딩 중일 수 있음
+    if(window._allStores===null){
+      el.innerHTML='<div class="store-loading">검색 중...</div>';
+      showView('view-country');
+      waitForStores(function(){ doSearch(document.getElementById('search-inp').value); });
+    } else {
+      el.innerHTML='<div class="search-empty">검색 결과가 없어요</div>';
+      showView('view-country');
+    }
   }
 }
 
