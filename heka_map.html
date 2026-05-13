@@ -6,368 +6,286 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px;display:flex;flex-direction:column}
 .sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0;position:relative;z-index:10}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0;z-index:10}
 .back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111}
-
-/* 지도 */
-#map{flex:1;width:100%;position:relative}
-
-/* 내 위치 버튼 */
-.my-loc-btn{position:absolute;bottom:90px;right:14px;width:38px;height:38px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5}
-.my-loc-btn svg{width:18px;height:18px}
-
-/* 하단 카드 */
-.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.1);z-index:5;transform:translateY(100%);transition:transform .3s ease}
-.store-card.open{transform:translateY(0)}
-.card-drag{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:0 auto 12px}
-.card-name{font-size:14px;font-weight:700;color:#111;margin-bottom:4px}
-.card-cat{font-size:11px;color:#888;margin-bottom:8px}
-.card-badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.cb{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;color:#fff}
-.cb-visa{background:#1a1f71}.cb-master{background:#eb001b}.cb-jcb{background:#007b40}
-.cb-amex{background:#007bc1}.cb-tlog{background:#FF6B00}.cb-twallet{background:#FFD600;color:#333}.cb-union{background:#e21836}
-.card-btns{display:flex;gap:8px}
-.card-detail-btn{flex:1;padding:10px;border-radius:10px;background:#1A5D1A;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
-.card-zzim-btn{width:42px;height:42px;border-radius:10px;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.card-zzim-btn svg{width:16px;height:16px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
-.card-zzim-btn.on svg{fill:#e53935;stroke:#e53935}
-
-/* 로딩 */
-.map-loading{position:absolute;inset:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:4}
-.map-loading-txt{font-size:12px;color:#888}
-.map-spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#1A5D1A;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.map-wrap{flex:1;position:relative;overflow:hidden}
+#gmap{width:100%;height:100%}
 
 /* 검색창 */
-.map-search{position:absolute;top:8px;left:12px;right:12px;z-index:5;display:flex;gap:6px}
-.map-search-inp{flex:1;padding:9px 14px;border-radius:22px;border:none;font-size:12px;font-family:inherit;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.2);background:#fff;color:#111}
-.map-search-btn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);flex-shrink:0}
-.map-search-btn svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
+.search-bar{position:absolute;top:10px;left:10px;right:10px;z-index:5;display:flex;gap:6px;align-items:center}
+.search-bar input{flex:1;height:36px;padding:0 14px;border-radius:20px;border:none;font-size:12px;font-family:inherit;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.25);background:#fff;color:#111}
+.search-bar button{width:36px;height:36px;border-radius:50%;background:#1A5D1A;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);flex-shrink:0}
+.search-bar button svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
 
-/* 검색 결과 드롭다운 */
-.map-search-results{position:absolute;top:52px;left:12px;right:12px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:6;max-height:200px;overflow-y:auto;display:none}
-.map-search-results.open{display:block}
-.map-search-result-item{padding:10px 14px;font-size:12px;color:#111;cursor:pointer;border-bottom:.5px solid #f5f5f5}
-.map-search-result-item:last-child{border-bottom:none}
-.map-search-result-item:hover{background:#f9f9f9}
-.map-result-name{font-weight:600;margin-bottom:2px}
-.map-result-addr{font-size:10px;color:#999}
-.marker-normal{background:#1A5D1A;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;position:relative}
-.marker-normal::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1A5D1A;border-bottom:none}
-.marker-zzim{background:#e53935;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;gap:3px;position:relative}
-.marker-zzim::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#e53935;border-bottom:none}
+/* 내 위치 버튼 */
+.loc-btn{position:absolute;bottom:96px;right:10px;width:36px;height:36px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center}
+.loc-btn svg{width:18px;height:18px;fill:none;stroke:#1A5D1A;stroke-width:2;stroke-linecap:round}
+
+/* 하단 카드 */
+.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:12px 16px 18px;box-shadow:0 -3px 16px rgba(0,0,0,.12);z-index:5;transform:translateY(110%);transition:transform .28s ease}
+.store-card.open{transform:translateY(0)}
+.drag-bar{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:0 auto 10px}
+.sc-name{font-size:14px;font-weight:700;color:#111;margin-bottom:2px}
+.sc-sub{font-size:11px;color:#999;margin-bottom:8px}
+.sc-cards{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.sc-card{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;color:#fff}
+.c-visa{background:#1a1f71}.c-master{background:#eb001b}.c-jcb{background:#007b40}
+.c-amex{background:#007bc1}.c-tlog{background:#FF6B00}.c-twallet{background:#FFD600;color:#333}.c-union{background:#e21836}
+.sc-btns{display:flex;gap:8px}
+.sc-detail{flex:1;padding:10px;border-radius:10px;background:#1A5D1A;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.sc-zzim{width:40px;height:40px;border-radius:10px;background:#f5f5f5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sc-zzim svg{width:16px;height:16px;fill:none;stroke:#bbb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.sc-zzim.on svg{fill:#e53935;stroke:#e53935}
+
+/* 로딩 */
+.loading-cover{position:absolute;inset:0;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10}
+.spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#1A5D1A;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:12px;color:#888}
 </style>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 </head>
 <body>
 <div class="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
-    <span style="font-size:13px;font-weight:700;color:#111">지도로 찾기</span>
+    <span style="font-size:13px;font-weight:700">지도로 찾기</span>
     <div style="width:30px"></div>
   </div>
 
-  <div id="map" style="flex:1;position:relative">
-    <div class="map-loading" id="map-loading">
-      <div class="map-spinner"></div>
-      <div class="map-loading-txt">현재 위치 불러오는 중...</div>
+  <div class="map-wrap">
+    <div class="loading-cover" id="loading-cover">
+      <div class="spinner"></div>
+      <div class="loading-txt">위치 불러오는 중...</div>
     </div>
+    <div id="gmap"></div>
+
     <!-- 검색창 -->
-    <div class="map-search">
-      <input class="map-search-inp" id="map-search-inp" placeholder="장소, 주소 검색" type="text"
-        onkeydown="if(event.key==='Enter') searchMapPlace()"
-        oninput="onSearchInput(this.value)"/>
-      <button class="map-search-btn" onclick="searchMapPlace()">
+    <div class="search-bar">
+      <input id="search-inp" placeholder="장소, 주소 검색" type="text"
+        onkeydown="if(event.key==='Enter')doSearch()"/>
+      <button onclick="doSearch()">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       </button>
     </div>
-    <div class="map-search-results" id="map-search-results"></div>
-    <div id="gmap" style="width:100%;height:100%"></div>
-    <button class="my-loc-btn" onclick="goMyLocation()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="2" stroke-linecap="round">
-        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-        <circle cx="12" cy="12" r="7" stroke-dasharray="2 2"/>
-      </svg>
-    </button>
-  </div>
 
-  <!-- 하단 매장 카드 -->
-  <div class="store-card" id="store-card">
-    <div class="card-drag"></div>
-    <div class="card-name" id="card-name"></div>
-    <div class="card-cat" id="card-cat"></div>
-    <div class="card-badges" id="card-badges"></div>
-    <div class="card-btns">
-      <button class="card-detail-btn" onclick="goDetail()">상세보기</button>
-      <button class="card-zzim-btn" id="card-zzim-btn" onclick="toggleCardZzim()">
-        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      </button>
+    <!-- 내 위치 -->
+    <button class="loc-btn" onclick="goMyLoc()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+    </button>
+
+    <!-- 매장 카드 -->
+    <div class="store-card" id="store-card">
+      <div class="drag-bar"></div>
+      <div class="sc-name" id="sc-name"></div>
+      <div class="sc-sub" id="sc-sub"></div>
+      <div class="sc-cards" id="sc-cards"></div>
+      <div class="sc-btns">
+        <button class="sc-detail" onclick="goDetail()">상세보기</button>
+        <button class="sc-zzim" id="sc-zzim" onclick="toggleZzim()">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-const firebaseConfig = {
+const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
   projectId:"card-store-finder",
   storageBucket:"card-store-finder.firebasestorage.app",
   messagingSenderId:"340038449458",
   appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
-};
-const app = initializeApp(firebaseConfig);
+});
 const db = getFirestore(app);
-
-window._loadStores = async function(){
+window._fetchStores = async function(){
   var snap = await getDocs(collection(db,'stores'));
-  var stores = [];
-  snap.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
-  return stores;
+  var arr = [];
+  snap.forEach(function(d){ arr.push({id:d.id,...d.data()}); });
+  return arr;
 };
 </script>
 
+<!-- Google Maps -->
 <script>
-var googleMap, _stores=[], _markers=[], _selectedStore=null;
-var _myLat=null, _myLng=null;
+var _map, _myLat, _myLng, _stores=[], _markers=[], _selStore=null;
+var _cardMap={'VISA':'c-visa','MASTER':'c-master','JCB':'c-jcb','AMEX':'c-amex','트래블로그':'c-tlog','트래블월렛':'c-twallet','UnionPay':'c-union'};
 
-function getZzimSet(){ try{ return new Set(JSON.parse(localStorage.getItem('haeka_zzim')||'[]')); }catch(e){ return new Set(); } }
-function saveZzimSet(set){ localStorage.setItem('haeka_zzim', JSON.stringify([...set])); }
+function getZzim(){ try{return new Set(JSON.parse(localStorage.getItem('haeka_zzim')||'[]'));}catch(e){return new Set();} }
+function saveZzim(s){ localStorage.setItem('haeka_zzim',JSON.stringify([...s])); }
 
-var cardMap = {
-  'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb',
-  'AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union'
-};
+function initMap(lat,lng){
+  document.getElementById('loading-cover').style.display='none';
+  _myLat=lat; _myLng=lng;
 
-function initMap(lat, lng){
-  document.getElementById('map-loading').style.display='none';
-  googleMap = new google.maps.Map(document.getElementById('gmap'),{
+  _map = new google.maps.Map(document.getElementById('gmap'),{
     center:{lat:lat,lng:lng},
-    zoom:14,
-    disableDefaultUI:true,
+    zoom:15,
+    mapTypeControl:false,
+    streetViewControl:false,
+    fullscreenControl:false,
     zoomControl:true,
-    styles:[
-      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]}
-    ]
+    zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER}
   });
 
-  // 내 위치 마커
+  // 내 위치 파란 점
   new google.maps.Marker({
     position:{lat:lat,lng:lng},
-    map:googleMap,
-    icon:{
-      path:google.maps.SymbolPath.CIRCLE,
-      scale:7,
-      fillColor:'#4285F4',
-      fillOpacity:1,
-      strokeColor:'#fff',
-      strokeWeight:2
-    },
-    title:'내 위치',
-    zIndex:999
+    map:_map,
+    icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:'#4285F4',fillOpacity:1,strokeColor:'#fff',strokeWeight:2.5},
+    zIndex:1000,
+    title:'내 위치'
   });
 
-  // 지도 클릭시 카드 닫기
-  googleMap.addListener('click', function(){ closeCard(); });
+  // 지도 클릭 시 카드 닫기
+  _map.addListener('click',closeCard);
 
-  // 매장 불러오기
-  if(window._loadStores){
-    window._loadStores().then(function(stores){
-      _stores = stores;
-      addStoreMarkers();
-    });
-  }
+  // 매장 마커 추가
+  loadAndMark();
 }
 
-function addStoreMarkers(){
-  var zzimSet = getZzimSet();
+function loadAndMark(){
+  if(!window._fetchStores){ setTimeout(loadAndMark,300); return; }
+  window._fetchStores().then(function(stores){
+    _stores=stores;
+    drawMarkers();
+  }).catch(function(e){ console.error(e); });
+}
+
+function drawMarkers(){
+  // 기존 마커 제거
+  _markers.forEach(function(m){ m.setMap(null); });
+  _markers=[];
+  var zzim=getZzim();
   _stores.forEach(function(s){
-    if(!s.lat || !s.lng) return;
-    var isZzim = zzimSet.has(s.id);
+    if(!s.lat||!s.lng) return;
+    var isZzim=zzim.has(s.id);
+    var label=s.name.length>6?s.name.slice(0,6)+'..':s.name;
+    var marker=new google.maps.Marker({
+      position:{lat:Number(s.lat),lng:Number(s.lng)},
+      map:_map,
+      title:s.name,
+      icon:{
+        path:google.maps.SymbolPath.CIRCLE,
+        scale:0 // 투명 - 라벨만 보이게
+      },
+      label:{
+        text: (isZzim?'♥ ':'')+label,
+        color:'#fff',
+        fontSize:'10px',
+        fontWeight:'700',
+        className:'haeka-label'
+      },
+      zIndex:isZzim?100:50
+    });
 
-    // 커스텀 오버레이
-    var div = document.createElement('div');
-    div.className = isZzim ? 'marker-zzim' : 'marker-normal';
-    if(isZzim){
-      div.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' + (s.name.length>8?s.name.slice(0,8)+'..':s.name);
-    } else {
-      div.textContent = s.name.length>8?s.name.slice(0,8)+'..':s.name;
-    }
-    div.onclick = function(e){ e.stopPropagation(); showCard(s); };
+    // 배경색 있는 마커를 위해 실제로는 커스텀 오버레이 사용
+    marker.setMap(null); // 위 방법 대신 아래 방법 사용
 
-    var overlay = new google.maps.OverlayView();
-    overlay.store = s;
-    overlay.div = div;
-    overlay.onAdd = function(){
-      this.getPanes().overlayMouseTarget.appendChild(this.div);
-    };
-    overlay.draw = function(){
-      var proj = this.getProjection();
-      var pos = proj.fromLatLngToDivPixel(new google.maps.LatLng(this.store.lat, this.store.lng));
-      var d = this.div;
-      d.style.position='absolute';
-      d.style.left=(pos.x - d.offsetWidth/2)+'px';
-      d.style.top=(pos.y - d.offsetHeight - 8)+'px';
-    };
-    overlay.onRemove = function(){ if(this.div.parentNode) this.div.parentNode.removeChild(this.div); };
-    overlay.setMap(googleMap);
-    _markers.push({overlay:overlay, store:s, div:div});
+    // SVG 아이콘으로 배경 있는 핀 만들기
+    var bg = isZzim ? '%23e53935' : '%231A5D1A';
+    var txt = encodeURIComponent((isZzim?'♥ ':'')+label);
+    var w = label.length*7 + (isZzim?22:10);
+    var svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+      +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="'+bg+'"/>'
+      +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="'+bg+'"/>'
+      +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'
+      +(isZzim?'♥ ':'')+label+'</text>'
+      +'</svg>';
+
+    var realMarker = new google.maps.Marker({
+      position:{lat:Number(s.lat),lng:Number(s.lng)},
+      map:_map,
+      title:s.name,
+      icon:{
+        url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),
+        anchor:new google.maps.Point(w/2,26)
+      },
+      zIndex:isZzim?100:50
+    });
+    realMarker.addListener('click',function(e){
+      e.stop && e.stop();
+      showCard(s);
+    });
+    _markers.push(realMarker);
   });
 }
 
 function showCard(s){
-  _selectedStore = s;
-  document.getElementById('card-name').textContent = s.name;
-  document.getElementById('card-cat').textContent = (s.category||'') + (s.city?' · '+s.city:'') + (s.address?' · '+s.address.split(',')[0]:'');
-  var badges = (s.payOk||s.cards||[]).map(function(c){
-    var cls=cardMap[c]||''; 
-    return cls?'<span class="cb '+cls+'">'+c+'</span>':'';
+  _selStore=s;
+  document.getElementById('sc-name').textContent=s.name;
+  document.getElementById('sc-sub').textContent=[s.category,s.city,s.address?s.address.split(',')[0]:''].filter(Boolean).join(' · ');
+  var cards=(s.payOk||s.cards||[]);
+  document.getElementById('sc-cards').innerHTML=cards.map(function(c){
+    var cl=_cardMap[c]||'';
+    return cl?'<span class="sc-card '+cl+'">'+c+'</span>':'';
   }).join('');
-  document.getElementById('card-badges').innerHTML = badges;
-  // 찜 상태
-  var zzimSet = getZzimSet();
-  var btn = document.getElementById('card-zzim-btn');
-  btn.classList.toggle('on', zzimSet.has(s.id));
+  var zzim=getZzim();
+  document.getElementById('sc-zzim').classList.toggle('on',zzim.has(s.id));
   document.getElementById('store-card').classList.add('open');
 }
 
 function closeCard(){
   document.getElementById('store-card').classList.remove('open');
-  _selectedStore = null;
+  _selStore=null;
 }
 
 function goDetail(){
-  if(_selectedStore) location.href='heka_store_detail.html?id='+_selectedStore.id;
+  if(_selStore) location.href='heka_store_detail.html?id='+_selStore.id;
 }
 
-function toggleCardZzim(){
-  if(!_selectedStore) return;
-  var zzimSet = getZzimSet();
-  var btn = document.getElementById('card-zzim-btn');
-  if(zzimSet.has(_selectedStore.id)){
-    zzimSet.delete(_selectedStore.id);
-    btn.classList.remove('on');
-  } else {
-    zzimSet.add(_selectedStore.id);
-    btn.classList.add('on');
-  }
-  saveZzimSet(zzimSet);
-  // 마커 업데이트
-  refreshMarkers();
+function toggleZzim(){
+  if(!_selStore) return;
+  var zzim=getZzim();
+  var btn=document.getElementById('sc-zzim');
+  if(zzim.has(_selStore.id)){ zzim.delete(_selStore.id); btn.classList.remove('on'); }
+  else { zzim.add(_selStore.id); btn.classList.add('on'); }
+  saveZzim(zzim);
+  drawMarkers(); // 마커 색상 업데이트
 }
 
-function refreshMarkers(){
-  _markers.forEach(function(m){ m.overlay.setMap(null); });
-  _markers = [];
-  addStoreMarkers();
+function goMyLoc(){
+  if(!_map) return;
+  if(_myLat&&_myLng){ _map.panTo({lat:_myLat,lng:_myLng}); _map.setZoom(15); return; }
+  navigator.geolocation.getCurrentPosition(function(p){
+    _myLat=p.coords.latitude; _myLng=p.coords.longitude;
+    _map.panTo({lat:_myLat,lng:_myLng}); _map.setZoom(15);
+  });
 }
 
-function goMyLocation(){
-  if(_myLat && _myLng){
-    googleMap.panTo({lat:_myLat, lng:_myLng});
-    googleMap.setZoom(15);
-  } else {
-    navigator.geolocation.getCurrentPosition(function(pos){
-      _myLat=pos.coords.latitude; _myLng=pos.coords.longitude;
-      googleMap.panTo({lat:_myLat,lng:_myLng});
-      googleMap.setZoom(15);
-    });
-  }
+function doSearch(){
+  var kw=document.getElementById('search-inp').value.trim();
+  if(!kw||!_map) return;
+  var svc=new google.maps.places.PlacesService(_map);
+  svc.textSearch({query:kw,location:_map.getCenter(),radius:5000},function(res,st){
+    if(st===google.maps.places.PlacesServiceStatus.OK&&res[0]){
+      _map.panTo(res[0].geometry.location);
+      _map.setZoom(16);
+    }
+  });
 }
 
-// 초기화
-function startMap(){
+// GPS → 지도 초기화
+function start(){
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
-      function(pos){
-        _myLat=pos.coords.latitude; _myLng=pos.coords.longitude;
-        initMap(_myLat, _myLng);
-      },
-      function(){
-        // GPS 실패 시 기본 위치 (서울)
-        initMap(37.5665, 126.9780);
-      },
-      {timeout:8000}
+      function(p){ initMap(p.coords.latitude,p.coords.longitude); },
+      function(){ initMap(35.6762,139.6503); }, // 실패시 도쿄
+      {timeout:8000,enableHighAccuracy:true}
     );
-  } else {
-    initMap(37.5665, 126.9780);
-  }
+  } else { initMap(35.6762,139.6503); }
 }
+</script>
 
-// Google Maps 로드 후 실행
-if(typeof google !== 'undefined'){
-  startMap();
-} else {
-  window.addEventListener('load', startMap);
-}
-
-var _searchTimeout = null;
-function onSearchInput(val){
-  clearTimeout(_searchTimeout);
-  if(!val.trim()){ closeSearchResults(); return; }
-  _searchTimeout = setTimeout(function(){ searchSuggest(val); }, 300);
-}
-
-async function searchSuggest(keyword){
-  if(!googleMap) return;
-  try{
-    var svc = new google.maps.places.AutocompleteService();
-    svc.getPlacePredictions({
-      input: keyword,
-      language: 'ko'
-    }, function(predictions, status){
-      if(status !== google.maps.places.PlacesServiceStatus.OK || !predictions){
-        closeSearchResults(); return;
-      }
-      var el = document.getElementById('map-search-results');
-      el.innerHTML = predictions.slice(0,5).map(function(p){
-        return '<div class="map-search-result-item" onclick="selectSearchResult(\''+p.place_id+'\')">'
-          +'<div class="map-result-name">'+p.structured_formatting.main_text+'</div>'
-          +'<div class="map-result-addr">'+(p.structured_formatting.secondary_text||'')+'</div>'
-          +'</div>';
-      }).join('');
-      el.classList.add('open');
-    });
-  }catch(e){}
-}
-
-function searchMapPlace(){
-  var keyword = document.getElementById('map-search-inp').value.trim();
-  if(!keyword || !googleMap) return;
-  var svc = new google.maps.places.PlacesService(googleMap);
-  svc.textSearch({query: keyword, location: googleMap.getCenter(), radius: 10000}, function(results, status){
-    if(status === google.maps.places.PlacesServiceStatus.OK && results[0]){
-      var loc = results[0].geometry.location;
-      googleMap.panTo(loc);
-      googleMap.setZoom(15);
-      closeSearchResults();
-    }
-  });
-}
-
-function selectSearchResult(placeId){
-  if(!googleMap) return;
-  var svc = new google.maps.places.PlacesService(googleMap);
-  svc.getDetails({placeId: placeId, fields:['geometry','name']}, function(place, status){
-    if(status === google.maps.places.PlacesServiceStatus.OK){
-      googleMap.panTo(place.geometry.location);
-      googleMap.setZoom(16);
-      document.getElementById('map-search-inp').value = place.name;
-      closeSearchResults();
-    }
-  });
-}
-
-function closeSearchResults(){
-  var el = document.getElementById('map-search-results');
-  el.classList.remove('open');
-  el.innerHTML = '';
-}
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&callback=start">
 </script>
 </body>
 </html>
