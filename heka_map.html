@@ -40,13 +40,26 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .map-spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#1A5D1A;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* 커스텀 마커 */
+/* 검색창 */
+.map-search{position:absolute;top:8px;left:12px;right:12px;z-index:5;display:flex;gap:6px}
+.map-search-inp{flex:1;padding:9px 14px;border-radius:22px;border:none;font-size:12px;font-family:inherit;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.2);background:#fff;color:#111}
+.map-search-btn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);flex-shrink:0}
+.map-search-btn svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
+
+/* 검색 결과 드롭다운 */
+.map-search-results{position:absolute;top:52px;left:12px;right:12px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:6;max-height:200px;overflow-y:auto;display:none}
+.map-search-results.open{display:block}
+.map-search-result-item{padding:10px 14px;font-size:12px;color:#111;cursor:pointer;border-bottom:.5px solid #f5f5f5}
+.map-search-result-item:last-child{border-bottom:none}
+.map-search-result-item:hover{background:#f9f9f9}
+.map-result-name{font-weight:600;margin-bottom:2px}
+.map-result-addr{font-size:10px;color:#999}
 .marker-normal{background:#1A5D1A;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;position:relative}
 .marker-normal::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1A5D1A;border-bottom:none}
 .marker-zzim{background:#e53935;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;gap:3px;position:relative}
 .marker-zzim::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#e53935;border-bottom:none}
 </style>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&v=beta&language=ko"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 </head>
 <body>
 <div class="phone">
@@ -62,6 +75,16 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       <div class="map-spinner"></div>
       <div class="map-loading-txt">현재 위치 불러오는 중...</div>
     </div>
+    <!-- 검색창 -->
+    <div class="map-search">
+      <input class="map-search-inp" id="map-search-inp" placeholder="장소, 주소 검색" type="text"
+        onkeydown="if(event.key==='Enter') searchMapPlace()"
+        oninput="onSearchInput(this.value)"/>
+      <button class="map-search-btn" onclick="searchMapPlace()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      </button>
+    </div>
+    <div class="map-search-results" id="map-search-results"></div>
     <div id="gmap" style="width:100%;height:100%"></div>
     <button class="my-loc-btn" onclick="goMyLocation()">
       <svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="2" stroke-linecap="round">
@@ -129,7 +152,6 @@ function initMap(lat, lng){
     disableDefaultUI:true,
     zoomControl:true,
     styles:[
-      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
       {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]}
     ]
   });
@@ -282,6 +304,69 @@ if(typeof google !== 'undefined'){
   startMap();
 } else {
   window.addEventListener('load', startMap);
+}
+
+var _searchTimeout = null;
+function onSearchInput(val){
+  clearTimeout(_searchTimeout);
+  if(!val.trim()){ closeSearchResults(); return; }
+  _searchTimeout = setTimeout(function(){ searchSuggest(val); }, 300);
+}
+
+async function searchSuggest(keyword){
+  if(!googleMap) return;
+  try{
+    var svc = new google.maps.places.AutocompleteService();
+    svc.getPlacePredictions({
+      input: keyword,
+      language: 'ko'
+    }, function(predictions, status){
+      if(status !== google.maps.places.PlacesServiceStatus.OK || !predictions){
+        closeSearchResults(); return;
+      }
+      var el = document.getElementById('map-search-results');
+      el.innerHTML = predictions.slice(0,5).map(function(p){
+        return '<div class="map-search-result-item" onclick="selectSearchResult(\''+p.place_id+'\')">'
+          +'<div class="map-result-name">'+p.structured_formatting.main_text+'</div>'
+          +'<div class="map-result-addr">'+(p.structured_formatting.secondary_text||'')+'</div>'
+          +'</div>';
+      }).join('');
+      el.classList.add('open');
+    });
+  }catch(e){}
+}
+
+function searchMapPlace(){
+  var keyword = document.getElementById('map-search-inp').value.trim();
+  if(!keyword || !googleMap) return;
+  var svc = new google.maps.places.PlacesService(googleMap);
+  svc.textSearch({query: keyword, location: googleMap.getCenter(), radius: 10000}, function(results, status){
+    if(status === google.maps.places.PlacesServiceStatus.OK && results[0]){
+      var loc = results[0].geometry.location;
+      googleMap.panTo(loc);
+      googleMap.setZoom(15);
+      closeSearchResults();
+    }
+  });
+}
+
+function selectSearchResult(placeId){
+  if(!googleMap) return;
+  var svc = new google.maps.places.PlacesService(googleMap);
+  svc.getDetails({placeId: placeId, fields:['geometry','name']}, function(place, status){
+    if(status === google.maps.places.PlacesServiceStatus.OK){
+      googleMap.panTo(place.geometry.location);
+      googleMap.setZoom(16);
+      document.getElementById('map-search-inp').value = place.name;
+      closeSearchResults();
+    }
+  });
+}
+
+function closeSearchResults(){
+  var el = document.getElementById('map-search-results');
+  el.classList.remove('open');
+  el.innerHTML = '';
 }
 </script>
 </body>
