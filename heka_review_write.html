@@ -219,6 +219,9 @@ window.submitReview = async function() {
       createdAt: serverTimestamp()
     });
 
+    // reviewCount +1
+    await updateDoc(doc(db, 'stores', storeId), { reviewCount: increment(1) });
+
     showToast('후기가 등록됐어요!');
     setTimeout(() => {
       history.back();

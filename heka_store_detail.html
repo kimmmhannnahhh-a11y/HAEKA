@@ -317,7 +317,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   // 결제 후기 + 해카 평점
   document.getElementById('review-section').style.display = 'block';
   var haekaRating = store.rating || null;
-  var revCount = store.review ? 1 : 0;
+  var revCount = store.reviewCount || 0;
   var ratingLabel = '(★'+revCount+')';
   var ratingTxt = '<button onclick="goReviewAll()" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:underline;font-family:inherit"> '+ratingLabel+'</button>';
   document.getElementById('review-title').innerHTML =
