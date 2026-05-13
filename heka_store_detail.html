@@ -318,7 +318,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   document.getElementById('review-section').style.display = 'block';
   var haekaRating = store.rating || null;
   var revCount = store.review ? 1 : 0;
-  var ratingLabel = '(★'+(haekaRating||'-')+') '+revCount;
+  var ratingLabel = '(★'+revCount+')';
   var ratingTxt = '<button onclick="goReviewAll()" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:underline;font-family:inherit"> '+ratingLabel+'</button>';
   document.getElementById('review-title').innerHTML =
     '<span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase">결제 후기</span>'
