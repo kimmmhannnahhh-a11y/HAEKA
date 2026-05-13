@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
+.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0;position:relative;z-index:10}
+.back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111}
+
+/* 지도 */
+#map{flex:1;width:100%;position:relative}
+
+/* 내 위치 버튼 */
+.my-loc-btn{position:absolute;bottom:90px;right:14px;width:38px;height:38px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5}
+.my-loc-btn svg{width:18px;height:18px}
+
+/* 하단 카드 */
+.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:14px 16px 20px;box-shadow:0 -2px 12px rgba(0,0,0,.1);z-index:5;transform:translateY(100%);transition:transform .3s ease}
+.store-card.open{transform:translateY(0)}
+.card-drag{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:0 auto 12px}
+.card-name{font-size:14px;font-weight:700;color:#111;margin-bottom:4px}
+.card-cat{font-size:11px;color:#888;margin-bottom:8px}
+.card-badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.cb{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;color:#fff}
+.cb-visa{background:#1a1f71}.cb-master{background:#eb001b}.cb-jcb{background:#007b40}
+.cb-amex{background:#007bc1}.cb-tlog{background:#FF6B00}.cb-twallet{background:#FFD600;color:#333}.cb-union{background:#e21836}
+.card-btns{display:flex;gap:8px}
+.card-detail-btn{flex:1;padding:10px;border-radius:10px;background:#1A5D1A;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.card-zzim-btn{width:42px;height:42px;border-radius:10px;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.card-zzim-btn svg{width:16px;height:16px;fill:none;stroke:#aaa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.card-zzim-btn.on svg{fill:#e53935;stroke:#e53935}
+
+/* 로딩 */
+.map-loading{position:absolute;inset:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:4}
+.map-loading-txt{font-size:12px;color:#888}
+.map-spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#1A5D1A;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 커스텀 마커 */
+.marker-normal{background:#1A5D1A;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;position:relative}
+.marker-normal::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1A5D1A;border-bottom:none}
+.marker-zzim{background:#e53935;color:#fff;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;gap:3px;position:relative}
+.marker-zzim::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#e53935;border-bottom:none}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&v=beta&language=ko"></script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span style="font-size:13px;font-weight:700;color:#111">지도로 찾기</span>
+    <div style="width:30px"></div>
+  </div>
+
+  <div id="map" style="flex:1;position:relative">
+    <div class="map-loading" id="map-loading">
+      <div class="map-spinner"></div>
+      <div class="map-loading-txt">현재 위치 불러오는 중...</div>
+    </div>
+    <div id="gmap" style="width:100%;height:100%"></div>
+    <button class="my-loc-btn" onclick="goMyLocation()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        <circle cx="12" cy="12" r="7" stroke-dasharray="2 2"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 하단 매장 카드 -->
+  <div class="store-card" id="store-card">
+    <div class="card-drag"></div>
+    <div class="card-name" id="card-name"></div>
+    <div class="card-cat" id="card-cat"></div>
+    <div class="card-badges" id="card-badges"></div>
+    <div class="card-btns">
+      <button class="card-detail-btn" onclick="goDetail()">상세보기</button>
+      <button class="card-zzim-btn" id="card-zzim-btn" onclick="toggleCardZzim()">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app",
+  messagingSenderId:"340038449458",
+  appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window._loadStores = async function(){
+  var snap = await getDocs(collection(db,'stores'));
+  var stores = [];
+  snap.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
+  return stores;
+};
+</script>
+
+<script>
+var googleMap, _stores=[], _markers=[], _selectedStore=null;
+var _myLat=null, _myLng=null;
+
+function getZzimSet(){ try{ return new Set(JSON.parse(localStorage.getItem('haeka_zzim')||'[]')); }catch(e){ return new Set(); } }
+function saveZzimSet(set){ localStorage.setItem('haeka_zzim', JSON.stringify([...set])); }
+
+var cardMap = {
+  'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb',
+  'AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union'
+};
+
+function initMap(lat, lng){
+  document.getElementById('map-loading').style.display='none';
+  googleMap = new google.maps.Map(document.getElementById('gmap'),{
+    center:{lat:lat,lng:lng},
+    zoom:14,
+    disableDefaultUI:true,
+    zoomControl:true,
+    styles:[
+      {featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]}
+    ]
+  });
+
+  // 내 위치 마커
+  new google.maps.Marker({
+    position:{lat:lat,lng:lng},
+    map:googleMap,
+    icon:{
+      path:google.maps.SymbolPath.CIRCLE,
+      scale:7,
+      fillColor:'#4285F4',
+      fillOpacity:1,
+      strokeColor:'#fff',
+      strokeWeight:2
+    },
+    title:'내 위치',
+    zIndex:999
+  });
+
+  // 지도 클릭시 카드 닫기
+  googleMap.addListener('click', function(){ closeCard(); });
+
+  // 매장 불러오기
+  if(window._loadStores){
+    window._loadStores().then(function(stores){
+      _stores = stores;
+      addStoreMarkers();
+    });
+  }
+}
+
+function addStoreMarkers(){
+  var zzimSet = getZzimSet();
+  _stores.forEach(function(s){
+    if(!s.lat || !s.lng) return;
+    var isZzim = zzimSet.has(s.id);
+
+    // 커스텀 오버레이
+    var div = document.createElement('div');
+    div.className = isZzim ? 'marker-zzim' : 'marker-normal';
+    if(isZzim){
+      div.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>' + (s.name.length>8?s.name.slice(0,8)+'..':s.name);
+    } else {
+      div.textContent = s.name.length>8?s.name.slice(0,8)+'..':s.name;
+    }
+    div.onclick = function(e){ e.stopPropagation(); showCard(s); };
+
+    var overlay = new google.maps.OverlayView();
+    overlay.store = s;
+    overlay.div = div;
+    overlay.onAdd = function(){
+      this.getPanes().overlayMouseTarget.appendChild(this.div);
+    };
+    overlay.draw = function(){
+      var proj = this.getProjection();
+      var pos = proj.fromLatLngToDivPixel(new google.maps.LatLng(this.store.lat, this.store.lng));
+      var d = this.div;
+      d.style.position='absolute';
+      d.style.left=(pos.x - d.offsetWidth/2)+'px';
+      d.style.top=(pos.y - d.offsetHeight - 8)+'px';
+    };
+    overlay.onRemove = function(){ if(this.div.parentNode) this.div.parentNode.removeChild(this.div); };
+    overlay.setMap(googleMap);
+    _markers.push({overlay:overlay, store:s, div:div});
+  });
+}
+
+function showCard(s){
+  _selectedStore = s;
+  document.getElementById('card-name').textContent = s.name;
+  document.getElementById('card-cat').textContent = (s.category||'') + (s.city?' · '+s.city:'') + (s.address?' · '+s.address.split(',')[0]:'');
+  var badges = (s.payOk||s.cards||[]).map(function(c){
+    var cls=cardMap[c]||''; 
+    return cls?'<span class="cb '+cls+'">'+c+'</span>':'';
+  }).join('');
+  document.getElementById('card-badges').innerHTML = badges;
+  // 찜 상태
+  var zzimSet = getZzimSet();
+  var btn = document.getElementById('card-zzim-btn');
+  btn.classList.toggle('on', zzimSet.has(s.id));
+  document.getElementById('store-card').classList.add('open');
+}
+
+function closeCard(){
+  document.getElementById('store-card').classList.remove('open');
+  _selectedStore = null;
+}
+
+function goDetail(){
+  if(_selectedStore) location.href='heka_store_detail.html?id='+_selectedStore.id;
+}
+
+function toggleCardZzim(){
+  if(!_selectedStore) return;
+  var zzimSet = getZzimSet();
+  var btn = document.getElementById('card-zzim-btn');
+  if(zzimSet.has(_selectedStore.id)){
+    zzimSet.delete(_selectedStore.id);
+    btn.classList.remove('on');
+  } else {
+    zzimSet.add(_selectedStore.id);
+    btn.classList.add('on');
+  }
+  saveZzimSet(zzimSet);
+  // 마커 업데이트
+  refreshMarkers();
+}
+
+function refreshMarkers(){
+  _markers.forEach(function(m){ m.overlay.setMap(null); });
+  _markers = [];
+  addStoreMarkers();
+}
+
+function goMyLocation(){
+  if(_myLat && _myLng){
+    googleMap.panTo({lat:_myLat, lng:_myLng});
+    googleMap.setZoom(15);
+  } else {
+    navigator.geolocation.getCurrentPosition(function(pos){
+      _myLat=pos.coords.latitude; _myLng=pos.coords.longitude;
+      googleMap.panTo({lat:_myLat,lng:_myLng});
+      googleMap.setZoom(15);
+    });
+  }
+}
+
+// 초기화
+function startMap(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        _myLat=pos.coords.latitude; _myLng=pos.coords.longitude;
+        initMap(_myLat, _myLng);
+      },
+      function(){
+        // GPS 실패 시 기본 위치 (서울)
+        initMap(37.5665, 126.9780);
+      },
+      {timeout:8000}
+    );
+  } else {
+    initMap(37.5665, 126.9780);
+  }
+}
+
+// Google Maps 로드 후 실행
+if(typeof google !== 'undefined'){
+  startMap();
+} else {
+  window.addEventListener('load', startMap);
+}
+</script>
+</body>
+</html>
