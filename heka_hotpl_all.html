@@ -104,8 +104,13 @@ function toKoreanCity(str){
 
 function extractCity(addr){
   if(!addr) return '';
+  // 일본 주소: "Osaka, Chuo Ward" 같은 패턴에서 도시명 우선
+  var japanCities=['Tokyo','Osaka','Kyoto','Fukuoka','Sapporo','Nagoya','Hiroshima','Nara','Kobe','Okinawa','Kanazawa','Sendai','Yokohama','Kobe','Kawasaki','Saitama','Chiba','Kumamoto','Niigata','Hamamatsu'];
+  for(var i=0;i<japanCities.length;i++){
+    if(addr.indexOf(japanCities[i])>-1) return japanCities[i];
+  }
   var parts=addr.split(',').map(function(s){return s.trim();});
-  var skip=['일본','한국','중국','미국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','싱가포르','호주','캐나다','포르투갈','네덜란드','오스트리아','체코','그리스','튀르키예','크로아티아','말레이시아','필리핀','인도네시아','인도','아랍에미리트','홍콩','대만','브라질','페루','모로코','뉴질랜드','Japan','China','USA','France','UK','Germany','Italy','Spain','Thailand','Vietnam','Singapore','Australia','Canada','Portugal','Netherlands','Austria','Czech','Greece','Turkey','Croatia','Malaysia','Philippines','Indonesia','India'];
+  var skip=['일본','한국','중국','미국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','싱가포르','호주','캐나다','포르투갈','네덜란드','오스트리아','체코','그리스','튀르키예','크로아티아','말레이시아','필리핀','인도네시아','인도','아랍에미리트','홍콩','대만','브라질','페루','모로코','뉴질랜드','Japan','China','USA','France','UK','Germany','Italy','Spain','Thailand','Vietnam','Singapore','Australia','Canada','Portugal','Netherlands','Austria','Czech','Greece','Turkey','Croatia','Malaysia','Philippines','Indonesia','India','Ward','Prefecture','District','Province','City','County'];
   for(var i=parts.length-1;i>=0;i--){
     var p=parts[i];
     if(/^\d/.test(p)) continue;
