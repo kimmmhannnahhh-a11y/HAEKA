@@ -39,6 +39,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sc-zzim svg{width:16px;height:16px;fill:none;stroke:#bbb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
 .sc-zzim.on svg{fill:#e53935;stroke:#e53935}
 
+/* 카테고리 필터 */
+.cat-bar{position:absolute;top:56px;left:0;right:0;z-index:5;display:flex;gap:6px;padding:0 10px;overflow-x:auto;scrollbar-width:none}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:.15s;display:flex;align-items:center;gap:4px}
+.cat-chip.on{background:#1A5D1A;color:#fff}
 /* 로딩 */
 .loading-cover{position:absolute;inset:0;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10}
 .spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#1A5D1A;border-radius:50%;animation:spin .8s linear infinite}
@@ -71,6 +76,16 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       </button>
     </div>
 
+    <!-- 카테고리 필터 -->
+    <div class="cat-bar" id="cat-bar">
+      <button class="cat-chip" onclick="searchCat(this,'restaurant','🍽️ 음식점')">🍽️ 음식점</button>
+      <button class="cat-chip" onclick="searchCat(this,'cafe','☕ 카페')">☕ 카페</button>
+      <button class="cat-chip" onclick="searchCat(this,'bar','🍺 바/펍')">🍺 바/펍</button>
+      <button class="cat-chip" onclick="searchCat(this,'convenience_store','🏪 편의점')">🏪 편의점</button>
+      <button class="cat-chip" onclick="searchCat(this,'shopping_mall','🛍️ 쇼핑')">🛍️ 쇼핑</button>
+      <button class="cat-chip" onclick="searchCat(this,'tourist_attraction','🏛️ 관광')">🏛️ 관광</button>
+      <button class="cat-chip" onclick="clearCat(this)">✕ 초기화</button>
+    </div>
     <!-- 내 위치 -->
     <button class="loc-btn" onclick="goMyLoc()">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
@@ -258,6 +273,72 @@ function goMyLoc(){
     _myLat=p.coords.latitude; _myLng=p.coords.longitude;
     _map.panTo({lat:_myLat,lng:_myLng}); _map.setZoom(15);
   });
+}
+
+var _catMarkers=[], _activeCat=null;
+
+function searchCat(btn, type, label){
+  if(_activeCat===type){ clearCat(btn); return; }
+  _activeCat=type;
+  // 버튼 상태
+  document.querySelectorAll('.cat-chip').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  // 기존 카테고리 마커 제거
+  clearCatMarkers();
+  if(!_map) return;
+  var svc=new google.maps.places.PlacesService(_map);
+  svc.nearbySearch({
+    location:_map.getCenter(),
+    radius:1000,
+    type:type
+  }, function(results, status){
+    if(status!==google.maps.places.PlacesServiceStatus.OK||!results) return;
+    results.forEach(function(place){
+      if(!place.geometry||!place.geometry.location) return;
+      var w=place.name.length>8?66:place.name.length*7+16;
+      var label=place.name.length>8?place.name.slice(0,8)+'..':place.name;
+      var svgStr='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+        +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="%234285F4"/>'
+        +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="%234285F4"/>'
+        +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'+label+'</text>'
+        +'</svg>';
+      var m=new google.maps.Marker({
+        position:place.geometry.location,
+        map:_map,
+        title:place.name,
+        icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),anchor:new google.maps.Point(w/2,26)},
+        zIndex:80
+      });
+      m.addListener('click', function(){
+        // Google Places 장소 카드 표시
+        _selStore=null;
+        document.getElementById('sc-name').textContent=place.name;
+        document.getElementById('sc-sub').textContent=(place.vicinity||'');
+        document.getElementById('sc-cards').innerHTML='<span style="font-size:10px;color:#bbb">HAEKA 미등록 매장</span>';
+        document.getElementById('sc-zzim').style.display='none';
+        document.getElementById('store-card').classList.add('open');
+        // 상세보기 버튼 - Google Maps로 연결
+        document.querySelector('.sc-detail').onclick=function(){
+          window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place.name)+'&query_place_id='+place.place_id,'_blank');
+        };
+      });
+      _catMarkers.push(m);
+    });
+  });
+}
+
+function clearCatMarkers(){
+  _catMarkers.forEach(function(m){ m.setMap(null); });
+  _catMarkers=[];
+}
+
+function clearCat(btn){
+  _activeCat=null;
+  document.querySelectorAll('.cat-chip').forEach(function(b){ b.classList.remove('on'); });
+  clearCatMarkers();
+  // 상세버튼 원상복구
+  document.querySelector('.sc-detail').onclick=goDetail;
+  document.getElementById('sc-zzim').style.display='';
 }
 
 function doSearch(){
