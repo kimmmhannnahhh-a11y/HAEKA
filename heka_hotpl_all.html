@@ -93,6 +93,25 @@ onSnapshot(q, function(snapshot){
 </script>
 
 <script>
+function extractCity(addr){
+  if(!addr) return '';
+  var parts=addr.split(',').map(function(s){return s.trim();});
+  var skip=['일본','한국','중국','미국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','싱가포르','호주','캐나다','포르투갈','네덜란드','오스트리아','체코','그리스','튀르키예','크로아티아','말레이시아','필리핀','인도네시아','인도','아랍에미리트','홍콩','대만','브라질','페루','모로코','뉴질랜드','Japan','China','USA','France','UK','Germany','Italy','Spain','Thailand','Vietnam','Singapore','Australia','Canada','Portugal','Netherlands','Austria','Czech','Greece','Turkey','Croatia','Malaysia','Philippines','Indonesia','India'];
+  for(var i=parts.length-1;i>=0;i--){
+    var p=parts[i];
+    if(/^\d/.test(p)) continue;
+    if(skip.some(function(k){return p.toLowerCase().indexOf(k.toLowerCase())>-1;})) continue;
+    if(p.length>1) return p;
+  }
+  return '';
+}
+
+function getCity(s){
+  if(s.city) return s.city;
+  if(s.location) return s.location;
+  return extractCity(s.address||'');
+}
+
 function timeAgo(ts){
   if(!ts) return '방금 전';
   var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:(typeof ts==='number'?ts:Date.now()));
@@ -160,7 +179,7 @@ window.renderHotpl = function(stores){
       +'</div></div>'
       +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="flex:1;min-width:0">'
-      +'<div class="hotpl-name">'+(s.name)+'<span style="font-size:10px;color:#bbb;font-weight:400;margin-left:6px">'+(s.city||s.location||'')+'</span></div>'
+      +'<div class="hotpl-name">'+(s.name)+'<span style="font-size:10px;color:#bbb;font-weight:400;margin-left:6px">'+getCity(s)+'</span></div>'
       
       +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
       +'</div>'
