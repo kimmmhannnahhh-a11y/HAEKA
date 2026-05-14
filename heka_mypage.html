@@ -332,34 +332,6 @@ window._loadNotices = async function() {
   </div>
 
   <!-- 언어/통화 시트 -->
-  <div class="overlay" id="lang-overlay">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-title">언어 / 통화 설정</div>
-      <div style="margin-bottom:10px">
-        <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">언어</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="lang-list">
-          <button onclick="selectLang(this,'한국어')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">한국어</button>
-          <button onclick="selectLang(this,'English')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">English</button>
-          <button onclick="selectLang(this,'日本語')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">日本語</button>
-          <button onclick="selectLang(this,'中文')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">中文</button>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">통화</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="currency-list">
-          <button onclick="selectCurrency(this,'KRW')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">KRW</button>
-          <button onclick="selectCurrency(this,'USD')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">USD</button>
-          <button onclick="selectCurrency(this,'JPY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">JPY</button>
-          <button onclick="selectCurrency(this,'EUR')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">EUR</button>
-          <button onclick="selectCurrency(this,'CNY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">CNY</button>
-        </div>
-      </div>
-      <button class="sheet-btn" style="margin-top:14px" onclick="saveLang()">저장하기</button>
-      <button class="sheet-cancel" onclick="closeLangSheet()">취소</button>
-    </div>
-  </div>
-
   <!-- 설정 패널 (톱니바퀴) -->
   <div class="overlay" id="settings-overlay" onclick="closeSettings()" style="align-items:stretch;background:rgba(0,0,0,0)"></div>
   <div id="settings-panel" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
@@ -410,6 +382,34 @@ window._loadNotices = async function() {
       <div class="menu-item" onclick="openLangSheet()">
         <div class="menu-txt"><div class="menu-title">언어 / 통화 설정</div><div class="menu-sub" id="lang-sub">한국어 · KRW</div></div>
         <span class="menu-arr">›</span>
+      </div>
+      <!-- 언어/통화 인라인 시트 -->
+      <div id="lang-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-end;border-radius:26px">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-title">언어 / 통화 설정</div>
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">언어</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap" id="lang-list">
+              <button onclick="selectLang(this,'한국어')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">한국어</button>
+              <button onclick="selectLang(this,'English')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">English</button>
+              <button onclick="selectLang(this,'日本語')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">日本語</button>
+              <button onclick="selectLang(this,'中文')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">中文</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">통화</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap" id="currency-list">
+              <button onclick="selectCurrency(this,'KRW')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">KRW</button>
+              <button onclick="selectCurrency(this,'USD')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">USD</button>
+              <button onclick="selectCurrency(this,'JPY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">JPY</button>
+              <button onclick="selectCurrency(this,'EUR')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">EUR</button>
+              <button onclick="selectCurrency(this,'CNY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">CNY</button>
+            </div>
+          </div>
+          <button class="sheet-btn" style="margin-top:14px" onclick="saveLang()">저장하기</button>
+          <button class="sheet-cancel" onclick="closeLangSheet()">취소</button>
+        </div>
       </div>
       <div class="menu-item" onclick="showToast('생체인증 설정은 앱 출시 후 지원 예정이에요!')">
         <div class="menu-txt"><div class="menu-title">자동 로그인 / 생체 인증</div><div class="menu-sub">Face ID · 지문 인식</div></div>
@@ -847,8 +847,8 @@ function toggleSwitch(btn) { btn.classList.toggle('on'); }
 
 // ── 언어/통화 ──
 var curLang = '한국어', curCurrency = 'KRW';
-function openLangSheet() { document.getElementById('lang-overlay').classList.add('open'); }
-function closeLangSheet() { document.getElementById('lang-overlay').classList.remove('open'); }
+function openLangSheet() { var el=document.getElementById('lang-overlay'); el.style.display='flex'; }
+function closeLangSheet() { document.getElementById('lang-overlay').style.display='none'; }
 function selectLang(btn, val) {
   curLang = val;
   document.querySelectorAll('.lang-btn').forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='#e0e0e0'; b.style.fontWeight='400'; });
