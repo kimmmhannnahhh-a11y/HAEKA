@@ -845,6 +845,56 @@ function autoSave(){
 document.addEventListener('visibilitychange',function(){if(document.hidden)autoSave();});
 window.addEventListener('pagehide',autoSave);
 window.addEventListener('beforeunload',autoSave);
+
+// 재진입 시 임시저장 복원 팝업
+window.addEventListener('DOMContentLoaded',function(){
+  try{
+    var draft=JSON.parse(localStorage.getItem('haeka_draft')||'null');
+    if(!draft) return;
+    if(!draft.name && !draft.cat && (!draft.payOk||!draft.payOk.length)) return;
+    // 팝업 생성
+    var overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center';
+    var box=document.createElement('div');
+    box.style.cssText='background:#fff;border-radius:18px;padding:24px 20px;width:280px;text-align:center;font-family:inherit';
+    box.innerHTML='<div style="font-size:22px;margin-bottom:10px">📝</div>'
+      +'<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px">이어서 등록하시겠습니까?</div>'
+      +'<div style="font-size:12px;color:#aaa;margin-bottom:20px">작성 중이던 내용이 있어요</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button id="draft-no" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">아니요</button>'
+      +'<button id="draft-yes" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">이어서 작성</button>'
+      +'</div>';
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    document.getElementById('draft-yes').onclick=function(){
+      overlay.remove();
+      // 데이터 복원
+      if(draft.name) document.getElementById('inp-name').value=draft.name;
+      if(draft.cat){
+        selectedCat=draft.cat;
+        document.querySelectorAll('.cat-btn').forEach(function(b){
+          b.classList.toggle('on',b.dataset.cat===draft.cat);
+        });
+      }
+      if(draft.payOk) draft.payOk.forEach(function(v){
+        payOkList.push(v);
+        var el=document.querySelector('.chk-item[onclick*="ok"][onclick*="'+v+'"]');
+        if(el){el.classList.add('on');var cb=el.querySelector('.chk-box');if(cb){cb.style.background='#1A5D1A';cb.style.borderColor='#1A5D1A';}}
+      });
+      if(draft.payNo) draft.payNo.forEach(function(v){
+        payNoList.push(v);
+        var el=document.querySelector('.chk-item[onclick*="no"][onclick*="'+v+'"]');
+        if(el){el.classList.add('on');el.classList.add('red');var cb=el.querySelector('.chk-box');if(cb){cb.style.background='#e53e3e';cb.style.borderColor='#e53e3e';}}
+      });
+      if(draft.review) document.getElementById('review-inp').value=draft.review;
+    };
+    document.getElementById('draft-no').onclick=function(){
+      overlay.remove();
+      localStorage.removeItem('haeka_draft');
+    };
+  }catch(e){}
+});
 </script>
 </body>
 </html>
