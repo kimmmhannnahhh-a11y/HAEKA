@@ -720,12 +720,7 @@ async function loadEditRequest(storeId) {
       badge.className = 'edit-badge';
       badge.style.display = 'flex';
       badge.onclick = openEditReqPopup;
-      badge.innerHTML = '수정중';
-      var joinTxt = document.createElement('span');
-      joinTxt.onclick = openEditReqPopup;
-      joinTxt.style.cssText = 'position:absolute;top:47px;left:80px;font-size:9px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.5)';
-      joinTxt.textContent = '← 참여하기';
-      heroEl.appendChild(joinTxt);
+      badge.innerHTML = '수정중 <sup style="font-size:8px;font-weight:800">+'+agreeCount+'</sup>';
       heroEl.appendChild(badge);
     }
   } catch(e) { console.error(e); }
@@ -779,7 +774,7 @@ window.voteEditRequest = async function(type) {
       _editReqData.agreeUids = newAgree;
       // 배지 업데이트
       var badge = document.getElementById('edit-req-badge');
-      if (badge) badge.innerHTML = '수정중 · 맞아요 ' + newAgree.length + '/3';
+      if (badge) badge.innerHTML = '수정중 <sup style="font-size:8px;font-weight:800">+'+newAgree.length+'</sup>';
       showToast('맞아요! 투표가 반영됐어요');
       // 3명 달성 시 자동 업데이트
       if (newAgree.length >= 3) {
