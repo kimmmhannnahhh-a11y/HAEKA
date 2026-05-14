@@ -134,7 +134,7 @@ let _currentUser = null;
 onAuthStateChanged(auth, u => { _currentUser = u; });
 
 function cardColor(card) {
-  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8'};
   return map[card] || '#888';
 }
 
