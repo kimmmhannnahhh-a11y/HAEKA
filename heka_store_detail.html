@@ -599,6 +599,16 @@ window._arrayUnion = arrayUnion;
   </div>
 
 
+
+  <!-- 로그인 유도 팝업 -->
+  <div id="login-need-overlay" onclick="closeLoginNeedPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300"></div>
+  <div id="login-need-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 20px;width:280px;z-index:301;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="font-size:32px;margin-bottom:10px">🔐</div>
+    <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px">로그인이 필요해요</div>
+    <div style="font-size:12px;color:#888;margin-bottom:20px">투표는 로그인 후 이용할 수 있어요</div>
+    <button onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
+    <button onclick="closeLoginNeedPopup()" style="width:100%;background:#f5f5f5;color:#888;border:none;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
+  </div>
   <!-- 수정중 팝업 -->
   <div id="edit-req-overlay" onclick="closeEditReqPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200"></div>
   <div id="edit-req-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:22px 20px;width:300px;z-index:201;box-shadow:0 8px 32px rgba(0,0,0,.18)">
@@ -728,7 +738,7 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  if (!_currentUser) { showToast('로그인 후 투표할 수 있어요'); return; }
+  if (!_currentUser) { showLoginNeedPopup(); return; }
   var req = _editReqData;
   var agreeCount = (req.agreeUids || []).length;
   var alreadyVoted = (req.agreeUids || []).includes(_currentUser.uid) || (req.disagreeUids || []).includes(_currentUser.uid);
@@ -752,13 +762,21 @@ function openEditReqPopup() {
   document.getElementById('edit-req-popup').style.display = 'block';
 }
 
+function showLoginNeedPopup() {
+  document.getElementById('login-need-overlay').style.display = 'block';
+  document.getElementById('login-need-popup').style.display = 'block';
+}
+function closeLoginNeedPopup() {
+  document.getElementById('login-need-overlay').style.display = 'none';
+  document.getElementById('login-need-popup').style.display = 'none';
+}
 function closeEditReqPopup() {
   document.getElementById('edit-req-overlay').style.display = 'none';
   document.getElementById('edit-req-popup').style.display = 'none';
 }
 
 window.voteEditRequest = async function(type) {
-  if (!_currentUser) { showToast('로그인이 필요해요'); return; }
+  if (!_currentUser) { showLoginNeedPopup(); return; }
   if (!_editReqData) return;
   var req = _editReqData;
   var uid = _currentUser.uid;

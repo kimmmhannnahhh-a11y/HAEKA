@@ -433,6 +433,8 @@ function openLegal(type){var c=legalContent[type];document.getElementById('legal
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
 function showToastAndGoHome(msg){var t=document.getElementById('login-toast');t.textContent=msg||'🎉 가입이 완료되었습니다!';t.classList.add('show');setTimeout(function(){t.classList.remove('show');setTimeout(goHome,400);},1800);}
 function goHome(){
+  var redirect = new URLSearchParams(location.search).get('redirect');
+  if (redirect) { location.href = redirect; return; }
   var bytes = Uint8Array.from(atob(homeB64), function(c){ return c.charCodeAt(0); });
   var html  = new TextDecoder('utf-8').decode(bytes);
   var doc   = document.open('text/html','replace');
