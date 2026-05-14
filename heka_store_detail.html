@@ -747,20 +747,14 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  // onAuthStateChanged 완료 대기 (최대 3초)
+  // localStorage uid 또는 currentUser 체크
   var waited = 0;
   var check = setInterval(function(){
     waited += 100;
-    if (window._currentUser !== undefined || waited >= 5000) {
+    var uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
+    if (uid || waited >= 5000) {
       clearInterval(check);
-      if (window._currentUser) { _doOpenEditReqPopup(); }
-      else if (localStorage.getItem('haeka_uid')) { 
-        // Firebase 응답 느림 - uid 있으면 잠시 더 대기
-        setTimeout(function(){
-          if(window._currentUser) _doOpenEditReqPopup();
-          else showLoginNeedPopup();
-        }, 2000);
-      }
+      if (uid) { _doOpenEditReqPopup(); }
       else { showLoginNeedPopup(); }
     }
   }, 100);
@@ -769,7 +763,8 @@ function _doOpenEditReqPopup() {
   var req = _editReqData;
   if (!req) return;
   var agreeCount = (req.agreeUids || []).length;
-  var alreadyVoted = (req.agreeUids || []).includes(window._currentUser.uid) || (req.disagreeUids || []).includes(window._currentUser.uid);
+  var _uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
+  var alreadyVoted = (req.agreeUids || []).includes(_uid) || (req.disagreeUids || []).includes(_uid);
   var body = '';
   if (req.payOk && req.payOk.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#1A5D1A;margin-bottom:4px">결제 가능 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payOk.map(function(c){ return '<span style="background:#e8f5e9;color:#1A5D1A;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
   if (req.payNo && req.payNo.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payNo.map(function(c){ return '<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
@@ -814,10 +809,10 @@ function closeEditReqPopup() {
 }
 
 window.voteEditRequest = async function(type) {
-  if (!window._currentUser) { showLoginNeedPopup(); return; }
+  var uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
+  if (!uid) { showLoginNeedPopup(); return; }
   if (!_editReqData) return;
   var req = _editReqData;
-  var uid = window._currentUser.uid;
   var alreadyVoted = (req.agreeUids || []).includes(uid) || (req.disagreeUids || []).includes(uid);
   if (alreadyVoted) { showToast('이미 투표했어요'); return; }
   closeEditReqPopup();
