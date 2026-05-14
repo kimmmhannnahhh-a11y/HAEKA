@@ -605,8 +605,21 @@ function extractCity(addr) {
 
 var selectedCity = '';
 
-function selectPlace(i) {
+async function selectPlace(i) {
   var p = window._r[i];
+
+  // 중복 체크
+  if (window.searchFirestore) {
+    var existing = await window.searchFirestore(p.name);
+    var dup = existing && existing.some(function(s){
+      return s.name === p.name && s.address === p.addr;
+    });
+    if (dup) {
+      alert('⚠️ 이미 등록된 매장이에요!\n다른 매장을 선택해주세요.');
+      return;
+    }
+  }
+
   var a = document.getElementById('selected-addr');
   a.textContent = '✅ '+p.name+' · '+p.addr;
   a.classList.add('show');
@@ -838,14 +851,15 @@ function showComplete(){
 function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
 
 // 임시저장
-function autoSave(){
-  var data={name:document.getElementById('inp-name').value,cat:selectedCat,payOk:payOkList,payNo:payNoList,review:document.getElementById('review-inp').value};
+function autoSave(showMsg){
+  var data={name:document.getElementById('inp-name')?document.getElementById('inp-name').value:'',cat:selectedCat,payOk:payOkList,payNo:payNoList,review:document.getElementById('review-inp')?document.getElementById('review-inp').value:''};
+  if(!data.name && !data.cat && !data.payOk.length) return; // 빈 데이터면 저장 안함
   try{localStorage.setItem('haeka_draft',JSON.stringify(data));}catch(e){}
-  var t=document.getElementById('save-toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);
+  if(showMsg){var t=document.getElementById('save-toast');if(t){t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}}
 }
-document.addEventListener('visibilitychange',function(){if(document.hidden)autoSave();});
-window.addEventListener('pagehide',autoSave);
-window.addEventListener('beforeunload',autoSave);
+document.addEventListener('visibilitychange',function(){if(document.hidden)autoSave(true);});
+window.addEventListener('pagehide',function(){autoSave(false);});
+window.addEventListener('beforeunload',function(){autoSave(false);});
 
 // 재진입 시 임시저장 복원 팝업
 (function(){
