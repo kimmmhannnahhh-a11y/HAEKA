@@ -220,7 +220,7 @@ async function renderStore(store) {
     var src = images[_slideIdx];
     var isVideo = store.videoUrl && src === store.videoUrl;
     if(isVideo){
-      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>';
+      heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;pointer-events:none"></video>';
     } else {
       heroEl.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>';
     }
