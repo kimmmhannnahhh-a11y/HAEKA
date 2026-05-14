@@ -655,6 +655,9 @@ function toggleZzim() {
   var btn = document.getElementById('zzim-btn');
   var store = window._currentDpStore;
   if (!store) return;
+  // 비로그인 시 로그인 유도
+  var uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
+  if (!uid) { showLoginNeedPopup(); return; }
   try {
     var list = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
     var idx = list.findIndex(function(s){ return s.id === store.id; });
