@@ -464,7 +464,7 @@ function closeLegal(){document.getElementById('legal-overlay').classList.remove(
 function showToastAndGoHome(msg){var t=document.getElementById('login-toast');t.textContent=msg||'🎉 가입이 완료되었습니다!';t.classList.add('show');setTimeout(function(){t.classList.remove('show');setTimeout(goHome,400);},1800);}
 function goHome(){
   var redirect = new URLSearchParams(location.search).get('redirect');
-  if (redirect) { location.href = redirect; return; }
+  if (redirect) { location.replace(redirect); return; }
   location.href = 'heka_home_v5.html';
 }
 /* 회원가입 JS */
