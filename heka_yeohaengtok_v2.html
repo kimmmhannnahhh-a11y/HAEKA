@@ -252,6 +252,8 @@ onSnapshot(q, function(snapshot){
     });
   });
   // Firebase 글 + 더미 데이터 합치기
+  // 디버그: 사진 필드 확인
+  fbPosts.forEach(function(p){ console.log("[HAEKA]", p.title, "| images:", JSON.stringify(p.images)); });
   window._fbPosts = fbPosts;
   window.posts = fbPosts;
   if(window.renderPosts) window.renderPosts(window.posts); if(typeof applyMyAvatar==="function") applyMyAvatar();
