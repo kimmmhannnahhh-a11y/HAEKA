@@ -497,7 +497,7 @@ function _startHotplTimer(){
 }
 
 function initHotpl(stores) {
-  _hotplStores = stores.slice(0, 10);
+  _hotplStores = stores.filter(function(s){ return (s.images && s.images[0]) || s.videoUrl; }).slice(0, 10);
   _hotplIdx = 0;
   renderHotplSlide();
   _startHotplTimer();
