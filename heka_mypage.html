@@ -413,6 +413,21 @@ window._loadNotices = async function() {
       </div>
       <button class="logout-btn" onclick="logout()" style="margin:8px 16px 20px;width:calc(100% - 32px)">로그아웃</button>
     </div>
+
+    <!-- 커스텀 팝업 -->
+    <div id="custom-popup-overlay" onclick="closePopup()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;border-radius:26px">
+      <div onclick="event.stopPropagation()" style="background:#fff;border-radius:14px;width:240px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+        <div style="padding:24px 20px 16px;text-align:center">
+          <div id="popup-icon" style="font-size:28px;margin-bottom:8px"></div>
+          <div id="popup-title" style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px"></div>
+          <div id="popup-body" style="font-size:12px;color:#888;line-height:1.6;white-space:pre-line"></div>
+        </div>
+        <div style="display:flex;border-top:0.5px solid #f0f0f0">
+          <button onclick="closePopup()" style="flex:1;padding:13px;background:none;border:none;font-size:13px;color:#888;cursor:pointer;font-family:inherit;border-right:0.5px solid #f0f0f0">취소</button>
+          <button id="popup-confirm-btn" style="flex:1;padding:13px;background:none;border:none;font-size:13px;font-weight:700;color:#1A5D1A;cursor:pointer;font-family:inherit"></button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 매장 슬라이드 패널 -->
@@ -530,21 +545,6 @@ window._loadNotices = async function() {
       <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">상세 내용</div>
       <textarea id="errreport-txt" placeholder="오류 내용을 자세히 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
       <button onclick="submitErrorReport()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
-    </div>
-  </div>
-
-  <!-- 커스텀 팝업 -->
-  <div id="custom-popup-overlay" onclick="closePopup()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;border-radius:26px">
-    <div onclick="event.stopPropagation()" style="background:#fff;border-radius:14px;width:240px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)">
-      <div style="padding:24px 20px 16px;text-align:center">
-        <div id="popup-icon" style="font-size:28px;margin-bottom:8px"></div>
-        <div id="popup-title" style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px"></div>
-        <div id="popup-body" style="font-size:12px;color:#888;line-height:1.6;white-space:pre-line"></div>
-      </div>
-      <div style="display:flex;border-top:0.5px solid #f0f0f0">
-        <button onclick="closePopup()" style="flex:1;padding:13px;background:none;border:none;font-size:13px;color:#888;cursor:pointer;font-family:inherit;border-right:0.5px solid #f0f0f0">취소</button>
-        <button id="popup-confirm-btn" style="flex:1;padding:13px;background:none;border:none;font-size:13px;font-weight:700;color:#1A5D1A;cursor:pointer;font-family:inherit"></button>
-      </div>
     </div>
   </div>
 
