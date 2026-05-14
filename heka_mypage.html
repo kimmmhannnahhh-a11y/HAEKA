@@ -232,9 +232,8 @@ window._loadMyData = async function() {
 
     <!-- 저장한 글 -->
     <div style="padding:14px 14px 7px;margin-top:6px">
-      <span onclick="openSavedPosts()" style="font-size:14px;font-weight:700;color:#111;cursor:pointer">내가 찜한 여행톡 →</span>
+      <span onclick="openSavedPosts()" style="font-size:14px;font-weight:700;color:#111;cursor:pointer">내가 찜한 여행톡</span>
     </div>
-    <div id="saved-posts-preview" style="padding:0 14px 10px;font-size:12px;color:#bbb">저장한 글이 없어요</div>
 
     <!-- 고객센터 -->
     <div class="menu-item" onclick="openInvite()">
@@ -799,46 +798,11 @@ function logout() {
   window.location.replace('heka_login_v5.html');
 }
 
-function loadSavedPostsPreview() {
-  var list = [];
-  try{ list = JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){}
-  var el = document.getElementById('saved-posts-preview');
-  if (!el) return;
-  if (!list.length) { el.innerHTML = '<span style="color:#bbb;font-size:12px">저장한 글이 없어요</span>'; return; }
-  el.innerHTML = list.slice(0,2).map(function(p){
-    var tag = p.tagTxt||'정보';
-    var tagColor = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#1A5D1A'}[tag]||'#1A5D1A';
-    return '<div style="padding:8px 0;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_yeohaengtok_v2.html\'">'
-      +'<span style="font-size:9px;background:'+tagColor+';color:#fff;padding:2px 6px;border-radius:4px;font-weight:700;margin-right:5px">'+tag+'</span>'
-      +'<span style="font-size:12px;color:#111;font-weight:600">'+p.title+'</span>'
-      +'</div>';
-  }).join('')
-  + (list.length > 2 ? '<div style="font-size:11px;color:#aaa;margin-top:4px">외 '+(list.length-2)+'개 더보기</div>' : '');
-}
 
 function openSavedPosts() {
-  var list = [];
-  try{ list = JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){}
-  document.getElementById('mylist-title').textContent = '저장한 글';
-  var content = document.getElementById('mylist-content');
-  if (!list.length) {
-    content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">저장한 글이 없어요</div>';
-  } else {
-    content.innerHTML = list.map(function(p){
-      var tag = p.tagTxt||'정보';
-      var tagColor = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#1A5D1A'}[tag]||'#1A5D1A';
-      return '<div style="padding:12px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_yeohaengtok_v2.html\'">'
-        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'
-        +'<span style="font-size:9px;background:'+tagColor+';color:#fff;padding:2px 6px;border-radius:4px;font-weight:700">'+tag+'</span>'
-        +'<span style="font-size:13px;font-weight:700;color:#111">'+p.title+'</span>'
-        +'</div>'
-        +'<div style="font-size:11px;color:#888">'+p.user+' · '+p.time+'</div>'
-        +'</div>';
-    }).join('');
-  }
-  document.getElementById('mylist-overlay').style.display = 'block';
-  document.getElementById('mylist-panel').style.display = 'flex';
+  window.location.href = 'heka_saved_posts.html';
 }
+
 
 function openMyList(type) {
   var stores = window._myStores || [];
@@ -884,7 +848,6 @@ function showToast(msg) {
 window.addEventListener('DOMContentLoaded', function(){
   init();
   setTimeout(function(){ if(window._loadMyData) window._loadMyData(); }, 500);
-  loadSavedPostsPreview();
 });
 </script>
 </body>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>내가 찜한 여행톡</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+.phone{width:390px;max-width:100vw;background:#fff;min-height:100vh;position:relative;display:flex;flex-direction:column}
+.sb{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 4px;font-size:11px;font-weight:600;color:#111;background:#fff}
+.topbar{display:flex;align-items:center;padding:8px 14px;background:#fff;border-bottom:0.5px solid #f0f0f0;position:sticky;top:0;z-index:10}
+.topbar-title{flex:1;text-align:center;font-size:15px;font-weight:700;color:#111}
+.back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1;width:28px}
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:20px}
+.post-item{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;background:#fff;transition:.1s}
+.post-item:active{background:#f9f9f9}
+.post-thumb{width:44px;height:44px;border-radius:10px;flex-shrink:0;overflow:hidden;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.post-thumb img{width:100%;height:100%;object-fit:cover}
+.post-body{flex:1;min-width:0}
+.post-tag{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;color:#fff;margin-bottom:4px}
+.post-title{font-size:13px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.post-meta{font-size:11px;color:#aaa}
+.del-btn{background:none;border:none;font-size:18px;color:#ccc;cursor:pointer;padding:4px;flex-shrink:0}
+.del-btn:hover{color:#f87171}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#bbb;font-size:13px;gap:10px}
+.empty-icon{font-size:36px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="topbar-title">내가 찜한 여행톡</span>
+    <div style="width:28px"></div>
+  </div>
+  <div class="scroll-wrap" id="post-list"></div>
+</div>
+
+<script>
+var TAG_COLOR = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#1A5D1A'};
+var TAG_EMOJI = {'동행':'🎒','맛집':'🍽️','날씨':'🌤️','정보':'✈️'};
+var TAG_BG = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#eef5fb','정보':'#f0f5ee'};
+
+function getSaved(){ try{ return JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){ return []; } }
+function setSaved(list){ try{ localStorage.setItem('haeka_saved_posts', JSON.stringify(list)); }catch(e){} }
+
+function render(){
+  var list = getSaved();
+  var el = document.getElementById('post-list');
+  if(!list.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🔖</div><div>찜한 여행톡이 없어요</div><div style="font-size:11px;color:#ddd">여행톡에서 🔖를 눌러 저장해보세요</div></div>';
+    return;
+  }
+  el.innerHTML = list.map(function(p, i){
+    var tag = p.tagTxt||'정보';
+    var tagColor = TAG_COLOR[tag]||'#1A5D1A';
+    var emoji = TAG_EMOJI[tag]||'✈️';
+    var bg = TAG_BG[tag]||'#f5f5f5';
+    var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length>10;
+    var thumb = hasImg
+      ? '<div class="post-thumb"><img src="'+p.images[0]+'" onerror="this.parentNode.style.background=\''+bg+'\';this.parentNode.innerHTML=\''+emoji+'\'"></div>'
+      : '<div class="post-thumb" style="background:'+bg+'">'+emoji+'</div>';
+    return '<div class="post-item" onclick="location.href=\'heka_post_detail.html?id='+(p.id||'')+'\'">'
+      +thumb
+      +'<div class="post-body">'
+      +'<span class="post-tag" style="background:'+tagColor+'">'+tag+'</span>'
+      +'<div class="post-title">'+p.title+'</div>'
+      +'<div class="post-meta">'+p.user+' · '+p.time+'</div>'
+      +'</div>'
+      +'<button class="del-btn" onclick="event.stopPropagation();removeSaved('+i+')">🗑️</button>'
+      +'</div>';
+  }).join('');
+}
+
+function removeSaved(idx){
+  var list = getSaved();
+  list.splice(idx,1);
+  setSaved(list);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
