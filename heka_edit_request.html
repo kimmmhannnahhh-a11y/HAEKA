@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>수정 요청</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:100px}
+.topbar{position:sticky;top:0;z-index:100;background:#1A5D1A;display:flex;align-items:center;padding:0 16px;height:52px}
+.back-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;background:none;font-size:18px;color:#fff;margin-right:8px}
+.topbar-title{font-size:16px;font-weight:700;color:#fff;flex:1}
+.store-info{background:#fff;padding:14px 16px;border-bottom:1px solid #f0f0f0;margin-bottom:8px}
+.store-name{font-size:14px;font-weight:700;color:#111}
+.store-sub{font-size:11px;color:#aaa;margin-top:2px}
+.section{background:#fff;padding:14px 16px;margin-bottom:8px}
+.block-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.label-blue{color:#1A5D1A}
+.label-red{color:#e53e3e}
+.chk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.chk-item{display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:8px;border:1.5px solid #e0e0e0;background:#f8f8f8;cursor:pointer;transition:.15s;user-select:none}
+.chk-item.on{border-color:#1A5D1A;background:#f0f9f0}
+.chk-item.on.red{border-color:#e53e3e;background:#fff5f5}
+.chk-box{width:15px;height:15px;border-radius:3px;border:1.5px solid #d0d0d0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;transition:.15s}
+.chk-item.on .chk-box{background:#1A5D1A;border-color:#1A5D1A}
+.chk-item.on.red .chk-box{background:#e53e3e;border-color:#e53e3e}
+.chk-item.on .chk-box::after,.chk-item.on.red .chk-box::after{content:"✓";color:#fff;font-size:9px;font-weight:800}
+.chk-txt{font-size:11px;font-weight:600;color:#333}
+.memo-box{width:100%;border:1.5px solid #eee;border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;resize:none;height:80px;outline:none;color:#222;margin-top:4px}
+.memo-box:focus{border-color:#1A5D1A}
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #eee;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.submit-btn{width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.submit-btn:disabled{background:#ccc;cursor:not-allowed}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.req-note{font-size:11px;color:#aaa;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="topbar-title">수정 요청</div>
+</div>
+
+<div class="store-info">
+  <div class="store-name" id="store-name-txt">매장 정보 불러오는 중...</div>
+  <div class="store-sub">결제 수단 정보 수정 요청</div>
+</div>
+
+<div class="section">
+  <div class="block-label label-blue">결제 가능 수단<span style="color:#e53e3e">*</span></div>
+  <div class="chk-grid">
+    <div class="chk-item" onclick="togglePay(this,'ok','VISA')"><div class="chk-box"></div><span class="chk-txt">VISA</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','MASTER')"><div class="chk-box"></div><span class="chk-txt">MASTER</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','JCB')"><div class="chk-box"></div><span class="chk-txt">JCB</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','AMEX')"><div class="chk-box"></div><span class="chk-txt">AMEX</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','트래블로그')"><div class="chk-box"></div><span class="chk-txt">트래블로그</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','트래블월렛')"><div class="chk-box"></div><span class="chk-txt">트래블월렛</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','UnionPay')"><div class="chk-box"></div><span class="chk-txt">UnionPay</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','현금가능')"><div class="chk-box"></div><span class="chk-txt">현금가능</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','카드가능')"><div class="chk-box"></div><span class="chk-txt">카드가능</span></div>
+    <div class="chk-item" onclick="togglePay(this,'ok','모르겠어요')"><div class="chk-box"></div><span class="chk-txt">모르겠어요</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="block-label label-red">결제 불가 수단<span style="color:#e53e3e">*</span></div>
+  <div class="chk-grid">
+    <div class="chk-item" onclick="togglePay(this,'no','VISA')"><div class="chk-box"></div><span class="chk-txt">VISA</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','MASTER')"><div class="chk-box"></div><span class="chk-txt">MASTER</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','JCB')"><div class="chk-box"></div><span class="chk-txt">JCB</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','AMEX')"><div class="chk-box"></div><span class="chk-txt">AMEX</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','트래블로그')"><div class="chk-box"></div><span class="chk-txt">트래블로그</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','트래블월렛')"><div class="chk-box"></div><span class="chk-txt">트래블월렛</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','UnionPay')"><div class="chk-box"></div><span class="chk-txt">UnionPay</span></div>
+    <div class="chk-item" onclick="togglePay(this,'no','현금불가')"><div class="chk-box"></div><span class="chk-txt">현금불가</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="block-label" style="color:#555">추가 메모 <span style="font-size:10px;color:#aaa;font-weight:400">(선택)</span></div>
+  <textarea class="memo-box" id="memo" placeholder="추가로 전달하고 싶은 내용을 적어주세요"></textarea>
+</div>
+
+<div class="bottom-bar">
+  <button class="submit-btn" id="submit-btn" onclick="submitRequest()">수정 요청 보내기</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const params = new URLSearchParams(location.search);
+const storeId = params.get('id') || '';
+const storeName = decodeURIComponent(params.get('name') || '');
+
+let currentUser = null;
+let payOkList = [], payNoList = [];
+let submitting = false;
+
+onAuthStateChanged(auth, u => { currentUser = u; });
+
+// 매장명 표시
+if (storeName) document.getElementById('store-name-txt').textContent = storeName;
+else if (storeId) {
+  getDoc(doc(db, 'stores', storeId)).then(s => {
+    if (s.exists()) document.getElementById('store-name-txt').textContent = s.data().name || storeName;
+  }).catch(()=>{});
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+window.togglePay = function(el, type, val) {
+  var list = type === 'ok' ? payOkList : payNoList;
+  var idx = list.indexOf(val);
+  if (idx > -1) {
+    list.splice(idx, 1);
+    el.classList.remove('on');
+    if (type === 'no') el.classList.remove('red');
+  } else {
+    list.push(val);
+    el.classList.add('on');
+    if (type === 'no') el.classList.add('red');
+  }
+};
+
+window.submitRequest = async function() {
+  if (submitting) return;
+  if (!payOkList.length && !payNoList.length) {
+    showToast('결제 가능 또는 불가 수단을 선택해주세요');
+    return;
+  }
+  submitting = true;
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
+
+  try {
+    await addDoc(collection(db, 'editRequests'), {
+      storeId: storeId,
+      storeName: storeName,
+      payOk: payOkList,
+      payNo: payNoList,
+      memo: document.getElementById('memo').value.trim(),
+      uid: currentUser ? currentUser.uid : 'anonymous',
+      nickname: currentUser ? (currentUser.displayName || currentUser.email?.split('@')[0] || '익명') : '익명',
+      createdAt: serverTimestamp()
+    });
+    showToast('수정 요청이 전송됐어요!');
+    setTimeout(() => history.back(), 1400);
+  } catch(e) {
+    console.error(e);
+    showToast('오류가 발생했어요. 다시 시도해주세요');
+    submitting = false;
+    btn.disabled = false;
+    btn.textContent = '수정 요청 보내기';
+  }
+};
+</script>
+</body>
+</html>
