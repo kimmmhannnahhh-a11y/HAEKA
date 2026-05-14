@@ -511,6 +511,11 @@ var userData = {
 var usedNicks = ['여행마스터','해카고수','도쿄탐험가','김철수'];
 
 function init() {
+  // 비로그인 시 로그인 화면으로
+  if (!localStorage.getItem('haeka_uid')) {
+    window.location.replace('heka_login_v5.html');
+    return;
+  }
   try { var saved = localStorage.getItem('haeka_user'); if(saved) userData = Object.assign(userData, JSON.parse(saved)); } catch(e){}
   // 이메일 표시
   try {
@@ -779,10 +784,13 @@ function confirmWithdraw() {
   }
 }
 function logout() {
-  try{ localStorage.removeItem('haeka_uid'); localStorage.removeItem('haeka_email'); }catch(e){}
+  try{ 
+    localStorage.removeItem('haeka_uid');
+    localStorage.removeItem('haeka_email');
+    localStorage.removeItem('haeka_user');
+  }catch(e){}
   try{ sessionStorage.clear(); }catch(e){}
-  showToast('로그아웃 되었습니다');
-  setTimeout(function(){ window.location.replace('heka_login_v5.html'); }, 1500);
+  window.location.replace('heka_login_v5.html');
 }
 
 function openMyList(type) {
