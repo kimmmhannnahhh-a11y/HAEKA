@@ -78,10 +78,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<div class="section">
-  <div class="block-label" style="color:#555">추가 메모 <span style="font-size:10px;color:#aaa;font-weight:400">(선택)</span></div>
-  <textarea class="memo-box" id="memo" placeholder="추가로 전달하고 싶은 내용을 적어주세요"></textarea>
-</div>
 
 <div class="bottom-bar">
   <button class="submit-btn" id="submit-btn" onclick="submitRequest()">수정 요청 보내기</button>
@@ -160,7 +156,6 @@ window.submitRequest = async function() {
       storeName: storeName,
       payOk: payOkList,
       payNo: payNoList,
-      memo: document.getElementById('memo').value.trim(),
       uid: currentUser ? currentUser.uid : 'anonymous',
       nickname: currentUser ? (currentUser.displayName || currentUser.email?.split('@')[0] || '익명') : '익명',
       createdAt: serverTimestamp()
