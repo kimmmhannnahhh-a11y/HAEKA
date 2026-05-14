@@ -60,6 +60,22 @@ tr:hover td{background:#f9fdf9}
 .notice-form input:focus,.notice-form textarea:focus,.notice-form select:focus{border-color:#1A5D1A}
 .notice-form textarea{height:100px;resize:vertical}
 .content-expand{max-width:300px;white-space:pre-wrap;word-break:break-all}
+.search-bar{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid #f0f0f0;background:#fafafa}
+.search-bar input{flex:1;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none}
+.search-bar input:focus{border-color:#1A5D1A}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px;width:480px;max-width:90vw;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:700;color:#888;margin-bottom:5px}
+.form-inp{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none}
+.form-inp:focus{border-color:#1A5D1A}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px}
+.card-chk{padding:7px 8px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;user-select:none}
+.card-chk.on{border-color:#1A5D1A;background:#f0f7f0;color:#1A5D1A}
+.modal-btns{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.btn-cancel{background:#f5f5f5;color:#555;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
@@ -118,7 +134,8 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">등록된 전체 매장 목록</div>
       <div class="card">
         <div class="card-head"><span class="card-title">전체 매장</span><button class="btn-sm" onclick="loadStores()">새로고침</button></div>
-        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록자 UID</th><th>등록일</th></tr></thead>
+        <div class="search-bar"><input type="text" id="stores-search" placeholder="매장명 검색..." oninput="filterStores(this.value)"/></div>
+        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록일</th><th>수정</th></tr></thead>
         <tbody id="stores-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
     </div>
@@ -129,8 +146,9 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">유저가 제출한 매장 정보 수정 요청</div>
       <div class="card">
         <div class="card-head"><span class="card-title">수정 요청 목록</span><button class="btn-sm" onclick="loadEditReq()">새로고침</button></div>
-        <table><thead><tr><th>매장 ID</th><th>내용</th><th>찬성</th><th>처리상태</th><th>등록일</th></tr></thead>
-        <tbody id="editreq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+        <div class="search-bar"><input type="text" id="editreq-search" placeholder="매장명 검색..." oninput="filterEditReq(this.value)"/></div>
+        <table><thead><tr><th>매장명</th><th>내용</th><th>찬성</th><th>처리상태</th><th>접수일</th><th>처리</th></tr></thead>
+        <tbody id="editreq-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -140,8 +158,9 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">유저 문의 및 제안 목록</div>
       <div class="card">
         <div class="card-head"><span class="card-title">문의 목록</span><button class="btn-sm" onclick="loadInquiries()">새로고침</button></div>
-        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th></tr></thead>
-        <tbody id="inq-tbody"><tr class="empty-row"><td colspan="4">불러오는 중...</td></tr></tbody></table>
+        <div class="search-bar"><input type="text" id="inq-search" placeholder="내용 검색..." oninput="filterInquiries(this.value)"/></div>
+        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
+        <tbody id="inq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -151,8 +170,9 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">유저가 제보한 오류 목록</div>
       <div class="card">
         <div class="card-head"><span class="card-title">오류 목록</span><button class="btn-sm" onclick="loadErrors()">새로고침</button></div>
-        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th></tr></thead>
-        <tbody id="err-tbody"><tr class="empty-row"><td colspan="4">불러오는 중...</td></tr></tbody></table>
+        <div class="search-bar"><input type="text" id="err-search" placeholder="내용 검색..." oninput="filterErrors(this.value)"/></div>
+        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
+        <tbody id="err-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -186,7 +206,7 @@ tr:hover td{background:#f9fdf9}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -198,6 +218,7 @@ const db = getFirestore(app);
 
 window._db = db;
 window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp };
+window._fbFns2 = { doc, updateDoc };
 </script>
 
 <script>
@@ -275,48 +296,99 @@ async function loadDashboard() {
   } catch(e) { console.error(e); }
 }
 
+var _allStores = [];
+var _allEditReqs = [];
+var _allInquiries = [];
+var _allErrors = [];
+
 async function loadStores() {
   if (!window._db) { setTimeout(loadStores, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'stores'), f.orderBy('createdAt','desc'), f.limit(100)));
-    var rows = [];
-    snap.forEach(function(d){ var s=d.data(); rows.push('<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td style="font-size:10px;color:#aaa">'+(s.uid||'-').substring(0,12)+'...</td><td>'+fmt(s.createdAt)+'</td></tr>'); });
-    document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
+    var snap = await f.getDocs(f.query(f.collection(db,'stores'), f.orderBy('createdAt','desc'), f.limit(200)));
+    _allStores = [];
+    snap.forEach(function(d){ _allStores.push({id:d.id,...d.data()}); });
+    renderStores(_allStores);
   } catch(e) { console.error(e); }
+}
+
+function renderStores(list) {
+  var rows = list.map(function(s){
+    return '<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td>'+fmt(s.createdAt)+'</td><td><button class="btn-primary" onclick=\'openStoreModal("'+s.id+'")\'  style="font-size:11px;padding:5px 10px">수정</button></td></tr>';
+  });
+  document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
+}
+
+function filterStores(q) {
+  var lower = q.toLowerCase();
+  renderStores(_allStores.filter(function(s){ return s.name.toLowerCase().indexOf(lower) > -1 || (s.city||'').toLowerCase().indexOf(lower) > -1; }));
 }
 
 async function loadEditReq() {
   if (!window._db) { setTimeout(loadEditReq, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'edit_requests'), f.orderBy('createdAt','desc'), f.limit(50)));
-    var rows = [];
-    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td style="font-size:10px;color:#aaa">'+(r.storeId||'-').substring(0,12)+'...</td><td class="content-expand">'+(r.description||'-')+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(r.resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
-    document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+    var snap = await f.getDocs(f.query(f.collection(db,'edit_requests'), f.orderBy('createdAt','desc'), f.limit(100)));
+    _allEditReqs = [];
+    snap.forEach(function(d){ _allEditReqs.push({id:d.id,...d.data()}); });
+    renderEditReqs(_allEditReqs);
   } catch(e) { console.error(e); }
+}
+function renderEditReqs(list) {
+  var rows = list.map(function(r){
+    var resolved = r.resolved;
+    return '<tr><td><b>'+(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+(r.description||'-')+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="resolveDoc(\'edit_requests\',\''+r.id+'\',\'editreq\')">완료처리</button>')+'</td></tr>';
+  });
+  document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
+}
+function filterEditReq(q) {
+  var lower = q.toLowerCase();
+  renderEditReqs(_allEditReqs.filter(function(r){ return (r.storeName||r.storeId||'').toLowerCase().indexOf(lower)>-1||(r.description||'').toLowerCase().indexOf(lower)>-1; }));
 }
 
 async function loadInquiries() {
   if (!window._db) { setTimeout(loadInquiries, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'inquiries'), f.orderBy('createdAt','desc'), f.limit(50)));
-    var rows = [];
-    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td>'+tagBadge(r.type||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
-    document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="4">데이터 없음</td></tr>';
+    var snap = await f.getDocs(f.query(f.collection(db,'inquiries'), f.orderBy('createdAt','desc'), f.limit(100)));
+    _allInquiries = [];
+    snap.forEach(function(d){ _allInquiries.push({id:d.id,...d.data()}); });
+    renderInquiries(_allInquiries);
   } catch(e) { console.error(e); }
 }
+function renderInquiries(list) {
+  var rows = list.map(function(r){
+    var done = r.resolved;
+    return '<tr><td>'+tagBadge(r.type||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\'inquiries\',\''+r.id+'\',\'inq\')">확인완료</button>')+'</td></tr>';
+  });
+  document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+}
+function filterInquiries(q) {
+  var lower = q.toLowerCase();
+  renderInquiries(_allInquiries.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1; }));
+}
+
 
 async function loadErrors() {
   if (!window._db) { setTimeout(loadErrors, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'error_reports'), f.orderBy('createdAt','desc'), f.limit(50)));
-    var rows = [];
-    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td>'+tagBadge(r.category||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
-    document.getElementById('err-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="4">데이터 없음</td></tr>';
+    var snap = await f.getDocs(f.query(f.collection(db,'error_reports'), f.orderBy('createdAt','desc'), f.limit(100)));
+    _allErrors = [];
+    snap.forEach(function(d){ _allErrors.push({id:d.id,...d.data()}); });
+    renderErrors(_allErrors);
   } catch(e) { console.error(e); }
+}
+function renderErrors(list) {
+  var rows = list.map(function(r){
+    var done = r.resolved;
+    return '<tr><td>'+tagBadge(r.category||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\'error_reports\',\''+r.id+'\',\'err\')">확인완료</button>')+'</td></tr>';
+  });
+  document.getElementById('err-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+}
+function filterErrors(q) {
+  var lower = q.toLowerCase();
+  renderErrors(_allErrors.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1; }));
 }
 
 async function loadNotices() {
@@ -355,6 +427,88 @@ async function deleteNotice(id) {
     loadNotices();
   } catch(e) { alert('삭제 실패: '+e.message); }
 }
+
+var CARDS = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+
+function openStoreModal(id) {
+  var store = _allStores.find(function(s){ return s.id===id; });
+  if (!store) return;
+  document.getElementById('edit-store-id').value = id;
+  document.getElementById('edit-name').value = store.name||'';
+  document.getElementById('edit-category').value = store.category||'기타';
+  document.getElementById('edit-city').value = store.city||'';
+  document.getElementById('edit-address').value = store.address||'';
+  document.getElementById('edit-review').value = store.review||'';
+  var payOk = store.payOk||[];
+  document.getElementById('edit-payok').innerHTML = CARDS.map(function(card){
+    var on = payOk.indexOf(card)>-1 ? ' on' : '';
+    return '<div class="card-chk'+on+'" data-card="'+card+'" onclick="toggleCard(this)">'+card+'</div>';
+  }).join('');
+  document.getElementById('store-modal').classList.add('on');
+}
+
+function toggleCard(el) { el.classList.toggle('on'); }
+
+function closeStoreModal() { document.getElementById('store-modal').classList.remove('on'); }
+
+async function saveStore() {
+  if (!window._db) return;
+  var db = window._db; var f = window._fbFns;
+  var id = document.getElementById('edit-store-id').value;
+  var payOk = [];
+  document.querySelectorAll('#edit-payok .card-chk.on').forEach(function(el){ payOk.push(el.dataset.card||el.textContent); });
+  var data = {
+    name: document.getElementById('edit-name').value.trim(),
+    category: document.getElementById('edit-category').value,
+    city: document.getElementById('edit-city').value.trim(),
+    address: document.getElementById('edit-address').value.trim(),
+    review: document.getElementById('edit-review').value.trim(),
+    payOk: payOk
+  };
+  try {
+    var { doc, updateDoc } = window._fbFns2 || {};
+    if (!updateDoc) { alert('Firebase updateDoc 미연결'); return; }
+    await updateDoc(doc(db,'stores',id), data);
+    closeStoreModal();
+    alert('저장됐어요!');
+    loadStores();
+  } catch(e) { alert('저장 실패: '+e.message); }
+}
+
+async function resolveDoc(colName, id, type) {
+  if (!window._db) return;
+  var db = window._db;
+  var { doc, updateDoc } = window._fbFns2 || {};
+  if (!updateDoc) { alert('Firebase updateDoc 미연결'); return; }
+  try {
+    await updateDoc(doc(db, colName, id), { resolved: true });
+    alert('처리 완료됐어요!');
+    if (type==='inq') loadInquiries();
+    else if (type==='err') loadErrors();
+    else if (type==='editreq') loadEditReq();
+  } catch(e) { alert('처리 실패: '+e.message); }
+}
 </script>
+
+<!-- 매장 수정 모달 -->
+<div class="modal-overlay" id="store-modal">
+  <div class="modal">
+    <div class="modal-title">매장 정보 수정</div>
+    <input type="hidden" id="edit-store-id"/>
+    <div class="form-group"><div class="form-label">매장명</div><input class="form-inp" type="text" id="edit-name"/></div>
+    <div class="form-group"><div class="form-label">카테고리</div>
+      <select class="form-inp" id="edit-category"><option>카페</option><option>음식점</option><option>편의점</option><option>쇼핑</option><option>호텔</option><option>기타</option></select>
+    </div>
+    <div class="form-group"><div class="form-label">도시</div><input class="form-inp" type="text" id="edit-city"/></div>
+    <div class="form-group"><div class="form-label">주소</div><input class="form-inp" type="text" id="edit-address"/></div>
+    <div class="form-group"><div class="form-label">결제 가능 카드</div><div class="card-grid" id="edit-payok"></div></div>
+    <div class="form-group"><div class="form-label">리뷰</div><textarea class="form-inp" id="edit-review" style="height:70px;resize:none"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeStoreModal()">취소</button>
+      <button class="btn-primary" onclick="saveStore()">저장</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
