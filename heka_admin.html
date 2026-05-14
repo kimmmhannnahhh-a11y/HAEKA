@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HAEKA 관리자</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;color:#111;min-height:100vh}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.login-box{background:#fff;border-radius:16px;padding:40px 32px;width:320px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.login-logo{font-size:22px;font-weight:900;color:#1A5D1A;text-align:center;margin-bottom:4px}
+.login-sub{font-size:12px;color:#aaa;text-align:center;margin-bottom:28px}
+.login-inp{width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;transition:.15s}
+.login-inp:focus{border-color:#1A5D1A}
+.login-btn{width:100%;padding:12px;background:#1A5D1A;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.login-err{font-size:12px;color:#dc2626;text-align:center;margin-top:8px;display:none}
+.admin-wrap{display:none;min-height:100vh}
+.sidebar{width:200px;background:#1A5D1A;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:10}
+.sidebar-logo{padding:24px 20px 16px;font-size:18px;font-weight:900;color:#fff}
+.sidebar-logo span{font-size:11px;font-weight:400;opacity:.6;display:block;margin-top:2px}
+.nav-item{padding:11px 20px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.on{background:rgba(255,255,255,.18);color:#fff;font-weight:700}
+.nav-sep{height:1px;background:rgba(255,255,255,.1);margin:6px 0}
+.sidebar-logout{margin-top:auto;padding:16px 20px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer}
+.sidebar-logout:hover{color:#fff}
+.main{margin-left:200px;padding:28px;min-height:100vh}
+.page{display:none}
+.page.on{display:block}
+.page-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.page-sub{font-size:13px;color:#888;margin-bottom:24px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.stat-label{font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px}
+.stat-num{font-size:28px;font-weight:800;color:#1A5D1A}
+.stat-sub{font-size:11px;color:#bbb;margin-top:3px}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden;margin-bottom:20px}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0f0}
+.card-title{font-size:14px;font-weight:700}
+.btn-sm{background:none;border:1px solid #e0e0e0;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:#555;transition:.15s}
+.btn-sm:hover{background:#f5f5f5}
+.btn-primary{background:#1A5D1A;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:700}
+.btn-danger{background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;font-size:11px;font-weight:700;color:#aaa;text-align:left;border-bottom:1px solid #f0f0f0;background:#fafafa}
+td{padding:11px 16px;font-size:12px;color:#333;border-bottom:0.5px solid #f5f5f5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f9fdf9}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;white-space:nowrap}
+.bg-green{background:#dcfce7;color:#15803d}
+.bg-yellow{background:#fef9c3;color:#854d0e}
+.bg-blue{background:#dbeafe;color:#1d4ed8}
+.bg-red{background:#fee2e2;color:#dc2626}
+.bg-gray{background:#f3f4f6;color:#555}
+.bg-purple{background:#ede9fe;color:#6d28d9}
+.empty-row td{text-align:center;color:#bbb;padding:32px}
+.notice-form{padding:20px}
+.notice-form input,.notice-form textarea,.notice-form select{width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px}
+.notice-form input:focus,.notice-form textarea:focus,.notice-form select:focus{border-color:#1A5D1A}
+.notice-form textarea{height:100px;resize:vertical}
+.content-expand{max-width:300px;white-space:pre-wrap;word-break:break-all}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">HAEKA</div>
+    <div class="login-sub">관리자 페이지</div>
+    <input class="login-inp" type="text" id="login-id" placeholder="관리자 ID" autocomplete="off"/>
+    <input class="login-inp" type="password" id="login-pw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="login-err">아이디 또는 비밀번호가 틀렸어요</div>
+  </div>
+</div>
+
+<!-- 관리자 -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="sidebar">
+    <div class="sidebar-logo">HAEKA<span>관리자 페이지</span></div>
+    <div class="nav-sep"></div>
+    <div class="nav-item on" onclick="goPage('dashboard',this)">📊 대시보드</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="goPage('stores',this)">🏬 매장 관리</div>
+    <div class="nav-item" onclick="goPage('edit-req',this)">✏️ 수정 요청</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="goPage('inquiries',this)">💬 1:1 문의</div>
+    <div class="nav-item" onclick="goPage('errors',this)">🚨 오류 제보</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="goPage('notices',this)">📢 공지사항</div>
+    <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
+  </div>
+
+  <div class="main">
+
+    <!-- 대시보드 -->
+    <div class="page on" id="page-dashboard">
+      <div class="page-title">대시보드</div>
+      <div class="page-sub">HAEKA 전체 현황</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">전체 매장</div><div class="stat-num" id="stat-stores">-</div><div class="stat-sub">등록된 장소</div></div>
+        <div class="stat-card"><div class="stat-label">1:1 문의</div><div class="stat-num" id="stat-inq">-</div><div class="stat-sub">접수된 문의</div></div>
+        <div class="stat-card"><div class="stat-label">오류 제보</div><div class="stat-num" id="stat-err">-</div><div class="stat-sub">접수된 오류</div></div>
+        <div class="stat-card"><div class="stat-label">수정 요청</div><div class="stat-num" id="stat-edit">-</div><div class="stat-sub">처리 대기</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">최근 등록 매장</span><button class="btn-sm" onclick="loadDashboard()">새로고침</button></div>
+        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>카드</th><th>등록일</th></tr></thead>
+        <tbody id="dash-stores"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 매장 관리 -->
+    <div class="page" id="page-stores">
+      <div class="page-title">매장 관리</div>
+      <div class="page-sub">등록된 전체 매장 목록</div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">전체 매장</span><button class="btn-sm" onclick="loadStores()">새로고침</button></div>
+        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록자 UID</th><th>등록일</th></tr></thead>
+        <tbody id="stores-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 수정 요청 -->
+    <div class="page" id="page-edit-req">
+      <div class="page-title">수정 요청</div>
+      <div class="page-sub">유저가 제출한 매장 정보 수정 요청</div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">수정 요청 목록</span><button class="btn-sm" onclick="loadEditReq()">새로고침</button></div>
+        <table><thead><tr><th>매장 ID</th><th>내용</th><th>찬성</th><th>처리상태</th><th>등록일</th></tr></thead>
+        <tbody id="editreq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 1:1 문의 -->
+    <div class="page" id="page-inquiries">
+      <div class="page-title">1:1 문의</div>
+      <div class="page-sub">유저 문의 및 제안 목록</div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">문의 목록</span><button class="btn-sm" onclick="loadInquiries()">새로고침</button></div>
+        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th></tr></thead>
+        <tbody id="inq-tbody"><tr class="empty-row"><td colspan="4">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 오류 제보 -->
+    <div class="page" id="page-errors">
+      <div class="page-title">오류 제보</div>
+      <div class="page-sub">유저가 제보한 오류 목록</div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">오류 목록</span><button class="btn-sm" onclick="loadErrors()">새로고침</button></div>
+        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th></tr></thead>
+        <tbody id="err-tbody"><tr class="empty-row"><td colspan="4">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 공지사항 -->
+    <div class="page" id="page-notices">
+      <div class="page-title">공지사항 관리</div>
+      <div class="page-sub">공지사항 작성 및 관리</div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><span class="card-title">공지 작성</span></div>
+        <div class="notice-form">
+          <select id="notice-tag">
+            <option value="공지">공지</option>
+            <option value="업데이트">업데이트</option>
+            <option value="점검">점검</option>
+            <option value="이벤트">이벤트</option>
+          </select>
+          <input type="text" id="notice-title" placeholder="제목"/>
+          <textarea id="notice-content" placeholder="내용"></textarea>
+          <button class="btn-primary" onclick="submitNotice()">공지 등록</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">공지 목록</span><button class="btn-sm" onclick="loadNotices()">새로고침</button></div>
+        <table><thead><tr><th>태그</th><th>제목</th><th>내용</th><th>등록일</th><th>삭제</th></tr></thead>
+        <tbody id="notice-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app"
+});
+const db = getFirestore(app);
+
+window._db = db;
+window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp };
+</script>
+
+<script>
+var ADMIN_ID = 'haeka_admin';
+var ADMIN_PW = 'haeka2024!';
+
+function doLogin() {
+  var id = document.getElementById('login-id').value.trim();
+  var pw = document.getElementById('login-pw').value;
+  if (id === ADMIN_ID && pw === ADMIN_PW) {
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'flex';
+    loadDashboard();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-wrap').style.display = 'none';
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-pw').value = '';
+}
+
+function goPage(name, el) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('on'); });
+  document.getElementById('page-'+name).classList.add('on');
+  el.classList.add('on');
+  var loaders = {
+    'dashboard': loadDashboard,
+    'stores': loadStores,
+    'edit-req': loadEditReq,
+    'inquiries': loadInquiries,
+    'errors': loadErrors,
+    'notices': loadNotices
+  };
+  if (loaders[name]) loaders[name]();
+}
+
+function fmt(ts) {
+  if (!ts) return '-';
+  var d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+}
+
+function tagBadge(tag) {
+  var map = {'결제정보 오류':'bg-red','카테고리 추가':'bg-blue','기능 제안':'bg-purple','기타':'bg-gray','지도 위치 오류':'bg-red','잘못된 결제 정보':'bg-yellow','매장 정보 오류':'bg-yellow','업데이트':'bg-green','점검':'bg-yellow','이벤트':'bg-purple','공지':'bg-gray'};
+  return '<span class="badge '+(map[tag]||'bg-gray')+'">'+tag+'</span>';
+}
+
+async function loadDashboard() {
+  if (!window._db) { setTimeout(loadDashboard, 300); return; }
+  var db = window._db;
+  var f = window._fbFns;
+  try {
+    var [stSnap, inqSnap, errSnap, editSnap] = await Promise.all([
+      f.getDocs(f.collection(db,'stores')),
+      f.getDocs(f.collection(db,'inquiries')),
+      f.getDocs(f.collection(db,'error_reports')),
+      f.getDocs(f.collection(db,'edit_requests'))
+    ]);
+    document.getElementById('stat-stores').textContent = stSnap.size;
+    document.getElementById('stat-inq').textContent = inqSnap.size;
+    document.getElementById('stat-err').textContent = errSnap.size;
+    document.getElementById('stat-edit').textContent = editSnap.docs.filter(function(d){ return !d.data().resolved; }).length;
+
+    var stores = [];
+    stSnap.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
+    stores.sort(function(a,b){ return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0); });
+    document.getElementById('dash-stores').innerHTML = stores.slice(0,8).map(function(s){
+      return '<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,3).join(', ')+'</td><td>'+(fmt(s.createdAt))+'</td></tr>';
+    }).join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function loadStores() {
+  if (!window._db) { setTimeout(loadStores, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db,'stores'), f.orderBy('createdAt','desc'), f.limit(100)));
+    var rows = [];
+    snap.forEach(function(d){ var s=d.data(); rows.push('<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td style="font-size:10px;color:#aaa">'+(s.uid||'-').substring(0,12)+'...</td><td>'+fmt(s.createdAt)+'</td></tr>'); });
+    document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function loadEditReq() {
+  if (!window._db) { setTimeout(loadEditReq, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db,'edit_requests'), f.orderBy('createdAt','desc'), f.limit(50)));
+    var rows = [];
+    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td style="font-size:10px;color:#aaa">'+(r.storeId||'-').substring(0,12)+'...</td><td class="content-expand">'+(r.description||'-')+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(r.resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
+    document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function loadInquiries() {
+  if (!window._db) { setTimeout(loadInquiries, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db,'inquiries'), f.orderBy('createdAt','desc'), f.limit(50)));
+    var rows = [];
+    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td>'+tagBadge(r.type||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
+    document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="4">데이터 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function loadErrors() {
+  if (!window._db) { setTimeout(loadErrors, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db,'error_reports'), f.orderBy('createdAt','desc'), f.limit(50)));
+    var rows = [];
+    snap.forEach(function(d){ var r=d.data(); rows.push('<tr><td>'+tagBadge(r.category||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td></tr>'); });
+    document.getElementById('err-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="4">데이터 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function loadNotices() {
+  if (!window._db) { setTimeout(loadNotices, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db,'notices'), f.orderBy('createdAt','desc'), f.limit(30)));
+    var rows = [];
+    snap.forEach(function(d){ var n=d.data(); rows.push('<tr><td>'+tagBadge(n.tag||'공지')+'</td><td><b>'+n.title+'</b></td><td class="content-expand" style="max-width:200px">'+(n.content||'')+'</td><td>'+fmt(n.createdAt)+'</td><td><button class="btn-danger" onclick="deleteNotice(\''+d.id+'\')">삭제</button></td></tr>'); });
+    document.getElementById('notice-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">공지사항 없음</td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function submitNotice() {
+  if (!window._db) return;
+  var db = window._db; var f = window._fbFns;
+  var tag = document.getElementById('notice-tag').value;
+  var title = document.getElementById('notice-title').value.trim();
+  var content = document.getElementById('notice-content').value.trim();
+  if (!title || !content) { alert('제목과 내용을 입력해주세요'); return; }
+  try {
+    await f.addDoc(f.collection(db,'notices'), { tag, title, content, createdAt: f.serverTimestamp() });
+    document.getElementById('notice-title').value = '';
+    document.getElementById('notice-content').value = '';
+    alert('공지가 등록됐어요!');
+    loadNotices();
+  } catch(e) { alert('오류: '+e.message); }
+}
+
+async function deleteNotice(id) {
+  if (!confirm('삭제할까요?')) return;
+  if (!window._db) return;
+  var db = window._db; var f = window._fbFns;
+  try {
+    await f.deleteDoc(f.doc(db,'notices',id));
+    loadNotices();
+  } catch(e) { alert('삭제 실패: '+e.message); }
+}
+</script>
+</body>
+</html>
