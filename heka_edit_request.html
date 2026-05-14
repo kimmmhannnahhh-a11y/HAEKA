@@ -49,6 +49,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="section">
+  <div class="block-label" style="color:#e53e3e">매장 상태</div>
+  <div onclick="toggleClosed(this)" id="closed-btn" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:1.5px solid #eee;background:#f8f8f8;cursor:pointer;transition:.15s">
+    <div id="closed-chk" style="width:18px;height:18px;border-radius:4px;border:1.5px solid #ddd;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px"></div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#333">폐업한 매장이에요</div>
+      <div style="font-size:10px;color:#aaa;margin-top:1px">선택 시 폐업 정보가 전달돼요</div>
+    </div>
+  </div>
+</div>
+
+<div id="pay-sections">
+<div class="section">
   <div class="block-label label-blue">결제 가능 수단<span style="color:#e53e3e">*</span></div>
   <div class="chk-grid">
     <div class="chk-item" onclick="togglePay(this,'ok','VISA')"><div class="chk-box"></div><span class="chk-txt">VISA</span></div>
@@ -125,6 +137,22 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+var isClosed = false;
+window.toggleClosed = function(el) {
+  isClosed = !isClosed;
+  var chk = document.getElementById('closed-chk');
+  var paySections = document.getElementById('pay-sections');
+  if (isClosed) {
+    el.style.borderColor = '#e53e3e'; el.style.background = '#fff5f5';
+    chk.style.background = '#e53e3e'; chk.style.borderColor = '#e53e3e'; chk.textContent = '✓';
+    paySections.style.opacity = '0.4'; paySections.style.pointerEvents = 'none';
+  } else {
+    el.style.borderColor = '#eee'; el.style.background = '#f8f8f8';
+    chk.style.background = '#fff'; chk.style.borderColor = '#ddd'; chk.textContent = '';
+    paySections.style.opacity = '1'; paySections.style.pointerEvents = '';
+  }
+};
+
 window.togglePay = function(el, type, val) {
   var list = type === 'ok' ? payOkList : payNoList;
   var idx = list.indexOf(val);
@@ -141,8 +169,8 @@ window.togglePay = function(el, type, val) {
 
 window.submitRequest = async function() {
   if (submitting) return;
-  if (!payOkList.length && !payNoList.length) {
-    showToast('결제 가능 또는 불가 수단을 선택해주세요');
+  if (!isClosed && !payOkList.length && !payNoList.length) {
+    showToast('결제 가능/불가 수단을 선택하거나 폐업 여부를 선택해주세요');
     return;
   }
   submitting = true;
@@ -154,6 +182,7 @@ window.submitRequest = async function() {
     await addDoc(collection(db, 'editRequests'), {
       storeId: storeId,
       storeName: storeName,
+      isClosed: isClosed,
       payOk: payOkList,
       payNo: payNoList,
       uid: currentUser ? currentUser.uid : 'anonymous',
