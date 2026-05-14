@@ -689,13 +689,18 @@ var _editReqData = null;
 
 async function loadEditRequest(storeId) {
   try {
-    var snap = await getDocs(query(collection(db, 'editRequests'), where('storeId', '==', storeId), where('resolved', '==', false)));
+    // resolved 필드 없는 문서도 포함해서 전체 조회 후 필터
+    var snap = await getDocs(query(collection(db, 'editRequests'), where('storeId', '==', storeId)));
     if (snap.empty) return;
-    var reqDoc = snap.docs[0];
+    var reqDoc = null;
+    snap.docs.forEach(function(d) {
+      var data = d.data();
+      if (!data.resolved) reqDoc = d;
+    });
+    if (!reqDoc) return;
     var req = { id: reqDoc.id, ...reqDoc.data() };
     _editReqData = req;
     var agreeCount = (req.agreeUids || []).length;
-    // 배지 삽입 - store 이름 옆
     var nameEl = document.getElementById('hero-name');
     if (nameEl && !document.getElementById('edit-req-badge')) {
       var badge = document.createElement('span');

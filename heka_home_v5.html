@@ -1018,23 +1018,13 @@ async function loadEditRequests(storeIds) {
   try {
     var snap = await getDocs(query(
       collection(db, 'editRequests'),
-      where('storeId', 'in', storeIds.slice(0,10)),
-      where('resolved', '==', false)
+      where('storeId', 'in', storeIds.slice(0,10))
     ));
     snap.forEach(function(d) {
       var r = { id: d.id, ...d.data() };
-      _homeEditMap[r.storeId] = r;
+      if (!r.resolved) _homeEditMap[r.storeId] = r;
     });
-  } catch(e) {
-    // resolved 필드 없는 경우 fallback
-    try {
-      var snap2 = await getDocs(query(collection(db, 'editRequests'), where('storeId', 'in', storeIds.slice(0,10))));
-      snap2.forEach(function(d) {
-        var r = { id: d.id, ...d.data() };
-        if (!r.resolved) _homeEditMap[r.storeId] = r;
-      });
-    } catch(e2) { console.error(e2); }
-  }
+  } catch(e) { console.error(e); }
   // 배지 업데이트
   document.querySelectorAll('[data-edit-store-id]').forEach(function(el) {
     var sid = el.getAttribute('data-edit-store-id');
