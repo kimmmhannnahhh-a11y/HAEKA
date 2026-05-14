@@ -203,7 +203,6 @@ window._loadMyData = async function() {
           </div>
           <div class="badge-row">
             <span class="badge-txt" id="badge-txt">🌱 여행 새싹</span>
-            <div id="user-email-txt" style="font-size:10px;color:#aaa;margin-top:2px"></div>
             <button onclick="openBadgeInfo()" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;opacity:0.5;display:flex;align-items:center">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </button>
@@ -347,6 +346,13 @@ window._loadMyData = async function() {
       <!-- 계정 연동 -->
       <div style="height:10px;background:#f5f5f5"></div>
       <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">계정 연동 관리</div>
+      <div style="padding:10px 16px 12px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid #f5f5f5">
+        <div style="width:32px;height:32px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px">👤</div>
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:1px">로그인된 계정</div>
+          <div id="settings-email" style="font-size:13px;font-weight:600;color:#111">-</div>
+        </div>
+      </div>
       <div class="menu-item" onclick="showToast('Google 계정이 연결되어 있어요')">
         <div class="menu-txt"><div class="menu-title">Google</div><div class="menu-sub">연결됨</div></div>
         <span class="menu-arr">›</span>
@@ -522,12 +528,7 @@ function init() {
     return;
   }
   try { var saved = localStorage.getItem('haeka_user'); if(saved) userData = Object.assign(userData, JSON.parse(saved)); } catch(e){}
-  // 이메일 표시
-  try {
-    var emailEl = document.getElementById('user-email-txt');
-    var savedEmail = localStorage.getItem('haeka_email') || '';
-    if(emailEl && savedEmail) emailEl.textContent = savedEmail;
-  } catch(e){}
+
   // 아바타 복원 (IndexedDB)
   loadAvatar(function(src) {
     document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
@@ -750,6 +751,9 @@ function saveBio() {
 
 // ── 설정 패널 ──
 function openSettings() {
+  var email = localStorage.getItem('haeka_email') || '-';
+  var el = document.getElementById('settings-email');
+  if(el) el.textContent = email;
   document.getElementById('settings-overlay').classList.add('open');
   document.getElementById('settings-panel').style.transform = 'translateX(0)';
 }
