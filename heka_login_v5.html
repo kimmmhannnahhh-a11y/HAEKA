@@ -183,9 +183,10 @@ const app = initializeApp({
 const auth = getAuth(app);
 window._doFirebaseLogin = async function(email, pw) {
   try {
-    await signInWithEmailAndPassword(auth, email, pw);
+    var result = await signInWithEmailAndPassword(auth, email, pw);
     return true;
   } catch(e) {
+    alert('오류: ' + e.code + ' / ' + e.message);
     return false;
   }
 };
