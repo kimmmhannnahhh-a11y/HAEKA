@@ -195,7 +195,8 @@ function getCountryFlag(address) {
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query, limit, onSnapshot, where, updateDoc, doc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
@@ -208,6 +209,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+let _currentUser = null;
+onAuthStateChanged(auth, u => { _currentUser = u; });
 
 function catEmoji(cat) {
   var map = {'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};
@@ -573,6 +577,7 @@ function renderNearby(stores) {
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
+      + '<span data-edit-store-id="'+store.id+'" onclick="event.stopPropagation();openHomeEditPopup(\''+store.id+'\')" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:#39ff14;color:#111;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;cursor:pointer;border:none;font-family:inherit;align-items:center;gap:2px"><span class="edit-badge-txt">수정중!</span></span>'
       + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
       + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
@@ -581,6 +586,9 @@ function renderNearby(stores) {
     row.appendChild(card);
   });
   row.querySelectorAll('.nm-cards').forEach(addDragScroll);
+  // 수정중 배지 로드
+  var ids = stores.slice(0,6).map(function(s){ return s.id; }).filter(Boolean);
+  if (ids.length) loadEditRequests(ids);
 }
 
 window.openFirebaseDetail = async function(store) {
@@ -970,5 +978,129 @@ function toggleHours(){
   arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';
 }
 </script>
+
+  <!-- 수정중 팝업 (홈화면) -->
+  <div id="home-edit-overlay" onclick="closeHomeEditPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300"></div>
+  <div id="home-edit-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:22px 20px;width:300px;z-index:301;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:4px">수정 요청 내용</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:14px">맞아요 3명이 모이면 자동으로 반영돼요</div>
+    <div id="home-edit-body"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button id="home-agree-btn" onclick="homeVote('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
+      <button onclick="homeVote('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요 👎</button>
+    </div>
+    <button onclick="closeHomeEditPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
+  </div>
+
+<script>
+// ===== 홈 수정중 배지 =====
+var _homeEditMap = {}; // storeId -> editReq data
+var _homeEditCurrent = null;
+
+async function loadEditRequests(storeIds) {
+  if (!storeIds.length) return;
+  try {
+    var snap = await getDocs(query(
+      collection(db, 'editRequests'),
+      where('storeId', 'in', storeIds.slice(0,10)),
+      where('resolved', '==', false)
+    ));
+    snap.forEach(function(d) {
+      var r = { id: d.id, ...d.data() };
+      _homeEditMap[r.storeId] = r;
+    });
+  } catch(e) {
+    // resolved 필드 없는 경우 fallback
+    try {
+      var snap2 = await getDocs(query(collection(db, 'editRequests'), where('storeId', 'in', storeIds.slice(0,10))));
+      snap2.forEach(function(d) {
+        var r = { id: d.id, ...d.data() };
+        if (!r.resolved) _homeEditMap[r.storeId] = r;
+      });
+    } catch(e2) { console.error(e2); }
+  }
+  // 배지 업데이트
+  document.querySelectorAll('[data-edit-store-id]').forEach(function(el) {
+    var sid = el.getAttribute('data-edit-store-id');
+    if (_homeEditMap[sid]) {
+      el.style.display = 'inline-flex';
+      var cnt = (_homeEditMap[sid].agreeUids || []).length;
+      el.querySelector('.edit-badge-txt').textContent = '수정중! 맞아요 '+cnt+'/3';
+    }
+  });
+}
+
+function openHomeEditPopup(storeId) {
+  var req = _homeEditMap[storeId];
+  if (!req) return;
+  if (!_currentUser) { alert('로그인 후 투표할 수 있어요'); return; }
+  _homeEditCurrent = req;
+  var agreeCount = (req.agreeUids || []).length;
+  var alreadyVoted = (req.agreeUids || []).includes(_currentUser.uid) || (req.disagreeUids || []).includes(_currentUser.uid);
+  var body = '';
+  if (req.payOk && req.payOk.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#1A5D1A;margin-bottom:4px">결제 가능 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payOk.map(function(c){ return '<span style="background:#e8f5e9;color:#1A5D1A;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
+  if (req.payNo && req.payNo.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payNo.map(function(c){ return '<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
+  body += '<div style="font-size:11px;color:#aaa;margin-top:4px">현재 맞아요 ' + agreeCount + '/3</div>';
+  document.getElementById('home-edit-body').innerHTML = body;
+  var agreeBtn = document.getElementById('home-agree-btn');
+  if (alreadyVoted) {
+    agreeBtn.disabled = true; agreeBtn.style.opacity = '0.5'; agreeBtn.textContent = '이미 투표했어요';
+  } else {
+    agreeBtn.disabled = false; agreeBtn.style.opacity = '1'; agreeBtn.textContent = '맞아요 👍';
+  }
+  document.getElementById('home-edit-overlay').style.display = 'block';
+  document.getElementById('home-edit-popup').style.display = 'block';
+}
+
+function closeHomeEditPopup() {
+  document.getElementById('home-edit-overlay').style.display = 'none';
+  document.getElementById('home-edit-popup').style.display = 'none';
+}
+
+window.homeVote = async function(type) {
+  if (!_currentUser || !_homeEditCurrent) return;
+  var req = _homeEditCurrent;
+  var uid = _currentUser.uid;
+  var alreadyVoted = (req.agreeUids||[]).includes(uid)||(req.disagreeUids||[]).includes(uid);
+  if (alreadyVoted) { closeHomeEditPopup(); return; }
+  closeHomeEditPopup();
+  try {
+    var reqRef = doc(db, 'editRequests', req.id);
+    if (type === 'agree') {
+      var newAgree = [...(req.agreeUids||[]), uid];
+      await updateDoc(reqRef, { agreeUids: arrayUnion(uid) });
+      _homeEditMap[req.storeId].agreeUids = newAgree;
+      // 배지 개수 업데이트
+      var badge = document.querySelector('[data-edit-store-id="'+req.storeId+'"]');
+      if (badge) badge.querySelector('.edit-badge-txt').textContent = '수정중! 맞아요 '+newAgree.length+'/3';
+      if (newAgree.length >= 3) {
+        // 자동 업데이트
+        var updateData = { resolved: true };
+        if (req.payOk && req.payOk.length) updateData.payOk = req.payOk;
+        if (req.payNo && req.payNo.length) updateData.payNo = req.payNo;
+        await updateDoc(doc(db, 'stores', req.storeId), updateData);
+        await updateDoc(reqRef, { resolved: true });
+        delete _homeEditMap[req.storeId];
+        if (badge) badge.style.display = 'none';
+        alert('✅ 맞아요 3명 달성! 정보가 자동 업데이트됐어요');
+      }
+    } else {
+      var newDisagree = [...(req.disagreeUids||[]), uid];
+      await updateDoc(reqRef, { disagreeUids: arrayUnion(uid) });
+      _homeEditMap[req.storeId].disagreeUids = newDisagree;
+      if (newDisagree.length >= 3) {
+        // 틀려요 3개 → 요청 삭제
+        await updateDoc(reqRef, { resolved: true });
+        delete _homeEditMap[req.storeId];
+        var badge2 = document.querySelector('[data-edit-store-id="'+req.storeId+'"]');
+        if (badge2) badge2.style.display = 'none';
+      }
+    }
+  } catch(e) { console.error(e); }
+};
+window.openHomeEditPopup = openHomeEditPopup;
+window.closeHomeEditPopup = closeHomeEditPopup;
+</script>
+
 </body>
 </html>
