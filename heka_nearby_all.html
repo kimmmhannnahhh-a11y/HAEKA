@@ -318,7 +318,8 @@ function toggleHours(){var el=document.getElementById('hours-full');var arrow=do
 <!-- Firebase module (홈화면과 동일 방식) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query, where, updateDoc, arrayUnion, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
@@ -329,6 +330,13 @@ const app = initializeApp({
   appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
 });
 const db = getFirestore(app);
+const auth = getAuth(app);
+let _currentUser = null;
+onAuthStateChanged(auth, u => { _currentUser = u; });
+window._db = db; window._getDocs = getDocs; window._collection = collection;
+window._query = query; window._where = where; window._doc = doc;
+window._updateDoc = updateDoc; window._arrayUnion = arrayUnion;
+window._getCurrentUser = function(){ return _currentUser; };
 
 window._fetchStores = async function() {
   try {
@@ -507,7 +515,7 @@ function renderList(stores){
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
     var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
-    return'<div class="store-item" data-idx="'+idx+'" onclick="openStoreByIdx(this)">'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+s.id+'" onclick="event.stopPropagation();openNearbyEditPopup(this)" style="display:none;position:absolute;top:8px;right:50px;z-index:10;background:#fff;color:#111;font-size:8px;font-weight:700;padding:2px 7px 4px;border-radius:0 5px 5px 5px;box-shadow:0 1px 4px rgba(0,0,0,.2);white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+s.name+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
@@ -676,9 +684,111 @@ function addDragScroll(el){var dn=false,sx,sl;el.addEventListener('mousedown',fu
 document.querySelectorAll('.chip-row,.cat-wrap').forEach(addDragScroll);
 document.querySelectorAll('.store-cards').forEach(addDragScroll);
 var _origRender=renderList;
-renderList=function(stores){_origRender(stores);document.querySelectorAll('.store-cards').forEach(addDragScroll);};
+renderList=function(stores){
+  _origRender(stores);
+  document.querySelectorAll('.store-cards').forEach(addDragScroll);
+  var ids=stores.slice(0,10).map(function(s){return s.id;}).filter(Boolean);
+  if(ids.length) loadNearbyEditRequests(ids);
+};
 
 window.addEventListener('DOMContentLoaded', init);
 </script>
+
+<!-- 수정중 팝업 -->
+<div id="nearby-edit-overlay" onclick="closeNearbyEditPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200"></div>
+<div id="nearby-edit-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:22px 20px;width:300px;z-index:201;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:4px">수정 요청 내용</div>
+  <div style="font-size:11px;color:#aaa;margin-bottom:14px">맞아요 3명이 모이면 자동으로 반영돼요</div>
+  <div id="nearby-edit-body"></div>
+  <div style="display:flex;gap:8px;margin-top:16px">
+    <button id="nearby-agree-btn" onclick="nearbyVote('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
+    <button onclick="nearbyVote('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요 👎</button>
+  </div>
+  <button onclick="closeNearbyEditPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
+</div>
+
+<script>
+var _nearbyEditMap = {};
+var _nearbyEditCurrent = null;
+
+async function loadNearbyEditRequests(storeIds) {
+  var db=window._db, getDocs=window._getDocs, collection=window._collection, query=window._query, where=window._where;
+  if (!db||!getDocs) return;
+  try {
+    var snap = await getDocs(query(collection(db,'editRequests'), where('storeId','in',storeIds.slice(0,10))));
+    snap.forEach(function(d){ var r={id:d.id,...d.data()}; if(!r.resolved) _nearbyEditMap[r.storeId]=r; });
+    document.querySelectorAll('[data-edit-store-id]').forEach(function(el){
+      var sid=el.getAttribute('data-edit-store-id');
+      if(_nearbyEditMap[sid]) el.style.display='inline-block';
+    });
+  } catch(e){ console.error(e); }
+}
+
+function openNearbyEditPopup(el) {
+  var sid = el.getAttribute('data-edit-store-id');
+  var req = _nearbyEditMap[sid];
+  if (!req) return;
+  var cu = window._getCurrentUser ? window._getCurrentUser() : null;
+  if (!cu) { alert('로그인 후 투표할 수 있어요'); return; }
+  _nearbyEditCurrent = req;
+  var agreeCount = (req.agreeUids||[]).length;
+  var alreadyVoted = (req.agreeUids||[]).includes(cu.uid)||(req.disagreeUids||[]).includes(cu.uid);
+  var body = '';
+  if (req.payOk&&req.payOk.length) body+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#1A5D1A;margin-bottom:4px">결제 가능</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+req.payOk.map(function(c){return'<span style="background:#e8f5e9;color:#1A5D1A;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>';}).join('')+'</div></div>';
+  if (req.payNo&&req.payNo.length) body+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+req.payNo.map(function(c){return'<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>';}).join('')+'</div></div>';
+  body+='<div style="font-size:11px;color:#aaa;margin-top:4px">현재 맞아요 '+agreeCount+'/3</div>';
+  document.getElementById('nearby-edit-body').innerHTML=body;
+  var agreeBtn=document.getElementById('nearby-agree-btn');
+  if(alreadyVoted){agreeBtn.disabled=true;agreeBtn.style.opacity='0.5';agreeBtn.textContent='이미 투표했어요';}
+  else{agreeBtn.disabled=false;agreeBtn.style.opacity='1';agreeBtn.textContent='맞아요 👍';}
+  document.getElementById('nearby-edit-overlay').style.display='block';
+  document.getElementById('nearby-edit-popup').style.display='block';
+}
+
+function closeNearbyEditPopup(){
+  document.getElementById('nearby-edit-overlay').style.display='none';
+  document.getElementById('nearby-edit-popup').style.display='none';
+}
+
+window.nearbyVote = async function(type){
+  var cu=window._getCurrentUser?window._getCurrentUser():null;
+  if(!cu||!_nearbyEditCurrent) return;
+  var req=_nearbyEditCurrent, uid=cu.uid;
+  var alreadyVoted=(req.agreeUids||[]).includes(uid)||(req.disagreeUids||[]).includes(uid);
+  if(alreadyVoted){closeNearbyEditPopup();return;}
+  closeNearbyEditPopup();
+  var db=window._db,doc=window._doc,updateDoc=window._updateDoc,arrayUnion=window._arrayUnion;
+  try{
+    var reqRef=doc(db,'editRequests',req.id);
+    if(type==='agree'){
+      var newAgree=[...(req.agreeUids||[]),uid];
+      await updateDoc(reqRef,{agreeUids:arrayUnion(uid)});
+      _nearbyEditMap[req.storeId].agreeUids=newAgree;
+      if(newAgree.length>=3){
+        var upd={resolved:true};
+        if(req.payOk&&req.payOk.length) upd.payOk=req.payOk;
+        if(req.payNo&&req.payNo.length) upd.payNo=req.payNo;
+        await updateDoc(doc(db,'stores',req.storeId),upd);
+        await updateDoc(reqRef,{resolved:true});
+        delete _nearbyEditMap[req.storeId];
+        var badge=document.querySelector('[data-edit-store-id="'+req.storeId+'"]');
+        if(badge) badge.style.display='none';
+        alert('✅ 맞아요 3명 달성! 정보가 자동 업데이트됐어요');
+      }
+    } else {
+      var newDisagree=[...(req.disagreeUids||[]),uid];
+      await updateDoc(reqRef,{disagreeUids:arrayUnion(uid)});
+      _nearbyEditMap[req.storeId].disagreeUids=newDisagree;
+      if(newDisagree.length>=3){
+        await updateDoc(reqRef,{resolved:true});
+        delete _nearbyEditMap[req.storeId];
+        var badge2=document.querySelector('[data-edit-store-id="'+req.storeId+'"]');
+        if(badge2) badge2.style.display='none';
+      }
+    }
+  }catch(e){console.error(e);}
+};
+</script>
+
 </body>
 </html>
