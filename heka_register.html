@@ -77,8 +77,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .prog-bar{height:100%;background:#1A5D1A;border-radius:3px;width:0;transition:width .3s}
 .toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,.95);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:22px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.save-toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.7);color:#fff;font-size:13px;font-weight:600;padding:12px 22px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
-.save-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+
 .map-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:60;display:none;align-items:flex-end;border-radius:26px}
 .map-overlay.open{display:flex}
 .map-box-popup{background:#fff;border-radius:18px 18px 0 0;width:100%;max-height:85%;display:flex;flex-direction:column}
@@ -368,7 +368,6 @@ window.saveToFirestore = async function(data) {
   </div>
 
   <div class="toast" id="reg-toast"></div>
-  <div class="save-toast" id="save-toast">임시저장 되었습니다.</div>
 
   <!-- 지도 검색 팝업 -->
   <div class="map-overlay" id="map-overlay">
@@ -844,72 +843,13 @@ function finish(){
   });
 }
 function showComplete(){
-  try{localStorage.removeItem('haeka_draft');}catch(e){}
   var name=document.getElementById('inp-name').value;
   document.getElementById('reg-phone').innerHTML='<div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div><div class="topbar"><button class="back-btn" onclick="goBack()">←</button><span class="topbar-title">등록 완료</span></div><div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:14px"><div style="width:60px;height:60px;border-radius:50%;background:#e8f5e8;display:flex;align-items:center;justify-content:center;font-size:26px">✅</div><div style="font-size:17px;font-weight:800;color:#111;text-align:center">등록이 완료됐어요!</div><div style="font-size:12px;color:#888;text-align:center;line-height:1.7">'+name+'<br>매장이 성공적으로 등록되었어요<br>다른 여행자들에게 도움이 될 거예요 🌏</div><div style="background:#f0f9f0;border-radius:12px;padding:12px 16px;text-align:center;width:100%"><div style="font-size:10px;color:#1A5D1A;font-weight:700;margin-bottom:2px">🎁 리워드 획득!</div><div style="font-size:20px;font-weight:800;color:#1A5D1A">+50 포인트</div><div style="font-size:10px;color:#888;margin-top:1px">첫 매장 등록 보너스</div></div><button onclick="goBack()" style="width:100%;padding:13px;border-radius:14px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:inherit">홈으로 돌아가기</button></div>';
 }
 function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
 
-// 임시저장
-function autoSave(showMsg){
-  var data={name:document.getElementById('inp-name')?document.getElementById('inp-name').value:'',cat:selectedCat,payOk:payOkList,payNo:payNoList,review:document.getElementById('review-inp')?document.getElementById('review-inp').value:''};
-  if(!data.name && !data.cat && !data.payOk.length) return; // 빈 데이터면 저장 안함
-  try{localStorage.setItem('haeka_draft',JSON.stringify(data));}catch(e){}
-  if(showMsg){var t=document.getElementById('save-toast');if(t){t.classList.add('show');setTimeout(function(){t.classList.remove('show');},1800);}}
-}
-document.addEventListener('visibilitychange',function(){if(document.hidden)autoSave(true);});
-window.addEventListener('pagehide',function(){autoSave(false);});
-window.addEventListener('beforeunload',function(){autoSave(false);});
 
-// 재진입 시 임시저장 복원 팝업
-(function(){
-  try{
-    var draft=JSON.parse(localStorage.getItem('haeka_draft')||'null');
-    if(!draft) return;
-    if(!draft.name && !draft.cat && (!draft.payOk||!draft.payOk.length)) return;
-    // 팝업 생성
-    var overlay=document.createElement('div');
-    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center';
-    var box=document.createElement('div');
-    box.style.cssText='background:#fff;border-radius:18px;padding:24px 20px;width:280px;text-align:center;font-family:inherit';
-    box.innerHTML='<div style="font-size:22px;margin-bottom:10px">📝</div>'
-      +'<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px">이어서 등록하시겠습니까?</div>'
-      +'<div style="font-size:12px;color:#aaa;margin-bottom:20px">작성 중이던 내용이 있어요</div>'
-      +'<div style="display:flex;gap:8px">'
-      +'<button id="draft-no" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">아니요</button>'
-      +'<button id="draft-yes" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">이어서 작성</button>'
-      +'</div>';
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
 
-    document.getElementById('draft-yes').onclick=function(){
-      overlay.remove();
-      // 데이터 복원
-      if(draft.name) document.getElementById('inp-name').value=draft.name;
-      if(draft.cat){
-        selectedCat=draft.cat;
-        document.querySelectorAll('.cat-btn').forEach(function(b){
-          b.classList.toggle('on',b.dataset.cat===draft.cat);
-        });
-      }
-      if(draft.payOk) draft.payOk.forEach(function(v){
-        payOkList.push(v);
-        var el=document.querySelector('.chk-item[onclick*="ok"][onclick*="'+v+'"]');
-        if(el){el.classList.add('on');var cb=el.querySelector('.chk-box');if(cb){cb.style.background='#1A5D1A';cb.style.borderColor='#1A5D1A';}}
-      });
-      if(draft.payNo) draft.payNo.forEach(function(v){
-        payNoList.push(v);
-        var el=document.querySelector('.chk-item[onclick*="no"][onclick*="'+v+'"]');
-        if(el){el.classList.add('on');el.classList.add('red');var cb=el.querySelector('.chk-box');if(cb){cb.style.background='#e53e3e';cb.style.borderColor='#e53e3e';}}
-      });
-      if(draft.review) document.getElementById('review-inp').value=draft.review;
-    };
-    document.getElementById('draft-no').onclick=function(){
-      overlay.remove();
-      localStorage.removeItem('haeka_draft');
-    };
-  }catch(e){}
-})();
 </script>
 </body>
 </html>
