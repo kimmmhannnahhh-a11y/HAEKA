@@ -140,6 +140,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -147,6 +148,20 @@ const _app = initializeApp({
   storageBucket:"card-store-finder.firebasestorage.app"
 });
 const _db = getFirestore(_app);
+const _auth = getAuth(_app);
+onAuthStateChanged(_auth, function(u){ window._currentUser = u||null; if(u) try{localStorage.setItem('haeka_uid',u.uid);localStorage.setItem('haeka_email',u.email||'');}catch(e){} });
+
+window._deleteAccount = async function() {
+  var user = _auth.currentUser;
+  if (!user) return false;
+  try {
+    await deleteUser(user);
+    return true;
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
+};
 
 window._loadMyData = async function() {
   var uid = localStorage.getItem('haeka_uid');
@@ -873,9 +888,22 @@ function clearCache() {
   showToast('✅ 캐시가 삭제됐어요!');
 }
 function confirmWithdraw() {
-  if (confirm('정말 탈퇴하시겠어요?\n등록한 모든 정보가 삭제되며 복구가 불가능해요.')) {
-    showToast('탈퇴 처리는 로그인 연동 후 지원 예정이에요');
-  }
+  // 1단계
+  showPopup('⚠️', '정말 탈퇴하시겠어요?', '탈퇴 시 등록한 매장 정보와 활동 내역이 모두 삭제돼요.\n삭제된 데이터는 30일간 보관 후 완전히 폐기됩니다.', '탈퇴 진행', function(){
+    // 2단계
+    showPopup('🗑️', '최종 확인', '정말로 탈퇴할까요?\n이 작업은 되돌릴 수 없어요.', '탈퇴하기', async function(){
+      if (window._deleteAccount) {
+        var ok = await window._deleteAccount();
+        if (ok) {
+          try{ localStorage.clear(); }catch(e){}
+          showToast('탈퇴가 완료됐어요');
+          setTimeout(function(){ window.location.replace('heka_home_v5.html'); }, 1500);
+        } else {
+          showToast('오류가 발생했어요. 재로그인 후 다시 시도해주세요');
+        }
+      }
+    });
+  });
 }
 function logout() {
   try{ 
