@@ -738,7 +738,14 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  if (!window._currentUser) { showLoginNeedPopup(); return; }
+  if (!window._currentUser) {
+    // auth 아직 로드 중일 수 있어서 500ms 후 재시도
+    setTimeout(function(){
+      if (!window._currentUser) { showLoginNeedPopup(); }
+      else { openEditReqPopup(); }
+    }, 500);
+    return;
+  }
   var req = _editReqData;
   var agreeCount = (req.agreeUids || []).length;
   var alreadyVoted = (req.agreeUids || []).includes(window._currentUser.uid) || (req.disagreeUids || []).includes(window._currentUser.uid);
