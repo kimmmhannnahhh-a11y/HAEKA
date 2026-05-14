@@ -57,6 +57,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fptag-info{background:#eab308;color:#fff}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
 .fpthumb{width:40px;height:40px;min-width:40px;border-radius:8px;overflow:hidden;flex-shrink:0;align-self:center}
+.fp-bm{position:absolute;top:6px;right:6px;background:none;border:none;font-size:16px;cursor:pointer;padding:0;z-index:5;line-height:1;opacity:.7}
+.fp-bm.on{opacity:1}
+.fpost{position:relative}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#1A5D1A;font-weight:600}
@@ -280,10 +283,32 @@ function renderPosts(list){
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="flex-shrink:0">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+'</div>';
+    var isBm = isSaved(p.id);
+    var bmBtn = p.id ? '<button class="fp-bm'+(isBm?' on':'')+'" onclick="event.stopPropagation();toggleSave(\''+p.id+'\',this)">'+(isBm?'🔖':'🔖')+'</button>' : '';
+    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="flex-shrink:0">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+bmBtn+'</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
+
+function getSavedPosts(){ try{ return JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){ return []; } }
+function isSaved(id){ return getSavedPosts().some(function(p){ return p.id===id; }); }
+function toggleSave(id, btn) {
+  var uid = localStorage.getItem('haeka_uid');
+  if (!uid) { alert('로그인 후 저장할 수 있어요'); return; }
+  var list = getSavedPosts();
+  var idx = list.findIndex(function(p){ return p.id===id; });
+  if (idx > -1) {
+    list.splice(idx, 1);
+    btn.classList.remove('on');
+    btn.style.opacity = '0.4';
+  } else {
+    var post = (window.posts||[]).find(function(p){ return p.id===id; });
+    if (post) list.unshift(post);
+    btn.classList.add('on');
+    btn.style.opacity = '1';
+  }
+  try{ localStorage.setItem('haeka_saved_posts', JSON.stringify(list)); }catch(e){}
+}
 
 function openAvatarDB(cb){var req=indexedDB.open('haeka_db',1);req.onupgradeneeded=function(e){e.target.result.createObjectStore('avatar');};req.onsuccess=function(e){cb(e.target.result);};req.onerror=function(){cb(null);};}
 function applyMyAvatar(){
