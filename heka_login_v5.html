@@ -184,6 +184,7 @@ const auth = getAuth(app);
 window._doFirebaseLogin = async function(email, pw) {
   try {
     var result = await signInWithEmailAndPassword(auth, email, pw);
+    try{ localStorage.setItem('haeka_uid', result.user.uid); }catch(e){}
     return true;
   } catch(e) {
     alert('오류: ' + e.code + ' / ' + e.message);

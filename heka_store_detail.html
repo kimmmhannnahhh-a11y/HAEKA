@@ -131,7 +131,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 window._currentUser = undefined; // undefined=아직로딩중, null=비로그인, object=로그인
-onAuthStateChanged(auth, function(u){ window._currentUser = u || null; });
+onAuthStateChanged(auth, function(u){ 
+  window._currentUser = u || null; 
+  try{ 
+    if(u) localStorage.setItem('haeka_uid', u.uid);
+    else localStorage.removeItem('haeka_uid');
+  }catch(e){}
+});
 
 function cardColor(card) {
   var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8'};
@@ -745,9 +751,16 @@ function openEditReqPopup() {
   var waited = 0;
   var check = setInterval(function(){
     waited += 100;
-    if (window._currentUser !== undefined || waited >= 3000) {
+    if (window._currentUser !== undefined || waited >= 5000) {
       clearInterval(check);
       if (window._currentUser) { _doOpenEditReqPopup(); }
+      else if (localStorage.getItem('haeka_uid')) { 
+        // Firebase 응답 느림 - uid 있으면 잠시 더 대기
+        setTimeout(function(){
+          if(window._currentUser) _doOpenEditReqPopup();
+          else showLoginNeedPopup();
+        }, 2000);
+      }
       else { showLoginNeedPopup(); }
     }
   }, 100);
