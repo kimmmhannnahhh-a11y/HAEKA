@@ -231,11 +231,47 @@ function doLogin() {
   if (id === ADMIN_ID && pw === ADMIN_PW) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'flex';
+    _pageHistory = ['dashboard'];
+    history.pushState(null, '', location.href);
     loadDashboard();
   } else {
     document.getElementById('login-err').style.display = 'block';
   }
 }
+
+// 뒤로가기 히스토리 관리
+var _pageHistory = [];
+var _origGoPage = null;
+
+window.addEventListener('popstate', function() {
+  if (_pageHistory.length > 1) {
+    _pageHistory.pop(); // 현재 페이지 제거
+    var prev = _pageHistory[_pageHistory.length - 1];
+    if (prev) {
+      var el = document.getElementById('nav-'+prev);
+      if (el) {
+        // goPage 호출 시 히스토리 추가 안 되게 플래그
+        _skipHistory = true;
+        goPage(prev, el);
+        _skipHistory = false;
+      }
+    }
+    history.pushState(null, '', location.href); // 항상 히스토리 유지
+  }
+});
+
+var _skipHistory = false;
+var _origGoPage2 = goPage;
+goPage = function(name, el) {
+  _origGoPage2(name, el);
+  if (!_skipHistory) {
+    _pageHistory.push(name);
+    history.pushState(null, '', location.href);
+  }
+};
+
+// 초기 히스토리 설정
+history.pushState(null, '', location.href);
 
 function doLogout() {
   document.getElementById('admin-wrap').style.display = 'none';
