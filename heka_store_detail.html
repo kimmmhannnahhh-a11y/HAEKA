@@ -272,7 +272,7 @@ async function renderStore(store) {
     if(btns){
       var delBtn = document.createElement('button');
       delBtn.style.cssText = 'flex:1;padding:12px;border-radius:12px;background:#fff0f0;color:#e53935;font-size:12px;font-weight:700;border:1.5px solid #e53935;cursor:pointer;font-family:inherit';
-      delBtn.textContent = '🗑️ 매장 삭제';
+      delBtn.textContent = '매장 삭제';
       delBtn.onclick = async function(){
         if(!confirm('정말 이 매장을 삭제할까요?')) return;
         try{
@@ -578,7 +578,7 @@ window.addEventListener('DOMContentLoaded', loadStore);
 
   <!-- 하단 버튼 -->
   <div class="bottom-btns" id="bottom-btns">
-    <button class="btn-report" onclick="window.location.href='heka_register.html'">✍️ 수정 요청하기</button>
+    <button class="btn-report" onclick="window.location.href='heka_register.html'">수정 요청하기</button>
   </div>
 
   <!-- 토스트 -->
