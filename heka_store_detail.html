@@ -135,7 +135,6 @@ onAuthStateChanged(auth, function(u){
   window._currentUser = u || null; 
   try{ 
     if(u) localStorage.setItem('haeka_uid', u.uid);
-    else localStorage.removeItem('haeka_uid');
   }catch(e){}
 });
 
