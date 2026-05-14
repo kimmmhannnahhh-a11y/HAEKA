@@ -720,7 +720,12 @@ async function loadEditRequest(storeId) {
       badge.className = 'edit-badge';
       badge.style.display = 'flex';
       badge.onclick = openEditReqPopup;
-      badge.innerHTML = '수정중 ← 참여하기';
+      badge.innerHTML = '수정중';
+      var joinTxt = document.createElement('span');
+      joinTxt.onclick = openEditReqPopup;
+      joinTxt.style.cssText = 'position:absolute;top:47px;left:80px;font-size:9px;color:#fff;font-weight:700;cursor:pointer;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.5)';
+      joinTxt.textContent = '← 참여하기';
+      heroEl.appendChild(joinTxt);
       heroEl.appendChild(badge);
     }
   } catch(e) { console.error(e); }
