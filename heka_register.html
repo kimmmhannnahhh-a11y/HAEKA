@@ -822,6 +822,7 @@ async function saveStore(){
     lng: selectedLng,
     images: imageUrls,
     videoUrl: videoUrl || null,
+    uid: localStorage.getItem('haeka_uid') || '',
   };
   if(window.saveToFirestore) await window.saveToFirestore(data);
 }

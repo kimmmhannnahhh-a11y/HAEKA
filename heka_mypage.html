@@ -135,6 +135,38 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .logout-btn:hover{background:#fee2e2}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+const _app = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app"
+});
+const _db = getFirestore(_app);
+
+window._loadMyData = async function() {
+  var uid = localStorage.getItem('haeka_uid');
+  if (!uid) return;
+  try {
+    // 등록한 장소
+    var storesSnap = await getDocs(query(collection(_db,'stores'), where('uid','==',uid)));
+    var myStores = [];
+    storesSnap.forEach(function(d){ myStores.push({id:d.id,...d.data()}); });
+    window._myStores = myStores;
+    document.getElementById('stat-place').textContent = myStores.length;
+
+    // 결제 제보 (hotpl 컬렉션 또는 stores 중 reporter가 uid인 것)
+    // stores에서 createdBy 또는 reporterUid 필드로 카운팅
+    window._myReports = myStores; // 동일 컬렉션 사용
+    document.getElementById('stat-report').textContent = myStores.length;
+
+    // 뱃지 업데이트
+    if(window._updateBadge) window._updateBadge(myStores.length);
+  } catch(e){ console.log('데이터 로드 오류:', e); }
+};
+</script>
 
 </head>
 <body>
@@ -180,12 +212,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         </div>
       </div>
       <div class="stats-row">
-        <div class="stat-box" onclick="showToast('내가 등록한 장소 목록')">
-          <div class="stat-num" id="stat-report">3</div>
+        <div class="stat-box" onclick="openMyList('report')" style="cursor:pointer">
+          <div class="stat-num" id="stat-report">-</div>
           <div class="stat-lbl">결제 제보</div>
         </div>
-        <div class="stat-box" onclick="showToast('내가 등록한 장소 목록')">
-          <div class="stat-num" id="stat-place">5</div>
+        <div class="stat-box" onclick="openMyList('place')" style="cursor:pointer">
+          <div class="stat-num" id="stat-place">-</div>
           <div class="stat-lbl">등록한 장소</div>
         </div>
       </div>
@@ -433,6 +465,16 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   </div>
 
   <div class="toast" id="toast"></div>
+
+  <!-- 내 장소 목록 패널 -->
+  <div id="mylist-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200" onclick="closeMyList()"></div>
+  <div id="mylist-panel" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:#fff;border-radius:18px 18px 0 0;z-index:201;max-height:80vh;overflow:hidden;display:flex;flex-direction:column">
+    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
+      <span id="mylist-title" style="font-size:15px;font-weight:700;color:#111">등록한 장소</span>
+      <button onclick="closeMyList()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
+    </div>
+    <div id="mylist-content" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+  </div>
 </div>
 
 <script>
@@ -743,6 +785,41 @@ function logout() {
   showToast('로그아웃 되었습니다');
   setTimeout(function(){ window.location.replace('heka_login_v5.html'); }, 1500);
 }
+
+function openMyList(type) {
+  var stores = window._myStores || [];
+  var title = type === 'place' ? '등록한 장소' : '결제 제보';
+  document.getElementById('mylist-title').textContent = title;
+  var content = document.getElementById('mylist-content');
+  if (!stores.length) {
+    content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">아직 없어요</div>';
+  } else {
+    content.innerHTML = stores.map(function(s){
+      var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.style.display='none'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏬</div>';
+      var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#e8f5e9;color:#1A5D1A;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href='heka_store_detail.html?id='+s.id+''">'
+        +img
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+s.name+'</div>'
+        +'<div style="font-size:11px;color:#888;margin:2px 0">'+( s.city||s.address||'')+'</div>'
+        +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px">'+cards+'</div>'
+        +'</div>'
+        +'<button onclick="event.stopPropagation();location.href='heka_register.html?edit='+s.id+''" style="background:none;border:1px solid #ddd;border-radius:8px;padding:5px 8px;font-size:11px;color:#555;cursor:pointer;white-space:nowrap">수정</button>'
+        +'</div>';
+    }).join('');
+  }
+  document.getElementById('mylist-overlay').style.display = 'block';
+  document.getElementById('mylist-panel').style.display = 'flex';
+}
+
+function closeMyList() {
+  document.getElementById('mylist-overlay').style.display = 'none';
+  document.getElementById('mylist-panel').style.display = 'none';
+}
+
+window._updateBadge = function(count) {
+  document.getElementById('badge-txt').textContent = getBadge(count);
+};
 function showToast(msg) {
   var t = document.getElementById('toast');
   t.textContent = msg;
@@ -750,7 +827,10 @@ function showToast(msg) {
   setTimeout(function(){ t.classList.remove('show'); }, 2200);
 }
 
-window.addEventListener('DOMContentLoaded', init);
+window.addEventListener('DOMContentLoaded', function(){
+  init();
+  setTimeout(function(){ if(window._loadMyData) window._loadMyData(); }, 500);
+});
 </script>
 </body>
 </html>
