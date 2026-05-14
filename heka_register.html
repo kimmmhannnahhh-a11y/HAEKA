@@ -389,9 +389,8 @@ window.saveToFirestore = async function(data) {
     </div>
   </div>
 
-  <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)"/>
-  <input type="file" id="gallery-input" accept="image/*" multiple style="display:none" onchange="handleGallerySelect(this)"/>
-  <input type="file" id="video-input" accept="video/*" style="display:none" onchange="handleVideoFile(this)"/>
+  <input type="file" id="gallery-input" accept="image/*,video/*" multiple style="display:none" onchange="handleMediaFile(this)"/>
+  <input type="file" id="camera-input" accept="image/*,video/*" capture="environment" style="display:none" onchange="handleMediaFile(this)"/>
 
   <!-- 갤러리 바텀시트 -->
   <div class="media-overlay" id="media-overlay" onclick="closeMedia()">
@@ -656,14 +655,13 @@ function togglePay(el,type,val){
 function openMedia(){ document.getElementById('gallery-input').click(); }
 function closeMedia(){document.getElementById('media-overlay').classList.remove('open');}
 function openGallery(){ document.getElementById('gallery-input').click(); }
-function openVideo(){ document.getElementById('video-input').click(); }
+function openVideo(){ document.getElementById('gallery-input').click(); }
 
 var _currentTab='photo';
 function switchTab(tab, el){
   _currentTab=tab;
   document.querySelectorAll('.media-tab').forEach(function(b){b.classList.remove('on');});
   el.classList.add('on');
-  if(tab==='video') document.getElementById('video-input').click();
   buildMediaGrid();
 }
 
@@ -733,10 +731,9 @@ function renderImgs(){
     vid.muted=true;
     vid.loop=true;
     vid.setAttribute('playsinline','');
-    vid.setAttribute('preload','metadata');
+    vid.setAttribute('preload','auto');
     vid.style.cssText='display:block';
-    vid.addEventListener('loadedmetadata',function(){
-      vid.currentTime=Math.min(1, vid.duration*0.1);
+    vid.addEventListener('loadeddata',function(){
       vid.play();
     });
     var badge=document.createElement('div');
