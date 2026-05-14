@@ -384,8 +384,8 @@ window._loadNotices = async function() {
         <div class="menu-txt"><div class="menu-title">자동 로그인 / 생체 인증</div><div class="menu-sub">Face ID · 지문 인식</div></div>
         <span class="menu-arr">›</span>
       </div>
-      <div class="menu-item" onclick="clearCache()">
-        <div class="menu-txt"><div class="menu-title">데이터 관리</div><div class="menu-sub" id="cache-sub">캐시 삭제 · 버전 1.0.0</div></div>
+      <div class="menu-item" onclick="openDataMgmt()">
+        <div class="menu-txt"><div class="menu-title">데이터 관리</div><div class="menu-sub">캐시 삭제 · 버전 1.0.0</div></div>
         <span class="menu-arr">›</span>
       </div>
 
@@ -841,7 +841,30 @@ function saveLangDirect(val) {
 }
 
 // ── 기타 ──
-function clearCache() { showToast('캐시가 삭제됐어요!'); }
+function openDataMgmt() {
+  var msg = 'HAEKA v1.0.0\n\n';
+  msg += '캐시 삭제: 임시 데이터를 초기화해요\n(로그인 정보는 유지됩니다)\n\n';
+  msg += '최신 버전입니다 ✅';
+  if(confirm(msg + '\n\n캐시를 삭제할까요?')) {
+    clearCache();
+  }
+}
+function clearCache() {
+  try {
+    var uid = localStorage.getItem('haeka_uid');
+    var email = localStorage.getItem('haeka_email');
+    var user = localStorage.getItem('haeka_user');
+    var zzim = localStorage.getItem('haeka_zzim');
+    var saved = localStorage.getItem('haeka_saved_posts');
+    localStorage.clear();
+    if(uid) localStorage.setItem('haeka_uid', uid);
+    if(email) localStorage.setItem('haeka_email', email);
+    if(user) localStorage.setItem('haeka_user', user);
+    if(zzim) localStorage.setItem('haeka_zzim', zzim);
+    if(saved) localStorage.setItem('haeka_saved_posts', saved);
+  } catch(e) {}
+  showToast('✅ 캐시가 삭제됐어요!');
+}
 function confirmWithdraw() {
   if (confirm('정말 탈퇴하시겠어요?\n등록한 모든 정보가 삭제되며 복구가 불가능해요.')) {
     showToast('탈퇴 처리는 로그인 연동 후 지원 예정이에요');
