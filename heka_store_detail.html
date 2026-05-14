@@ -204,7 +204,7 @@ async function renderStore(store) {
   // 사진 슬라이드
   var heroEl = document.getElementById('hero-img');
   var dotsEl = document.getElementById('hero-dots');
-  var images = store.images && store.images.length ? store.images : [];
+  var images = store.images && store.images.length ? store.images.filter(function(u){ return u !== store.videoUrl; }) : [];
   if(store.videoUrl) images = [store.videoUrl].concat(images); // 동영상 첫번째
   var _slideIdx = 0;
 
@@ -222,7 +222,7 @@ async function renderStore(store) {
     if(isVideo){
       heroEl.innerHTML = '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;pointer-events:none"></video>';
     } else {
-      heroEl.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>';
+      heroEl.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;pointer-events:none"/>';
     }
     // 점 인디케이터
     if(images.length > 1){
@@ -234,21 +234,22 @@ async function renderStore(store) {
 
   window.heroGoTo = function(idx){ _slideIdx=idx; renderSlide(); };
 
-  // 스와이프
+  // 스와이프 - hero 전체에 이벤트 (overlay가 heroEl 터치 막아서)
   var _hStartX=0;
-  heroEl.addEventListener('touchstart',function(e){_hStartX=e.touches[0].clientX;},{passive:true});
-  heroEl.addEventListener('touchend',function(e){
+  var heroWrap = document.getElementById('hero');
+  heroWrap.addEventListener('touchstart',function(e){_hStartX=e.touches[0].clientX;},{passive:true});
+  heroWrap.addEventListener('touchend',function(e){
     var diff=e.changedTouches[0].clientX-_hStartX;
     if(Math.abs(diff)<30)return;
     if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
     else _slideIdx=(_slideIdx-1+images.length)%images.length;
     renderSlide();
   },{passive:true});
-  heroEl.addEventListener('mousedown',function(e){_hStartX=e.clientX;});
+  heroWrap.addEventListener('mousedown',function(e){_hStartX=e.clientX;});
   document.addEventListener('mouseup',function(e){
     if(!_hStartX)return;
     var diff=e.clientX-_hStartX; _hStartX=0;
-    if(Math.abs(diff)<30||!heroEl.contains(e.target))return;
+    if(Math.abs(diff)<30||!heroWrap.contains(e.target))return;
     if(diff<0) _slideIdx=(_slideIdx+1)%images.length;
     else _slideIdx=(_slideIdx-1+images.length)%images.length;
     renderSlide();
