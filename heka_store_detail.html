@@ -624,8 +624,8 @@ window._arrayUnion = arrayUnion;
     <div style="font-size:11px;color:#aaa;margin-bottom:14px">3명이 맞아요를 누르면 자동으로 반영돼요</div>
     <div id="edit-req-body"></div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button id="edit-agree-btn" onclick="voteEditRequest('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
-      <button onclick="voteEditRequest('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요 👎</button>
+      <button id="edit-agree-btn" onclick="voteEditRequest('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요</button>
+      <button onclick="voteEditRequest('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요</button>
     </div>
     <button onclick="closeEditReqPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
   </div>
@@ -778,7 +778,7 @@ function _doOpenEditReqPopup() {
   } else {
     agreeBtn.disabled = false;
     agreeBtn.style.opacity = '1';
-    agreeBtn.textContent = '맞아요 👍';
+    agreeBtn.textContent = '맞아요';
   }
   document.getElementById('edit-req-overlay').style.display = 'block';
   document.getElementById('edit-req-popup').style.display = 'block';
