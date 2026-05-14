@@ -135,6 +135,29 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .logout-btn:hover{background:#fee2e2}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+const _fbApp = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder"
+});
+const _auth = getAuth(_fbApp);
+onAuthStateChanged(_auth, function(u){
+  window._currentUser = u || null;
+  if(u){
+    try{ localStorage.setItem('haeka_uid', u.uid); }catch(e){}
+    // 이메일 표시
+    var emailEl = document.getElementById('user-email-txt');
+    if(emailEl) emailEl.textContent = u.email || '';
+  }
+});
+window._doLogout = async function(){
+  try{ await signOut(_auth); }catch(e){}
+  try{ localStorage.removeItem('haeka_uid'); }catch(e){}
+};
+</script>
 </head>
 <body>
 <div class="phone" id="phone">
@@ -164,6 +187,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         <div class="profile-info">
           <div class="nick-row">
             <span class="nick" id="nick-txt">김한아</span>
+            <div id="user-email-txt" style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:2px"></div>
             <button class="nick-edit-btn" onclick="openNickEdit()">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -730,8 +754,16 @@ function confirmWithdraw() {
   }
 }
 function logout() {
-  showToast('로그아웃 되었습니다');
-  setTimeout(function(){ window.location.href='heka_home_v5.html'; }, 1500);
+  if(window._doLogout){
+    window._doLogout().then(function(){
+      showToast('로그아웃 되었습니다');
+      setTimeout(function(){ window.location.href='heka_home_v5.html'; }, 1500);
+    });
+  } else {
+    try{ localStorage.removeItem('haeka_uid'); }catch(e){}
+    showToast('로그아웃 되었습니다');
+    setTimeout(function(){ window.location.href='heka_home_v5.html'; }, 1500);
+  }
 }
 function showToast(msg) {
   var t = document.getElementById('toast');
