@@ -266,10 +266,17 @@ window._loadNotices = async function() {
 
     <!-- 저장한 글 -->
     <div style="padding:14px 14px 7px;margin-top:6px">
-      <span onclick="openSavedPosts()" style="font-size:14px;font-weight:700;color:#111;cursor:pointer">내가 찜한 여행톡</span>
+      <div class="menu-item" onclick="openSavedPosts()" style="padding:13px 0">
+        <div class="menu-txt"><div class="menu-title">내가 찜한 여행톡</div></div>
+        <span class="menu-arr">›</span>
+      </div>
     </div>
 
     <!-- 고객센터 -->
+    <div class="menu-item" onclick="openNotice()">
+      <div class="menu-txt"><div class="menu-title">공지사항</div><div class="menu-sub">업데이트·점검·이벤트 안내</div></div>
+      <span class="menu-arr">›</span>
+    </div>
     <div class="menu-item" onclick="openInvite()">
       <div class="menu-txt"><div class="menu-title">친구 초대하기</div></div>
       <span class="menu-arr">›</span>
@@ -283,10 +290,7 @@ window._loadNotices = async function() {
         <div class="menu-txt"><div class="menu-title">1:1 문의 / 제안</div><div class="menu-sub">카테고리 추가·서비스 불편 접수</div></div>
         <span class="menu-arr">›</span>
       </div>
-      <div class="menu-item" onclick="openNotice()" style="padding-left:24px">
-        <div class="menu-txt"><div class="menu-title">공지사항</div><div class="menu-sub">업데이트·점검·이벤트 안내</div></div>
-        <span class="menu-arr">›</span>
-      </div>
+
       <div class="menu-item" onclick="openErrorReport()" style="padding-left:24px;border-bottom:none">
         <div class="menu-txt"><div class="menu-title">오류 제보</div><div class="menu-sub">지도 위치 오류·잘못된 결제 정보</div></div>
         <span class="menu-arr">›</span>
