@@ -132,12 +132,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 /* 로그아웃 버튼 */
 .logout-btn{margin:4px 16px 16px;padding:12px;border-radius:12px;background:#fff5f5;color:#dc2626;font-size:13px;font-weight:700;border:1.5px solid #fecaca;cursor:pointer;width:calc(100% - 32px);font-family:inherit;transition:.15s}
+.inq-type-btn{padding:9px 6px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;font-size:12px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:.15s}
+.inq-type-btn.on{border-color:#1A5D1A;background:#f0f7f0;color:#1A5D1A}
 .logout-btn:hover{background:#fee2e2}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -165,6 +167,39 @@ window._loadMyData = async function() {
     // 뱃지 업데이트
     if(window._updateBadge) window._updateBadge(myStores.length);
   } catch(e){ console.log('데이터 로드 오류:', e); }
+};
+
+window._submitInquiry = async function(type, content) {
+  try {
+    await addDoc(collection(_db,'inquiries'), {
+      type: type, content: content,
+      uid: localStorage.getItem('haeka_uid')||'',
+      email: localStorage.getItem('haeka_email')||'',
+      createdAt: serverTimestamp()
+    });
+    return true;
+  } catch(e){ console.error(e); return false; }
+};
+
+window._submitErrorReport = async function(category, content) {
+  try {
+    await addDoc(collection(_db,'error_reports'), {
+      category: category, content: content,
+      uid: localStorage.getItem('haeka_uid')||'',
+      email: localStorage.getItem('haeka_email')||'',
+      createdAt: serverTimestamp()
+    });
+    return true;
+  } catch(e){ console.error(e); return false; }
+};
+
+window._loadNotices = async function() {
+  try {
+    var snap = await getDocs(query(collection(_db,'notices'), orderBy('createdAt','desc'), limit(20)));
+    var list = [];
+    snap.forEach(function(d){ list.push({id:d.id,...d.data()}); });
+    return list;
+  } catch(e){ return []; }
 };
 </script>
 
@@ -244,15 +279,15 @@ window._loadMyData = async function() {
       <span class="menu-arr" id="acc-support-arrow">›</span>
     </div>
     <div id="acc-support" style="display:none;background:#fafafa">
-      <div class="menu-item" onclick="showToast('1:1 문의 준비 중이에요!')" style="padding-left:24px">
+      <div class="menu-item" onclick="openInquiry()" style="padding-left:24px">
         <div class="menu-txt"><div class="menu-title">1:1 문의 / 제안</div><div class="menu-sub">카테고리 추가·서비스 불편 접수</div></div>
         <span class="menu-arr">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('공지사항 준비 중이에요!')" style="padding-left:24px">
+      <div class="menu-item" onclick="openNotice()" style="padding-left:24px">
         <div class="menu-txt"><div class="menu-title">공지사항</div><div class="menu-sub">업데이트·점검·이벤트 안내</div></div>
         <span class="menu-arr">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('오류 제보 준비 중이에요!')" style="padding-left:24px;border-bottom:none">
+      <div class="menu-item" onclick="openErrorReport()" style="padding-left:24px;border-bottom:none">
         <div class="menu-txt"><div class="menu-title">오류 제보</div><div class="menu-sub">지도 위치 오류·잘못된 결제 정보</div></div>
         <span class="menu-arr">›</span>
       </div>
@@ -484,6 +519,58 @@ window._loadMyData = async function() {
     </div>
     <div id="mylist-content" style="overflow-y:auto;flex:1;padding:8px 0"></div>
   </div>
+  <!-- 1:1 문의 패널 -->
+  <div id="inquiry-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeInquiry()"></div>
+  <div id="inquiry-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
+    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
+      <span style="font-size:15px;font-weight:700;color:#111">1:1 문의 / 제안</span>
+      <button onclick="closeInquiry()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">문의 유형</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
+        <button onclick="selectInqType(this,'결제정보 오류')" class="inq-type-btn">결제정보 오류</button>
+        <button onclick="selectInqType(this,'카테고리 추가')" class="inq-type-btn">카테고리 추가</button>
+        <button onclick="selectInqType(this,'기능 제안')" class="inq-type-btn">기능 제안</button>
+        <button onclick="selectInqType(this,'기타')" class="inq-type-btn">기타</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">내용</div>
+      <textarea id="inquiry-txt" placeholder="문의 내용을 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
+      <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
+    </div>
+  </div>
+
+  <!-- 공지사항 패널 -->
+  <div id="notice-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeNotice()"></div>
+  <div id="notice-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
+    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
+      <span style="font-size:15px;font-weight:700;color:#111">공지사항</span>
+      <button onclick="closeNotice()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
+    </div>
+    <div id="notice-list" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+  </div>
+
+  <!-- 오류 제보 패널 -->
+  <div id="errreport-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeErrorReport()"></div>
+  <div id="errreport-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
+    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
+      <span style="font-size:15px;font-weight:700;color:#111">오류 제보</span>
+      <button onclick="closeErrorReport()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:16px">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">오류 유형</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
+        <button onclick="selectErrType(this,'지도 위치 오류')" class="inq-type-btn">지도 위치 오류</button>
+        <button onclick="selectErrType(this,'잘못된 결제 정보')" class="inq-type-btn">잘못된 결제 정보</button>
+        <button onclick="selectErrType(this,'매장 정보 오류')" class="inq-type-btn">매장 정보 오류</button>
+        <button onclick="selectErrType(this,'기타')" class="inq-type-btn">기타</button>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">상세 내용</div>
+      <textarea id="errreport-txt" placeholder="오류 내용을 자세히 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
+      <button onclick="submitErrorReport()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -807,6 +894,91 @@ function openSavedPosts() {
   window.location.href = 'heka_saved_posts.html';
 }
 
+
+var _inqType = '';
+var _errType = '';
+
+function selectInqType(btn, type) {
+  document.querySelectorAll('#inquiry-panel .inq-type-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  _inqType = type;
+}
+function selectErrType(btn, type) {
+  document.querySelectorAll('#errreport-panel .inq-type-btn').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  _errType = type;
+}
+
+function openInquiry() {
+  _inqType = '';
+  document.getElementById('inquiry-txt').value = '';
+  document.querySelectorAll('#inquiry-panel .inq-type-btn').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('inquiry-overlay').style.display = 'block';
+  document.getElementById('inquiry-panel').style.display = 'flex';
+}
+function closeInquiry() {
+  document.getElementById('inquiry-overlay').style.display = 'none';
+  document.getElementById('inquiry-panel').style.display = 'none';
+}
+async function submitInquiry() {
+  if (!_inqType) { showToast('문의 유형을 선택해주세요'); return; }
+  var txt = document.getElementById('inquiry-txt').value.trim();
+  if (!txt) { showToast('내용을 입력해주세요'); return; }
+  if (window._submitInquiry) {
+    var ok = await window._submitInquiry(_inqType, txt);
+    if (ok) { closeInquiry(); showToast('✅ 문의가 접수됐어요!'); }
+    else showToast('오류가 발생했어요. 다시 시도해주세요');
+  }
+}
+
+async function openNotice() {
+  document.getElementById('notice-overlay').style.display = 'block';
+  document.getElementById('notice-panel').style.display = 'flex';
+  var listEl = document.getElementById('notice-list');
+  listEl.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">불러오는 중...</div>';
+  var notices = window._loadNotices ? await window._loadNotices() : [];
+  if (!notices.length) {
+    listEl.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">공지사항이 없어요</div>';
+  } else {
+    listEl.innerHTML = notices.map(function(n){
+      var tag = n.tag || '공지';
+      var tagColor = {'업데이트':'#1A5D1A','점검':'#f59e0b','이벤트':'#6366f1','공지':'#888'}[tag]||'#888';
+      return '<div style="padding:14px 16px;border-bottom:0.5px solid #f5f5f5">'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'
+        +'<span style="font-size:9px;background:'+tagColor+';color:#fff;padding:2px 6px;border-radius:4px;font-weight:700">'+tag+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:#111">'+n.title+'</span>'
+        +'</div>'
+        +'<div style="font-size:12px;color:#666;line-height:1.5">'+n.content+'</div>'
+        +'</div>';
+    }).join('');
+  }
+}
+function closeNotice() {
+  document.getElementById('notice-overlay').style.display = 'none';
+  document.getElementById('notice-panel').style.display = 'none';
+}
+
+function openErrorReport() {
+  _errType = '';
+  document.getElementById('errreport-txt').value = '';
+  document.querySelectorAll('#errreport-panel .inq-type-btn').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('errreport-overlay').style.display = 'block';
+  document.getElementById('errreport-panel').style.display = 'flex';
+}
+function closeErrorReport() {
+  document.getElementById('errreport-overlay').style.display = 'none';
+  document.getElementById('errreport-panel').style.display = 'none';
+}
+async function submitErrorReport() {
+  if (!_errType) { showToast('오류 유형을 선택해주세요'); return; }
+  var txt = document.getElementById('errreport-txt').value.trim();
+  if (!txt) { showToast('내용을 입력해주세요'); return; }
+  if (window._submitErrorReport) {
+    var ok = await window._submitErrorReport(_errType, txt);
+    if (ok) { closeErrorReport(); showToast('✅ 오류 제보가 접수됐어요!'); }
+    else showToast('오류가 발생했어요. 다시 시도해주세요');
+  }
+}
 
 function openMyList(type) {
   var stores = window._myStores || [];
