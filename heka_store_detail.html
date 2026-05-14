@@ -130,9 +130,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 window._currentUser = null;
-window._authReady = new Promise(function(resolve){
-  onAuthStateChanged(auth, function(u){ window._currentUser = u; resolve(u); });
-});
+onAuthStateChanged(auth, function(u){ window._currentUser = u; });
 
 function cardColor(card) {
   var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8'};
@@ -740,10 +738,14 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  (window._authReady || Promise.resolve(window._currentUser)).then(function(){
-    if (!window._currentUser) { showLoginNeedPopup(); return; }
-    _doOpenEditReqPopup();
-  });
+  if (window._currentUser) { _doOpenEditReqPopup(); return; }
+  // auth 로딩 중일 수 있으니 최대 2초 대기
+  var waited = 0;
+  var check = setInterval(function(){
+    waited += 200;
+    if (window._currentUser) { clearInterval(check); _doOpenEditReqPopup(); }
+    else if (waited >= 2000) { clearInterval(check); showLoginNeedPopup(); }
+  }, 200);
 }
 function _doOpenEditReqPopup() {
   var req = _editReqData;
