@@ -709,6 +709,15 @@ window.addEventListener('pageshow', function(e) {
     renderNearby(sortByDistance(allStores));
   }
 });
+// Firebase 브릿지
+window._db = db;
+window._getDocs = getDocs;
+window._collection = collection;
+window._query = query;
+window._where = where;
+window._doc = doc;
+window._updateDoc = updateDoc;
+window._arrayUnion = arrayUnion;
 </script>
 </head>
 <body>
@@ -1015,6 +1024,8 @@ var _homeEditCurrent = null;
 
 async function loadEditRequests(storeIds) {
   if (!storeIds.length) return;
+  var db=window._db, getDocs=window._getDocs, collection=window._collection, query=window._query, where=window._where;
+  if (!db || !getDocs) return;
   try {
     var snap = await getDocs(query(
       collection(db, 'editRequests'),
@@ -1070,6 +1081,7 @@ window.homeVote = async function(type) {
   var alreadyVoted = (req.agreeUids||[]).includes(uid)||(req.disagreeUids||[]).includes(uid);
   if (alreadyVoted) { closeHomeEditPopup(); return; }
   closeHomeEditPopup();
+  var db=window._db, doc=window._doc, updateDoc=window._updateDoc, arrayUnion=window._arrayUnion;
   try {
     var reqRef = doc(db, 'editRequests', req.id);
     if (type === 'agree') {

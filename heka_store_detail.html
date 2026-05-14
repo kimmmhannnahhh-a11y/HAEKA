@@ -477,6 +477,15 @@ function renderHours(hours, isOpen) {
   document.getElementById('hours-all-content').innerHTML = allHtml;
 }
 window.addEventListener('DOMContentLoaded', loadStore);
+// Firebase 브릿지
+window._db = db;
+window._getDocs = getDocs;
+window._collection = collection;
+window._query = query;
+window._where = where;
+window._doc = doc;
+window._updateDoc = updateDoc;
+window._arrayUnion = arrayUnion;
 </script>
 </head>
 <body>
@@ -689,8 +698,10 @@ var _editReqData = null;
 
 async function loadEditRequest(storeId) {
   try {
+    var _db=window._db, getDocs=window._getDocs, collection=window._collection, query=window._query, where=window._where;
+    if (!_db || !getDocs) return;
     // resolved 필드 없는 문서도 포함해서 전체 조회 후 필터
-    var snap = await getDocs(query(collection(db, 'editRequests'), where('storeId', '==', storeId)));
+    var snap = await getDocs(query(collection(_db, 'editRequests'), where('storeId', '==', storeId)));
     if (snap.empty) return;
     var reqDoc = null;
     snap.docs.forEach(function(d) {
@@ -753,7 +764,8 @@ window.voteEditRequest = async function(type) {
   if (alreadyVoted) { showToast('이미 투표했어요'); return; }
   closeEditReqPopup();
   try {
-    var reqRef = doc(db, 'editRequests', req.id);
+    var doc=window._doc, updateDoc=window._updateDoc, arrayUnion=window._arrayUnion, db=window._db;
+  var reqRef = doc(db, 'editRequests', req.id);
     if (type === 'agree') {
       var newAgree = [...(req.agreeUids || []), uid];
       await updateDoc(reqRef, { agreeUids: arrayUnion(uid) });
