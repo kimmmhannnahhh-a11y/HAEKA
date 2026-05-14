@@ -14,12 +14,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .topbar-right{display:flex;align-items:center;gap:10px}
 .search-icon-btn{width:32px;height:32px;border-radius:50%;border:0.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,0.15)}
 .search-icon-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
-.filterbar{padding:6px 0 6px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.filterbar{padding:6px 0 6px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:5px;overflow:hidden;position:relative}
 .filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
-.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:24px;cursor:grab}
+.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:40px;cursor:grab}
 .chip-row::-webkit-scrollbar{display:none}
 .chip-row:active{cursor:grabbing}
-.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-right:24px;cursor:grab}
+.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-right:40px;cursor:grab}
 .cat-wrap::-webkit-scrollbar{display:none}
 .cat-wrap:active{cursor:grabbing}
 .sq-chip{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
@@ -159,6 +159,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 #dp-zzim svg{fill:none;stroke:#ccc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
 #dp-zzim.on svg{fill:#e53935;stroke:#e53935}
+
+.chip-fade{position:relative}.chip-fade::after{content:"";position:absolute;top:0;right:0;width:36px;height:100%;background:linear-gradient(to right,transparent,#fff);pointer-events:none;z-index:2}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
@@ -735,7 +737,7 @@ window._arrayUnion = arrayUnion;
   </div>
 
   <div class="filterbar">
-    <div>
+    <div class="chip-fade">
       <div class="chip-row">
         <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드 ▾</div>
         <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')">VISA</div>
@@ -747,7 +749,7 @@ window._arrayUnion = arrayUnion;
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
       </div>
     </div>
-    <div>
+    <div class="chip-fade">
       <div class="cat-wrap" id="cat-wrap">
         <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleSheet()">업종 ▾</div>
       </div>
