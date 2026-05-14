@@ -577,7 +577,7 @@ function renderNearby(stores) {
     var card = document.createElement('div');
     card.className = 'ncard';
     card.innerHTML = imgHtml
-      + '<span data-edit-store-id="'+store.id+'" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:rgba(248,113,113,.2);color:#f87171;border:1px solid rgba(248,113,113,.4);font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;cursor:default;white-space:nowrap;align-items:center"><span class="edit-badge-txt">수정중</span></span>'
+      + '<span data-edit-store-id="'+store.id+'" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap;align-items:center"><span class="edit-badge-txt">수정중</span></span>'
       + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
       + '<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(store.createdAt)+distTxt+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
