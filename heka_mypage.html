@@ -334,7 +334,7 @@ window._loadNotices = async function() {
   <!-- 언어/통화 시트 -->
   <!-- 설정 패널 (톱니바퀴) -->
   <div id="settings-overlay" onclick="closeSettings()" style="position:absolute;inset:0;z-index:34;display:none;background:rgba(0,0,0,0);border-radius:26px"></div>
-  <div id="settings-panel" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
+  <div id="settings-panel" onclick="event.stopPropagation()" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
     <!-- 설정 상단바 -->
     <div style="background:#1A5D1A;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
     <div style="background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
