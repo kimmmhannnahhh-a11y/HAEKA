@@ -540,16 +540,6 @@ window._loadNotices = async function() {
     </div>
   </div>
 
-  <!-- 공지사항 패널 -->
-  <div id="notice-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeNotice()"></div>
-  <div id="notice-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
-    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
-      <span style="font-size:15px;font-weight:700;color:#111">공지사항</span>
-      <button onclick="closeNotice()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
-    </div>
-    <div id="notice-list" style="overflow-y:auto;flex:1;padding:8px 0"></div>
-  </div>
-
   <!-- 오류 제보 패널 -->
   <div id="errreport-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeErrorReport()"></div>
   <div id="errreport-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
@@ -931,32 +921,10 @@ async function submitInquiry() {
   }
 }
 
-async function openNotice() {
-  document.getElementById('notice-overlay').style.display = 'block';
-  document.getElementById('notice-panel').style.display = 'flex';
-  var listEl = document.getElementById('notice-list');
-  listEl.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">불러오는 중...</div>';
-  var notices = window._loadNotices ? await window._loadNotices() : [];
-  if (!notices.length) {
-    listEl.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">공지사항이 없어요</div>';
-  } else {
-    listEl.innerHTML = notices.map(function(n){
-      var tag = n.tag || '공지';
-      var tagColor = {'업데이트':'#1A5D1A','점검':'#f59e0b','이벤트':'#6366f1','공지':'#888'}[tag]||'#888';
-      return '<div style="padding:14px 16px;border-bottom:0.5px solid #f5f5f5">'
-        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'
-        +'<span style="font-size:9px;background:'+tagColor+';color:#fff;padding:2px 6px;border-radius:4px;font-weight:700">'+tag+'</span>'
-        +'<span style="font-size:13px;font-weight:700;color:#111">'+n.title+'</span>'
-        +'</div>'
-        +'<div style="font-size:12px;color:#666;line-height:1.5">'+n.content+'</div>'
-        +'</div>';
-    }).join('');
-  }
+function openNotice() {
+  window.location.href = 'heka_notices.html';
 }
-function closeNotice() {
-  document.getElementById('notice-overlay').style.display = 'none';
-  document.getElementById('notice-panel').style.display = 'none';
-}
+function closeNotice() {}
 
 function openErrorReport() {
   _errType = '';

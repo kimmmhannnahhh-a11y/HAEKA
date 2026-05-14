@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>공지사항</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center}
+.phone{width:390px;max-width:100vw;background:#fff;min-height:100vh;display:flex;flex-direction:column}
+.sb{display:flex;justify-content:space-between;padding:10px 16px 4px;font-size:11px;font-weight:600;color:#111}
+.topbar{display:flex;align-items:center;padding:8px 14px;background:#fff;border-bottom:0.5px solid #f0f0f0;position:sticky;top:0;z-index:10}
+.topbar-title{flex:1;text-align:center;font-size:15px;font-weight:700;color:#111}
+.back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1;width:28px}
+.scroll-wrap{flex:1;overflow-y:auto}
+.notice-item{padding:16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer}
+.notice-item:active{background:#f9f9f9}
+.notice-tag{display:inline-block;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;color:#fff;margin-bottom:7px}
+.notice-title{font-size:14px;font-weight:700;color:#111;margin-bottom:5px}
+.notice-body{font-size:12px;color:#666;line-height:1.6;display:none}
+.notice-item.open .notice-body{display:block}
+.notice-date{font-size:11px;color:#bbb;margin-top:6px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:#bbb;font-size:13px;gap:10px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span class="topbar-title">공지사항</span>
+    <div style="width:28px"></div>
+  </div>
+  <div class="scroll-wrap" id="notice-list">
+    <div class="empty"><div style="font-size:36px">📢</div><div>불러오는 중...</div></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app"
+});
+const db = getFirestore(app);
+
+var TAG_COLOR = {'업데이트':'#1A5D1A','점검':'#f59e0b','이벤트':'#6366f1','공지':'#888'};
+
+function formatDate(ts) {
+  if (!ts) return '';
+  var d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+}
+
+async function load() {
+  var el = document.getElementById('notice-list');
+  try {
+    var snap = await getDocs(query(collection(db,'notices'), orderBy('createdAt','desc'), limit(30)));
+    if (snap.empty) {
+      el.innerHTML = '<div class="empty"><div style="font-size:36px">📢</div><div>공지사항이 없어요</div></div>';
+      return;
+    }
+    el.innerHTML = '';
+    snap.forEach(function(d) {
+      var n = d.data();
+      var tag = n.tag || '공지';
+      var color = TAG_COLOR[tag] || '#888';
+      var div = document.createElement('div');
+      div.className = 'notice-item';
+      div.innerHTML =
+        '<span class="notice-tag" style="background:'+color+'">'+tag+'</span>'
+        +'<div class="notice-title">'+n.title+'</div>'
+        +'<div class="notice-body">'+n.content+'</div>'
+        +'<div class="notice-date">'+formatDate(n.createdAt)+'</div>';
+      div.onclick = function(){ this.classList.toggle('open'); };
+      el.appendChild(div);
+    });
+  } catch(e) {
+    el.innerHTML = '<div class="empty"><div style="font-size:36px">📢</div><div>불러오기 실패</div></div>';
+  }
+}
+load();
+</script>
+</body>
+</html>
