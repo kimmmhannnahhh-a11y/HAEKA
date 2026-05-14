@@ -746,15 +746,22 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  // localStorage uid 또는 currentUser 체크
   var waited = 0;
   var check = setInterval(function(){
     waited += 100;
-    var uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
-    if (uid || waited >= 5000) {
+    // _currentUser 로드 완료 대기 (undefined=로딩중)
+    if (window._currentUser !== undefined || waited >= 5000) {
       clearInterval(check);
-      if (uid) { _doOpenEditReqPopup(); }
-      else { showLoginNeedPopup(); }
+      var uid = (window._currentUser && window._currentUser.uid);
+      if (uid) {
+        // 최신 uid로 localStorage 갱신
+        try{ localStorage.setItem('haeka_uid', uid); }catch(e){}
+        _doOpenEditReqPopup();
+      } else if (localStorage.getItem('haeka_uid')) {
+        _doOpenEditReqPopup();
+      } else {
+        showLoginNeedPopup();
+      }
     }
   }, 100);
 }
