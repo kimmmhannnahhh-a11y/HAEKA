@@ -729,7 +729,7 @@ async function loadEditRequest(storeId) {
       badge.id = 'edit-req-badge';
       badge.className = 'edit-badge';
       badge.style.display = 'flex';
-      badge.onclick = openEditReqPopup;
+      badge.onclick = function(){ window.openEditReqPopup && window.openEditReqPopup(); };
       badge.innerHTML = '수정중 <sup style="font-size:8px;font-weight:800">+'+agreeCount+'</sup>';
       heroEl.appendChild(badge);
     }
