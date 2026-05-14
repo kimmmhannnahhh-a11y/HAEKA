@@ -379,22 +379,7 @@ window._loadNotices = async function() {
       <!-- 환경설정 -->
       <div style="height:10px;background:#f5f5f5"></div>
       <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">환경설정</div>
-      <div class="menu-item" onclick="openLangSheet()">
-        <div class="menu-txt"><div class="menu-title">언어 / 통화 설정</div><div class="menu-sub" id="lang-sub">한국어</div></div>
-        <span class="menu-arr">›</span>
-      </div>
-      <!-- 언어 선택 팝업 -->
-      <div id="lang-overlay" onclick="closeLangSheet()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;border-radius:26px">
-        <div onclick="event.stopPropagation()" style="background:#fff;border-radius:14px;width:220px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.18)">
-          <div style="padding:14px 16px 10px;font-size:14px;font-weight:700;color:#111;border-bottom:0.5px solid #f0f0f0">언어 선택</div>
-          <div id="lang-list">
-            <div onclick="saveLangDirect('한국어')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-ko"><span>한국어</span></div>
-            <div onclick="saveLangDirect('English')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-en"><span>English</span></div>
-            <div onclick="saveLangDirect('日本語')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-jp"><span>日本語</span></div>
-            <div onclick="saveLangDirect('中文')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between" id="lang-opt-cn"><span>中文</span></div>
-          </div>
-        </div>
-      </div>
+
       <div class="menu-item" onclick="showToast('생체인증 설정은 앱 출시 후 지원 예정이에요!')">
         <div class="menu-txt"><div class="menu-title">자동 로그인 / 생체 인증</div><div class="menu-sub">Face ID · 지문 인식</div></div>
         <span class="menu-arr">›</span>
