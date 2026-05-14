@@ -270,9 +270,9 @@ function renderPosts(list){
   var readSet = getReadSet();
   el.innerHTML = list.map(function(p){
     var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
-    var hasImg = p.fromFirebase && p.images && p.images[0];
+    var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].indexOf('http')===0;
     var thumbHtml = hasImg
-      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block;border-radius:8px" loading="eager" decoding="async"/></div>'
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block;border-radius:8px" loading="eager" decoding="async" onerror="this.parentNode.style.display=\'none\'"/></div>'
       : '';
     var isNew = p.id && !readSet.has(p.id);
     var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
