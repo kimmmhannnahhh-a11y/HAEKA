@@ -86,8 +86,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 /* 하단 버튼 */
 .bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
-.btn-report{flex:1;padding:12px;border-radius:12px;background:#f0f7f0;color:#1A5D1A;font-size:12px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit}
-.btn-report:hover{background:#e0f0e0}
+.btn-report{flex:1;padding:11px;border-radius:10px;background:#fff;color:#555;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit}
+.btn-report:hover{background:#f5f5f5}
 
 /* 토스트 */
 .toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
@@ -271,7 +271,7 @@ async function renderStore(store) {
     var btns = document.getElementById('bottom-btns');
     if(btns){
       var delBtn = document.createElement('button');
-      delBtn.style.cssText = 'flex:1;padding:12px;border-radius:12px;background:#fff0f0;color:#e53935;font-size:12px;font-weight:700;border:1.5px solid #e53935;cursor:pointer;font-family:inherit';
+      delBtn.style.cssText = 'flex:1;padding:11px;border-radius:10px;background:#fff;color:#e53935;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit';
       delBtn.textContent = '매장 삭제';
       delBtn.onclick = async function(){
         if(!confirm('정말 이 매장을 삭제할까요?')) return;
@@ -578,7 +578,7 @@ window.addEventListener('DOMContentLoaded', loadStore);
 
   <!-- 하단 버튼 -->
   <div class="bottom-btns" id="bottom-btns">
-    <button class="btn-report" onclick="var s=window._currentDpStore||{};location.href='heka_edit_request.html?id='+(s.id||new URLSearchParams(location.search).get('id')||'')+'&name='+encodeURIComponent(s.name||'')">수정 요청하기</button>
+    <button class="btn-report" onclick="var s=window._currentDpStore||{};location.href='heka_edit_request.html?id='+(s.id||new URLSearchParams(location.search).get('id')||'')+'&name='+encodeURIComponent(s.name||'')">수정 요청</button>
   </div>
 
   <!-- 토스트 -->
