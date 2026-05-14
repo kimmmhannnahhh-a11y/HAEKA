@@ -87,6 +87,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 하단 버튼 */
 .bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
 .btn-report{flex:1;padding:11px;border-radius:10px;background:#fff;color:#555;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit}
+.edit-badge{display:inline-flex;align-items:center;gap:4px;background:#fff8e1;color:#f59e0b;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid #fde68a;cursor:pointer;margin-left:6px;vertical-align:middle}
 .btn-report:hover{background:#f5f5f5}
 
 /* 토스트 */
@@ -109,7 +110,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, deleteDoc, collection, getDocs, query, where, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 window._deleteStore = async function(storeId){
   await deleteDoc(doc(db,"stores",storeId));
@@ -126,6 +128,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+let _currentUser = null;
+onAuthStateChanged(auth, u => { _currentUser = u; });
 
 function cardColor(card) {
   var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};
@@ -184,6 +189,8 @@ async function loadStore() {
 async function renderStore(store) {
   // store 데이터 저장 (찜 버튼에서 사용)
   window._currentDpStore = store;
+  // 수정 요청 배지 로드
+  if (store.id) loadEditRequest(store.id);
   // 찜 상태 복원
   try {
     var list = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
@@ -581,6 +588,20 @@ window.addEventListener('DOMContentLoaded', loadStore);
     <button class="btn-report" onclick="var s=window._currentDpStore||{};location.href='heka_edit_request.html?id='+(s.id||new URLSearchParams(location.search).get('id')||'')+'&name='+encodeURIComponent(s.name||'')">수정 요청</button>
   </div>
 
+
+  <!-- 수정중 팝업 -->
+  <div id="edit-req-overlay" onclick="closeEditReqPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200"></div>
+  <div id="edit-req-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:22px 20px;width:300px;z-index:201;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+    <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:4px">수정 요청 내용</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:14px">3명이 맞아요를 누르면 자동으로 반영돼요</div>
+    <div id="edit-req-body"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button id="edit-agree-btn" onclick="voteEditRequest('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
+      <button onclick="voteEditRequest('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요 👎</button>
+    </div>
+    <button onclick="closeEditReqPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
+  </div>
+
   <!-- 토스트 -->
   <div class="toast" id="toast"></div>
 
@@ -660,6 +681,101 @@ function submitCatRequest() {
   document.getElementById('cat-input').value = '';
   showToast('💬 소중한 의견 감사합니다! 검토 후 반영할게요 😊');
 }
+
+
+// ===== 수정 요청 관련 =====
+var _editReqData = null;
+
+async function loadEditRequest(storeId) {
+  try {
+    var snap = await getDocs(query(collection(db, 'editRequests'), where('storeId', '==', storeId)));
+    if (snap.empty) return;
+    var reqDoc = snap.docs[0];
+    var req = { id: reqDoc.id, ...reqDoc.data() };
+    _editReqData = req;
+    var agreeCount = (req.agreeUids || []).length;
+    // 배지 삽입 - store 이름 옆
+    var nameEl = document.getElementById('hero-name');
+    if (nameEl && !document.getElementById('edit-req-badge')) {
+      var badge = document.createElement('span');
+      badge.id = 'edit-req-badge';
+      badge.className = 'edit-badge';
+      badge.onclick = openEditReqPopup;
+      badge.innerHTML = '수정중 · 맞아요 ' + agreeCount + '/3';
+      nameEl.appendChild(badge);
+    }
+  } catch(e) { console.error(e); }
+}
+
+function openEditReqPopup() {
+  if (!_editReqData) return;
+  if (!_currentUser) { showToast('로그인 후 투표할 수 있어요'); return; }
+  var req = _editReqData;
+  var agreeCount = (req.agreeUids || []).length;
+  var alreadyVoted = (req.agreeUids || []).includes(_currentUser.uid) || (req.disagreeUids || []).includes(_currentUser.uid);
+  var body = '';
+  if (req.payOk && req.payOk.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#1A5D1A;margin-bottom:4px">결제 가능 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payOk.map(function(c){ return '<span style="background:#e8f5e9;color:#1A5D1A;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
+  if (req.payNo && req.payNo.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payNo.map(function(c){ return '<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
+  if (req.memo) body += '<div style="font-size:11px;color:#888;margin-top:4px">메모: '+req.memo+'</div>';
+  body += '<div style="font-size:11px;color:#aaa;margin-top:8px">현재 맞아요 ' + agreeCount + '/3</div>';
+  document.getElementById('edit-req-body').innerHTML = body;
+  var agreeBtn = document.getElementById('edit-agree-btn');
+  if (alreadyVoted) {
+    agreeBtn.disabled = true;
+    agreeBtn.style.opacity = '0.5';
+    agreeBtn.textContent = '이미 투표했어요';
+  } else {
+    agreeBtn.disabled = false;
+    agreeBtn.style.opacity = '1';
+    agreeBtn.textContent = '맞아요 👍';
+  }
+  document.getElementById('edit-req-overlay').style.display = 'block';
+  document.getElementById('edit-req-popup').style.display = 'block';
+}
+
+function closeEditReqPopup() {
+  document.getElementById('edit-req-overlay').style.display = 'none';
+  document.getElementById('edit-req-popup').style.display = 'none';
+}
+
+window.voteEditRequest = async function(type) {
+  if (!_currentUser) { showToast('로그인이 필요해요'); return; }
+  if (!_editReqData) return;
+  var req = _editReqData;
+  var uid = _currentUser.uid;
+  var alreadyVoted = (req.agreeUids || []).includes(uid) || (req.disagreeUids || []).includes(uid);
+  if (alreadyVoted) { showToast('이미 투표했어요'); return; }
+  closeEditReqPopup();
+  try {
+    var reqRef = doc(db, 'editRequests', req.id);
+    if (type === 'agree') {
+      var newAgree = [...(req.agreeUids || []), uid];
+      await updateDoc(reqRef, { agreeUids: arrayUnion(uid) });
+      _editReqData.agreeUids = newAgree;
+      // 배지 업데이트
+      var badge = document.getElementById('edit-req-badge');
+      if (badge) badge.innerHTML = '수정중 · 맞아요 ' + newAgree.length + '/3';
+      showToast('맞아요! 투표가 반영됐어요');
+      // 3명 달성 시 자동 업데이트
+      if (newAgree.length >= 3) {
+        var storeRef = doc(db, 'stores', req.storeId);
+        var updateData = {};
+        if (req.payOk && req.payOk.length) updateData.payOk = req.payOk;
+        if (req.payNo && req.payNo.length) updateData.payNo = req.payNo;
+        await updateDoc(storeRef, updateData);
+        await updateDoc(reqRef, { resolved: true });
+        if (badge) badge.remove();
+        _editReqData = null;
+        showToast('✅ 맞아요 3명 달성! 정보가 자동 업데이트됐어요');
+      }
+    } else {
+      await updateDoc(reqRef, { disagreeUids: arrayUnion(uid) });
+      showToast('틀려요! 의견이 반영됐어요');
+    }
+  } catch(e) { console.error(e); showToast('오류가 발생했어요'); }
+};
+window.openEditReqPopup = openEditReqPopup;
+window.closeEditReqPopup = closeEditReqPopup;
 
 function goReviewAll() {
   var s = window._currentDpStore || {};
