@@ -87,8 +87,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 하단 버튼 */
 .bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
 .btn-report{flex:1;padding:11px;border-radius:10px;background:#fff;color:#555;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit}
-.edit-badge{display:inline-flex;align-items:center;gap:4px;background:#39ff14;color:#111;font-size:9px;font-weight:800;padding:3px 9px 3px 8px;border-radius:20px;cursor:pointer;margin-left:6px;vertical-align:middle;position:relative}
-.edit-badge::after{content:'';position:absolute;bottom:-5px;left:12px;border:3px solid transparent;border-top-color:#39ff14}
+.edit-badge{display:none;position:absolute;top:10px;left:12px;z-index:10;align-items:center;gap:4px;background:#39ff14;color:#111;font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .btn-report:hover{background:#f5f5f5}
 
 /* 토스트 */
@@ -493,7 +492,7 @@ window._arrayUnion = arrayUnion;
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
   <!-- 히어로 이미지 슬라이드 -->
-  <div class="hero">
+  <div class="hero" id="hero">
     <div id="hero-img" style="width:100%;height:100%;position:relative;background:#1a2e1a;overflow:hidden">
       <!-- 슬라이드 이미지들이 JS로 주입됨 -->
     </div>
@@ -712,14 +711,16 @@ async function loadEditRequest(storeId) {
     var req = { id: reqDoc.id, ...reqDoc.data() };
     _editReqData = req;
     var agreeCount = (req.agreeUids || []).length;
-    var nameEl = document.getElementById('hero-name');
-    if (nameEl && !document.getElementById('edit-req-badge')) {
+    var heroEl = document.getElementById('hero');
+    if (!heroEl) heroEl = document.querySelector('.hero');
+    if (heroEl && !document.getElementById('edit-req-badge')) {
       var badge = document.createElement('span');
       badge.id = 'edit-req-badge';
       badge.className = 'edit-badge';
+      badge.style.display = 'flex';
       badge.onclick = openEditReqPopup;
-      badge.innerHTML = '수정중 · 맞아요 ' + agreeCount + '/3';
-      nameEl.appendChild(badge);
+      badge.innerHTML = '✏️ 수정중 ' + agreeCount + '/3';
+      heroEl.appendChild(badge);
     }
   } catch(e) { console.error(e); }
 }
