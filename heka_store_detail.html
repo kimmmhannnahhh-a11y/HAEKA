@@ -87,6 +87,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 하단 버튼 */
 .bottom-btns{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0;display:flex;gap:8px}
 .btn-report{flex:1;padding:11px;border-radius:10px;background:#fff;color:#555;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit}
+.closed-badge{position:absolute;top:10px;left:12px;z-index:11;background:rgba(220,38,38,.85);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;pointer-events:none}
 .edit-badge{display:none;position:absolute;top:44px;left:12px;z-index:10;align-items:center;gap:5px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:pointer}
 .btn-report:hover{background:#f5f5f5}
 
@@ -129,8 +130,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-window._currentUser = null;
-onAuthStateChanged(auth, function(u){ window._currentUser = u; });
+window._currentUser = undefined; // undefined=아직로딩중, null=비로그인, object=로그인
+onAuthStateChanged(auth, function(u){ window._currentUser = u || null; });
 
 function cardColor(card) {
   var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8'};
@@ -189,6 +190,8 @@ async function loadStore() {
 async function renderStore(store) {
   // store 데이터 저장 (찜 버튼에서 사용)
   window._currentDpStore = store;
+  // 폐업 배지
+  if (store.closed) showClosedBadge();
   // 수정 요청 배지 로드
   if (store.id) loadEditRequest(store.id);
   // 찜 상태 복원
@@ -738,14 +741,16 @@ async function loadEditRequest(storeId) {
 
 function openEditReqPopup() {
   if (!_editReqData) return;
-  if (window._currentUser) { _doOpenEditReqPopup(); return; }
-  // auth 로딩 중일 수 있으니 최대 2초 대기
+  // onAuthStateChanged 완료 대기 (최대 3초)
   var waited = 0;
   var check = setInterval(function(){
-    waited += 200;
-    if (window._currentUser) { clearInterval(check); _doOpenEditReqPopup(); }
-    else if (waited >= 2000) { clearInterval(check); showLoginNeedPopup(); }
-  }, 200);
+    waited += 100;
+    if (window._currentUser !== undefined || waited >= 3000) {
+      clearInterval(check);
+      if (window._currentUser) { _doOpenEditReqPopup(); }
+      else { showLoginNeedPopup(); }
+    }
+  }, 100);
 }
 function _doOpenEditReqPopup() {
   var req = _editReqData;
@@ -770,6 +775,16 @@ function _doOpenEditReqPopup() {
   }
   document.getElementById('edit-req-overlay').style.display = 'block';
   document.getElementById('edit-req-popup').style.display = 'block';
+}
+
+function showClosedBadge() {
+  var heroEl = document.getElementById('hero');
+  if (!heroEl || document.getElementById('closed-badge')) return;
+  var badge = document.createElement('div');
+  badge.id = 'closed-badge';
+  badge.className = 'closed-badge';
+  badge.textContent = '🚫 폐업';
+  heroEl.appendChild(badge);
 }
 
 function showLoginNeedPopup() {
@@ -810,7 +825,10 @@ window.voteEditRequest = async function(type) {
         var updateData = {};
         if (req.payOk && req.payOk.length) updateData.payOk = req.payOk;
         if (req.payNo && req.payNo.length) updateData.payNo = req.payNo;
+        if (req.isClosed) updateData.closed = true;
         await updateDoc(storeRef, updateData);
+        // 폐업 처리 시 배지 표시
+        if (req.isClosed) showClosedBadge();
         await updateDoc(reqRef, { resolved: true });
         if (badge) badge.remove();
         _editReqData = null;
