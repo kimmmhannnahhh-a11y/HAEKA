@@ -463,11 +463,7 @@ function showToastAndGoHome(msg){var t=document.getElementById('login-toast');t.
 function goHome(){
   var redirect = new URLSearchParams(location.search).get('redirect');
   if (redirect) { location.href = redirect; return; }
-  var bytes = Uint8Array.from(atob(homeB64), function(c){ return c.charCodeAt(0); });
-  var html  = new TextDecoder('utf-8').decode(bytes);
-  var doc   = document.open('text/html','replace');
-  doc.write(html);
-  doc.close();
+  location.href = 'heka_home_v5.html';
 }
 /* 회원가입 JS */
 
