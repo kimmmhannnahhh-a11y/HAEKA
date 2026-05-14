@@ -380,35 +380,19 @@ window._loadNotices = async function() {
       <div style="height:10px;background:#f5f5f5"></div>
       <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">환경설정</div>
       <div class="menu-item" onclick="openLangSheet()">
-        <div class="menu-txt"><div class="menu-title">언어 / 통화 설정</div><div class="menu-sub" id="lang-sub">한국어 · KRW</div></div>
+        <div class="menu-txt"><div class="menu-title">언어 / 통화 설정</div><div class="menu-sub" id="lang-sub">한국어</div></div>
         <span class="menu-arr">›</span>
       </div>
-      <!-- 언어/통화 인라인 시트 -->
-      <div id="lang-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-end;border-radius:26px">
-        <div class="sheet">
-          <div class="sheet-handle"></div>
-          <div class="sheet-title">언어 / 통화 설정</div>
-          <div style="margin-bottom:10px">
-            <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">언어</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap" id="lang-list">
-              <button onclick="selectLang(this,'한국어')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">한국어</button>
-              <button onclick="selectLang(this,'English')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">English</button>
-              <button onclick="selectLang(this,'日本語')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">日本語</button>
-              <button onclick="selectLang(this,'中文')" class="lang-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">中文</button>
-            </div>
+      <!-- 언어 선택 팝업 -->
+      <div id="lang-overlay" onclick="closeLangSheet()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center;border-radius:26px">
+        <div onclick="event.stopPropagation()" style="background:#fff;border-radius:14px;width:220px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+          <div style="padding:14px 16px 10px;font-size:14px;font-weight:700;color:#111;border-bottom:0.5px solid #f0f0f0">언어 선택</div>
+          <div id="lang-list">
+            <div onclick="saveLangDirect('한국어')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-ko"><span>한국어</span></div>
+            <div onclick="saveLangDirect('English')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-en"><span>English</span></div>
+            <div onclick="saveLangDirect('日本語')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f5f5f5" id="lang-opt-jp"><span>日本語</span></div>
+            <div onclick="saveLangDirect('中文')" style="padding:13px 16px;font-size:13px;color:#111;cursor:pointer;display:flex;align-items:center;justify-content:space-between" id="lang-opt-cn"><span>中文</span></div>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#bbb;margin-bottom:6px">통화</div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap" id="currency-list">
-              <button onclick="selectCurrency(this,'KRW')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">KRW</button>
-              <button onclick="selectCurrency(this,'USD')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">USD</button>
-              <button onclick="selectCurrency(this,'JPY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">JPY</button>
-              <button onclick="selectCurrency(this,'EUR')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">EUR</button>
-              <button onclick="selectCurrency(this,'CNY')" class="curr-btn" style="padding:7px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:11px;cursor:pointer;font-family:inherit">CNY</button>
-            </div>
-          </div>
-          <button class="sheet-btn" style="margin-top:14px" onclick="saveLang()">저장하기</button>
-          <button class="sheet-cancel" onclick="closeLangSheet()">취소</button>
         </div>
       </div>
       <div class="menu-item" onclick="showToast('생체인증 설정은 앱 출시 후 지원 예정이에요!')">
@@ -847,22 +831,28 @@ function toggleSwitch(btn) { btn.classList.toggle('on'); }
 
 // ── 언어/통화 ──
 var curLang = '한국어', curCurrency = 'KRW';
-function openLangSheet() { var el=document.getElementById('lang-overlay'); el.style.display='flex'; }
+function openLangSheet() {
+  var el = document.getElementById('lang-overlay');
+  el.style.display = 'flex';
+  // 현재 선택 언어 체크 표시
+  var langMap = {'한국어':'ko','English':'en','日本語':'jp','中文':'cn'};
+  ['ko','en','jp','cn'].forEach(function(k){
+    var el2 = document.getElementById('lang-opt-'+k);
+    if(el2) el2.style.fontWeight = '400';
+    if(el2) el2.querySelector('span').style.color = '#111';
+  });
+  var cur = langMap[curLang] || 'ko';
+  var curEl = document.getElementById('lang-opt-'+cur);
+  if(curEl){ curEl.style.fontWeight='700'; curEl.querySelector('span').style.color='#1A5D1A'; }
+}
 function closeLangSheet() { document.getElementById('lang-overlay').style.display='none'; }
-function selectLang(btn, val) {
+function saveLangDirect(val) {
   curLang = val;
-  document.querySelectorAll('.lang-btn').forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='#e0e0e0'; b.style.fontWeight='400'; });
-  btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; btn.style.fontWeight='600';
-}
-function selectCurrency(btn, val) {
-  curCurrency = val;
-  document.querySelectorAll('.curr-btn').forEach(function(b){ b.style.background='#fff'; b.style.color='#555'; b.style.borderColor='#e0e0e0'; b.style.fontWeight='400'; });
-  btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; btn.style.fontWeight='600';
-}
-function saveLang() {
-  document.getElementById('lang-sub').textContent = curLang + ' · ' + curCurrency;
+  userData.lang = val;
+  try{ localStorage.setItem('haeka_user', JSON.stringify(userData)); }catch(e){}
+  document.getElementById('lang-sub').textContent = val;
   closeLangSheet();
-  showToast('✅ 언어/통화 설정이 저장됐어요!');
+  showToast('✅ 언어가 저장됐어요!');
 }
 
 // ── 기타 ──
