@@ -409,6 +409,7 @@ window.saveToFirestore = async function(data) {
 </div>
 
 <script>
+try{localStorage.removeItem('haeka_draft');}catch(e){}
 var locationSelected=false, selectedCat=null, payOkList=[], payNoList=[], uploadedImgs=[];
 var uploadedVideos=[]; // {dataUrl, file} 형태
 var currentTab='all';
