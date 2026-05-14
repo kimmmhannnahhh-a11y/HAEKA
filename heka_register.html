@@ -847,7 +847,7 @@ window.addEventListener('pagehide',autoSave);
 window.addEventListener('beforeunload',autoSave);
 
 // 재진입 시 임시저장 복원 팝업
-window.addEventListener('DOMContentLoaded',function(){
+(function(){
   try{
     var draft=JSON.parse(localStorage.getItem('haeka_draft')||'null');
     if(!draft) return;
@@ -894,7 +894,7 @@ window.addEventListener('DOMContentLoaded',function(){
       localStorage.removeItem('haeka_draft');
     };
   }catch(e){}
-});
+})();
 </script>
 </body>
 </html>
