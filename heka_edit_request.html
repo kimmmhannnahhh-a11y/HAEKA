@@ -123,12 +123,32 @@ let submitting = false;
 
 onAuthStateChanged(auth, u => { currentUser = u; });
 
-// 매장명 표시
-if (storeName) document.getElementById('store-name-txt').textContent = storeName;
-else if (storeId) {
+// 매장 정보 불러와서 이름 + 기존 payOk/payNo 미리 선택
+if (storeId) {
   getDoc(doc(db, 'stores', storeId)).then(s => {
-    if (s.exists()) document.getElementById('store-name-txt').textContent = s.data().name || storeName;
+    if (!s.exists()) return;
+    var data = s.data();
+    if (data.name) document.getElementById('store-name-txt').textContent = data.name;
+    // 기존 결제가능 항목 미리 선택
+    var existingOk = data.payOk || [];
+    var existingNo = data.payNo || [];
+    document.querySelectorAll('#pay-sections .chk-item').forEach(function(el) {
+      var fn = el.getAttribute('onclick') || '';
+      var match = fn.match(/togglePay\(this,'(ok|no)','([^']+)'\)/);
+      if (!match) return;
+      var type = match[1], val = match[2];
+      if (type === 'ok' && existingOk.indexOf(val) > -1) {
+        el.classList.add('on');
+        if (payOkList.indexOf(val) === -1) payOkList.push(val);
+      }
+      if (type === 'no' && existingNo.indexOf(val) > -1) {
+        el.classList.add('on', 'red');
+        if (payNoList.indexOf(val) === -1) payNoList.push(val);
+      }
+    });
   }).catch(()=>{});
+} else if (storeName) {
+  document.getElementById('store-name-txt').textContent = storeName;
 }
 
 function showToast(msg) {
