@@ -31,7 +31,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .page.on{display:block}
 .page-title{font-size:20px;font-weight:800;margin-bottom:4px}
 .page-sub{font-size:13px;color:#888;margin-bottom:24px}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .stat-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.06);transition:.15s}.stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-2px)}
 .stat-label{font-size:11px;color:#aaa;font-weight:600;margin-bottom:6px}
 .stat-num{font-size:28px;font-weight:800;color:#1A5D1A}
@@ -146,6 +146,11 @@ tr:hover td{background:#f9fdf9}
       <div class="card">
         <div class="card-head"><span class="card-title">수정 요청 목록</span><button class="btn-sm" onclick="loadEditReq()">새로고침</button></div>
         <div class="search-bar"><input type="text" id="editreq-search" placeholder="매장명 검색..." oninput="filterEditReq(this.value)"/></div>
+        <div style="display:flex;gap:6px;padding:0 0 12px">
+          <button id="editreq-filter-all" onclick="setEditReqFilter('all')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">전체</button>
+          <button id="editreq-filter-pending" onclick="setEditReqFilter('pending')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">대기</button>
+          <button id="editreq-filter-done" onclick="setEditReqFilter('done')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">완료</button>
+        </div>
         <table><thead><tr><th>매장명</th><th>내용</th><th>찬성</th><th>처리상태</th><th>접수일</th><th>처리</th></tr></thead>
         <tbody id="editreq-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
@@ -379,7 +384,10 @@ async function loadDashboard() {
       f.getDocs(f.collection(db,'editRequests'))
     ]);
     document.getElementById('stat-stores').textContent = stSnap.size;
-    document.getElementById('stat-inq').textContent = inqSnap.size + errSnap.size;
+    var unresInq = 0;
+    inqSnap.forEach(function(d){ if(!d.data().resolved) unresInq++; });
+    errSnap.forEach(function(d){ if(!d.data().resolved) unresInq++; });
+    document.getElementById('stat-inq').textContent = unresInq;
     updateNavBadges(inqSnap, errSnap, editSnap);
     document.getElementById('stat-edit').textContent = editSnap.docs.filter(function(d){ return !d.data().resolved; }).length;
 
@@ -443,9 +451,30 @@ function renderEditReqs(list) {
   });
   document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
+var _editReqFilter = 'all';
+function setEditReqFilter(type) {
+  _editReqFilter = type;
+  ['all','pending','done'].forEach(function(t) {
+    var btn = document.getElementById('editreq-filter-'+t);
+    if (!btn) return;
+    if (t === type) {
+      btn.style.background = '#1A5D1A'; btn.style.color = '#fff'; btn.style.borderColor = '#1A5D1A';
+    } else {
+      btn.style.background = '#fff'; btn.style.color = '#555'; btn.style.borderColor = '#e0e0e0';
+    }
+  });
+  filterEditReq(document.getElementById('editreq-search').value);
+}
 function filterEditReq(q) {
   var lower = q.toLowerCase();
-  renderEditReqs(_allEditReqs.filter(function(r){ return (r.storeName||r.storeId||'').toLowerCase().indexOf(lower)>-1||(r.description||'').toLowerCase().indexOf(lower)>-1; }));
+  var list = _allEditReqs.filter(function(r){
+    var nameMatch = (r.storeName||r.storeId||'').toLowerCase().indexOf(lower)>-1||(r.description||'').toLowerCase().indexOf(lower)>-1;
+    if (!nameMatch) return false;
+    if (_editReqFilter === 'pending') return !r.resolved;
+    if (_editReqFilter === 'done') return !!r.resolved;
+    return true;
+  });
+  renderEditReqs(list);
 }
 
 var _curInqTab = 'inq';
