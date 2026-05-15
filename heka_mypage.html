@@ -906,13 +906,15 @@ function confirmWithdraw() {
   });
 }
 function logout() {
-  try{ 
-    localStorage.removeItem('haeka_uid');
-    localStorage.removeItem('haeka_email');
-    localStorage.removeItem('haeka_user');
-  }catch(e){}
-  try{ sessionStorage.clear(); }catch(e){}
-  window.location.replace('heka_login_v5.html');
+  showPopup('👋', '로그아웃', '로그아웃 하시겠습니까?', '로그아웃', function(){
+    try{ 
+      localStorage.removeItem('haeka_uid');
+      localStorage.removeItem('haeka_email');
+      localStorage.removeItem('haeka_user');
+    }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    window.location.replace('heka_login_v5.html');
+  });
 }
 
 
