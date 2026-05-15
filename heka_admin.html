@@ -106,6 +106,8 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item" id="nav-inquiries" onclick="goPage('inquiries',this)">💬 1:1 문의 / 오류제보<span class="nav-badge" id="badge-inq" style="display:none"></span></div>
     <div class="nav-sep"></div>
     <div class="nav-item" id="nav-notices" onclick="goPage('notices',this)">📢 공지사항</div>
+    <div class="nav-item" id="nav-cards" onclick="goPage('cards',this)">💳 카드 관리</div>
+    <div class="nav-item" id="nav-add-store" onclick="goPage('add-store',this)">➕ 매장 등록</div>
     <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
   </div>
 
@@ -132,10 +134,77 @@ tr:hover td{background:#f9fdf9}
       <div class="page-title">매장 관리</div>
       <div class="page-sub">등록된 전체 매장 목록</div>
       <div class="card">
-        <div class="card-head"><span class="card-title">전체 매장</span><button class="btn-sm" onclick="loadStores()">새로고침</button></div>
-        <div class="search-bar"><input type="text" id="stores-search" placeholder="매장명 검색..." oninput="filterStores(this.value)"/></div>
-        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록일</th><th>수정</th></tr></thead>
+        <div class="card-head"><span class="card-title">전체 매장</span><div style="display:flex;gap:6px"><button class="btn-primary" onclick="goPage('add-store',document.getElementById('nav-add-store'))" style="font-size:12px;padding:5px 12px">+ 매장 등록</button><button class="btn-sm" onclick="loadStores()">새로고침</button></div></div>
+        <div class="search-bar"><input type="text" id="stores-search" placeholder="매장명 / 도시 검색..." oninput="filterStores(this.value)"/></div>
+        <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록일</th><th>수정/삭제</th></tr></thead>
         <tbody id="stores-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- 카드 관리 -->
+    <div class="page" id="page-cards">
+      <div class="page-title">카드 관리</div>
+      <div class="page-sub">결제 가능/불가 카드 항목 관리</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-head"><span class="card-title" style="color:#1A5D1A">결제 가능 카드</span></div>
+          <div style="display:flex;gap:6px;margin-bottom:12px">
+            <input type="text" id="card-ok-inp" placeholder="카드명 입력" style="flex:1;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+            <button class="btn-primary" onclick="addCardItem('ok')" style="padding:8px 14px;font-size:12px">추가</button>
+          </div>
+          <div id="card-ok-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title" style="color:#dc2626">결제 불가 카드</span></div>
+          <div style="display:flex;gap:6px;margin-bottom:12px">
+            <input type="text" id="card-no-inp" placeholder="카드명 입력" style="flex:1;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+            <button class="btn-primary" onclick="addCardItem('no')" style="padding:8px 14px;font-size:12px">추가</button>
+          </div>
+          <div id="card-no-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 매장 직접 등록 -->
+    <div class="page" id="page-add-store">
+      <div class="page-title">매장 등록</div>
+      <div class="page-sub">관리자 직접 매장 등록</div>
+      <div class="card" style="max-width:600px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">매장명 *</div>
+            <input type="text" id="as-name" placeholder="매장명" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">카테고리 *</div>
+            <select id="as-category" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:#fff">
+              <option value="">선택</option>
+              <option>식당</option><option>카페</option><option>편의점</option><option>마트</option>
+              <option>숙박</option><option>쇼핑</option><option>관광</option><option>교통</option><option>기타</option>
+            </select>
+          </div>
+          <div style="grid-column:1/-1">
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">주소 *</div>
+            <input type="text" id="as-address" placeholder="주소 입력" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">위도 (lat)</div>
+            <input type="number" id="as-lat" placeholder="35.123" step="any" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">경도 (lng)</div>
+            <input type="number" id="as-lng" placeholder="139.456" step="any" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:700;color:#1A5D1A;margin-bottom:6px">결제 가능 카드</div>
+          <div id="as-ok-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px">결제 불가 카드</div>
+          <div id="as-no-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <button class="btn-primary" onclick="submitAddStore()" style="width:100%;padding:12px;font-size:14px">매장 등록하기</button>
       </div>
     </div>
 
@@ -229,8 +298,8 @@ window._fbFns2 = { doc, updateDoc };
 var ADMIN_ID = 'haeka_admin';
 var ADMIN_PW = 'haeka2024!';
 
-// 페이지 로드 시 자동 로그인 체크
-(function() {
+// 페이지 로드 시 자동 로그인 체크 (module script 로드 후 실행)
+window.addEventListener('load', function() {
   try {
     var saved = localStorage.getItem('haeka_admin_auth');
     if (saved) {
@@ -241,11 +310,11 @@ var ADMIN_PW = 'haeka2024!';
         document.getElementById('login-wrap').style.display = 'none';
         document.getElementById('admin-wrap').style.display = 'flex';
         _pageHistory = ['dashboard'];
-        loadDashboard();
+        setTimeout(loadDashboard, 100);
       }
     }
   } catch(e) {}
-})();
+});
 
 function doLogin() {
   var id = document.getElementById('login-id').value.trim();
@@ -323,7 +392,9 @@ function goPage(name, el) {
     'stores': loadStores,
     'edit-req': loadEditReq,
     'inquiries': loadInquiries,
-    'notices': loadNotices
+    'notices': loadNotices,
+    'cards': loadCards,
+    'add-store': loadAddStoreChips
   };
   if (loaders[name]) loaders[name]();
 }
@@ -418,7 +489,7 @@ async function loadStores() {
 
 function renderStores(list) {
   var rows = list.map(function(s){
-    return '<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td>'+fmt(s.createdAt)+'</td><td><button class="btn-primary" onclick=\'openStoreModal("'+s.id+'")\'  style="font-size:11px;padding:5px 10px">수정</button></td></tr>';
+    var safeName = s.name ? s.name.split("'").join('') : ''; return '<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td>'+fmt(s.createdAt)+'</td><td style="display:flex;gap:4px"><button class="btn-primary" onclick=\'openStoreModal("'+s.id+'")\'  style="font-size:11px;padding:5px 10px">수정</button><button class="btn-danger" onclick=\'deleteStore("'+s.id+'","'+safeName+'")\' style="font-size:11px;padding:5px 10px">삭제</button></td></tr>';
   });
   document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
@@ -536,6 +607,137 @@ function renderErrors(list) {
 function filterErrors(q) {
   var lower = q.toLowerCase();
   renderErrors(_allErrors.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1; }));
+}
+
+// ── 매장 삭제 ──
+async function deleteStore(id, name) {
+  if (!confirm('"' + name + '"
+정말 삭제할까요? 되돌릴 수 없어요.')) return;
+  var f = window._fbFns;
+  var f2 = window._fbFns2 || {};
+  try {
+    await f.deleteDoc(f.doc(window._db, 'stores', id));
+    alert('삭제 완료!');
+    loadStores();
+  } catch(e) { alert('삭제 실패: '+e.message); }
+}
+
+// ── 카드 관리 ──
+var _cardOkList = [];
+var _cardNoList = [];
+
+async function loadCards() {
+  if (!window._db) { setTimeout(loadCards, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  try {
+    var snap = await f.getDocs(f.collection(db, 'cardOptions'));
+    _cardOkList = []; _cardNoList = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      if (data.type === 'ok') _cardOkList.push({id: d.id, name: data.name});
+      if (data.type === 'no') _cardNoList.push({id: d.id, name: data.name});
+    });
+    renderCardList('ok');
+    renderCardList('no');
+  } catch(e) { console.error(e); }
+}
+
+function renderCardList(type) {
+  var list = type === 'ok' ? _cardOkList : _cardNoList;
+  var elId = type === 'ok' ? 'card-ok-list' : 'card-no-list';
+  var color = type === 'ok' ? '#1A5D1A' : '#dc2626';
+  var el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = list.map(function(item) {
+    return '<div style="display:flex;align-items:center;gap:4px;background:#f5f5f5;border-radius:20px;padding:4px 10px 4px 12px;font-size:12px;font-weight:600;color:'+color+'">'
+      + item.name
+      + '<button onclick="deleteCardItem(''+item.id+'')" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:14px;padding:0 0 0 4px;line-height:1">×</button>'
+      + '</div>';
+  }).join('') || '<div style="color:#bbb;font-size:12px">아직 없어요</div>';
+}
+
+async function addCardItem(type) {
+  var inp = document.getElementById(type === 'ok' ? 'card-ok-inp' : 'card-no-inp');
+  var name = inp.value.trim();
+  if (!name) return;
+  var f = window._fbFns;
+  try {
+    await f.addDoc(f.collection(window._db, 'cardOptions'), { name: name, type: type, createdAt: f.serverTimestamp() });
+    inp.value = '';
+    loadCards();
+  } catch(e) { alert('추가 실패: '+e.message); }
+}
+
+async function deleteCardItem(id) {
+  if (!confirm('삭제할까요?')) return;
+  var f = window._fbFns;
+  try {
+    await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
+    loadCards();
+  } catch(e) { alert('삭제 실패: '+e.message); }
+}
+
+// ── 매장 직접 등록 ──
+var _asOkSelected = [];
+var _asNoSelected = [];
+var _defaultCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금가능','카드가능','모르겠어요'];
+var _defaultNoCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금불가','카드불가'];
+
+function loadAddStoreChips() {
+  _asOkSelected = []; _asNoSelected = [];
+  renderAsChips('ok'); renderAsChips('no');
+}
+
+function renderAsChips(type) {
+  var cards = type === 'ok' ? _defaultCards : _defaultNoCards;
+  var selected = type === 'ok' ? _asOkSelected : _asNoSelected;
+  var elId = type === 'ok' ? 'as-ok-chips' : 'as-no-chips';
+  var el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = cards.map(function(card) {
+    var on = selected.indexOf(card) > -1;
+    var bg = on ? (type==='ok'?'#1A5D1A':'#dc2626') : '#f0f0f0';
+    var clr = on ? '#fff' : '#555';
+    return '<div onclick="toggleAsCard(''+type+'',''+card+'')" style="padding:5px 12px;border-radius:20px;background:'+bg+';color:'+clr+';font-size:12px;font-weight:600;cursor:pointer;transition:.15s">'+card+'</div>';
+  }).join('');
+}
+
+function toggleAsCard(type, card) {
+  var selected = type === 'ok' ? _asOkSelected : _asNoSelected;
+  var idx = selected.indexOf(card);
+  if (idx > -1) selected.splice(idx, 1); else selected.push(card);
+  renderAsChips(type);
+}
+
+async function submitAddStore() {
+  var name = document.getElementById('as-name').value.trim();
+  var category = document.getElementById('as-category').value;
+  var address = document.getElementById('as-address').value.trim();
+  var lat = parseFloat(document.getElementById('as-lat').value);
+  var lng = parseFloat(document.getElementById('as-lng').value);
+  if (!name || !category || !address) { alert('매장명, 카테고리, 주소는 필수예요'); return; }
+  if (!confirm('"'+name+'" 매장을 등록할까요?')) return;
+  var f = window._fbFns;
+  try {
+    await f.addDoc(f.collection(window._db, 'stores'), {
+      name: name,
+      category: category,
+      address: address,
+      lat: isNaN(lat) ? null : lat,
+      lng: isNaN(lng) ? null : lng,
+      payOk: _asOkSelected.slice(),
+      payNo: _asNoSelected.slice(),
+      createdAt: f.serverTimestamp(),
+      registeredBy: 'admin'
+    });
+    alert('✅ 등록 완료!');
+    document.getElementById('as-name').value = '';
+    document.getElementById('as-category').value = '';
+    document.getElementById('as-address').value = '';
+    document.getElementById('as-lat').value = '';
+    document.getElementById('as-lng').value = '';
+    loadAddStoreChips();
+  } catch(e) { alert('등록 실패: '+e.message); }
 }
 
 async function loadNotices() {
