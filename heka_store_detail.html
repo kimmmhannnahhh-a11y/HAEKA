@@ -311,11 +311,17 @@ async function renderStore(store) {
   }
 
   // 결제 가능 카드
-  var okCards = (store.payOk || []).filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
-  if (okCards.length) {
-    document.getElementById('cards-ok').innerHTML = okCards.map(function(c){
-      return '<div class="card-chip" style="background:'+cardColor(c)+'"><div class="card-dot"></div>'+c+'</div>';
-    }).join('');
+  var allOk = store.payOk || [];
+  var okCards = allOk.filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+  var hasCard = allOk.indexOf('카드가능') > -1;
+  var hasCash = allOk.indexOf('현금가능') > -1;
+  var chips = okCards.map(function(c){
+    return '<div class="card-chip" style="background:'+cardColor(c)+'"><div class="card-dot"></div>'+c+'</div>';
+  });
+  if (hasCard) chips.push('<div class="card-chip" style="background:#4caf50"><div class="card-dot"></div>카드가능</div>');
+  if (hasCash) chips.push('<div class="card-chip" style="background:#795548"><div class="card-dot"></div>현금가능</div>');
+  if (chips.length) {
+    document.getElementById('cards-ok').innerHTML = chips.join('');
   }
 
   // 결제 불가 카드
