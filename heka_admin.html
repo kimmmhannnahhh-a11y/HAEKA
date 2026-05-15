@@ -695,28 +695,23 @@ function renderCardList(type) {
   var el = document.getElementById(elId);
   if (!el) return;
 
+  var rowStyle = 'display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #f5f5f5;font-size:13px;font-weight:600;';
   var html = '';
-  // 기본 카드 (삭제 불가, 회색 표시)
-  html += '<div style="font-size:10px;font-weight:700;color:#aaa;margin-bottom:6px;letter-spacing:.05em">기본 항목</div>';
-  html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">';
-  html += baseList.map(function(name) {
-    return '<div style="display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#999">'+name+'</div>';
-  }).join('');
-  html += '</div>';
 
-  // 추가 카드 (삭제 가능)
-  html += '<div style="font-size:10px;font-weight:700;color:#aaa;margin-bottom:6px;letter-spacing:.05em">추가 항목</div>';
-  if (!dbList.length) {
-    html += '<div style="color:#bbb;font-size:12px;padding:4px 0">추가된 항목이 없어요</div>';
-  } else {
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-    html += dbList.map(function(item) {
-      return '<div style="display:flex;align-items:center;gap:6px;background:'+bg+';border:1.5px solid '+color+'44;border-radius:20px;padding:6px 10px 6px 14px;font-size:12px;font-weight:700;color:'+color+'">'
-        + item.name
-        + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:'+color+';border:none;cursor:pointer;color:#fff;font-size:11px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0">×</button>'
-        + '</div>';
-    }).join('');
-    html += '</div>';
+  // 기본 카드 (삭제 불가)
+  html += baseList.map(function(name) {
+    return '<div style="'+rowStyle+'color:#999"><span>'+name+'</span><span style="font-size:10px;color:#ccc">기본</span></div>';
+  }).join('');
+
+  // 추가 카드 (삭제 가능, X버튼)
+  html += dbList.map(function(item) {
+    return '<div style="'+rowStyle+'color:'+color+';background:'+bg+'"><span>'+item.name+'</span>'
+      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:none;border:none;cursor:pointer;color:#bbb;font-size:18px;line-height:1;padding:0 2px;font-weight:300">×</button>'
+      + '</div>';
+  }).join('');
+
+  if (!baseList.length && !dbList.length) {
+    html = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center">등록된 카드가 없어요</div>';
   }
   el.innerHTML = html;
 }
