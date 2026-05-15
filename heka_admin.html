@@ -313,7 +313,7 @@ async function loadDashboard() {
       f.getDocs(f.collection(db,'stores')),
       f.getDocs(f.collection(db,'inquiries')),
       f.getDocs(f.collection(db,'error_reports')),
-      f.getDocs(f.collection(db,'edit_requests'))
+      f.getDocs(f.collection(db,'editRequests'))
     ]);
     document.getElementById('stat-stores').textContent = stSnap.size;
     document.getElementById('stat-inq').textContent = inqSnap.size + errSnap.size;
@@ -360,7 +360,7 @@ async function loadEditReq() {
   if (!window._db) { setTimeout(loadEditReq, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'edit_requests'), f.orderBy('createdAt','desc'), f.limit(100)));
+    var snap = await f.getDocs(f.query(f.collection(db,'editRequests'), f.orderBy('createdAt','desc'), f.limit(100)));
     _allEditReqs = [];
     snap.forEach(function(d){ _allEditReqs.push({id:d.id,...d.data()}); });
     renderEditReqs(_allEditReqs);
@@ -369,7 +369,13 @@ async function loadEditReq() {
 function renderEditReqs(list) {
   var rows = list.map(function(r){
     var resolved = r.resolved;
-    return '<tr><td><b>'+(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+(r.description||'-')+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="resolveDoc(\'edit_requests\',\''+r.id+'\',\'editreq\')">완료처리</button>')+'</td></tr>';
+    // 수정 내용 요약
+    var changes = [];
+    if (r.payOk && r.payOk.length) changes.push('결제가능: '+r.payOk.join(', '));
+    if (r.payNo && r.payNo.length) changes.push('결제불가: '+r.payNo.join(', '));
+    if (r.isClosed) changes.push('폐업 처리');
+    var changesTxt = changes.length ? changes.join(' / ') : (r.description||'-');
+    return '<tr><td><b>'+(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+changesTxt+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="applyEditReq(\''+r.id+'\')">반영하기</button>')+'</td></tr>';
   });
   document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
@@ -521,6 +527,35 @@ async function saveStore() {
     alert('저장됐어요!');
     loadStores();
   } catch(e) { alert('저장 실패: '+e.message); }
+}
+
+async function applyEditReq(id) {
+  if (!window._db) return;
+  var db = window._db;
+  var f = window._fbFns;
+  var f2 = window._fbFns2 || {};
+  var updateDoc = f2.updateDoc;
+  var docFn = f2.doc;
+  if (!updateDoc) { alert('Firebase updateDoc 미연결'); return; }
+  // 해당 수정요청 데이터 찾기
+  var req = _allEditReqs.find(function(r){ return r.id === id; });
+  if (!req) { alert('요청 데이터를 찾을 수 없어요'); return; }
+  if (!req.storeId) { alert('storeId가 없어요'); return; }
+  if (!confirm('이 수정 요청을 매장에 바로 반영할까요?')) return;
+  try {
+    var updateData = {};
+    if (req.payOk && req.payOk.length) updateData.payOk = req.payOk;
+    if (req.payNo && req.payNo.length) updateData.payNo = req.payNo;
+    if (req.isClosed) updateData.closed = true;
+    // stores 컬렉션에 반영
+    if (Object.keys(updateData).length) {
+      await updateDoc(docFn(db, 'stores', req.storeId), updateData);
+    }
+    // editRequests resolved 처리
+    await updateDoc(docFn(db, 'editRequests', id), { resolved: true, adminApplied: true });
+    alert('✅ 반영 완료! 매장 정보가 업데이트됐어요.');
+    loadEditReq();
+  } catch(e) { alert('오류: '+e.message); }
 }
 
 async function resolveDoc(colName, id, type) {
