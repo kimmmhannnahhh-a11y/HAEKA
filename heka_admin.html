@@ -543,12 +543,25 @@ async function applyEditReq(id) {
   if (!req.storeId) { alert('storeId가 없어요'); return; }
   if (!confirm('이 수정 요청을 매장에 바로 반영할까요?')) return;
   try {
-    var updateData = {};
-    // payOk/payNo - undefined 아니면 무조건 반영 (현금가능 등 포함)
-    if (req.payOk !== undefined) updateData.payOk = req.payOk || [];
-    if (req.payNo !== undefined) updateData.payNo = req.payNo || [];
+    // 기존 stores 데이터 먼저 가져오기
+    var f3 = window._fbFns;
+    var storeSnap = await f3.getDocs(f3.query(f3.collection(db, 'stores')));
+    var existingStore = null;
+    storeSnap.forEach(function(d){ if(d.id === req.storeId) existingStore = d.data(); });
+    var existingOk = (existingStore && existingStore.payOk) || [];
+    var existingNo = (existingStore && existingStore.payNo) || [];
+    var reqOk = req.payOk || [];
+    var reqNo = req.payNo || [];
+    // merge: 기존 + 수정요청 합집합 (중복제거)
+    var mergedOk = existingOk.slice();
+    reqOk.forEach(function(v){ if(mergedOk.indexOf(v) === -1) mergedOk.push(v); });
+    // payNo에 있는 항목은 payOk에서 제거
+    var mergedNo = existingNo.slice();
+    reqNo.forEach(function(v){ if(mergedNo.indexOf(v) === -1) mergedNo.push(v); });
+    mergedOk = mergedOk.filter(function(v){ return mergedNo.indexOf(v) === -1; });
+    var updateData = { payOk: mergedOk, payNo: mergedNo };
     if (req.isClosed) updateData.closed = true;
-    console.log('[applyEditReq] storeId:', req.storeId, 'data:', JSON.stringify(updateData));
+    console.log('[applyEditReq] storeId:', req.storeId, 'merged:', JSON.stringify(updateData));
     await updateDoc(docFn(db, 'stores', req.storeId), updateData);
     await updateDoc(docFn(db, 'editRequests', id), { resolved: true, adminApplied: true });
     alert('반영 완료! 매장 정보가 업데이트됐어요.');
