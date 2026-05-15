@@ -314,6 +314,8 @@ const db = getFirestore(app);
 window._db = db;
 window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp };
 window._fbFns2 = { doc, updateDoc };
+// Firebase 준비 완료 이벤트
+window.dispatchEvent(new Event('fbReady'));
 </script>
 
 <script>
@@ -396,6 +398,13 @@ function doLogout() {
   document.getElementById('login-id').value = '';
   document.getElementById('login-pw').value = '';
 }
+
+// Firebase 준비되면 현재 페이지 탭 다시 로드
+window.addEventListener('fbReady', function() {
+  var activePage = document.querySelector('.page.on');
+  if (activePage && activePage.id === 'page-cards') loadCards();
+  if (activePage && activePage.id === 'page-inquiries') loadInquiries();
+});
 
 function goPage(name, el) {
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
@@ -653,8 +662,13 @@ async function deleteStore(id, name) {
 var _cardOkList = [];
 var _cardNoList = [];
 
+var _loadCardsRetry = 0;
 async function loadCards() {
-  if (!window._db || !window._fbFns) { setTimeout(loadCards, 300); return; }
+  if (!window._db || !window._fbFns) {
+    if (_loadCardsRetry++ < 20) setTimeout(loadCards, 300);
+    return;
+  }
+  _loadCardsRetry = 0;
   var db = window._db; var f = window._fbFns;
   try {
     var snap = await f.getDocs(f.collection(db, 'cardOptions'));
