@@ -678,7 +678,7 @@ var _cardOkList = [];
 var _cardNoList = [];
 
 async function loadCards() {
-  if (!window._db) { setTimeout(loadCards, 300); return; }
+  if (!window._db || !window._fbFns) { setTimeout(loadCards, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
     var snap = await f.getDocs(f.collection(db, 'cardOptions'));
@@ -690,7 +690,7 @@ async function loadCards() {
     });
     renderCardList('ok');
     renderCardList('no');
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error('loadCards error:', e); }
 }
 
 function renderCardList(type) {
@@ -716,6 +716,7 @@ async function addCardItem(type) {
   var inp = document.getElementById(type === 'ok' ? 'card-ok-inp' : 'card-no-inp');
   var name = inp.value.trim();
   if (!name) return;
+  if (!window._db || !window._fbFns) { alert('Firebase 연결 중이에요. 잠시 후 다시 시도해주세요.'); return; }
   var f = window._fbFns;
   try {
     await f.addDoc(f.collection(window._db, 'cardOptions'), { name: name, type: type, createdAt: f.serverTimestamp() });
@@ -725,7 +726,8 @@ async function addCardItem(type) {
 }
 
 async function deleteCardItem(id) {
-  if (!confirm('삭제할까요?')) return;
+  if (!confirm('삭제할까요?\n등록/수정 화면에서도 자동으로 사라져요.')) return;
+  if (!window._db || !window._fbFns) return;
   var f = window._fbFns;
   try {
     await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
@@ -739,8 +741,28 @@ var _asNoSelected = [];
 var _defaultCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금가능','카드가능','모르겠어요'];
 var _defaultNoCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금불가','카드불가'];
 
-function loadAddStoreChips() {
+async function loadAddStoreChips() {
   _asOkSelected = []; _asNoSelected = [];
+  // cardOptions에서 동적으로 불러오기
+  if (window._db) {
+    try {
+      var f = window._fbFns;
+      var snap = await f.getDocs(f.collection(window._db, 'cardOptions'));
+      var okCards = [], noCards = [];
+      snap.forEach(function(d) {
+        var data = d.data();
+        if (data.type === 'ok') okCards.push(data.name);
+        if (data.type === 'no') noCards.push(data.name);
+      });
+      // 기본 카드 + 커스텀 카드 합치기
+      var baseOk = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금가능','카드가능','모르겠어요'];
+      var baseNo = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금불가','카드불가'];
+      okCards.forEach(function(n){ if(baseOk.indexOf(n)<0) baseOk.push(n); });
+      noCards.forEach(function(n){ if(baseNo.indexOf(n)<0) baseNo.push(n); });
+      _defaultCards = baseOk;
+      _defaultNoCards = baseNo;
+    } catch(e) { console.error(e); }
+  }
   renderAsChips('ok'); renderAsChips('no');
   // 주소 자동완성 초기화
   setTimeout(function() {
@@ -755,7 +777,6 @@ function loadAddStoreChips() {
       var lng = place.geometry.location.lng();
       document.getElementById('as-lat').value = lat.toFixed(6);
       document.getElementById('as-lng').value = lng.toFixed(6);
-      // 지도 미리보기
       var mapEl = document.getElementById('as-map');
       mapEl.style.display = 'block';
       var map = new google.maps.Map(mapEl, { center: { lat: lat, lng: lng }, zoom: 16, disableDefaultUI: true });
