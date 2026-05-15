@@ -234,6 +234,14 @@ tr:hover td{background:#f9fdf9}
             <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">❌ 결제 불가</div>
             <div id="as-no-chips" style="display:flex;flex-wrap:wrap;gap:7px"></div>
           </div>
+          <div style="border-top:1px solid #f5f5f5;padding-top:16px;margin-bottom:16px">
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">📷 사진 업로드</div>
+            <input type="file" id="as-photos" accept="image/*" multiple style="display:none" onchange="previewAsPhotos(this)"/>
+            <div onclick="document.getElementById('as-photos').click()" style="border:2px dashed #e0e0e0;border-radius:10px;padding:16px;text-align:center;cursor:pointer;color:#aaa;font-size:13px;margin-bottom:10px" id="as-photo-drop">
+              클릭하여 사진 선택 (최대 5장)
+            </div>
+            <div id="as-photo-preview" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+          </div>
           <button class="btn-primary" onclick="submitAddStore()" style="width:100%;padding:14px;font-size:14px;border-radius:12px;letter-spacing:.02em">매장 등록하기 →</button>
         </div>
       </div>
@@ -266,6 +274,11 @@ tr:hover td{background:#f9fdf9}
           <button class="btn-sm" onclick="loadInquiries()">새로고침</button>
         </div>
         <div class="search-bar"><input type="text" id="inq-search" placeholder="내용 검색..." oninput="filterCurrent(this.value)"/></div>
+        <div style="display:flex;gap:6px;padding:0 0 12px">
+          <button id="inq-filter-all" onclick="setInqFilter('all')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">전체</button>
+          <button id="inq-filter-pending" onclick="setInqFilter('pending')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">대기</button>
+          <button id="inq-filter-done" onclick="setInqFilter('done')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">완료</button>
+        </div>
         <table><thead><tr><th>구분</th><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
         <tbody id="inq-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
@@ -302,6 +315,7 @@ tr:hover td{background:#f9fdf9}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -312,6 +326,11 @@ const app = initializeApp({
 const db = getFirestore(app);
 
 window._db = db;
+const storage = getStorage(app);
+window._storage = storage;
+window._storageRef = ref;
+window._uploadBytes = uploadBytes;
+window._getDownloadURL = getDownloadURL;
 window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp };
 window._fbFns2 = { doc, updateDoc };
 // Firebase 준비 완료 이벤트
@@ -610,6 +629,17 @@ function filterEditReq(q) {
   renderEditReqs(list);
 }
 
+var _inqFilter = 'all';
+function setInqFilter(type) {
+  _inqFilter = type;
+  ['all','pending','done'].forEach(function(t) {
+    var btn = document.getElementById('inq-filter-'+t);
+    if (!btn) return;
+    if (t === type) { btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; }
+    else { btn.style.background='#fff'; btn.style.color='#555'; btn.style.borderColor='#e0e0e0'; }
+  });
+  filterInquiries(document.getElementById('inq-search').value);
+}
 function filterCurrent(q) { filterInquiries(q); }
 
 async function loadInquiries() {
@@ -647,7 +677,10 @@ function renderInquiries(list) {
 function filterInquiries(q) {
   var lower = q.toLowerCase();
   renderInquiries(_allInquiries.filter(function(r){
-    return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1;
+    var textOk = !lower || (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1;
+    if (_inqFilter === 'pending') return textOk && !r.resolved;
+    if (_inqFilter === 'done') return textOk && !!r.resolved;
+    return textOk;
   }));
 }
 
@@ -741,33 +774,13 @@ async function addCardItem(type) {
 }
 
 async function deleteCardItem(id) {
-  showPopupConfirm('이 카드 항목을 삭제할까요?\n등록·수정 화면에서도 자동으로 사라져요.', async function() {
-    if (!window._db || !window._fbFns) return;
-    var f = window._fbFns;
-    try {
-      await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
-      loadCards();
-    } catch(e) { alert('삭제 실패: '+e.message); }
-  });
-}
-
-function showPopupConfirm(msg, cb) {
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99999;display:flex;align-items:center;justify-content:center';
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:16px;width:280px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.15)';
-  box.innerHTML = '<div style="padding:24px 20px 16px;text-align:center">'
-    + '<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:8px">삭제 확인</div>'
-    + '<div style="font-size:12.5px;color:#999;line-height:1.7;white-space:pre-line">'+msg+'</div>'
-    + '</div>'
-    + '<div style="display:flex;border-top:1px solid #f2f2f2">'
-    + '<button id="_popup_cancel" style="flex:1;padding:14px;background:none;border:none;font-size:13px;color:#aaa;cursor:pointer;border-right:1px solid #f2f2f2;font-family:inherit">취소</button>'
-    + '<button id="_popup_ok" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:700;color:#dc2626;cursor:pointer;font-family:inherit">삭제</button>'
-    + '</div>';
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  document.getElementById('_popup_cancel').onclick = function() { document.body.removeChild(overlay); };
-  document.getElementById('_popup_ok').onclick = function() { document.body.removeChild(overlay); cb(); };
+  if (!confirm('이 카드 항목을 삭제할까요?')) return;
+  if (!window._db || !window._fbFns) { alert('Firebase 연결 중이에요. 잠시 후 다시 시도해주세요.'); return; }
+  var f = window._fbFns;
+  try {
+    await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
+    loadCards();
+  } catch(e) { alert('삭제 실패: '+e.message); }
 }
 
 // ── 매장 직접 등록 ──
@@ -844,6 +857,22 @@ function toggleAsCard(type, card) {
   renderAsChips(type);
 }
 
+var _asPhotos = [];
+
+window.previewAsPhotos = function(input) {
+  var files = Array.from(input.files).slice(0, 5);
+  _asPhotos = files;
+  var preview = document.getElementById('as-photo-preview');
+  preview.innerHTML = files.map(function(f, i) {
+    var url = URL.createObjectURL(f);
+    return '<div style="position:relative;width:72px;height:72px">'
+      + '<img src="'+url+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #eee"/>'
+      + '<div onclick="_asPhotos.splice('+i+',1);previewAsPhotos({files:_asPhotos})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer">×</div>'
+      + '</div>';
+  }).join('');
+  document.getElementById('as-photo-drop').textContent = files.length + '장 선택됨';
+};
+
 async function submitAddStore() {
   var name = document.getElementById('as-name').value.trim();
   var category = document.getElementById('as-category').value;
@@ -854,6 +883,16 @@ async function submitAddStore() {
   if (!confirm('"'+name+'" 매장을 등록할까요?')) return;
   var f = window._fbFns;
   try {
+    // 사진 업로드
+    var imageUrls = [];
+    if (_asPhotos.length && window._storage) {
+      for (var i = 0; i < _asPhotos.length; i++) {
+        var storRef = window._storageRef(window._storage, 'stores/'+Date.now()+'_'+i+'_'+_asPhotos[i].name);
+        var snap = await window._uploadBytes(storRef, _asPhotos[i]);
+        var url = await window._getDownloadURL(snap.ref);
+        imageUrls.push(url);
+      }
+    }
     await f.addDoc(f.collection(window._db, 'stores'), {
       name: name,
       category: category,
@@ -862,6 +901,7 @@ async function submitAddStore() {
       lng: isNaN(lng) ? null : lng,
       payOk: _asOkSelected.slice(),
       payNo: _asNoSelected.slice(),
+      images: imageUrls,
       createdAt: f.serverTimestamp(),
       registeredBy: 'admin'
     });
@@ -871,6 +911,9 @@ async function submitAddStore() {
     document.getElementById('as-address').value = '';
     document.getElementById('as-lat').value = '';
     document.getElementById('as-lng').value = '';
+    document.getElementById('as-photo-preview').innerHTML = '';
+    document.getElementById('as-photo-drop').textContent = '클릭하여 사진 선택 (최대 5장)';
+    _asPhotos = [];
     loadAddStoreChips();
   } catch(e) { alert('등록 실패: '+e.message); }
 }
