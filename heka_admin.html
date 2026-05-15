@@ -613,8 +613,7 @@ function filterErrors(q) {
 
 // ── 매장 삭제 ──
 async function deleteStore(id, name) {
-  if (!confirm('"' + name + '"
-정말 삭제할까요? 되돌릴 수 없어요.')) return;
+  if (!confirm('"' + name + '"\n정말 삭제할까요? 되돌릴 수 없어요.')) return;
   var f = window._fbFns;
   var f2 = window._fbFns2 || {};
   try {
