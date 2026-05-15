@@ -699,7 +699,7 @@ function renderAsChips(type) {
     var on = selected.indexOf(card) > -1;
     var bg = on ? (type==='ok'?'#1A5D1A':'#dc2626') : '#f0f0f0';
     var clr = on ? '#fff' : '#555';
-    return '<div onclick="toggleAsCard(''+type+'',''+card+'')" style="padding:5px 12px;border-radius:20px;background:'+bg+';color:'+clr+';font-size:12px;font-weight:600;cursor:pointer;transition:.15s">'+card+'</div>';
+    return '<div onclick="toggleAsCard(\''+type+'\',\''+card+'\')" style="padding:5px 12px;border-radius:20px;background:'+bg+';color:'+clr+';font-size:12px;font-weight:600;cursor:pointer;transition:.15s">'+card+'</div>';
   }).join('');
 }
 
