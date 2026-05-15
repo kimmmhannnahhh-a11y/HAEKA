@@ -596,7 +596,17 @@ window.openFirebaseDetail = async function(store) {
   } catch(e) {}
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = store.category || '';  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  document.getElementById('dp-cat').textContent = store.category || '';
+  // 폐업 뱃지
+  var existBadge = document.getElementById('dp-closed-badge');
+  if (existBadge) existBadge.remove();
+  if (store.closed) {
+    var badge = document.createElement('span');
+    badge.id = 'dp-closed-badge';
+    badge.textContent = '폐업';
+    badge.style.cssText = 'background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;flex-shrink:0';
+    document.getElementById('dp-name').after(badge);
+  }  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('dp-scroll').scrollTop = 0;
