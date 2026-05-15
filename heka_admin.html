@@ -102,8 +102,7 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item" id="nav-stores" onclick="goPage('stores',this)">🏬 매장 관리</div>
     <div class="nav-item" id="nav-edit-req" onclick="goPage('edit-req',this)">✏️ 수정 요청</div>
     <div class="nav-sep"></div>
-    <div class="nav-item" id="nav-inquiries" onclick="goPage('inquiries',this)">💬 1:1 문의</div>
-    <div class="nav-item" id="nav-errors" onclick="goPage('errors',this)">🚨 오류 제보</div>
+    <div class="nav-item" id="nav-inquiries" onclick="goPage('inquiries',this)">💬 1:1 문의 / 오류제보</div>
     <div class="nav-sep"></div>
     <div class="nav-item" id="nav-notices" onclick="goPage('notices',this)">📢 공지사항</div>
     <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
@@ -117,8 +116,7 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">HAEKA 전체 현황</div>
       <div class="stat-grid">
         <div class="stat-card" onclick="goPage('stores',document.getElementById('nav-stores'))" style="cursor:pointer"><div class="stat-label">전체 매장</div><div class="stat-num" id="stat-stores">-</div><div class="stat-sub">등록된 장소</div></div>
-        <div class="stat-card" onclick="goPage('inquiries',document.getElementById('nav-inquiries'))" style="cursor:pointer"><div class="stat-label">1:1 문의</div><div class="stat-num" id="stat-inq">-</div><div class="stat-sub">접수된 문의</div></div>
-        <div class="stat-card" onclick="goPage('errors',document.getElementById('nav-errors'))" style="cursor:pointer"><div class="stat-label">오류 제보</div><div class="stat-num" id="stat-err">-</div><div class="stat-sub">접수된 오류</div></div>
+        <div class="stat-card" onclick="goPage('inquiries',document.getElementById('nav-inquiries'))" style="cursor:pointer"><div class="stat-label">1:1 문의 / 오류제보</div><div class="stat-num" id="stat-inq">-</div><div class="stat-sub">접수된 문의·오류</div></div>
         <div class="stat-card" onclick="goPage('edit-req',document.getElementById('nav-edit-req'))" style="cursor:pointer"><div class="stat-label">수정 요청</div><div class="stat-num" id="stat-edit">-</div><div class="stat-sub">처리 대기</div></div>
       </div>
       <div class="card">
@@ -152,27 +150,27 @@ tr:hover td{background:#f9fdf9}
       </div>
     </div>
 
-    <!-- 1:1 문의 -->
+    <!-- 1:1 문의 / 오류제보 통합 -->
     <div class="page" id="page-inquiries">
-      <div class="page-title">1:1 문의</div>
-      <div class="page-sub">유저 문의 및 제안 목록</div>
+      <div class="page-title">1:1 문의 / 오류제보</div>
+      <div class="page-sub">유저 문의 및 오류 제보 목록</div>
       <div class="card">
-        <div class="card-head"><span class="card-title">문의 목록</span><button class="btn-sm" onclick="loadInquiries()">새로고침</button></div>
-        <div class="search-bar"><input type="text" id="inq-search" placeholder="내용 검색..." oninput="filterInquiries(this.value)"/></div>
-        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
-        <tbody id="inq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
-      </div>
-    </div>
-
-    <!-- 오류 제보 -->
-    <div class="page" id="page-errors">
-      <div class="page-title">오류 제보</div>
-      <div class="page-sub">유저가 제보한 오류 목록</div>
-      <div class="card">
-        <div class="card-head"><span class="card-title">오류 목록</span><button class="btn-sm" onclick="loadErrors()">새로고침</button></div>
-        <div class="search-bar"><input type="text" id="err-search" placeholder="내용 검색..." oninput="filterErrors(this.value)"/></div>
-        <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
-        <tbody id="err-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+        <div class="card-head">
+          <span class="card-title">
+            <span id="inq-tab-btn" onclick="switchInqTab('inq')" style="cursor:pointer;padding:4px 12px;border-radius:20px;background:#1A5D1A;color:#fff;font-size:12px;margin-right:6px">1:1 문의</span>
+            <span id="err-tab-btn" onclick="switchInqTab('err')" style="cursor:pointer;padding:4px 12px;border-radius:20px;background:#f0f0f0;color:#555;font-size:12px">오류 제보</span>
+          </span>
+          <button class="btn-sm" onclick="reloadInqTab()">새로고침</button>
+        </div>
+        <div class="search-bar"><input type="text" id="inq-search" placeholder="내용 검색..." oninput="filterCurrent(this.value)"/></div>
+        <div id="inq-tab-panel">
+          <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
+          <tbody id="inq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+        </div>
+        <div id="err-tab-panel" style="display:none">
+          <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
+          <tbody id="err-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
+        </div>
       </div>
     </div>
 
@@ -290,7 +288,6 @@ function goPage(name, el) {
     'stores': loadStores,
     'edit-req': loadEditReq,
     'inquiries': loadInquiries,
-    'errors': loadErrors,
     'notices': loadNotices
   };
   if (loaders[name]) loaders[name]();
@@ -319,8 +316,7 @@ async function loadDashboard() {
       f.getDocs(f.collection(db,'edit_requests'))
     ]);
     document.getElementById('stat-stores').textContent = stSnap.size;
-    document.getElementById('stat-inq').textContent = inqSnap.size;
-    document.getElementById('stat-err').textContent = errSnap.size;
+    document.getElementById('stat-inq').textContent = inqSnap.size + errSnap.size;
     document.getElementById('stat-edit').textContent = editSnap.docs.filter(function(d){ return !d.data().resolved; }).length;
 
     var stores = [];
@@ -382,6 +378,23 @@ function filterEditReq(q) {
   renderEditReqs(_allEditReqs.filter(function(r){ return (r.storeName||r.storeId||'').toLowerCase().indexOf(lower)>-1||(r.description||'').toLowerCase().indexOf(lower)>-1; }));
 }
 
+var _curInqTab = 'inq';
+function switchInqTab(tab) {
+  _curInqTab = tab;
+  document.getElementById('inq-tab-btn').style.background = tab==='inq' ? '#1A5D1A' : '#f0f0f0';
+  document.getElementById('inq-tab-btn').style.color = tab==='inq' ? '#fff' : '#555';
+  document.getElementById('err-tab-btn').style.background = tab==='err' ? '#1A5D1A' : '#f0f0f0';
+  document.getElementById('err-tab-btn').style.color = tab==='err' ? '#fff' : '#555';
+  document.getElementById('inq-tab-panel').style.display = tab==='inq' ? '' : 'none';
+  document.getElementById('err-tab-panel').style.display = tab==='err' ? '' : 'none';
+  document.getElementById('inq-search').value = '';
+}
+function reloadInqTab() {
+  if (_curInqTab === 'inq') loadInquiries(); else loadErrors();
+}
+function filterCurrent(q) {
+  if (_curInqTab === 'inq') filterInquiries(q); else filterErrors(q);
+}
 async function loadInquiries() {
   if (!window._db) { setTimeout(loadInquiries, 300); return; }
   var db = window._db; var f = window._fbFns;
@@ -390,6 +403,7 @@ async function loadInquiries() {
     _allInquiries = [];
     snap.forEach(function(d){ _allInquiries.push({id:d.id,...d.data()}); });
     renderInquiries(_allInquiries);
+    loadErrors();
   } catch(e) { console.error(e); }
 }
 function renderInquiries(list) {
@@ -403,8 +417,6 @@ function filterInquiries(q) {
   var lower = q.toLowerCase();
   renderInquiries(_allInquiries.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1; }));
 }
-
-
 async function loadErrors() {
   if (!window._db) { setTimeout(loadErrors, 300); return; }
   var db = window._db; var f = window._fbFns;
