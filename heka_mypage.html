@@ -889,7 +889,7 @@ function clearCache() {
 }
 function confirmWithdraw() {
   // 1단계
-  showPopup('⚠️', '정말 탈퇴하시겠어요?', '탈퇴 시 등록한 매장 정보와 활동 내역이 모두 삭제돼요.\n삭제된 데이터는 30일간 보관 후 완전히 폐기됩니다.', '탈퇴 진행', function(){
+  showPopup('⚠️', '정말 탈퇴하시겠어요?', '탈퇴 시 계정 및 개인정보가 삭제됩니다.', '탈퇴 진행', function(){
     // 2단계
     showPopup('🗑️', '최종 확인', '정말로 탈퇴할까요?\n이 작업은 되돌릴 수 없어요.', '탈퇴하기', async function(){
       if (window._deleteAccount) {
