@@ -683,23 +683,42 @@ async function loadCards() {
   } catch(e) { console.error('loadCards error:', e); }
 }
 
+var _defaultOkCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드가능','현금가능'];
+var _defaultNoCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드불가','현금불가'];
+
 function renderCardList(type) {
-  var list = type === 'ok' ? _cardOkList : _cardNoList;
+  var dbList = type === 'ok' ? _cardOkList : _cardNoList;
+  var baseList = type === 'ok' ? _defaultOkCards : _defaultNoCards;
   var elId = type === 'ok' ? 'card-ok-list' : 'card-no-list';
   var color = type === 'ok' ? '#1A5D1A' : '#dc2626';
   var bg = type === 'ok' ? '#f0f9f0' : '#fff5f5';
   var el = document.getElementById(elId);
   if (!el) return;
-  if (!list.length) {
-    el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px 0;text-align:center;width:100%">등록된 카드가 없어요</div>';
-    return;
-  }
-  el.innerHTML = list.map(function(item) {
-    return '<div style="display:flex;align-items:center;gap:6px;background:'+bg+';border:1.5px solid '+color+'22;border-radius:20px;padding:6px 10px 6px 14px;font-size:12px;font-weight:700;color:'+color+'">'
-      + item.name
-      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:'+color+';border:none;cursor:pointer;color:#fff;font-size:11px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0">×</button>'
-      + '</div>';
+
+  var html = '';
+  // 기본 카드 (삭제 불가, 회색 표시)
+  html += '<div style="font-size:10px;font-weight:700;color:#aaa;margin-bottom:6px;letter-spacing:.05em">기본 항목</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">';
+  html += baseList.map(function(name) {
+    return '<div style="display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#999">'+name+'</div>';
   }).join('');
+  html += '</div>';
+
+  // 추가 카드 (삭제 가능)
+  html += '<div style="font-size:10px;font-weight:700;color:#aaa;margin-bottom:6px;letter-spacing:.05em">추가 항목</div>';
+  if (!dbList.length) {
+    html += '<div style="color:#bbb;font-size:12px;padding:4px 0">추가된 항목이 없어요</div>';
+  } else {
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    html += dbList.map(function(item) {
+      return '<div style="display:flex;align-items:center;gap:6px;background:'+bg+';border:1.5px solid '+color+'44;border-radius:20px;padding:6px 10px 6px 14px;font-size:12px;font-weight:700;color:'+color+'">'
+        + item.name
+        + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:'+color+';border:none;cursor:pointer;color:#fff;font-size:11px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0">×</button>'
+        + '</div>';
+    }).join('');
+    html += '</div>';
+  }
+  el.innerHTML = html;
 }
 
 async function addCardItem(type) {

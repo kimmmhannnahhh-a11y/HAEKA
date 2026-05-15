@@ -650,18 +650,20 @@ function renderRegPayGrid(type) {
   }).join('');
 }
 
+// 기본 카드 즉시 렌더링 (DB 로드 전)
+renderRegPayGrid('ok');
+renderRegPayGrid('no');
+
+// cardOptions에서 추가 카드 불러와서 합치기
 getDocs(collection(db, 'cardOptions')).then(function(snap) {
+  var changed = false;
   snap.forEach(function(d) {
     var data = d.data();
-    if (data.type === 'ok' && _regBaseOk.indexOf(data.name) < 0) _regBaseOk.push(data.name);
-    if (data.type === 'no' && _regBaseNo.indexOf(data.name) < 0) _regBaseNo.push(data.name);
+    if (data.type === 'ok' && _regBaseOk.indexOf(data.name) < 0) { _regBaseOk.push(data.name); changed = true; }
+    if (data.type === 'no' && _regBaseNo.indexOf(data.name) < 0) { _regBaseNo.push(data.name); changed = true; }
   });
-  renderRegPayGrid('ok');
-  renderRegPayGrid('no');
-}).catch(function() {
-  renderRegPayGrid('ok');
-  renderRegPayGrid('no');
-});
+  if (changed) { renderRegPayGrid('ok'); renderRegPayGrid('no'); }
+}).catch(function(e) { console.error('cardOptions load:', e); });
 
 function togglePay(el,type,val){
   el.classList.toggle('on');
