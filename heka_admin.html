@@ -706,6 +706,9 @@ var _cardOkList = [];
 var _cardNoList = [];
 
 var _loadCardsRetry = 0;
+var _defaultOkInit = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드가능','현금가능'];
+var _defaultNoInit = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드불가','현금불가'];
+
 async function loadCards() {
   if (!window._db || !window._fbFns) {
     if (_loadCardsRetry++ < 20) setTimeout(loadCards, 300);
@@ -715,6 +718,14 @@ async function loadCards() {
   var db = window._db; var f = window._fbFns;
   try {
     var snap = await f.getDocs(f.collection(db, 'cardOptions'));
+    // 비어있으면 기본 카드 자동 초기화
+    if (snap.empty) {
+      var batch = [];
+      _defaultOkInit.forEach(function(name) { batch.push(f.addDoc(f.collection(db,'cardOptions'), {name:name, type:'ok', isDefault:true, createdAt:f.serverTimestamp()})); });
+      _defaultNoInit.forEach(function(name) { batch.push(f.addDoc(f.collection(db,'cardOptions'), {name:name, type:'no', isDefault:true, createdAt:f.serverTimestamp()})); });
+      await Promise.all(batch);
+      snap = await f.getDocs(f.collection(db, 'cardOptions'));
+    }
     _cardOkList = []; _cardNoList = [];
     snap.forEach(function(d) {
       var data = d.data();
@@ -730,31 +741,20 @@ var _defaultOkCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블
 var _defaultNoCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드불가','현금불가'];
 
 function renderCardList(type) {
-  var dbList = type === 'ok' ? _cardOkList : _cardNoList;
-  var baseList = type === 'ok' ? _defaultOkCards : _defaultNoCards;
+  var list = type === 'ok' ? _cardOkList : _cardNoList;
   var elId = type === 'ok' ? 'card-ok-list' : 'card-no-list';
   var color = type === 'ok' ? '#1A5D1A' : '#dc2626';
-  var bg = type === 'ok' ? '#f0f9f0' : '#fff5f5';
   var el = document.getElementById(elId);
   if (!el) return;
 
   var row = 'display:flex;align-items:center;justify-content:space-between;padding:10px 4px;border-bottom:1px solid #f5f5f5;font-size:13px;font-weight:600;width:100%;box-sizing:border-box;';
-  var html = '';
-
-  // 기본 카드 (삭제 불가, X 비활성)
-  html += baseList.map(function(name) {
-    return '<div style="'+row+'color:#555"><span>'+name+'</span>'
-      + '<button disabled style="background:none;border:none;color:#e0e0e0;font-size:18px;line-height:1;padding:0;cursor:default">×</button></div>';
-  }).join('');
-
-  // 추가 카드 (삭제 가능, X 활성)
-  html += dbList.map(function(item) {
-    return '<div style="'+row+'color:'+color+';background:'+bg+'"><span>'+item.name+'</span>'
-      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:18px;line-height:1;padding:0">×</button>'
+  var html = list.map(function(item) {
+    return '<div style="'+row+'color:#333"><span>'+item.name+'</span>'
+      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:20px;line-height:1;padding:0 2px" onmouseover="this.style.color=\'#dc2626\'" onmouseout="this.style.color=\'#ccc\'">×</button>'
       + '</div>';
   }).join('');
 
-  if (!baseList.length && !dbList.length) {
+  if (!list.length) {
     html = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center">등록된 카드가 없어요</div>';
   }
   el.innerHTML = '<div style="display:flex;flex-direction:column;width:100%">'+html+'</div>';
