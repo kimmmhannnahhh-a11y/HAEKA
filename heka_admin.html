@@ -78,6 +78,7 @@ tr:hover td{background:#f9fdf9}
 .modal-btns{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
 .btn-cancel{background:#f5f5f5;color:#555;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:inherit}
 </style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
 </head>
 <body>
 
@@ -142,25 +143,34 @@ tr:hover td{background:#f9fdf9}
     </div>
 
     <!-- 카드 관리 -->
+    <!-- 카드 관리 -->
     <div class="page" id="page-cards">
       <div class="page-title">카드 관리</div>
       <div class="page-sub">결제 가능/불가 카드 항목 관리</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div class="card">
-          <div class="card-head"><span class="card-title" style="color:#1A5D1A">결제 가능 카드</span></div>
-          <div style="display:flex;gap:6px;margin-bottom:12px">
-            <input type="text" id="card-ok-inp" placeholder="카드명 입력" style="flex:1;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
-            <button class="btn-primary" onclick="addCardItem('ok')" style="padding:8px 14px;font-size:12px">추가</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card" style="border-top:3px solid #1A5D1A">
+          <div class="card-head" style="margin-bottom:16px">
+            <span class="card-title" style="color:#1A5D1A;font-size:15px">✅ 결제 가능 카드</span>
           </div>
-          <div id="card-ok-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <input type="text" id="card-ok-inp" placeholder="카드명 입력 후 Enter" style="flex:1;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s" onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e0e0e0'" onkeydown="if(event.key==='Enter')addCardItem('ok')"/>
+            <button class="btn-primary" onclick="addCardItem('ok')" style="padding:10px 18px;font-size:13px;border-radius:10px">+ 추가</button>
+          </div>
+          <div id="card-ok-list" style="display:flex;flex-wrap:wrap;gap:8px;min-height:40px">
+            <div style="color:#ccc;font-size:12px;padding:8px 0">불러오는 중...</div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-head"><span class="card-title" style="color:#dc2626">결제 불가 카드</span></div>
-          <div style="display:flex;gap:6px;margin-bottom:12px">
-            <input type="text" id="card-no-inp" placeholder="카드명 입력" style="flex:1;padding:8px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
-            <button class="btn-primary" onclick="addCardItem('no')" style="padding:8px 14px;font-size:12px">추가</button>
+        <div class="card" style="border-top:3px solid #dc2626">
+          <div class="card-head" style="margin-bottom:16px">
+            <span class="card-title" style="color:#dc2626;font-size:15px">❌ 결제 불가 카드</span>
           </div>
-          <div id="card-no-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <input type="text" id="card-no-inp" placeholder="카드명 입력 후 Enter" style="flex:1;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s" onfocus="this.style.borderColor='#dc2626'" onblur="this.style.borderColor='#e0e0e0'" onkeydown="if(event.key==='Enter')addCardItem('no')"/>
+            <button onclick="addCardItem('no')" style="padding:10px 18px;font-size:13px;border-radius:10px;background:#dc2626;color:#fff;border:none;font-weight:700;cursor:pointer;font-family:inherit">+ 추가</button>
+          </div>
+          <div id="card-no-list" style="display:flex;flex-wrap:wrap;gap:8px;min-height:40px">
+            <div style="color:#ccc;font-size:12px;padding:8px 0">불러오는 중...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -169,42 +179,51 @@ tr:hover td{background:#f9fdf9}
     <div class="page" id="page-add-store">
       <div class="page-title">매장 등록</div>
       <div class="page-sub">관리자 직접 매장 등록</div>
-      <div class="card" style="max-width:600px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">매장명 *</div>
-            <input type="text" id="as-name" placeholder="매장명" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px">
+        <!-- 왼쪽: 기본 정보 -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:18px;font-size:14px;color:#555">📋 기본 정보</div>
+          <div style="margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">매장명 *</div>
+            <input type="text" id="as-name" placeholder="매장명을 입력하세요" style="width:100%;padding:11px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s" onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"/>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">카테고리 *</div>
-            <select id="as-category" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:#fff">
-              <option value="">선택</option>
+          <div style="margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">카테고리 *</div>
+            <select id="as-category" style="width:100%;padding:11px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fff;transition:.15s" onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'">
+              <option value="">카테고리 선택</option>
               <option>식당</option><option>카페</option><option>편의점</option><option>마트</option>
               <option>숙박</option><option>쇼핑</option><option>관광</option><option>교통</option><option>기타</option>
             </select>
           </div>
-          <div style="grid-column:1/-1">
-            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">주소 *</div>
-            <input type="text" id="as-address" placeholder="주소 입력" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          <div style="margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">주소 검색 *</div>
+            <input type="text" id="as-address" placeholder="주소 검색 (자동완성)" style="width:100%;padding:11px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s" onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"/>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">위도 (lat)</div>
-            <input type="number" id="as-lat" placeholder="35.123" step="any" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:5px">위도 (자동입력)</div>
+              <input type="text" id="as-lat" placeholder="자동 입력" readonly style="width:100%;padding:11px 14px;border:1.5px solid #f0f0f0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fafafa;color:#555"/>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:5px">경도 (자동입력)</div>
+              <input type="text" id="as-lng" placeholder="자동 입력" readonly style="width:100%;padding:11px 14px;border:1.5px solid #f0f0f0;border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:#fafafa;color:#555"/>
+            </div>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">경도 (lng)</div>
-            <input type="number" id="as-lng" placeholder="139.456" step="any" style="width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none"/>
+          <div id="as-map" style="width:100%;height:160px;border-radius:10px;border:1px solid #e8e8e8;margin-top:12px;display:none"></div>
+        </div>
+        <!-- 오른쪽: 결제 정보 -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:18px;font-size:14px;color:#555">💳 결제 정보</div>
+          <div style="margin-bottom:16px">
+            <div style="font-size:11px;font-weight:700;color:#1A5D1A;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">✅ 결제 가능</div>
+            <div id="as-ok-chips" style="display:flex;flex-wrap:wrap;gap:7px"></div>
           </div>
+          <div style="border-top:1px solid #f5f5f5;padding-top:16px;margin-bottom:20px">
+            <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em">❌ 결제 불가</div>
+            <div id="as-no-chips" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+          </div>
+          <button class="btn-primary" onclick="submitAddStore()" style="width:100%;padding:14px;font-size:14px;border-radius:12px;letter-spacing:.02em">매장 등록하기 →</button>
         </div>
-        <div style="margin-bottom:12px">
-          <div style="font-size:11px;font-weight:700;color:#1A5D1A;margin-bottom:6px">결제 가능 카드</div>
-          <div id="as-ok-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-        </div>
-        <div style="margin-bottom:16px">
-          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px">결제 불가 카드</div>
-          <div id="as-no-chips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-        </div>
-        <button class="btn-primary" onclick="submitAddStore()" style="width:100%;padding:12px;font-size:14px">매장 등록하기</button>
       </div>
     </div>
 
@@ -647,14 +666,19 @@ function renderCardList(type) {
   var list = type === 'ok' ? _cardOkList : _cardNoList;
   var elId = type === 'ok' ? 'card-ok-list' : 'card-no-list';
   var color = type === 'ok' ? '#1A5D1A' : '#dc2626';
+  var bg = type === 'ok' ? '#f0f9f0' : '#fff5f5';
   var el = document.getElementById(elId);
   if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px 0;text-align:center;width:100%">등록된 카드가 없어요</div>';
+    return;
+  }
   el.innerHTML = list.map(function(item) {
-    return '<div style="display:flex;align-items:center;gap:4px;background:#f5f5f5;border-radius:20px;padding:4px 10px 4px 12px;font-size:12px;font-weight:600;color:'+color+'">'
+    return '<div style="display:flex;align-items:center;gap:6px;background:'+bg+';border:1.5px solid '+color+'22;border-radius:20px;padding:6px 10px 6px 14px;font-size:12px;font-weight:700;color:'+color+'">'
       + item.name
-      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:14px;padding:0 0 0 4px;line-height:1">×</button>'
+      + '<button onclick="deleteCardItem(\''+item.id+'\')" style="background:'+color+';border:none;cursor:pointer;color:#fff;font-size:11px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;flex-shrink:0">×</button>'
       + '</div>';
-  }).join('') || '<div style="color:#bbb;font-size:12px">아직 없어요</div>';
+  }).join('');
 }
 
 async function addCardItem(type) {
@@ -687,6 +711,27 @@ var _defaultNoCards = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블
 function loadAddStoreChips() {
   _asOkSelected = []; _asNoSelected = [];
   renderAsChips('ok'); renderAsChips('no');
+  // 주소 자동완성 초기화
+  setTimeout(function() {
+    var input = document.getElementById('as-address');
+    if (!input || input._acInit) return;
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) return;
+    var ac = new google.maps.places.Autocomplete(input, { language: 'ko' });
+    ac.addListener('place_changed', function() {
+      var place = ac.getPlace();
+      if (!place.geometry) return;
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+      document.getElementById('as-lat').value = lat.toFixed(6);
+      document.getElementById('as-lng').value = lng.toFixed(6);
+      // 지도 미리보기
+      var mapEl = document.getElementById('as-map');
+      mapEl.style.display = 'block';
+      var map = new google.maps.Map(mapEl, { center: { lat: lat, lng: lng }, zoom: 16, disableDefaultUI: true });
+      new google.maps.Marker({ position: { lat: lat, lng: lng }, map: map });
+    });
+    input._acInit = true;
+  }, 300);
 }
 
 function renderAsChips(type) {
@@ -697,9 +742,11 @@ function renderAsChips(type) {
   if (!el) return;
   el.innerHTML = cards.map(function(card) {
     var on = selected.indexOf(card) > -1;
-    var bg = on ? (type==='ok'?'#1A5D1A':'#dc2626') : '#f0f0f0';
-    var clr = on ? '#fff' : '#555';
-    return '<div onclick="toggleAsCard(\''+type+'\',\''+card+'\')" style="padding:5px 12px;border-radius:20px;background:'+bg+';color:'+clr+';font-size:12px;font-weight:600;cursor:pointer;transition:.15s">'+card+'</div>';
+    var activeColor = type==='ok' ? '#1A5D1A' : '#dc2626';
+    var bg = on ? activeColor : '#f5f5f5';
+    var clr = on ? '#fff' : '#888';
+    var border = on ? activeColor : '#e8e8e8';
+    return '<div onclick="toggleAsCard(\''+type+'\',\''+card+'\')" style="padding:6px 14px;border-radius:20px;background:'+bg+';color:'+clr+';font-size:12px;font-weight:700;cursor:pointer;transition:.15s;border:1.5px solid '+border+';user-select:none">'+card+'</div>';
   }).join('');
 }
 
@@ -714,8 +761,8 @@ async function submitAddStore() {
   var name = document.getElementById('as-name').value.trim();
   var category = document.getElementById('as-category').value;
   var address = document.getElementById('as-address').value.trim();
-  var lat = parseFloat(document.getElementById('as-lat').value);
-  var lng = parseFloat(document.getElementById('as-lng').value);
+  var lat = parseFloat(document.getElementById('as-lat').value) || null;
+  var lng = parseFloat(document.getElementById('as-lng').value) || null;
   if (!name || !category || !address) { alert('매장명, 카테고리, 주소는 필수예요'); return; }
   if (!confirm('"'+name+'" 매장을 등록할까요?')) return;
   var f = window._fbFns;
