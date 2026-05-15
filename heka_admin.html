@@ -22,6 +22,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-item{padding:11px 20px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px}
 .nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
 .nav-item.on{background:rgba(255,255,255,.18);color:#fff;font-weight:700}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;padding:0 5px;border-radius:9px;margin-left:auto}
 .nav-sep{height:1px;background:rgba(255,255,255,.1);margin:6px 0}
 .sidebar-logout{margin-top:auto;padding:16px 20px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer}
 .sidebar-logout:hover{color:#fff}
@@ -100,9 +101,9 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item on" id="nav-dashboard" onclick="goPage('dashboard',this)">📊 대시보드</div>
     <div class="nav-sep"></div>
     <div class="nav-item" id="nav-stores" onclick="goPage('stores',this)">🏬 매장 관리</div>
-    <div class="nav-item" id="nav-edit-req" onclick="goPage('edit-req',this)">✏️ 수정 요청</div>
+    <div class="nav-item" id="nav-edit-req" onclick="goPage('edit-req',this)">✏️ 수정 요청<span class="nav-badge" id="badge-edit" style="display:none"></span></div>
     <div class="nav-sep"></div>
-    <div class="nav-item" id="nav-inquiries" onclick="goPage('inquiries',this)">💬 1:1 문의 / 오류제보</div>
+    <div class="nav-item" id="nav-inquiries" onclick="goPage('inquiries',this)">💬 1:1 문의 / 오류제보<span class="nav-badge" id="badge-inq" style="display:none"></span></div>
     <div class="nav-sep"></div>
     <div class="nav-item" id="nav-notices" onclick="goPage('notices',this)">📢 공지사항</div>
     <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
@@ -283,6 +284,15 @@ function goPage(name, el) {
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('on'); });
   document.getElementById('page-'+name).classList.add('on');
   el.classList.add('on');
+  // 해당 탭 뱃지 숨기기 + lastSeen 저장
+  if (name === 'edit-req') {
+    try { localStorage.setItem('haeka_admin_seen_edit', Date.now()); } catch(e) {}
+    var b = document.getElementById('badge-edit'); if(b) b.style.display='none';
+  }
+  if (name === 'inquiries') {
+    try { localStorage.setItem('haeka_admin_seen_inq', Date.now()); } catch(e) {}
+    var b = document.getElementById('badge-inq'); if(b) b.style.display='none';
+  }
   var loaders = {
     'dashboard': loadDashboard,
     'stores': loadStores,
@@ -304,6 +314,39 @@ function tagBadge(tag) {
   return '<span class="badge '+(map[tag]||'bg-gray')+'">'+tag+'</span>';
 }
 
+function updateNavBadges(inqSnap, errSnap, editSnap) {
+  try {
+    var seenEdit = parseInt(localStorage.getItem('haeka_admin_seen_edit') || '0');
+    var seenInq = parseInt(localStorage.getItem('haeka_admin_seen_inq') || '0');
+    // 수정요청: resolved=false 중 seenEdit 이후 생성된 것
+    var newEdit = 0;
+    editSnap.forEach(function(d) {
+      var data = d.data();
+      if (data.resolved) return;
+      var ts = data.createdAt && data.createdAt.seconds ? data.createdAt.seconds * 1000 : 0;
+      if (ts > seenEdit) newEdit++;
+    });
+    // 문의+오류: resolved=false 중 seenInq 이후 생성된 것
+    var newInq = 0;
+    inqSnap.forEach(function(d) {
+      var data = d.data();
+      if (data.resolved) return;
+      var ts = data.createdAt && data.createdAt.seconds ? data.createdAt.seconds * 1000 : 0;
+      if (ts > seenInq) newInq++;
+    });
+    errSnap.forEach(function(d) {
+      var data = d.data();
+      if (data.resolved) return;
+      var ts = data.createdAt && data.createdAt.seconds ? data.createdAt.seconds * 1000 : 0;
+      if (ts > seenInq) newInq++;
+    });
+    var bEdit = document.getElementById('badge-edit');
+    if (bEdit) { bEdit.textContent = newEdit; bEdit.style.display = newEdit > 0 ? 'inline-flex' : 'none'; }
+    var bInq = document.getElementById('badge-inq');
+    if (bInq) { bInq.textContent = newInq; bInq.style.display = newInq > 0 ? 'inline-flex' : 'none'; }
+  } catch(e) { console.error(e); }
+}
+
 async function loadDashboard() {
   if (!window._db) { setTimeout(loadDashboard, 300); return; }
   var db = window._db;
@@ -317,6 +360,7 @@ async function loadDashboard() {
     ]);
     document.getElementById('stat-stores').textContent = stSnap.size;
     document.getElementById('stat-inq').textContent = inqSnap.size + errSnap.size;
+    updateNavBadges(inqSnap, errSnap, editSnap);
     document.getElementById('stat-edit').textContent = editSnap.docs.filter(function(d){ return !d.data().resolved; }).length;
 
     var stores = [];
