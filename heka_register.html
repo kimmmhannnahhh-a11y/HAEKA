@@ -297,18 +297,7 @@ window.saveToFirestore = async function(data) {
     <!-- 결제 가능 수단 -->
     <div class="section" style="padding-top:12px">
       <div class="block-label label-blue">결제 가능 수단<span class="req-star">*</span></div>
-      <div class="card-grid">
-        <div class="chk-item" onclick="togglePay(this,'ok','VISA')"><div class="chk-box"></div><span class="chk-txt">VISA</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','MASTER')"><div class="chk-box"></div><span class="chk-txt">MASTER</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','JCB')"><div class="chk-box"></div><span class="chk-txt">JCB</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','AMEX')"><div class="chk-box"></div><span class="chk-txt">AMEX</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','트래블로그')"><div class="chk-box"></div><span class="chk-txt">트래블로그</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','트래블월렛')"><div class="chk-box"></div><span class="chk-txt">트래블월렛</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','UnionPay')"><div class="chk-box"></div><span class="chk-txt">UnionPay</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','모르겠어요')"><div class="chk-box"></div><span class="chk-txt">모르겠어요</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','카드가능')"><div class="chk-box"></div><span class="chk-txt">카드가능</span></div>
-        <div class="chk-item" onclick="togglePay(this,'ok','현금가능')"><div class="chk-box"></div><span class="chk-txt">현금가능</span></div>
-      </div>
+      <div class="card-grid" id="reg-grid-ok"></div>
       <div class="err-txt" id="err-pay-ok">결제 가능 수단을 선택해주세요</div>
     </div>
 
@@ -317,18 +306,7 @@ window.saveToFirestore = async function(data) {
     <!-- 결제 불가 수단 -->
     <div class="section" style="padding-top:12px">
       <div class="block-label label-red">결제 불가 수단<span class="req-star">*</span></div>
-      <div class="card-grid">
-        <div class="chk-item" onclick="togglePay(this,'no','VISA')"><div class="chk-box"></div><span class="chk-txt">VISA</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','MASTER')"><div class="chk-box"></div><span class="chk-txt">MASTER</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','JCB')"><div class="chk-box"></div><span class="chk-txt">JCB</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','AMEX')"><div class="chk-box"></div><span class="chk-txt">AMEX</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','트래블로그')"><div class="chk-box"></div><span class="chk-txt">트래블로그</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','트래블월렛')"><div class="chk-box"></div><span class="chk-txt">트래블월렛</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','UnionPay')"><div class="chk-box"></div><span class="chk-txt">UnionPay</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','모르겠어요')"><div class="chk-box"></div><span class="chk-txt">모르겠어요</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','카드불가')"><div class="chk-box"></div><span class="chk-txt">카드불가</span></div>
-        <div class="chk-item" onclick="togglePay(this,'no','현금불가')"><div class="chk-box"></div><span class="chk-txt">현금불가</span></div>
-      </div>
+      <div class="card-grid" id="reg-grid-no"></div>
       <div class="err-txt" id="err-pay-no">결제 불가 수단을 선택해주세요</div>
     </div>
 
@@ -658,6 +636,33 @@ function confirmEtc(){
   document.getElementById('cat-menu').classList.remove('open');
   document.getElementById('cat-dropdown').classList.remove('open');
 }
+// cardOptions 동적 로드
+var _regBaseOk = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드가능','현금가능'];
+var _regBaseNo = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드불가','현금불가'];
+
+function renderRegPayGrid(type) {
+  var cards = type === 'ok' ? _regBaseOk : _regBaseNo;
+  var el = document.getElementById(type === 'ok' ? 'reg-grid-ok' : 'reg-grid-no');
+  if (!el) return;
+  el.innerHTML = cards.map(function(card) {
+    return '<div class="chk-item" onclick="togglePay(this,\''+type+'\',\''+card+'\')">'
+      + '<div class="chk-box"></div><span class="chk-txt">'+card+'</span></div>';
+  }).join('');
+}
+
+getDocs(collection(db, 'cardOptions')).then(function(snap) {
+  snap.forEach(function(d) {
+    var data = d.data();
+    if (data.type === 'ok' && _regBaseOk.indexOf(data.name) < 0) _regBaseOk.push(data.name);
+    if (data.type === 'no' && _regBaseNo.indexOf(data.name) < 0) _regBaseNo.push(data.name);
+  });
+  renderRegPayGrid('ok');
+  renderRegPayGrid('no');
+}).catch(function() {
+  renderRegPayGrid('ok');
+  renderRegPayGrid('no');
+});
+
 function togglePay(el,type,val){
   el.classList.toggle('on');
   var list=type==='ok'?payOkList:payNoList;
