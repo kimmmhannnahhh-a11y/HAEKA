@@ -328,6 +328,15 @@ function showAdmin() {
   document.getElementById('login-wrap').style.display = 'none';
   document.getElementById('admin-wrap').style.display = 'flex';
   _pageHistory = ['dashboard'];
+  // 새로고침 시 마지막 탭 복원
+  try {
+    var lastPage = sessionStorage.getItem('haeka_admin_page');
+    if (lastPage && lastPage !== 'dashboard') {
+      var navEl = document.getElementById('nav-'+lastPage);
+      if (navEl) setTimeout(function(){ goPage(lastPage, navEl); }, 250);
+      return;
+    }
+  } catch(e) {}
 }
 
 // 페이지 로드 시 자동 로그인 체크
@@ -411,6 +420,7 @@ function goPage(name, el) {
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('on'); });
   document.getElementById('page-'+name).classList.add('on');
   el.classList.add('on');
+  try { sessionStorage.setItem('haeka_admin_page', name); } catch(e) {}
   // 해당 탭 뱃지 숨기기 + lastSeen 저장
   if (name === 'edit-req') {
     try { localStorage.setItem('haeka_admin_seen_edit', Date.now()); } catch(e) {}
@@ -743,7 +753,7 @@ async function deleteCardItem(id) {
 
 function showPopupConfirm(msg, cb) {
   var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9999;display:flex;align-items:center;justify-content:center';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99999;display:flex;align-items:center;justify-content:center';
   var box = document.createElement('div');
   box.style.cssText = 'background:#fff;border-radius:16px;width:280px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.15)';
   box.innerHTML = '<div style="padding:24px 20px 16px;text-align:center">'
