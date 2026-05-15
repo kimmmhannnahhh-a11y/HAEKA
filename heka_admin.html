@@ -427,7 +427,7 @@ function fmt(ts) {
 }
 
 function tagBadge(tag) {
-  var map = {'결제정보 오류':'bg-red','카테고리 추가':'bg-blue','기능 제안':'bg-purple','기타':'bg-gray','지도 위치 오류':'bg-red','잘못된 결제 정보':'bg-yellow','매장 정보 오류':'bg-yellow','업데이트':'bg-green','점검':'bg-yellow','이벤트':'bg-purple','공지':'bg-gray'};
+  var map = {'결제정보 오류':'bg-red','지도 위치 오류':'bg-red','매장 정보 오류':'bg-yellow','카테고리 추가':'bg-blue','기능 제안':'bg-purple','기타':'bg-gray','잘못된 결제 정보':'bg-yellow','업데이트':'bg-green','점검':'bg-yellow','이벤트':'bg-purple','공지':'bg-gray'};
   return '<span class="badge '+(map[tag]||'bg-gray')+'">'+tag+'</span>';
 }
 
