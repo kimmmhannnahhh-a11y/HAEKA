@@ -297,8 +297,16 @@ window._fbFns2 = { doc, updateDoc };
 <script>
 var ADMIN_ID = 'haeka_admin';
 var ADMIN_PW = 'haeka2024!';
+var _pageHistory = [];
+var _origGoPage = null;
 
-// 페이지 로드 시 자동 로그인 체크 (module script 로드 후 실행)
+function showAdmin() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('admin-wrap').style.display = 'flex';
+  _pageHistory = ['dashboard'];
+}
+
+// 페이지 로드 시 자동 로그인 체크
 window.addEventListener('load', function() {
   try {
     var saved = localStorage.getItem('haeka_admin_auth');
@@ -307,10 +315,8 @@ window.addEventListener('load', function() {
       var parts = decoded.split(':');
       var sid = parts[0], spw = parts.slice(1).join(':');
       if (sid === ADMIN_ID && spw === ADMIN_PW) {
-        document.getElementById('login-wrap').style.display = 'none';
-        document.getElementById('admin-wrap').style.display = 'flex';
-        _pageHistory = ['dashboard'];
-        setTimeout(loadDashboard, 100);
+        showAdmin();
+        setTimeout(loadDashboard, 200);
       }
     }
   } catch(e) {}
@@ -321,19 +327,15 @@ function doLogin() {
   var pw = document.getElementById('login-pw').value;
   if (id === ADMIN_ID && pw === ADMIN_PW) {
     try { localStorage.setItem('haeka_admin_auth', btoa(id+':'+pw)); } catch(e) {}
-    document.getElementById('login-wrap').style.display = 'none';
-    document.getElementById('admin-wrap').style.display = 'flex';
-    _pageHistory = ['dashboard'];
+    showAdmin();
     history.pushState(null, '', location.href);
-    loadDashboard();
+    setTimeout(loadDashboard, 200);
   } else {
     document.getElementById('login-err').style.display = 'block';
   }
 }
 
 // 뒤로가기 히스토리 관리
-var _pageHistory = [];
-var _origGoPage = null;
 
 window.addEventListener('popstate', function() {
   if (_pageHistory.length > 1) {
