@@ -301,13 +301,8 @@ window._loadNotices = async function() {
       <span class="menu-arr" id="acc-support-arrow">›</span>
     </div>
     <div id="acc-support" style="display:none;background:#fafafa">
-      <div class="menu-item" onclick="openInquiry()" style="padding-left:24px">
-        <div class="menu-txt"><div class="menu-title">1:1 문의 / 제안</div><div class="menu-sub">카테고리 추가·서비스 불편 접수</div></div>
-        <span class="menu-arr">›</span>
-      </div>
-
-      <div class="menu-item" onclick="openErrorReport()" style="padding-left:24px;border-bottom:none">
-        <div class="menu-txt"><div class="menu-title">오류 제보</div><div class="menu-sub">지도 위치 오류·잘못된 결제 정보</div></div>
+      <div class="menu-item" onclick="openInquiry()" style="padding-left:24px;border-bottom:none">
+        <div class="menu-txt"><div class="menu-title">1:1 문의 / 오류제보</div><div class="menu-sub">서비스 불편·오류·제안 접수</div></div>
         <span class="menu-arr">›</span>
       </div>
     </div>
@@ -518,45 +513,26 @@ window._loadNotices = async function() {
     </div>
     <div id="mylist-content" style="overflow-y:auto;flex:1;padding:8px 0"></div>
   </div>
-  <!-- 1:1 문의 패널 -->
+  <!-- 1:1 문의 / 오류제보 패널 -->
   <div id="inquiry-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeInquiry()"></div>
   <div id="inquiry-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
     <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
-      <span style="font-size:15px;font-weight:700;color:#111">1:1 문의 / 제안</span>
+      <span style="font-size:15px;font-weight:700;color:#111">1:1 문의 / 오류제보</span>
       <button onclick="closeInquiry()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
     </div>
     <div style="overflow-y:auto;flex:1;padding:16px">
-      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">문의 유형</div>
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">유형</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
         <button onclick="selectInqType(this,'결제정보 오류')" class="inq-type-btn">결제정보 오류</button>
+        <button onclick="selectInqType(this,'지도 위치 오류')" class="inq-type-btn">지도 위치 오류</button>
+        <button onclick="selectInqType(this,'매장 정보 오류')" class="inq-type-btn">매장 정보 오류</button>
         <button onclick="selectInqType(this,'카테고리 추가')" class="inq-type-btn">카테고리 추가</button>
         <button onclick="selectInqType(this,'기능 제안')" class="inq-type-btn">기능 제안</button>
         <button onclick="selectInqType(this,'기타')" class="inq-type-btn">기타</button>
       </div>
       <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">내용</div>
-      <textarea id="inquiry-txt" placeholder="문의 내용을 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
+      <textarea id="inquiry-txt" placeholder="내용을 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
       <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
-    </div>
-  </div>
-
-  <!-- 오류 제보 패널 -->
-  <div id="errreport-overlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;border-radius:26px" onclick="closeErrorReport()"></div>
-  <div id="errreport-panel" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:201;flex-direction:column;max-height:90%">
-    <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #f0f0f0">
-      <span style="font-size:15px;font-weight:700;color:#111">오류 제보</span>
-      <button onclick="closeErrorReport()" style="background:none;border:none;font-size:20px;color:#888;cursor:pointer;padding:0">✕</button>
-    </div>
-    <div style="overflow-y:auto;flex:1;padding:16px">
-      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">오류 유형</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
-        <button onclick="selectErrType(this,'지도 위치 오류')" class="inq-type-btn">지도 위치 오류</button>
-        <button onclick="selectErrType(this,'잘못된 결제 정보')" class="inq-type-btn">잘못된 결제 정보</button>
-        <button onclick="selectErrType(this,'매장 정보 오류')" class="inq-type-btn">매장 정보 오류</button>
-        <button onclick="selectErrType(this,'기타')" class="inq-type-btn">기타</button>
-      </div>
-      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">상세 내용</div>
-      <textarea id="errreport-txt" placeholder="오류 내용을 자세히 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
-      <button onclick="submitErrorReport()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
     </div>
   </div>
 
@@ -964,27 +940,6 @@ function openNotice() {
 }
 function closeNotice() {}
 
-function openErrorReport() {
-  _errType = '';
-  document.getElementById('errreport-txt').value = '';
-  document.querySelectorAll('#errreport-panel .inq-type-btn').forEach(function(b){ b.classList.remove('on'); });
-  document.getElementById('errreport-overlay').style.display = 'block';
-  document.getElementById('errreport-panel').style.display = 'flex';
-}
-function closeErrorReport() {
-  document.getElementById('errreport-overlay').style.display = 'none';
-  document.getElementById('errreport-panel').style.display = 'none';
-}
-async function submitErrorReport() {
-  if (!_errType) { showToast('오류 유형을 선택해주세요'); return; }
-  var txt = document.getElementById('errreport-txt').value.trim();
-  if (!txt) { showToast('내용을 입력해주세요'); return; }
-  if (window._submitErrorReport) {
-    var ok = await window._submitErrorReport(_errType, txt);
-    if (ok) { closeErrorReport(); showToast('✅ 오류 제보가 접수됐어요!'); }
-    else showToast('오류가 발생했어요. 다시 시도해주세요');
-  }
-}
 
 function openMyList(type) {
   var stores = window._myStores || [];
