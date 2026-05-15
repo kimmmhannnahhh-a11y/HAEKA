@@ -137,6 +137,18 @@ tr:hover td{background:#f9fdf9}
       <div class="card">
         <div class="card-head"><span class="card-title">전체 매장</span><div style="display:flex;gap:6px"><button class="btn-primary" onclick="goPage('add-store',document.getElementById('nav-add-store'))" style="font-size:12px;padding:5px 12px">+ 매장 등록</button><button class="btn-sm" onclick="loadStores()">새로고침</button></div></div>
         <div class="search-bar"><input type="text" id="stores-search" placeholder="매장명 / 도시 검색..." oninput="filterStores(this.value)"/></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 14px">
+          <button id="stores-cat-전체" onclick="setStoresCat('전체')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #1A5D1A;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">전체</button>
+          <button id="stores-cat-식당" onclick="setStoresCat('식당')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🍽 식당</button>
+          <button id="stores-cat-카페" onclick="setStoresCat('카페')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">☕ 카페</button>
+          <button id="stores-cat-편의점" onclick="setStoresCat('편의점')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🏪 편의점</button>
+          <button id="stores-cat-마트" onclick="setStoresCat('마트')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🛒 마트</button>
+          <button id="stores-cat-숙박" onclick="setStoresCat('숙박')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🏨 숙박</button>
+          <button id="stores-cat-쇼핑" onclick="setStoresCat('쇼핑')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🛍 쇼핑</button>
+          <button id="stores-cat-관광" onclick="setStoresCat('관광')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🗺 관광</button>
+          <button id="stores-cat-교통" onclick="setStoresCat('교통')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🚌 교통</button>
+          <button id="stores-cat-기타" onclick="setStoresCat('기타')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">📦 기타</button>
+        </div>
         <table><thead><tr><th>매장명</th><th>카테고리</th><th>도시</th><th>결제 카드</th><th>등록일</th><th>수정/삭제</th></tr></thead>
         <tbody id="stores-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
@@ -519,7 +531,11 @@ function renderStores(list) {
 
 function filterStores(q) {
   var lower = q.toLowerCase();
-  renderStores(_allStores.filter(function(s){ return s.name.toLowerCase().indexOf(lower) > -1 || (s.city||'').toLowerCase().indexOf(lower) > -1; }));
+  renderStores(_allStores.filter(function(s){
+    var textOk = !lower || s.name.toLowerCase().indexOf(lower) > -1 || (s.city||'').toLowerCase().indexOf(lower) > -1;
+    var catOk = _storesCat === '전체' || (s.category||'') === _storesCat;
+    return textOk && catOk;
+  }));
 }
 
 async function loadEditReq() {
@@ -545,6 +561,19 @@ function renderEditReqs(list) {
   });
   document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
+var _storesCat = '전체';
+function setStoresCat(cat) {
+  _storesCat = cat;
+  var cats = ['전체','식당','카페','편의점','마트','숙박','쇼핑','관광','교통','기타'];
+  cats.forEach(function(t) {
+    var btn = document.getElementById('stores-cat-'+t);
+    if (!btn) return;
+    if (t === cat) { btn.style.background='#1A5D1A'; btn.style.color='#fff'; btn.style.borderColor='#1A5D1A'; }
+    else { btn.style.background='#fff'; btn.style.color='#555'; btn.style.borderColor='#e0e0e0'; }
+  });
+  filterStores(document.getElementById('stores-search').value);
+}
+
 var _editReqFilter = 'all';
 function setEditReqFilter(type) {
   _editReqFilter = type;
