@@ -510,7 +510,9 @@ async function loadStores() {
 
 function renderStores(list) {
   var rows = list.map(function(s){
-    var safeName = s.name ? s.name.split("'").join('') : ''; return '<tr><td><b>'+s.name+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td>'+fmt(s.createdAt)+'</td><td style="display:flex;gap:4px"><button class="btn-primary" onclick=\'openStoreModal("'+s.id+'")\'  style="font-size:11px;padding:5px 10px">수정</button><button class="btn-danger" onclick=\'deleteStore("'+s.id+'","'+safeName+'")\' style="font-size:11px;padding:5px 10px">삭제</button></td></tr>';
+    var safeName = s.name ? s.name.split("'").join('') : '';
+    var closedBadge = s.closed ? '<span style="background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;margin-left:5px;vertical-align:middle">폐업</span>' : '';
+    return '<tr'+(s.closed?' style="opacity:.6"':'')+'><td><b>'+s.name+'</b>'+closedBadge+'</td><td>'+tagBadge(s.category||'-')+'</td><td>'+(s.city||'-')+'</td><td style="font-size:11px">'+(s.payOk||[]).slice(0,4).join(', ')+'</td><td>'+fmt(s.createdAt)+'</td><td style="display:flex;gap:4px"><button class="btn-primary" onclick=\'openStoreModal("'+s.id+'")\'  style="font-size:11px;padding:5px 10px">수정</button><button class="btn-danger" onclick=\'deleteStore("'+s.id+'","'+safeName+'")\'  style="font-size:11px;padding:5px 10px">삭제</button></td></tr>';
   });
   document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
