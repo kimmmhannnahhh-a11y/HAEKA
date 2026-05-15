@@ -262,21 +262,12 @@ tr:hover td{background:#f9fdf9}
       <div class="page-sub">유저 문의 및 오류 제보 목록</div>
       <div class="card">
         <div class="card-head">
-          <span class="card-title">
-            <span id="inq-tab-btn" onclick="switchInqTab('inq')" style="cursor:pointer;padding:4px 12px;border-radius:20px;background:#1A5D1A;color:#fff;font-size:12px;margin-right:6px">1:1 문의</span>
-            <span id="err-tab-btn" onclick="switchInqTab('err')" style="cursor:pointer;padding:4px 12px;border-radius:20px;background:#f0f0f0;color:#555;font-size:12px">오류 제보</span>
-          </span>
-          <button class="btn-sm" onclick="reloadInqTab()">새로고침</button>
+          <span class="card-title">전체 목록</span>
+          <button class="btn-sm" onclick="loadInquiries()">새로고침</button>
         </div>
         <div class="search-bar"><input type="text" id="inq-search" placeholder="내용 검색..." oninput="filterCurrent(this.value)"/></div>
-        <div id="inq-tab-panel">
-          <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
-          <tbody id="inq-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
-        </div>
-        <div id="err-tab-panel" style="display:none">
-          <table><thead><tr><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
-          <tbody id="err-tbody"><tr class="empty-row"><td colspan="5">불러오는 중...</td></tr></tbody></table>
-        </div>
+        <table><thead><tr><th>구분</th><th>유형</th><th>내용</th><th>이메일</th><th>접수일</th><th>상태</th></tr></thead>
+        <tbody id="inq-tbody"><tr class="empty-row"><td colspan="6">불러오는 중...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -600,66 +591,51 @@ function filterEditReq(q) {
   renderEditReqs(list);
 }
 
-var _curInqTab = 'inq';
-function switchInqTab(tab) {
-  _curInqTab = tab;
-  document.getElementById('inq-tab-btn').style.background = tab==='inq' ? '#1A5D1A' : '#f0f0f0';
-  document.getElementById('inq-tab-btn').style.color = tab==='inq' ? '#fff' : '#555';
-  document.getElementById('err-tab-btn').style.background = tab==='err' ? '#1A5D1A' : '#f0f0f0';
-  document.getElementById('err-tab-btn').style.color = tab==='err' ? '#fff' : '#555';
-  document.getElementById('inq-tab-panel').style.display = tab==='inq' ? '' : 'none';
-  document.getElementById('err-tab-panel').style.display = tab==='err' ? '' : 'none';
-  document.getElementById('inq-search').value = '';
-}
-function reloadInqTab() {
-  if (_curInqTab === 'inq') loadInquiries(); else loadErrors();
-}
-function filterCurrent(q) {
-  if (_curInqTab === 'inq') filterInquiries(q); else filterErrors(q);
-}
+function filterCurrent(q) { filterInquiries(q); }
+
 async function loadInquiries() {
-  if (!window._db) { setTimeout(loadInquiries, 300); return; }
+  if (!window._db || !window._fbFns) { setTimeout(loadInquiries, 300); return; }
   var db = window._db; var f = window._fbFns;
   try {
-    var snap = await f.getDocs(f.query(f.collection(db,'inquiries'), f.orderBy('createdAt','desc'), f.limit(100)));
+    var inqSnap = await f.getDocs(f.query(f.collection(db,'inquiries'), f.orderBy('createdAt','desc'), f.limit(100)));
+    var errSnap = await f.getDocs(f.query(f.collection(db,'error_reports'), f.orderBy('createdAt','desc'), f.limit(100)));
     _allInquiries = [];
-    snap.forEach(function(d){ _allInquiries.push({id:d.id,...d.data()}); });
+    inqSnap.forEach(function(d){ _allInquiries.push({id:d.id, _col:'inquiries', ...d.data()}); });
+    errSnap.forEach(function(d){ _allInquiries.push({id:d.id, _col:'error_reports', ...d.data()}); });
+    // 최신순 정렬
+    _allInquiries.sort(function(a,b){
+      var at = a.createdAt && a.createdAt.seconds ? a.createdAt.seconds : 0;
+      var bt = b.createdAt && b.createdAt.seconds ? b.createdAt.seconds : 0;
+      return bt - at;
+    });
     renderInquiries(_allInquiries);
-    loadErrors();
   } catch(e) { console.error(e); }
 }
+
 function renderInquiries(list) {
   var rows = list.map(function(r){
     var done = r.resolved;
-    return '<tr><td>'+tagBadge(r.type||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\'inquiries\',\''+r.id+'\',\'inq\')">확인완료</button>')+'</td></tr>';
+    var isErr = r._col === 'error_reports';
+    var divBadge = isErr
+      ? '<span class="badge bg-red" style="font-size:10px">오류제보</span>'
+      : '<span class="badge bg-blue" style="font-size:10px">1:1문의</span>';
+    var type = r.type || r.category || '기타';
+    return '<tr><td>'+divBadge+'</td><td>'+tagBadge(type)+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\''+r._col+'\',\''+r.id+'\',\'inq\')">확인완료</button>')+'</td></tr>';
   });
-  document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
+  document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
+
 function filterInquiries(q) {
   var lower = q.toLowerCase();
-  renderInquiries(_allInquiries.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1; }));
+  renderInquiries(_allInquiries.filter(function(r){
+    return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.type||'').indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1;
+  }));
 }
-async function loadErrors() {
-  if (!window._db) { setTimeout(loadErrors, 300); return; }
-  var db = window._db; var f = window._fbFns;
-  try {
-    var snap = await f.getDocs(f.query(f.collection(db,'error_reports'), f.orderBy('createdAt','desc'), f.limit(100)));
-    _allErrors = [];
-    snap.forEach(function(d){ _allErrors.push({id:d.id,...d.data()}); });
-    renderErrors(_allErrors);
-  } catch(e) { console.error(e); }
-}
-function renderErrors(list) {
-  var rows = list.map(function(r){
-    var done = r.resolved;
-    return '<tr><td>'+tagBadge(r.category||'기타')+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\'error_reports\',\''+r.id+'\',\'err\')">확인완료</button>')+'</td></tr>';
-  });
-  document.getElementById('err-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
-}
-function filterErrors(q) {
-  var lower = q.toLowerCase();
-  renderErrors(_allErrors.filter(function(r){ return (r.content||'').toLowerCase().indexOf(lower)>-1||(r.category||'').indexOf(lower)>-1; }));
-}
+
+// 하위 호환용
+function loadErrors() { loadInquiries(); }
+function renderErrors() {}
+function filterErrors() {}
 
 // ── 매장 삭제 ──
 async function deleteStore(id, name) {
