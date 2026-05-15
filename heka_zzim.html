@@ -305,12 +305,22 @@ function selectCity(country, city){
   });
 })();
 
-function getZzimList(){try{return JSON.parse(localStorage.getItem('haeka_zzim')||'[]');}catch(e){return[];}}
-function saveZzimList(list){try{localStorage.setItem('haeka_zzim',JSON.stringify(list));}catch(e){}}
+function getZzimList(){
+  if(window._currentUser&&window._zzimStores)return window._zzimStores.slice();
+  try{return JSON.parse(localStorage.getItem('haeka_zzim')||'[]');}catch(e){return[];}
+}
+async function saveZzimList(list){
+  if(window._currentUser&&window._db){
+    window._zzimStores=list;
+    try{await window._setDoc(window._doc(window._db,'zzim',window._currentUser.uid),{stores:list},{merge:true});}catch(e){console.error(e);}
+  } else {
+    try{localStorage.setItem('haeka_zzim',JSON.stringify(list));}catch(e){}
+  }
+}
 
-function removeZzim(id){
+async function removeZzim(id){
   var list=getZzimList().filter(function(s){return s.id!==id;});
-  saveZzimList(list); _allStores=list;
+  await saveZzimList(list); _allStores=list;
   renderCountryChips(_allStores); doFilter();
   showToast('찜 목록에서 삭제됐어요');
 }
@@ -419,7 +429,7 @@ function goToDetail(){var id=window._currentStoreId;window.location.href='heka_s
 function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
 
 function init(){
-  try{var cached=sessionStorage.getItem('haeka_gps');if(cached){var c=JSON.parse(cached);userLat=c.lat;userLng=c.lng;}}catch(e){}
+  try{var cached=sessionStorage.getItem('haeka_gps');if(cached){var cv=JSON.parse(cached);userLat=cv.lat;userLng=cv.lng;}}catch(e){}
   _allStores=getZzimList();
   renderCountryChips(_allStores);
   doFilter();
@@ -429,7 +439,57 @@ function init(){
     function(){},{timeout:5000,maximumAge:60000}
   );
 }
-window.addEventListener('DOMContentLoaded',init);
+window.addEventListener('DOMContentLoaded', function(){
+  // Firebase 로드 대기 (최대 1.5초) 후 init
+  var waited = 0;
+  var checkFb = setInterval(function(){
+    waited += 100;
+    if(window._fbReady || waited >= 1500){
+      clearInterval(checkFb);
+      init();
+    }
+  }, 100);
+});
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+window._db = db;
+window._setDoc = setDoc;
+window._doc = doc;
+onAuthStateChanged(auth, async u => {
+  window._currentUser = u;
+  if (u) {
+    try {
+      var snap = await getDoc(doc(db, 'zzim', u.uid));
+      var local = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
+      if (local.length > 0) {
+        var existing = (snap.exists() && snap.data().stores) ? snap.data().stores : [];
+        var existIds = existing.map(function(s){ return s.id; });
+        var merged = existing.slice();
+        local.forEach(function(s){ if(existIds.indexOf(s.id)===-1) merged.unshift(s); });
+        await setDoc(doc(db,'zzim',u.uid), { stores: merged }, { merge: true });
+        localStorage.removeItem('haeka_zzim');
+        window._zzimStores = merged;
+      } else {
+        window._zzimStores = snap.exists() ? (snap.data().stores || []) : [];
+      }
+    } catch(e) { console.error('zzim load:', e); }
+  }
+  window._fbReady = true;
+});
 </script>
 </body>
 </html>
