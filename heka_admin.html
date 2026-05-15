@@ -544,18 +544,16 @@ async function applyEditReq(id) {
   if (!confirm('이 수정 요청을 매장에 바로 반영할까요?')) return;
   try {
     var updateData = {};
-    if (req.payOk && req.payOk.length) updateData.payOk = req.payOk;
-    if (req.payNo && req.payNo.length) updateData.payNo = req.payNo;
+    // payOk/payNo - undefined 아니면 무조건 반영 (현금가능 등 포함)
+    if (req.payOk !== undefined) updateData.payOk = req.payOk || [];
+    if (req.payNo !== undefined) updateData.payNo = req.payNo || [];
     if (req.isClosed) updateData.closed = true;
-    // stores 컬렉션에 반영
-    if (Object.keys(updateData).length) {
-      await updateDoc(docFn(db, 'stores', req.storeId), updateData);
-    }
-    // editRequests resolved 처리
+    console.log('[applyEditReq] storeId:', req.storeId, 'data:', JSON.stringify(updateData));
+    await updateDoc(docFn(db, 'stores', req.storeId), updateData);
     await updateDoc(docFn(db, 'editRequests', id), { resolved: true, adminApplied: true });
-    alert('✅ 반영 완료! 매장 정보가 업데이트됐어요.');
+    alert('반영 완료! 매장 정보가 업데이트됐어요.');
     loadEditReq();
-  } catch(e) { alert('오류: '+e.message); }
+  } catch(e) { console.error(e); alert('오류: '+e.message); }
 }
 
 async function resolveDoc(colName, id, type) {
