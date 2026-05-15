@@ -636,33 +636,37 @@ function confirmEtc(){
   document.getElementById('cat-menu').classList.remove('open');
   document.getElementById('cat-dropdown').classList.remove('open');
 }
-// cardOptions 동적 로드
-var _regBaseOk = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드가능','현금가능'];
-var _regBaseNo = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','모르겠어요','카드불가','현금불가'];
+// cardOptions에서 동적 로드 (Firestore 단일 소스)
+var _regBaseOk = [];
+var _regBaseNo = [];
 
 function renderRegPayGrid(type) {
   var cards = type === 'ok' ? _regBaseOk : _regBaseNo;
   var el = document.getElementById(type === 'ok' ? 'reg-grid-ok' : 'reg-grid-no');
   if (!el) return;
+  if (!cards.length) {
+    el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center;grid-column:1/-1">불러오는 중...</div>';
+    return;
+  }
   el.innerHTML = cards.map(function(card) {
     return '<div class="chk-item" onclick="togglePay(this,\''+type+'\',\''+card+'\')">'
       + '<div class="chk-box"></div><span class="chk-txt">'+card+'</span></div>';
   }).join('');
 }
 
-// 기본 카드 즉시 렌더링 (DB 로드 전)
 renderRegPayGrid('ok');
 renderRegPayGrid('no');
 
-// cardOptions에서 추가 카드 불러와서 합치기
 getDocs(collection(db, 'cardOptions')).then(function(snap) {
-  var changed = false;
+  _regBaseOk = [];
+  _regBaseNo = [];
   snap.forEach(function(d) {
     var data = d.data();
-    if (data.type === 'ok' && _regBaseOk.indexOf(data.name) < 0) { _regBaseOk.push(data.name); changed = true; }
-    if (data.type === 'no' && _regBaseNo.indexOf(data.name) < 0) { _regBaseNo.push(data.name); changed = true; }
+    if (data.type === 'ok') _regBaseOk.push(data.name);
+    if (data.type === 'no') _regBaseNo.push(data.name);
   });
-  if (changed) { renderRegPayGrid('ok'); renderRegPayGrid('no'); }
+  renderRegPayGrid('ok');
+  renderRegPayGrid('no');
 }).catch(function(e) { console.error('cardOptions load:', e); });
 
 function togglePay(el,type,val){

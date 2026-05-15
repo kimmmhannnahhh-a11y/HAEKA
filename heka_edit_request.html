@@ -102,21 +102,24 @@ let submitting = false;
 
 onAuthStateChanged(auth, u => { currentUser = u; });
 
-// cardOptions 동적 로드 후 그리드 렌더링
-var _baseOk = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금가능','카드가능','모르겠어요'];
-var _baseNo = ['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금불가','카드불가'];
+// cardOptions 단일 소스 로드
+var _baseOk = [];
+var _baseNo = [];
 
 function renderPayGrid(type, existingSelected) {
   var cards = type === 'ok' ? _baseOk : _baseNo;
   var gridId = type === 'ok' ? 'grid-ok' : 'grid-no';
   var el = document.getElementById(gridId);
   if (!el) return;
+  if (!cards.length) {
+    el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center;grid-column:1/-1">불러오는 중...</div>';
+    return;
+  }
   el.innerHTML = cards.map(function(card) {
     var isOn = existingSelected && existingSelected.indexOf(card) > -1;
     var onClass = isOn ? (type==='no' ? ' on red' : ' on') : '';
     return '<div class="chk-item'+onClass+'" onclick="togglePay(this,\''+type+'\',\''+card+'\')">' + '<div class="chk-box"></div><span class="chk-txt">'+card+'</span></div>';
   }).join('');
-  // 미리 선택된 항목 payList에 추가
   if (existingSelected) {
     existingSelected.forEach(function(v) {
       if (type === 'ok' && payOkList.indexOf(v) === -1 && cards.indexOf(v) > -1) payOkList.push(v);
@@ -126,10 +129,11 @@ function renderPayGrid(type, existingSelected) {
 }
 
 getDocs(collection(db, 'cardOptions')).then(function(snap) {
+  _baseOk = []; _baseNo = [];
   snap.forEach(function(d) {
     var data = d.data();
-    if (data.type === 'ok' && _baseOk.indexOf(data.name) < 0) _baseOk.push(data.name);
-    if (data.type === 'no' && _baseNo.indexOf(data.name) < 0) _baseNo.push(data.name);
+    if (data.type === 'ok') _baseOk.push(data.name);
+    if (data.type === 'no') _baseNo.push(data.name);
   });
   renderPayGrid('ok', null);
   renderPayGrid('no', null);
