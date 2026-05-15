@@ -275,15 +275,19 @@ async function loadStores() {
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
-      // 동영상 미리 로드
-      var firstVideoStore = allStores.find(function(s){ return s.videoUrl; });
-      if(firstVideoStore){
-        var preloadVid = document.createElement('video');
-        preloadVid.src = firstVideoStore.videoUrl;
-        preloadVid.preload = 'auto';
-        preloadVid.muted = true;
-        preloadVid.load();
-      }
+      // 핫플 동영상 모두 백그라운드 미리 버퍼링
+      var hotplCandidates = allStores.filter(function(s){ return (s.images && s.images[0]) || s.videoUrl; }).slice(0, 10);
+      hotplCandidates.forEach(function(s) {
+        if (s.videoUrl) {
+          var pv = document.createElement('video');
+          pv.src = s.videoUrl;
+          pv.preload = 'auto';
+          pv.muted = true;
+          pv.playsInline = true;
+          pv.load();
+          s._preloadedVideo = pv; // 재사용용 캐시
+        }
+      });
       initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
     }
@@ -342,48 +346,27 @@ onSnapshot(postsQ, function(snapshot){
 });
 
 function initGPS() {
-  // 캐싱된 GPS 있으면 즉시 사용 후 바로 로드
+  // 스토어 즉시 로드 (핫플 배너 바로 표시)
+  loadStores();
+
+  // GPS는 주변매장 정렬용으로만 백그라운드에서 받기
+  if (!navigator.geolocation) return;
   try {
     var cached = sessionStorage.getItem('haeka_gps');
     if (cached) {
       var c = JSON.parse(cached);
       userLat = c.lat; userLng = c.lng;
-      loadStores();
-      // 백그라운드로 GPS 갱신
-      if (!navigator.geolocation) return;
-      navigator.geolocation.getCurrentPosition(
-        function(p) {
-          userLat = p.coords.latitude; userLng = p.coords.longitude;
-          try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
-          if (allStores.length > 0) renderNearby(sortByDistance(allStores));
-        },
-        function() {},
-        { timeout: 5000, maximumAge: 60000 }
-      );
-      return;
+      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
     }
   } catch(e) {}
-
-  // 캐시 없으면 GPS 먼저 받고 로드 (최대 3초 대기)
-  if (!navigator.geolocation) { loadStores(); return; }
-  var gpsReceived = false;
-  var timer = setTimeout(function() {
-    if (!gpsReceived) loadStores();
-  }, 3000);
   navigator.geolocation.getCurrentPosition(
     function(p) {
-      gpsReceived = true;
-      clearTimeout(timer);
       userLat = p.coords.latitude; userLng = p.coords.longitude;
       try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
-      loadStores();
+      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
     },
-    function() {
-      gpsReceived = true;
-      clearTimeout(timer);
-      loadStores();
-    },
-    { timeout: 3000, maximumAge: 60000 }
+    function() {},
+    { timeout: 5000, maximumAge: 60000 }
   );
 }
 
@@ -440,7 +423,8 @@ function renderHotplSlide() {
 
   var media;
   if(store.videoUrl){
-    media = document.createElement('video');
+    // 미리 버퍼링된 video 재사용 → 즉시 재생
+    media = store._preloadedVideo || document.createElement('video');
     media.src = store.videoUrl;
     media.autoplay = true;
     media.muted = true;
@@ -449,6 +433,7 @@ function renderHotplSlide() {
     media.setAttribute('preload','auto');
     media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer';
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
+    media.play().catch(function(){});
   } else if(store.images && store.images[0]){
     media = document.createElement('img');
     media.src = store.images[0];
