@@ -731,13 +731,33 @@ async function addCardItem(type) {
 }
 
 async function deleteCardItem(id) {
-  if (!confirm('삭제할까요?\n등록/수정 화면에서도 자동으로 사라져요.')) return;
-  if (!window._db || !window._fbFns) return;
-  var f = window._fbFns;
-  try {
-    await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
-    loadCards();
-  } catch(e) { alert('삭제 실패: '+e.message); }
+  showPopupConfirm('이 카드 항목을 삭제할까요?\n등록·수정 화면에서도 자동으로 사라져요.', async function() {
+    if (!window._db || !window._fbFns) return;
+    var f = window._fbFns;
+    try {
+      await f.deleteDoc(f.doc(window._db, 'cardOptions', id));
+      loadCards();
+    } catch(e) { alert('삭제 실패: '+e.message); }
+  });
+}
+
+function showPopupConfirm(msg, cb) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9999;display:flex;align-items:center;justify-content:center';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;width:280px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.15)';
+  box.innerHTML = '<div style="padding:24px 20px 16px;text-align:center">'
+    + '<div style="font-size:15px;font-weight:700;color:#111;margin-bottom:8px">삭제 확인</div>'
+    + '<div style="font-size:12.5px;color:#999;line-height:1.7;white-space:pre-line">'+msg+'</div>'
+    + '</div>'
+    + '<div style="display:flex;border-top:1px solid #f2f2f2">'
+    + '<button id="_popup_cancel" style="flex:1;padding:14px;background:none;border:none;font-size:13px;color:#aaa;cursor:pointer;border-right:1px solid #f2f2f2;font-family:inherit">취소</button>'
+    + '<button id="_popup_ok" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:700;color:#dc2626;cursor:pointer;font-family:inherit">삭제</button>'
+    + '</div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  document.getElementById('_popup_cancel').onclick = function() { document.body.removeChild(overlay); };
+  document.getElementById('_popup_ok').onclick = function() { document.body.removeChild(overlay); cb(); };
 }
 
 // ── 매장 직접 등록 ──
