@@ -264,6 +264,17 @@ window._doVerifySMS = async function(code) {
   }
 };
 
+// 이메일 중복 체크 (Firebase fetchSignInMethodsForEmail)
+window._checkEmailExists = async function(email) {
+  try {
+    var { fetchSignInMethodsForEmail } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
+    var methods = await fetchSignInMethodsForEmail(auth, email);
+    return { exists: methods.length > 0 };
+  } catch(e) {
+    return { exists: false };
+  }
+};
+
 window._doSendResetEmail = async function(email) {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -960,6 +971,7 @@ function checkNick() {
   }
 }
 
+var _emailCheckTimer = null;
 function checkEmail() {
   var val = document.getElementById('inp-email').value.trim();
   var errEl = document.getElementById('email-error');
@@ -971,12 +983,25 @@ function checkEmail() {
     errEl.textContent = '올바른 이메일 형식을 입력해주세요'; errEl.classList.add('show');
     okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // 하드코딩 중복 체크
   if (usedEmails.indexOf(val) > -1) {
     errEl.textContent = '이미 사용 중인 이메일이에요'; errEl.classList.add('show');
-    okEl.classList.remove('show'); inp.classList.add('error');
-  } else {
-    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+    okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // Firebase 실시간 중복 체크 (디바운스 500ms)
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  if (_emailCheckTimer) clearTimeout(_emailCheckTimer);
+  _emailCheckTimer = setTimeout(function() {
+    if (!window._checkEmailExists) { okEl.classList.add('show'); inp.classList.remove('error'); return; }
+    window._checkEmailExists(val).then(function(res) {
+      if (res.exists) {
+        errEl.textContent = '이미 사용 중인 이메일이에요'; errEl.classList.add('show');
+        okEl.classList.remove('show'); inp.classList.add('error');
+      } else {
+        errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+      }
+    });
+  }, 500);
 }
 
 function checkPw() {
