@@ -802,13 +802,28 @@ function renderCardList(type) {
       };
     })(item.id, badgeEl, colorPickerInput, saveColorBtn);
 
+    // 수정 버튼
+    var editBtn = document.createElement('button');
+    editBtn.textContent = '✏';
+    editBtn.title = '카드명 수정';
+    editBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#bbb;font-size:13px;padding:0 3px;flex-shrink:0;transition:.1s';
+    editBtn.onmouseover = function(){ this.style.color='#1A5D1A'; };
+    editBtn.onmouseout = function(){ this.style.color='#bbb'; };
+    (function(cid, cname, badge){
+      editBtn.onclick = function() {
+        var newName = prompt('카드명을 수정하세요', cname);
+        if (!newName || !newName.trim() || newName.trim() === cname) return;
+        renameCardItem(cid, newName.trim(), badge);
+      };
+    })(item.id, item.name, badgeEl);
+
     var delBtn = document.createElement('button');
     delBtn.textContent = '×';
     delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#ccc;font-size:20px;line-height:1;padding:0 4px;flex-shrink:0';
     delBtn.onmouseover = function(){ this.style.color='#dc2626'; };
     delBtn.onmouseout = function(){ this.style.color='#ccc'; };
     (function(cid,cname){ delBtn.onclick = function(){ deleteCardItem(cid,cname); }; })(item.id, item.name);
-    row.appendChild(handleEl); row.appendChild(badgeEl); row.appendChild(colorPickerInput); row.appendChild(saveColorBtn); row.appendChild(delBtn);
+    row.appendChild(handleEl); row.appendChild(badgeEl); row.appendChild(colorPickerInput); row.appendChild(saveColorBtn); row.appendChild(editBtn); row.appendChild(delBtn);
     // 드래그 이벤트
     row.addEventListener('dragstart', function(e) {
       _dragSrc = {id: item.id, type: type, idx: idx};
@@ -862,6 +877,16 @@ async function addCardItem(type) {
     inp.value = '';
     loadCards();
   } catch(e) { alert('추가 실패: '+e.message); }
+}
+
+async function renameCardItem(id, newName, badgeEl) {
+  if (!window._db || !window._fbFns) return;
+  var f = window._fbFns;
+  try {
+    await f.updateDoc(f.doc(window._db, 'cardOptions', id), { name: newName });
+    if (badgeEl) badgeEl.textContent = newName;
+    loadCards();
+  } catch(e) { alert('수정 실패: ' + e.message); }
 }
 
 async function updateCardColor(id, color) {
