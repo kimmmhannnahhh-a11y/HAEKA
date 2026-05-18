@@ -780,20 +780,27 @@ function renderCardList(type) {
     badgeEl.textContent = item.name;
     badgeEl.style.cssText = 'display:inline-block;background:'+bg+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:1';
 
-    // 컬러 스와치 버튼 (항목 옆, 항상 보임)
+    // 컬러 스와치 + 저장 버튼 (색상 바꾼 후 저장 눌러야 반영)
     var colorPickerInput = document.createElement('input');
     colorPickerInput.type = 'color';
     colorPickerInput.value = bg;
-    colorPickerInput.title = '색상 변경';
+    colorPickerInput.title = '색상 선택';
     colorPickerInput.style.cssText = 'width:26px;height:26px;border:2px solid #e0e0e0;border-radius:6px;cursor:pointer;padding:1px;background:#fff;flex-shrink:0;box-sizing:border-box';
-    (function(cid, badge, inp){
+
+    var saveColorBtn = document.createElement('button');
+    saveColorBtn.textContent = '저장';
+    saveColorBtn.style.cssText = 'display:none;padding:3px 8px;font-size:11px;font-weight:700;background:#1A5D1A;color:#fff;border:none;border-radius:6px;cursor:pointer;flex-shrink:0;font-family:inherit';
+
+    (function(cid, badge, inp, saveBtn){
       inp.oninput = function() {
         badge.style.background = inp.value;
+        saveBtn.style.display = 'inline-block';
       };
-      inp.onchange = function() {
+      saveBtn.onclick = function() {
         updateCardColor(cid, inp.value);
+        saveBtn.style.display = 'none';
       };
-    })(item.id, badgeEl, colorPickerInput);
+    })(item.id, badgeEl, colorPickerInput, saveColorBtn);
 
     var delBtn = document.createElement('button');
     delBtn.textContent = '×';
@@ -801,7 +808,7 @@ function renderCardList(type) {
     delBtn.onmouseover = function(){ this.style.color='#dc2626'; };
     delBtn.onmouseout = function(){ this.style.color='#ccc'; };
     (function(cid,cname){ delBtn.onclick = function(){ deleteCardItem(cid,cname); }; })(item.id, item.name);
-    row.appendChild(handleEl); row.appendChild(badgeEl); row.appendChild(colorPickerInput); row.appendChild(delBtn);
+    row.appendChild(handleEl); row.appendChild(badgeEl); row.appendChild(colorPickerInput); row.appendChild(saveColorBtn); row.appendChild(delBtn);
     // 드래그 이벤트
     row.addEventListener('dragstart', function(e) {
       _dragSrc = {id: item.id, type: type, idx: idx};
