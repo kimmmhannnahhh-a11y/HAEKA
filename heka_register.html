@@ -146,6 +146,7 @@ const storage = getStorage(app);
 window._db = db;
 window._storage = storage;
 window._collection = collection;
+window._getDocs = getDocs;
 window._addDoc = addDoc;
 window._serverTimestamp = serverTimestamp;
 
@@ -657,17 +658,34 @@ function renderRegPayGrid(type) {
 renderRegPayGrid('ok');
 renderRegPayGrid('no');
 
-getDocs(collection(db, 'cardOptions')).then(function(snap) {
-  _regBaseOk = [];
-  _regBaseNo = [];
-  snap.forEach(function(d) {
-    var data = d.data();
-    if (data.type === 'ok') _regBaseOk.push(data.name);
-    if (data.type === 'no') _regBaseNo.push(data.name);
+function loadCardOptions() {
+  if (!window._getDocs || !window._db || !window._collection) {
+    setTimeout(loadCardOptions, 150);
+    return;
+  }
+  window._getDocs(window._collection(window._db, 'cardOptions')).then(function(snap) {
+    _regBaseOk = [];
+    _regBaseNo = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      if (data.type === 'ok') _regBaseOk.push(data.name);
+      if (data.type === 'no') _regBaseNo.push(data.name);
+    });
+    // cardOptions가 비어있으면 기본값 사용
+    if (!_regBaseOk.length) _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
+    if (!_regBaseNo.length) _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
+    renderRegPayGrid('ok');
+    renderRegPayGrid('no');
+  }).catch(function(e) {
+    console.error('cardOptions load:', e);
+    // 에러 시 기본값으로 폴백
+    _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
+    _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
+    renderRegPayGrid('ok');
+    renderRegPayGrid('no');
   });
-  renderRegPayGrid('ok');
-  renderRegPayGrid('no');
-}).catch(function(e) { console.error('cardOptions load:', e); });
+}
+loadCardOptions();
 
 function togglePay(el,type,val){
   el.classList.toggle('on');
@@ -677,6 +695,7 @@ function togglePay(el,type,val){
   document.getElementById('err-pay-'+type).classList.remove('show');
 }
 function openMedia(){ document.getElementById('gallery-input').click(); }
+function openCamera(){ document.getElementById('camera-input').click(); }
 function closeMedia(){document.getElementById('media-overlay').classList.remove('open');}
 function openGallery(){ document.getElementById('gallery-input').click(); }
 function openVideo(){ document.getElementById('gallery-input').click(); }
