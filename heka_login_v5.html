@@ -199,18 +199,26 @@ window._doFirebaseLogin = async function(email, pw) {
 // 리다이렉트 결과 처리 (모바일 복귀 시)
 getRedirectResult(auth).then(function(result) {
   if (result && result.user) {
-    try { localStorage.setItem('haeka_uid', result.user.uid); localStorage.setItem('haeka_email', result.user.email||''); } catch(e){}
-    window.location.replace('heka_home_v5.html');
+    try {
+      localStorage.setItem('haeka_uid', result.user.uid);
+      localStorage.setItem('haeka_email', result.user.email||'');
+      localStorage.setItem('haeka_nick', result.user.displayName||'');
+    } catch(e){}
+    window.location.href = 'heka_home_v5.html';
   }
-}).catch(function(e){ console.error(e); });
+}).catch(function(e){
+  console.error('redirect error:', e.code, e.message);
+  alert('구글 로그인 오류: ' + e.code);
+});
 
 window._doGoogleLogin = async function() {
   try {
     var provider = new GoogleAuthProvider();
     var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
+      provider.setCustomParameters({ prompt: "select_account" });
       await signInWithRedirect(auth, provider);
-      return { ok: false }; // 리다이렉트라 여기서 끝
+      return { ok: false };
     }
     var result = await signInWithPopup(auth, provider);
     try{
