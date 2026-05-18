@@ -414,16 +414,8 @@ function showAdmin() {
 // 페이지 로드 시 자동 로그인 체크
 window.addEventListener('load', function() {
   try {
-    var saved = localStorage.getItem('haeka_admin_auth');
-    if (saved) {
-      var decoded = atob(saved);
-      var parts = decoded.split(':');
-      var sid = parts[0], spw = parts.slice(1).join(':');
-      if (sid === ADMIN_ID && spw === ADMIN_PW) {
-        showAdmin();
-        setTimeout(loadDashboard, 200);
-      }
-    }
+    // 기존 저장된 auth 초기화 (로그인 버튼 안 먹히는 문제 해결)
+    localStorage.removeItem('haeka_admin_auth');
   } catch(e) {}
 });
 
@@ -432,9 +424,16 @@ function doLogin() {
   var pw = document.getElementById('login-pw').value;
   if (id === ADMIN_ID && pw === ADMIN_PW) {
     try { localStorage.setItem('haeka_admin_auth', btoa(id+':'+pw)); } catch(e) {}
+    document.getElementById('login-err').style.display = 'none';
     showAdmin();
     history.pushState(null, '', location.href);
-    setTimeout(loadDashboard, 200);
+    // Firebase 준비될 때까지 대기
+    var tries = 0;
+    var waitFb = setInterval(function() {
+      tries++;
+      if (window._db) { clearInterval(waitFb); loadDashboard(); }
+      else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
+    }, 100);
   } else {
     document.getElementById('login-err').style.display = 'block';
   }
@@ -1307,13 +1306,13 @@ function renderMembers(list) {
       : '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">정상</span>';
     var joinDate = m.createdAt ? m.createdAt.slice(0,10) : '-';
     return '<tr style="opacity:'+(status==='banned'?'0.5':'1')+'">'
-      + '<td style="text-align:center;cursor:pointer" onclick="toggleFav(''+m.id+'')">' + (isFav ? '⭐' : '☆') + '</td>'
+      + '<td style="text-align:center;cursor:pointer" onclick="toggleFav(\''+m.id+'\')">' + (isFav ? '⭐' : '☆') + '</td>'
       + '<td><b>' + (m.nick||'-') + '</b></td>'
       + '<td style="font-size:12px;color:#666">' + (m.email||'-') + '</td>'
       + '<td style="font-size:12px">' + (m.phone||'-') + '</td>'
       + '<td style="font-size:12px;color:#888">' + joinDate + '</td>'
       + '<td>' + statusBadge + '</td>'
-      + '<td><button class="btn-sm" onclick="openMemberModal('' + m.id + '')">상세</button></td>'
+      + '<td><button class="btn-sm" onclick="openMemberModal(\''+m.id+'\')">상세</button></td>'
       + '</tr>';
   }).join('');
 }
