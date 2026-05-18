@@ -1260,6 +1260,8 @@ function saveMemberLocal() {
 
 async function loadAllMembers() {
   loadMemberLocal();
+  if (!window._db || !window._fbFns) { setTimeout(loadAllMembers, 300); return; }
+  var db = window._db;
   var f = window._fbFns;
   var tbody = document.getElementById('member-tbody');
   var empty = document.getElementById('member-empty');
