@@ -418,8 +418,32 @@ function showAdmin() {
 // 페이지 로드 시 자동 로그인 체크
 window.addEventListener('load', function() {
   try {
-    // 기존 저장된 auth 초기화 (로그인 버튼 안 먹히는 문제 해결)
-    localStorage.removeItem('haeka_admin_auth');
+    var saved = localStorage.getItem('haeka_admin_auth');
+    if (saved) {
+      var decoded = atob(saved);
+      var parts = decoded.split(':');
+      var sid = parts[0], spw = parts.slice(1).join(':');
+      if (sid === ADMIN_ID && spw === ADMIN_PW) {
+        showAdmin();
+        // Firebase 준비될 때까지 대기 후 대시보드 로드
+        var tries = 0;
+        var waitFb = setInterval(function() {
+          tries++;
+          if (window._db) { clearInterval(waitFb); loadDashboard(); }
+          else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
+        }, 100);
+        // 마지막 탭 복원
+        try {
+          var lastPage = sessionStorage.getItem('haeka_admin_page');
+          if (lastPage && lastPage !== 'dashboard') {
+            setTimeout(function(){
+              var navEl = document.getElementById('nav-'+lastPage);
+              if (navEl) goPage(lastPage, navEl);
+            }, 500);
+          }
+        } catch(e) {}
+      }
+    }
   } catch(e) {}
 });
 
