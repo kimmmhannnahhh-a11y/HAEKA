@@ -174,6 +174,10 @@ tr:hover td{background:#f9fdf9}
           <input id="member-search-inp" type="text" placeholder="검색어 입력..."
             style="flex:1;min-width:160px;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none"
             onkeydown="if(event.key==='Enter')searchMembers()"/>
+          <select id="member-sort" onchange="sortAndRender()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none">
+            <option value="newest">가입 최신순</option>
+            <option value="oldest">가입 오래된순</option>
+          </select>
           <button class="btn-primary" onclick="searchMembers()" style="font-size:13px;padding:8px 16px">검색</button>
           <button class="btn-sm" onclick="loadAllMembers()">전체 보기</button>
         </div>
@@ -1276,6 +1280,17 @@ async function loadAllMembers() {
   }
 }
 
+function sortAndRender() {
+  var sort = document.getElementById('member-sort') ? document.getElementById('member-sort').value : 'newest';
+  var list = _allMembers.slice();
+  list.sort(function(a,b){
+    var da = a.createdAt || '';
+    var db2 = b.createdAt || '';
+    return sort === 'newest' ? db2.localeCompare(da) : da.localeCompare(db2);
+  });
+  renderMembers(list);
+}
+
 function searchMembers() {
   var type = document.getElementById('member-search-type').value;
   var keyword = document.getElementById('member-search-inp').value.trim().toLowerCase();
@@ -1411,6 +1426,8 @@ function saveMemo(uid) {
 async function setMemberStatus(uid, status) {
   var label = status === 'banned' ? '강퇴' : status === 'suspended' ? '정지' : '정상 복구';
   if (!confirm(label + ' 처리하시겠어요?')) return;
+  if (!window._db || !window._fbFns) { alert('Firebase 연결 중이에요. 잠시 후 다시 시도해주세요.'); return; }
+  var db = window._db;
   var f = window._fbFns;
   try {
     await f.updateDoc(f.doc(db, 'users', uid), { status: status });
