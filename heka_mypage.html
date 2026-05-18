@@ -139,7 +139,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -149,7 +149,26 @@ const _app = initializeApp({
 });
 const _db = getFirestore(_app);
 const _auth = getAuth(_app);
-onAuthStateChanged(_auth, function(u){ window._currentUser = u||null; if(u) try{localStorage.setItem('haeka_uid',u.uid);localStorage.setItem('haeka_email',u.email||'');}catch(e){} });
+onAuthStateChanged(_auth, async function(u){
+  window._currentUser = u||null;
+  if(u) {
+    try{localStorage.setItem('haeka_uid',u.uid);localStorage.setItem('haeka_email',u.email||'');}catch(e){}
+    // Firestore에서 닉네임 불러오기
+    try {
+      var uDoc = await getDoc(doc(_db,'users',u.uid));
+      if(uDoc.exists()) {
+        var uData = uDoc.data();
+        if(uData.nick) {
+          userData.nick = uData.nick;
+          var el = document.getElementById('nick-txt');
+          if(el) el.textContent = uData.nick;
+          try { var saved = JSON.parse(localStorage.getItem('haeka_user')||'{}'); saved.nick = uData.nick; localStorage.setItem('haeka_user', JSON.stringify(saved)); } catch(e){}
+        }
+        if(uData.phone) { userData.phone = uData.phone; }
+      }
+    } catch(e){ console.log('nick load err:', e); }
+  }
+});
 
 window._deleteAccount = async function() {
   var user = _auth.currentUser;
@@ -246,7 +265,7 @@ window._loadNotices = async function() {
         </div>
         <div class="profile-info">
           <div class="nick-row">
-            <span class="nick" id="nick-txt">김한아</span>
+            <span class="nick" id="nick-txt">로딩 중...</span>
             <button class="nick-edit-btn" onclick="openNickEdit()">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -557,7 +576,7 @@ function getBadge(count) {
 
 // ── 상태 ──
 var userData = {
-  nick: '김한아',
+  nick: localStorage.getItem('haeka_nick') || '닉네임',
   bio: '',
   reportCount: 3,
   placeCount: 5,
