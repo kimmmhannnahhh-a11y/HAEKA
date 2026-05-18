@@ -724,12 +724,12 @@ window.openFirebaseDetail = async function(store) {
 };
 
 window.initGPS = initGPS;
-window.addEventListener('DOMContentLoaded', function() {
-  if (typeof initGPS === 'function') initGPS();
-});
-// module 로드가 DOMContentLoaded보다 늦을 경우 대비
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setTimeout(initGPS, 0);
+// module script는 defer 실행이라 DOMContentLoaded 이미 지났을 수 있음
+// readyState 체크해서 즉시 or 리스너 등록
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGPS);
+} else {
+  initGPS();
 }
 // PC 브라우저 뒤로가기 캐시 대응 - 페이지 다시 보일 때 하트 상태 재동기화
 window.addEventListener('pageshow', function(e) {
