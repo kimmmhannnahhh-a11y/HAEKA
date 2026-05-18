@@ -177,7 +177,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -186,6 +186,39 @@ const app = initializeApp({
   appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
 });
 const auth = getAuth(app);
+// reCAPTCHA 초기화 (보이지 않는 방식)
+window._initRecaptcha = function(btnId) {
+  if (window._recaptchaVerifier) {
+    try { window._recaptchaVerifier.clear(); } catch(e) {}
+  }
+  window._recaptchaVerifier = new RecaptchaVerifier(auth, btnId, { size: 'invisible' });
+};
+
+window._doSendSMS = async function(phoneNumber) {
+  try {
+    if (!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'send-btn', { size: 'invisible' });
+    }
+    var result = await signInWithPhoneNumber(auth, phoneNumber, window._recaptchaVerifier);
+    window._confirmationResult = result;
+    return { ok: true };
+  } catch(e) {
+    console.error(e);
+    try { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; } catch(e2) {}
+    return { ok: false, code: e.code, message: e.message };
+  }
+};
+
+window._doVerifySMS = async function(code) {
+  try {
+    if (!window._confirmationResult) return { ok: false, code: 'no-result' };
+    var result = await window._confirmationResult.confirm(code);
+    return { ok: true, user: result.user };
+  } catch(e) {
+    return { ok: false, code: e.code };
+  }
+};
+
 window._doSendResetEmail = async function(email) {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -615,7 +648,6 @@ var currentStep = 1;
 var timerInterval = null;
 var timerSec = 180;
 var codeVerified = false;
-var CODE_MOCK = '123456'; // 테스트용 인증번호
 
 // 중복 DB (데모)
 var usedNicks = ['여행왕', '도쿄마스터', 'heka'];
@@ -697,22 +729,37 @@ function selectCarrier(el) {
 }
 
 function sendCode() {
-  var phone = document.getElementById('inp-phone').value.trim();
+  var phone = document.getElementById('inp-phone').value.trim().replace(/-/g, '');
   if (!phone) { showPopup('📱', '휴대폰 번호를 입력해주세요', '번호를 먼저 입력해주세요.', '확인'); return; }
-  document.getElementById('code-group').style.display = 'block';
-  document.getElementById('verify-btn').disabled = false;
-  document.getElementById('verify-btn').className = 'btn-primary';
-  document.getElementById('send-btn').textContent = '재발송';
-  // 타이머 시작
-  if (timerInterval) clearInterval(timerInterval);
-  timerSec = 180;
-  updateTimer();
-  timerInterval = setInterval(function() {
-    timerSec--;
-    updateTimer();
-    if (timerSec <= 0) { clearInterval(timerInterval); document.getElementById('timer-txt').textContent = '만료'; }
-  }, 1000);
-  showPopup('📨', '인증번호를 발송했어요', '테스트 코드: ' + CODE_MOCK + '\n(실제 서비스에서는 SMS로 전송)', '확인');
+  // 한국 번호 포맷 (+82)
+  var e164 = phone.startsWith('0') ? '+82' + phone.slice(1) : (phone.startsWith('+') ? phone : '+82' + phone);
+  if (!window._doSendSMS) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.textContent = '발송 중...';
+  window._doSendSMS(e164).then(function(res) {
+    btn.disabled = false;
+    if (res.ok) {
+      document.getElementById('code-group').style.display = 'block';
+      document.getElementById('verify-btn').disabled = false;
+      document.getElementById('verify-btn').className = 'btn-primary';
+      btn.textContent = '재발송';
+      if (timerInterval) clearInterval(timerInterval);
+      timerSec = 180;
+      updateTimer();
+      timerInterval = setInterval(function() {
+        timerSec--;
+        updateTimer();
+        if (timerSec <= 0) { clearInterval(timerInterval); document.getElementById('timer-txt').textContent = '만료'; }
+      }, 1000);
+      showPopup('📨', '인증번호를 발송했어요', 'SMS로 6자리 인증번호를 보냈어요.', '확인');
+    } else {
+      btn.textContent = '인증번호 받기';
+      if (res.code === 'auth/invalid-phone-number') alert('올바른 휴대폰 번호를 입력해주세요');
+      else if (res.code === 'auth/too-many-requests') alert('잠시 후 다시 시도해주세요');
+      else alert('오류: ' + (res.code || res.message));
+    }
+  });
 }
 
 function updateTimer() {
@@ -724,15 +771,34 @@ function updateTimer() {
 function verifyCode() {
   var code = document.getElementById('inp-code').value.trim();
   var errEl = document.getElementById('code-error');
-  if (code === CODE_MOCK) {
-    clearInterval(timerInterval);
-    errEl.classList.remove('show');
-    codeVerified = true;
-    showPopup('✅', '인증 완료!', '본인 인증이 완료되었어요.', '다음으로', function(){ goStep(3); });
-  } else {
-    errEl.classList.add('show');
-    document.getElementById('inp-code').classList.add('error');
-  }
+  if (!code) { errEl.classList.add('show'); return; }
+  if (!window._doVerifySMS) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('verify-btn');
+  btn.disabled = true;
+  btn.textContent = '확인 중...';
+  window._doVerifySMS(code).then(function(res) {
+    btn.disabled = false;
+    btn.textContent = '확인';
+    if (res.ok) {
+      clearInterval(timerInterval);
+      errEl.classList.remove('show');
+      codeVerified = true;
+      // 인증된 전화번호 저장
+      try { localStorage.setItem('haeka_phone', document.getElementById('inp-phone').value.trim()); } catch(e) {}
+      showPopup('✅', '인증 완료!', '본인 인증이 완료되었어요.', '다음으로', function(){ goStep(3); });
+    } else {
+      btn.textContent = '확인';
+      if (res.code === 'auth/invalid-verification-code') {
+        errEl.textContent = '인증번호가 올바르지 않아요';
+        errEl.classList.add('show');
+        document.getElementById('inp-code').classList.add('error');
+      } else if (res.code === 'auth/code-expired') {
+        alert('인증번호가 만료됐어요. 재발송해주세요');
+      } else {
+        alert('오류: ' + res.code);
+      }
+    }
+  });
 }
 
 /* ══ STEP 3 ══ */
