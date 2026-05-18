@@ -666,13 +666,16 @@ function loadCardOptions() {
   }
   // onSnapshot으로 실시간 연동 - 관리자에서 추가/삭제 즉시 반영
   window._onSnapshot(window._collection(window._db, 'cardOptions'), function(snap) {
-    _regBaseOk = [];
-    _regBaseNo = [];
+    var okArr = [], noArr = [];
     snap.forEach(function(d) {
       var data = d.data();
-      if (data.type === 'ok') _regBaseOk.push(data.name);
-      if (data.type === 'no') _regBaseNo.push(data.name);
+      if (data.type === 'ok') okArr.push({name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
+      if (data.type === 'no') noArr.push({name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
     });
+    okArr.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+    noArr.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+    _regBaseOk = okArr.map(function(x){ return x.name; });
+    _regBaseNo = noArr.map(function(x){ return x.name; });
     if (!_regBaseOk.length) _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
     if (!_regBaseNo.length) _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
     renderRegPayGrid('ok');
