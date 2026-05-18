@@ -127,7 +127,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -147,6 +147,7 @@ window._db = db;
 window._storage = storage;
 window._collection = collection;
 window._getDocs = getDocs;
+window._onSnapshot = onSnapshot;
 window._addDoc = addDoc;
 window._serverTimestamp = serverTimestamp;
 
@@ -659,11 +660,12 @@ renderRegPayGrid('ok');
 renderRegPayGrid('no');
 
 function loadCardOptions() {
-  if (!window._getDocs || !window._db || !window._collection) {
+  if (!window._onSnapshot || !window._db || !window._collection) {
     setTimeout(loadCardOptions, 150);
     return;
   }
-  window._getDocs(window._collection(window._db, 'cardOptions')).then(function(snap) {
+  // onSnapshot으로 실시간 연동 - 관리자에서 추가/삭제 즉시 반영
+  window._onSnapshot(window._collection(window._db, 'cardOptions'), function(snap) {
     _regBaseOk = [];
     _regBaseNo = [];
     snap.forEach(function(d) {
@@ -671,14 +673,12 @@ function loadCardOptions() {
       if (data.type === 'ok') _regBaseOk.push(data.name);
       if (data.type === 'no') _regBaseNo.push(data.name);
     });
-    // cardOptions가 비어있으면 기본값 사용
     if (!_regBaseOk.length) _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
     if (!_regBaseNo.length) _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
     renderRegPayGrid('ok');
     renderRegPayGrid('no');
-  }).catch(function(e) {
-    console.error('cardOptions load:', e);
-    // 에러 시 기본값으로 폴백
+  }, function(e) {
+    console.error('cardOptions listen:', e);
     _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
     _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
     renderRegPayGrid('ok');
