@@ -177,7 +177,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 </style>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -196,29 +196,11 @@ window._doFirebaseLogin = async function(email, pw) {
     return false;
   }
 };
-// 리다이렉트 결과 처리 (모바일 복귀 시)
-// 모바일 redirect 복귀 처리
-getRedirectResult(auth).then(function(result) {
-  if (result && result.user) {
-    try {
-      localStorage.setItem('haeka_uid', result.user.uid);
-      localStorage.setItem('haeka_email', result.user.email||'');
-      localStorage.setItem('haeka_nick', result.user.displayName||'');
-    } catch(e){}
-    window.location.href = 'heka_home_v5.html';
-  }
-}).catch(function(e){ console.error(e); });
+
 
 window._doGoogleLogin = async function() {
   try {
     var provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
-    // 모바일: redirect, PC: popup
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      localStorage.setItem('haeka_google_pending', '1');
-      await signInWithRedirect(auth, provider);
-      return { ok: false };
-    }
     var result = await signInWithPopup(auth, provider);
     try{
       localStorage.setItem('haeka_uid', result.user.uid);
@@ -557,8 +539,7 @@ var legalContent={privacy:{title:'개인정보처리방침',body:'<b>해카 개�
 function openLegal(type){var c=legalContent[type];document.getElementById('legal-title').textContent=c.title;document.getElementById('legal-body').innerHTML=c.body;document.getElementById('legal-overlay').classList.add('open');}
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
 function doGoogleLogin() {
-  alert('구글 버튼 클릭됨. _doGoogleLogin 준비: ' + (typeof window._doGoogleLogin));
-  if (!window._doGoogleLogin) { alert('Firebase 로딩 중. 잠시 후 다시 시도해주세요'); return; }
+  if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
   window._doGoogleLogin().then(function(res) {
     if (res.ok) showToastAndGoHome('✅ Google 로그인 완료!');
   });
