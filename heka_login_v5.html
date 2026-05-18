@@ -189,7 +189,7 @@ window._db = db;
 window._fbFns = { collection, query, where, getDocs };
 
 // 회원가입 - Firebase Auth + Firestore 저장
-window._doSignup = async function(email, pw, nick, phone) {
+window._doSignup = async function(email, pw, nick, phone, name, birth) {
   try {
     var cred = await createUserWithEmailAndPassword(auth, email, pw);
     var uid = cred.user.uid;
@@ -198,6 +198,8 @@ window._doSignup = async function(email, pw, nick, phone) {
       email: email,
       nick: nick,
       phone: phone || '',
+      name: name || '',
+      birth: birth || '',
       createdAt: new Date().toISOString()
     });
     return { ok: true, uid: uid };
@@ -1057,8 +1059,12 @@ function doJoin() {
   var btn = document.getElementById('join-btn');
   btn.disabled = true; btn.textContent = '처리 중...';
   var phone = '';
+  var name = '';
+  var birth = '';
   try { phone = document.getElementById('inp-phone').value.trim(); } catch(e) {}
-  window._doSignup(email, pw, nick, phone).then(function(res) {
+  try { name = document.getElementById('inp-name').value.trim(); } catch(e) {}
+  try { birth = document.getElementById('inp-birth').value.trim(); } catch(e) {}
+  window._doSignup(email, pw, nick, phone, name, birth).then(function(res) {
     btn.disabled = false; btn.textContent = '가입 완료';
     if (res.ok) {
       try { localStorage.setItem('haeka_uid', res.uid); localStorage.setItem('haeka_nick', nick); } catch(e) {}
