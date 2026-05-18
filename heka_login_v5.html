@@ -420,9 +420,9 @@ window._doGoogleLogin = async function() {
         <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600">휴대폰 번호</div>
         <div style="display:flex;gap:8px">
           <input id="findid-phone" type="tel" placeholder="010-0000-0000"
-            style="flex:1;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
+            style="flex:1;min-width:0;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
             onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"/>
-          <button id="findid-send-btn" onclick="sendFindIdCode()" style="padding:0 16px;background:#1A5D1A;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">인증번호 받기</button>
+          <button id="findid-send-btn" onclick="sendFindIdCode()" style="flex-shrink:0;padding:0 12px;height:48px;background:#1A5D1A;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">인증번호<br>받기</button>
         </div>
       </div>
       <div id="findid-code-group" style="display:none;margin-bottom:16px">
