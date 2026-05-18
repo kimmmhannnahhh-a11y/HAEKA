@@ -328,12 +328,10 @@ async function renderStore(store) {
   var noCards = (store.payNo || []);
   if (noCards.length) {
     document.getElementById('cards-no-section').style.display = 'block';
-var specialCards = ['모르겠어요','현금불가','카드불가'];
+var noColorMap = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','현금불가':'#b71c1c','카드불가':'#c62828','모르겠어요':'#9e9e9e'};
 document.getElementById('cards-no').innerHTML = noCards.map(function(c){
-  if(specialCards.indexOf(c) > -1){
-    return '<div class="card-chip-no">'+c+'</div>';
-  }
-  return '<div class="card-chip-no">⚠️ '+c+' 결제 실패 사례 있음</div>';
+  var bg = noColorMap[c] || '#888';
+  return '<div class="card-chip" style="background:'+bg+';opacity:0.75"><div class="card-dot"></div>'+c+'</div>';
 }).join('');
   }
 
