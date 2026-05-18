@@ -264,12 +264,12 @@ window._doVerifySMS = async function(code) {
   }
 };
 
-// 이메일 중복 체크 (Firebase fetchSignInMethodsForEmail)
+// 이메일 중복 체크 (Firestore users 컬렉션에서 직접 확인)
 window._checkEmailExists = async function(email) {
   try {
-    var { fetchSignInMethodsForEmail } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
-    var methods = await fetchSignInMethodsForEmail(auth, email);
-    return { exists: methods.length > 0 };
+    var q = query(collection(db, 'users'), where('email', '==', email));
+    var snap = await getDocs(q);
+    return { exists: !snap.empty };
   } catch(e) {
     return { exists: false };
   }
