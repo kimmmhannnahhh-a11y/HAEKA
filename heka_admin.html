@@ -809,13 +809,13 @@ function renderCardList(type) {
     editBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#bbb;font-size:13px;padding:0 3px;flex-shrink:0;transition:.1s';
     editBtn.onmouseover = function(){ this.style.color='#1A5D1A'; };
     editBtn.onmouseout = function(){ this.style.color='#bbb'; };
-    (function(cid, cname, badge){
+    (function(cid, cname, badge, currentBg){
       editBtn.onclick = function() {
         var newName = prompt('카드명을 수정하세요', cname);
         if (!newName || !newName.trim() || newName.trim() === cname) return;
-        renameCardItem(cid, newName.trim(), badge);
+        renameCardItem(cid, newName.trim(), badge, currentBg);
       };
-    })(item.id, item.name, badgeEl);
+    })(item.id, item.name, badgeEl, bg);
 
     var delBtn = document.createElement('button');
     delBtn.textContent = '×';
@@ -879,11 +879,12 @@ async function addCardItem(type) {
   } catch(e) { alert('추가 실패: '+e.message); }
 }
 
-async function renameCardItem(id, newName, badgeEl) {
+async function renameCardItem(id, newName, badgeEl, currentColor) {
   if (!window._db || !window._fbFns) return;
   var f = window._fbFns;
   try {
-    await f.updateDoc(f.doc(window._db, 'cardOptions', id), { name: newName });
+    // 현재 보여지는 색상도 color 필드에 저장 (이름 바뀌어도 색상 유지)
+    await f.updateDoc(f.doc(window._db, 'cardOptions', id), { name: newName, color: currentColor || null });
     if (badgeEl) badgeEl.textContent = newName;
     loadCards();
   } catch(e) { alert('수정 실패: ' + e.message); }
