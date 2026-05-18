@@ -557,7 +557,8 @@ var legalContent={privacy:{title:'개인정보처리방침',body:'<b>해카 개�
 function openLegal(type){var c=legalContent[type];document.getElementById('legal-title').textContent=c.title;document.getElementById('legal-body').innerHTML=c.body;document.getElementById('legal-overlay').classList.add('open');}
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
 function doGoogleLogin() {
-  if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  alert('구글 버튼 클릭됨. _doGoogleLogin 준비: ' + (typeof window._doGoogleLogin));
+  if (!window._doGoogleLogin) { alert('Firebase 로딩 중. 잠시 후 다시 시도해주세요'); return; }
   window._doGoogleLogin().then(function(res) {
     if (res.ok) showToastAndGoHome('✅ Google 로그인 완료!');
   });
