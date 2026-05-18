@@ -197,18 +197,21 @@ window._doFirebaseLogin = async function(email, pw) {
   }
 };
 // 리다이렉트 결과 처리 (모바일 복귀 시)
-getRedirectResult(auth).then(function(result) {
-  alert('redirect result: ' + (result ? (result.user ? result.user.email : 'no user') : 'null'));
-  if (result && result.user) {
-    try {
-      localStorage.setItem('haeka_uid', result.user.uid);
-      localStorage.setItem('haeka_email', result.user.email||'');
-      localStorage.setItem('haeka_nick', result.user.displayName||'');
-    } catch(e){}
-    window.location.href = 'heka_home_v5.html';
-  }
-}).catch(function(e){
-  alert('redirect error: ' + e.code + ' / ' + e.message);
+// 페이지 로드 완료 후 redirect 결과 처리
+window.addEventListener('load', function() {
+  getRedirectResult(auth).then(function(result) {
+    alert('redirect result: ' + (result ? (result.user ? result.user.email : 'no user') : 'null'));
+    if (result && result.user) {
+      try {
+        localStorage.setItem('haeka_uid', result.user.uid);
+        localStorage.setItem('haeka_email', result.user.email||'');
+        localStorage.setItem('haeka_nick', result.user.displayName||'');
+      } catch(e){}
+      window.location.href = 'heka_home_v5.html';
+    }
+  }).catch(function(e){
+    alert('redirect error: ' + e.code + ' / ' + e.message);
+  });
 });
 
 window._doGoogleLogin = async function() {
