@@ -127,10 +127,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .field-ok.show{display:block}
 .field-hint{font-size:10px;color:#bbb}
 
-/* 통신사 칩 */
-.carrier-row{display:flex;gap:5px}
-.carrier-chip{flex:1;padding:8px 4px;border-radius:16px;font-size:10px;font-weight:600;border:1.5px solid #e0e0e0;background:#fff;color:#717171;cursor:pointer;text-align:center;font-family:inherit;transition:.15s}
-.carrier-chip.on{background:#1A5D1A;border-color:#1A5D1A;color:#fff}
+
 
 /* 인증번호 */
 .input-row{display:flex;gap:7px}
@@ -188,6 +185,8 @@ const app = initializeApp({
 });
 const auth = getAuth(app);
 const db = getFirestore(app);
+window._db = db;
+window._fbFns = { collection, query, where, getDocs };
 
 // 회원가입 - Firebase Auth + Firestore 저장
 window._doSignup = async function(email, pw, nick, phone) {
@@ -555,15 +554,7 @@ window._doGoogleLogin = async function() {
         <div class="field-label">생년월일</div>
         <input class="field-input" id="inp-birth" placeholder="YYYY / MM / DD" type="text"/>
       </div>
-      <div class="field-group">
-        <div class="field-label">통신사</div>
-        <div class="carrier-row">
-          <button class="carrier-chip on" onclick="selectCarrier(this)">SKT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">KT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">LG U+</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">알뜰폰</button>
-        </div>
-      </div>
+
       <div class="field-group">
         <div class="field-label">휴대폰 번호</div>
         <div class="input-row">
@@ -877,11 +868,6 @@ function step1Next() {
 }
 
 /* ══ STEP 2 ══ */
-function selectCarrier(el) {
-  el.closest('.carrier-row').querySelectorAll('.carrier-chip').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
-
 function sendCode() {
   var phone = document.getElementById('inp-phone').value.trim().replace(/-/g, '');
   if (!phone) { showPopup('📱', '휴대폰 번호를 입력해주세요', '번호를 먼저 입력해주세요.', '확인'); return; }
@@ -956,6 +942,7 @@ function verifyCode() {
 }
 
 /* ══ STEP 3 ══ */
+var _nickCheckTimer = null;
 function checkNick() {
   var val = document.getElementById('inp-nick').value;
   document.getElementById('nick-count').textContent = val.length + '/20';
@@ -963,12 +950,26 @@ function checkNick() {
   var okEl = document.getElementById('nick-ok');
   var inp = document.getElementById('inp-nick');
   if (!val) { errEl.classList.remove('show'); okEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  // 하드코딩 중복 체크
   if (usedNicks.indexOf(val) > -1) {
     errEl.textContent = '이미 사용 중인 닉네임이에요'; errEl.classList.add('show');
-    okEl.classList.remove('show'); inp.classList.add('error');
-  } else {
-    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+    okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // Firestore 실시간 중복 체크 (디바운스 500ms)
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  if (_nickCheckTimer) clearTimeout(_nickCheckTimer);
+  _nickCheckTimer = setTimeout(function() {
+    if (!window._fbFns || !window._db) { okEl.classList.add('show'); inp.classList.remove('error'); return; }
+    var f = window._fbFns;
+    f.getDocs(f.query(f.collection(window._db, 'users'), f.where('nick', '==', val))).then(function(snap) {
+      if (!snap.empty) {
+        errEl.textContent = '이미 사용 중인 닉네임이에요'; errEl.classList.add('show');
+        okEl.classList.remove('show'); inp.classList.add('error');
+      } else {
+        errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+      }
+    }).catch(function(){ okEl.classList.add('show'); inp.classList.remove('error'); });
+  }, 500);
 }
 
 var _emailCheckTimer = null;
