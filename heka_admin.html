@@ -331,7 +331,7 @@ window._storage = storage;
 window._storageRef = ref;
 window._uploadBytes = uploadBytes;
 window._getDownloadURL = getDownloadURL;
-window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp };
+window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp, updateDoc };
 window._fbFns2 = { doc, updateDoc };
 // Firebase 준비 완료 이벤트
 window.dispatchEvent(new Event('fbReady'));
@@ -729,9 +729,11 @@ async function loadCards() {
     _cardOkList = []; _cardNoList = [];
     snap.forEach(function(d) {
       var data = d.data();
-      if (data.type === 'ok') _cardOkList.push({id: d.id, name: data.name});
-      if (data.type === 'no') _cardNoList.push({id: d.id, name: data.name});
+      if (data.type === 'ok') _cardOkList.push({id: d.id, name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
+      if (data.type === 'no') _cardNoList.push({id: d.id, name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
     });
+    _cardOkList.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+    _cardNoList.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
     renderCardList('ok');
     renderCardList('no');
   } catch(e) { console.error('loadCards error:', e); }
@@ -757,14 +759,70 @@ function renderCardList(type) {
     el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center">등록된 카드가 없어요</div>';
     return;
   }
-  var html = list.map(function(item) {
+  el.innerHTML = '';
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;width:100%';
+  list.forEach(function(item, idx) {
     var bg = _getCardColor(item.name);
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #f5f5f5;width:100%;box-sizing:border-box;">'
-      + '<span style="display:inline-block;background:'+bg+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap">'+item.name+'</span>'
-      + '<button onclick="deleteCardItem(''+item.id+'',''+item.name+'')" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:20px;line-height:1;padding:0 4px" onmouseover="this.style.color='#dc2626'" onmouseout="this.style.color='#ccc'">×</button>'
-      + '</div>';
-  }).join('');
-  el.innerHTML = '<div style="display:flex;flex-direction:column;width:100%">'+html+'</div>';
+    var row = document.createElement('div');
+    row.dataset.id = item.id;
+    row.dataset.type = type;
+    row.dataset.idx = idx;
+    row.draggable = true;
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 4px;border-bottom:1px solid #f5f5f5;width:100%;box-sizing:border-box;cursor:grab;transition:background .15s';
+    var handleEl = document.createElement('span');
+    handleEl.textContent = '⠿';
+    handleEl.style.cssText = 'color:#ccc;font-size:14px;cursor:grab;padding:0 2px;flex-shrink:0';
+    var badgeEl = document.createElement('span');
+    badgeEl.textContent = item.name;
+    badgeEl.style.cssText = 'display:inline-block;background:'+bg+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:1';
+    var delBtn = document.createElement('button');
+    delBtn.textContent = '×';
+    delBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:#ccc;font-size:20px;line-height:1;padding:0 4px;flex-shrink:0';
+    delBtn.onmouseover = function(){ this.style.color='#dc2626'; };
+    delBtn.onmouseout = function(){ this.style.color='#ccc'; };
+    (function(cid,cname){ delBtn.onclick = function(){ deleteCardItem(cid,cname); }; })(item.id, item.name);
+    row.appendChild(handleEl); row.appendChild(badgeEl); row.appendChild(delBtn);
+    // 드래그 이벤트
+    row.addEventListener('dragstart', function(e) {
+      _dragSrc = {id: item.id, type: type, idx: idx};
+      row.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', function() { row.style.opacity = '1'; });
+    row.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      wrap.querySelectorAll('[data-type]').forEach(function(r){ r.style.background=''; });
+      row.style.background = '#f0f9f0';
+    });
+    row.addEventListener('dragleave', function() { row.style.background = ''; });
+    row.addEventListener('drop', function(e) {
+      e.preventDefault();
+      row.style.background = '';
+      if (!_dragSrc || _dragSrc.type !== type || _dragSrc.idx === idx) return;
+      var lst = type === 'ok' ? _cardOkList : _cardNoList;
+      var moved = lst.splice(_dragSrc.idx, 1)[0];
+      lst.splice(idx, 0, moved);
+      renderCardList(type);
+      saveCardOrder(type);
+    });
+    wrap.appendChild(row);
+  });
+  el.appendChild(wrap);
+}
+
+var _dragSrc = null;
+
+async function saveCardOrder(type) {
+  var list = type === 'ok' ? _cardOkList : _cardNoList;
+  var f = window._fbFns;
+  if (!f || !window._db) return;
+  try {
+    await Promise.all(list.map(function(item, idx) {
+      return f.updateDoc(f.doc(window._db, 'cardOptions', item.id), { sortOrder: idx });
+    }));
+  } catch(e) { console.error('순서 저장 오류:', e); }
 }
 
 async function addCardItem(type) {
