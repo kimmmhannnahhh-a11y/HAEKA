@@ -1334,7 +1334,7 @@ function openMemberModal(uid) {
     + '<div style="width:44px;height:44px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">' + (m.nick||'?')[0] + '</div>'
     + '<div><div style="font-size:16px;font-weight:800">' + (m.nick||'-') + '</div>'
     + '<div style="font-size:12px;color:#888">' + (m.email||'-') + '</div></div>'
-    + '<button onclick="toggleFavModal('' + uid + '')" style="margin-left:auto;background:none;border:none;font-size:22px;cursor:pointer">' + (isFav?'⭐':'☆') + '</button>'
+    + '<button onclick="toggleFavModal(\''+uid+'\')" style="margin-left:auto;background:none;border:none;font-size:22px;cursor:pointer">' + (isFav?'⭐':'☆') + '</button>'
     + '</div>'
     + '<div style="background:#f9fafb;border-radius:10px;padding:14px;margin-bottom:14px;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
     + '<div><span style="color:#888">이름</span><br><b>' + (m.name||'-') + '</b></div>'
@@ -1346,16 +1346,45 @@ function openMemberModal(uid) {
     + '<div style="margin-bottom:14px">'
     + '<div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px">메모</div>'
     + '<textarea id="member-memo-inp" placeholder="관리자 메모 입력..." style="width:100%;height:70px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;resize:none;outline:none;box-sizing:border-box">' + memo + '</textarea>'
-    + '<button onclick="saveMemo('' + uid + '')" style="margin-top:6px;padding:6px 14px;background:#1A5D1A;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">메모 저장</button>'
+    + '<button onclick="saveMemo(\''+uid+'\')" style="margin-top:6px;padding:6px 14px;background:#1A5D1A;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">메모 저장</button>'
     + '</div>'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    + (status !== 'suspended' && status !== 'banned' ? '<button onclick="setMemberStatus('' + uid + '','suspended')" style="flex:1;padding:10px;background:#fef3c7;color:#d97706;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">⏸ 계정 정지</button>' : '')
-    + (status === 'suspended' ? '<button onclick="setMemberStatus('' + uid + '','active')" style="flex:1;padding:10px;background:#dcfce7;color:#16a34a;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">▶ 정지 해제</button>' : '')
-    + (status !== 'banned' ? '<button onclick="setMemberStatus('' + uid + '','banned')" style="flex:1;padding:10px;background:#fee2e2;color:#dc2626;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🚫 강퇴</button>' : '')
-    + (status === 'banned' ? '<button onclick="setMemberStatus('' + uid + '','active')" style="flex:1;padding:10px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">↩ 강퇴 취소</button>' : '')
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap" id="member-action-btns">'
     + '</div>';
 
   document.getElementById('member-modal-body').innerHTML = body;
+  // 버튼 따옴표 충돌 방지 - JS로 버튼 동적 생성
+  var btnWrap = document.getElementById('member-action-btns');
+  if (btnWrap) {
+    var _s = m.status || 'active';
+    if (_s !== 'suspended' && _s !== 'banned') {
+      var b1 = document.createElement('button');
+      b1.style.cssText = 'flex:1;padding:10px;background:#fef3c7;color:#d97706;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+      b1.textContent = '⏸ 계정 정지';
+      b1.onclick = function(){ setMemberStatus(uid, 'suspended'); };
+      btnWrap.appendChild(b1);
+    }
+    if (_s === 'suspended') {
+      var b2 = document.createElement('button');
+      b2.style.cssText = 'flex:1;padding:10px;background:#dcfce7;color:#16a34a;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+      b2.textContent = '▶ 정지 해제';
+      b2.onclick = function(){ setMemberStatus(uid, 'active'); };
+      btnWrap.appendChild(b2);
+    }
+    if (_s !== 'banned') {
+      var b3 = document.createElement('button');
+      b3.style.cssText = 'flex:1;padding:10px;background:#fee2e2;color:#dc2626;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+      b3.textContent = '🚫 강퇴';
+      b3.onclick = function(){ setMemberStatus(uid, 'banned'); };
+      btnWrap.appendChild(b3);
+    }
+    if (_s === 'banned') {
+      var b4 = document.createElement('button');
+      b4.style.cssText = 'flex:1;padding:10px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+      b4.textContent = '↩ 강퇴 취소';
+      b4.onclick = function(){ setMemberStatus(uid, 'active'); };
+      btnWrap.appendChild(b4);
+    }
+  }
   document.getElementById('member-modal-overlay').style.display = 'block';
   document.getElementById('member-modal').style.display = 'block';
 }
