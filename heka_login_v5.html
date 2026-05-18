@@ -287,7 +287,25 @@ window._doSendResetEmail = async function(email) {
 window._doFirebaseLogin = async function(email, pw) {
   try {
     var result = await signInWithEmailAndPassword(auth, email, pw);
-    try{ localStorage.setItem('haeka_uid', result.user.uid); localStorage.setItem('haeka_email', result.user.email||''); }catch(e){}
+    var uid = result.user.uid;
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var status = uDoc.data().status;
+        if (status === 'suspended') {
+          await auth.signOut();
+          alert('정지된 계정이에요. 문의사항은 고객센터로 연락해주세요.');
+          return false;
+        }
+        if (status === 'banned') {
+          await auth.signOut();
+          alert('강퇴된 계정이에요. 서비스 이용이 불가합니다.');
+          return false;
+        }
+      }
+    } catch(e2) { console.log('status check err:', e2); }
+    try{ localStorage.setItem('haeka_uid', uid); localStorage.setItem('haeka_email', result.user.email||''); }catch(e){}
     return true;
   } catch(e) {
     alert('오류: ' + e.code + ' / ' + e.message);
@@ -300,8 +318,24 @@ window._doGoogleLogin = async function() {
   try {
     var provider = new GoogleAuthProvider();
     var result = await signInWithPopup(auth, provider);
+    var uid = result.user.uid;
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var status = uDoc.data().status;
+        if (status === 'suspended') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '정지된 계정이에요. 문의사항은 고객센터로 연락해주세요.' };
+        }
+        if (status === 'banned') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '강퇴된 계정이에요. 서비스 이용이 불가합니다.' };
+        }
+      }
+    } catch(e2) { console.log('status check err:', e2); }
     try{
-      localStorage.setItem('haeka_uid', result.user.uid);
+      localStorage.setItem('haeka_uid', uid);
       localStorage.setItem('haeka_email', result.user.email||'');
       localStorage.setItem('haeka_nick', result.user.displayName||'');
     }catch(e){}
@@ -779,6 +813,7 @@ function closeLegal(){document.getElementById('legal-overlay').classList.remove(
 function doGoogleLogin() {
   if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
   window._doGoogleLogin().then(function(res) {
+    if (res.blocked) { alert(res.msg); return; }
     if (res.ok) showToastAndGoHome('✅ Google 로그인 완료!');
   });
 }
