@@ -1414,6 +1414,60 @@ function renderCategories() {
 }
 
 
+function openEditCat(id, name, emoji) {
+  var old2 = document.getElementById('edit-cat-overlay');
+  if (old2) old2.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'edit-cat-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:flex;align-items:center;justify-content:center';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;padding:24px;width:340px;max-width:90vw';
+  // 제목
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:16px;font-weight:800;margin-bottom:16px';
+  title.textContent = '업종 수정';
+  box.appendChild(title);
+  // 입력 영역
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:12px';
+  var emojiInput = document.createElement('input');
+  emojiInput.id = 'edit-cat-emoji';
+  emojiInput.type = 'hidden';
+  emojiInput.value = emoji;
+  var emojiBtn = document.createElement('button');
+  emojiBtn.id = 'edit-cat-emoji-btn';
+  emojiBtn.style.cssText = 'width:52px;height:40px;border:1px solid #e5e7eb;border-radius:8px;font-size:20px;background:#fff;cursor:pointer';
+  emojiBtn.textContent = emoji;
+  emojiBtn.onclick = function(){ toggleEmojiPicker('edit-cat-emoji-picker'); };
+  var nameInput = document.createElement('input');
+  nameInput.id = 'edit-cat-name';
+  nameInput.type = 'text';
+  nameInput.value = name;
+  nameInput.style.cssText = 'flex:1;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none';
+  row.appendChild(emojiInput); row.appendChild(emojiBtn); row.appendChild(nameInput);
+  box.appendChild(row);
+  // 이모지 피커
+  var picker = document.createElement('div');
+  picker.id = 'edit-cat-emoji-picker';
+  picker.style.cssText = 'display:none;flex-wrap:wrap;gap:6px;padding:4px 0 12px';
+  box.appendChild(picker);
+  // 버튼
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:8px';
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'flex:1;padding:10px;background:#f3f4f6;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+  cancelBtn.textContent = '취소';
+  cancelBtn.onclick = function(){ overlay.remove(); };
+  var saveBtn = document.createElement('button');
+  saveBtn.style.cssText = 'flex:1;padding:10px;background:#1A5D1A;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+  saveBtn.textContent = '저장';
+  saveBtn.onclick = function(){ saveCatEdit(id); };
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(saveBtn);
+  box.appendChild(btnRow);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
 async function saveCatEdit(id) {
   var emoji = document.getElementById('edit-cat-emoji').value;
   var name = document.getElementById('edit-cat-name').value.trim();
