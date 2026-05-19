@@ -1367,7 +1367,45 @@ function renderCategories() {
     listEl.innerHTML = ''; emptyEl.style.display = 'block'; return;
   }
   emptyEl.style.display = 'none';
-  // (동적 생성으로 대체됨)
+  listEl.innerHTML = '';
+  _categories.forEach(function(cat, i) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb';
+    var emojiEl = document.createElement('span');
+    emojiEl.style.cssText = 'font-size:22px;width:32px;text-align:center';
+    emojiEl.textContent = cat.emoji||'📦';
+    var nameEl = document.createElement('span');
+    nameEl.style.cssText = 'flex:1;font-size:14px;font-weight:600';
+    nameEl.textContent = cat.name;
+    var btnWrap = document.createElement('div');
+    btnWrap.style.cssText = 'display:flex;gap:6px';
+    if (i > 0) {
+      var bUp = document.createElement('button');
+      bUp.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px';
+      bUp.textContent = '▲';
+      bUp.onclick = (function(id){ return function(){ moveCat(id,-1); }; })(cat.id);
+      btnWrap.appendChild(bUp);
+    }
+    if (i < _categories.length-1) {
+      var bDown = document.createElement('button');
+      bDown.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px';
+      bDown.textContent = '▼';
+      bDown.onclick = (function(id){ return function(){ moveCat(id,1); }; })(cat.id);
+      btnWrap.appendChild(bDown);
+    }
+    var bEdit = document.createElement('button');
+    bEdit.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700;color:#374151';
+    bEdit.textContent = '수정';
+    bEdit.onclick = (function(id,name,em){ return function(){ openEditCat(id,name,em); }; })(cat.id, cat.name, cat.emoji||'📦');
+    var bDel = document.createElement('button');
+    bDel.style.cssText = 'background:#fff;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700';
+    bDel.textContent = '삭제';
+    bDel.onclick = (function(id,name){ return function(){ deleteCategory(id,name); }; })(cat.id, cat.name);
+    btnWrap.appendChild(bEdit);
+    btnWrap.appendChild(bDel);
+    row.appendChild(emojiEl); row.appendChild(nameEl); row.appendChild(btnWrap);
+    listEl.appendChild(row);
+  });
 }
 
 
