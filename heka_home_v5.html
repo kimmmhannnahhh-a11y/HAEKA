@@ -213,6 +213,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 let _currentUser = null;
+
+// 업종 Firestore에서 로드
+if (window._loadCatsFromFirestore) window._loadCatsFromFirestore(db, collection, getDocs);
+else setTimeout(function(){ if(window._loadCatsFromFirestore) window._loadCatsFromFirestore(db, collection, getDocs); }, 500);
+
 onAuthStateChanged(auth, async u => {
   _currentUser = u;
   window._currentUser = u;
@@ -933,10 +938,45 @@ function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').c
 var cats=['식당','카페','펍','패스트푸드','이자카야','편의점','마트','호텔','입장권','전철 티켓','버스','ATM기','기타'];
 var selected=new Set();
 var wrap=document.getElementById('cat-wrap');
-cats.forEach(function(lbl){var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);});
 var sw=document.getElementById('sheet-wrap');
-var allChip=document.createElement('div');allChip.className='sheet-chip on';allChip.textContent='전체';allChip.id='cat-all-select';allChip.onclick=function(){catSelectAll();};sw.appendChild(allChip);
-cats.forEach(function(lbl){var d=document.createElement('div');d.className='sheet-chip';d.textContent=lbl;d.dataset.lbl=lbl;d.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d);});
+
+function buildCatChips(list) {
+  // 기존 칩 제거 (전체 버튼 제외)
+  wrap.innerHTML = '';
+  sw.querySelectorAll('.sheet-chip:not(#cat-all-select)').forEach(function(el){ el.remove(); });
+  var allChip = document.getElementById('cat-all-select');
+  if (!allChip) {
+    allChip = document.createElement('div');
+    allChip.className='sheet-chip on';
+    allChip.textContent='전체';
+    allChip.id='cat-all-select';
+    allChip.onclick=function(){catSelectAll();};
+    sw.appendChild(allChip);
+  }
+  list.forEach(function(lbl){
+    var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;
+    d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);
+    var d2=document.createElement('div');d2.className='sheet-chip';d2.textContent=lbl;d2.dataset.lbl=lbl;
+    d2.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d2);
+  });
+}
+
+// 초기 렌더링
+buildCatChips(cats);
+
+// Firestore에서 업종 동적 로드
+window._loadCatsFromFirestore = async function(db, collection, getDocs) {
+  try {
+    var snap = await getDocs(collection(db, 'categories'));
+    if (!snap.empty) {
+      var list = [];
+      snap.forEach(function(d){ list.push(d.data()); });
+      list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+      cats = list.map(function(d){ return d.name; });
+      buildCatChips(cats);
+    }
+  } catch(e) { console.log('cat load err:', e); }
+};
 function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);if(selected.size===0)catSelectAll();else{var as=document.getElementById('cat-all-select');if(as)as.classList.remove('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.remove('on');}window._selected=selected;if(window.applyFilters)window.applyFilters();}
 function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){if(c.id==='cat-all-select')return;c.classList.toggle('on',selected.has(c.dataset.lbl));});}
 function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.remove('on');});var as=document.getElementById('cat-all-select');if(as)as.classList.add('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
