@@ -1396,18 +1396,19 @@ function renderCategories() {
     btnWrap.appendChild(bEdit);
     btnWrap.appendChild(bDel);
     row.appendChild(handle); row.appendChild(emojiEl); row.appendChild(nameEl); row.appendChild(btnWrap);
-    // 드래그 이벤트
-    row.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/plain', cat.id); row.style.opacity='0.4'; });
-    row.addEventListener('dragend', function(){ row.style.opacity='1'; });
-    row.addEventListener('dragover', function(e){ e.preventDefault(); row.style.background='#e8f5e9'; });
-    row.addEventListener('dragleave', function(){ row.style.background='#f9fafb'; });
-    row.addEventListener('drop', function(e){
-      e.preventDefault(); row.style.background='#f9fafb';
-      var fromId = e.dataTransfer.getData('text/plain');
-      var toId = cat.id;
-      if (fromId === toId) return;
-      saveCatOrder(fromId, toId);
-    });
+    // 드래그 이벤트 (클로저로 id 고정)
+    (function(rowEl, id) {
+      rowEl.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/plain', id); rowEl.style.opacity='0.4'; });
+      rowEl.addEventListener('dragend', function(){ rowEl.style.opacity='1'; });
+      rowEl.addEventListener('dragover', function(e){ e.preventDefault(); rowEl.style.background='#e8f5e9'; });
+      rowEl.addEventListener('dragleave', function(){ rowEl.style.background='#f9fafb'; });
+      rowEl.addEventListener('drop', function(e){
+        e.preventDefault(); rowEl.style.background='#f9fafb';
+        var fromId = e.dataTransfer.getData('text/plain');
+        if (fromId === id) return;
+        saveCatOrder(fromId, id);
+      });
+    })(row, cat.id);
     listEl.appendChild(row);
   });
 }
