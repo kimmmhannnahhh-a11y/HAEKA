@@ -430,7 +430,12 @@ function showToast(msg){var t=document.getElementById('toast');t.textContent=msg
 
 function init(){
   try{var cached=sessionStorage.getItem('haeka_gps');if(cached){var cv=JSON.parse(cached);userLat=cv.lat;userLng=cv.lng;}}catch(e){}
-  _allStores=getZzimList();
+  // Firestore에서 로드된 찜 목록 우선 사용
+  if(window._currentUser && window._zzimStores) {
+    _allStores = window._zzimStores.slice();
+  } else {
+    _allStores = getZzimList();
+  }
   renderCountryChips(_allStores);
   doFilter();
   if(!navigator.geolocation)return;
@@ -444,7 +449,7 @@ window.addEventListener('DOMContentLoaded', function(){
   var waited = 0;
   var checkFb = setInterval(function(){
     waited += 100;
-    if(window._fbReady || waited >= 1500){
+    if(window._fbReady || waited >= 3000){
       clearInterval(checkFb);
       init();
     }
@@ -487,6 +492,10 @@ onAuthStateChanged(auth, async u => {
         window._zzimStores = snap.exists() ? (snap.data().stores || []) : [];
       }
     } catch(e) { console.error('zzim load:', e); }
+  } else {
+    // 비로그인 상태도 ready
+    window._fbReady = true;
+    return;
   }
   window._fbReady = true;
 });
