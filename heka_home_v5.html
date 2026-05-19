@@ -231,10 +231,12 @@ onAuthStateChanged(auth, async u => {
         localStorage.removeItem('haeka_zzim');
       }
       // Firestore에서 최신 찜 목록 로드
-      if (snap.exists() || local.length > 0) {
-        var fresh = await getDoc(zzimRef);
-        if (fresh.exists()) window._zzimStores = fresh.data().stores || [];
-      }
+      var freshSnap = await getDoc(zzimRef);
+      window._zzimStores = freshSnap.exists() ? (freshSnap.data().stores || []) : [];
+      // 찜 목록 로드 후 UI 전체 동기화
+      window._zzimStores.forEach(function(s){
+        _syncAllZzimUI(s.id, true);
+      });
     } catch(e) { console.error('zzim migration:', e); }
   }
 });
