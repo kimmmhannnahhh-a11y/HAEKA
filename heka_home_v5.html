@@ -217,7 +217,17 @@ onAuthStateChanged(auth, async u => {
   _currentUser = u;
   window._currentUser = u;
   if (u) {
-    // 로그인 시 localStorage → Firestore 마이그레이션
+    // 찜 변경 플래그 확인 - 다른 페이지에서 찜 변경 시 강제 리로드
+    var zzimChanged = sessionStorage.getItem('haeka_zzim_changed');
+    if (zzimChanged) {
+      sessionStorage.removeItem('haeka_zzim_changed');
+      window._zzimStores = undefined; // 강제 리로드
+    }
+    // 이미 _zzimStores가 세팅돼있으면 다시 로드 안 함
+    if (window._zzimStores !== undefined) {
+      window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
+      return;
+    }
     try {
       var local = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
       var zzimRef = doc(db, 'zzim', u.uid);
@@ -230,13 +240,11 @@ onAuthStateChanged(auth, async u => {
         await setDoc(zzimRef, { stores: merged }, { merge: true });
         localStorage.removeItem('haeka_zzim');
       }
-      // Firestore에서 최신 찜 목록 로드
+      // Firestore에서 최신 찜 목록 로드 (최초 1회만)
       var freshSnap = await getDoc(zzimRef);
       window._zzimStores = freshSnap.exists() ? (freshSnap.data().stores || []) : [];
-      // 찜 목록 로드 후 UI 전체 동기화
-      window._zzimStores.forEach(function(s){
-        _syncAllZzimUI(s.id, true);
-      });
+      // 찜 UI 동기화
+      window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
     } catch(e) { console.error('zzim migration:', e); }
   }
 });

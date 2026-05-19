@@ -321,6 +321,8 @@ async function saveZzimList(list){
 async function removeZzim(id){
   var list=getZzimList().filter(function(s){return s.id!==id;});
   await saveZzimList(list); _allStores=list;
+  // 홈화면에 찜 변경 알림
+  try { sessionStorage.setItem('haeka_zzim_changed','1'); } catch(e){}
   renderCountryChips(_allStores); doFilter();
   showToast('찜 목록에서 삭제됐어요');
 }
