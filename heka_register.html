@@ -127,7 +127,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -142,6 +142,30 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// 업종 Firestore에서 동적 로드
+async function loadCategoryOptions() {
+  try {
+    var snap = await getDocs(collection(db, 'categories'));
+    var list = [];
+    snap.forEach(function(d){ list.push(d.data()); });
+    list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+    var menu = document.getElementById('cat-menu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    list.forEach(function(cat) {
+      var isEtc = cat.name === '기타';
+      var div = document.createElement('div');
+      div.className = 'cat-opt';
+      div.textContent = (cat.emoji ? cat.emoji + ' ' : '') + cat.name;
+      div.onclick = isEtc ? function(){ selectCat('기타', true); } : (function(n){ return function(){ selectCat(n); }; })(cat.name);
+      menu.appendChild(div);
+    });
+  } catch(e) {
+    console.error('category load:', e);
+  }
+}
+loadCategoryOptions();
 const storage = getStorage(app);
 window._db = db;
 window._storage = storage;
@@ -272,20 +296,7 @@ window.saveToFirestore = async function(data) {
         </div>
       </div>
       <div class="cat-menu" id="cat-menu">
-        <div class="cat-opt" onclick="selectCat('식당')">식당</div>
-        <div class="cat-opt" onclick="selectCat('카페')">카페</div>
-        <div class="cat-opt" onclick="selectCat('펍')">펍</div>
-        <div class="cat-opt" onclick="selectCat('패스트푸드')">패스트푸드</div>
-        <div class="cat-opt" onclick="selectCat('이자카야')">이자카야</div>
-        <div class="cat-opt" onclick="selectCat('쇼핑')">쇼핑</div>
-        <div class="cat-opt" onclick="selectCat('편의점')">편의점</div>
-        <div class="cat-opt" onclick="selectCat('마트')">마트</div>
-        <div class="cat-opt" onclick="selectCat('호텔')">호텔</div>
-        <div class="cat-opt" onclick="selectCat('입장권')">입장권</div>
-        <div class="cat-opt" onclick="selectCat('전철 티켓')">전철 티켓</div>
-        <div class="cat-opt" onclick="selectCat('버스')">버스</div>
-        <div class="cat-opt" onclick="selectCat('ATM기')">ATM기</div>
-        <div class="cat-opt" onclick="selectCat('기타', true)">기타</div>
+        <div style="color:#bbb;font-size:12px;padding:8px;text-align:center">불러오는 중...</div>
       </div>
       <div id="etc-wrap" style="display:none">
         <input class="cat-etc-inp show" id="etc-input" placeholder="업종을 직접 입력해주세요" type="text" style="margin-top:0"/>
