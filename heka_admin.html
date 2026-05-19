@@ -1396,16 +1396,24 @@ function renderCategories() {
     btnWrap.appendChild(bEdit);
     btnWrap.appendChild(bDel);
     row.appendChild(handle); row.appendChild(emojiEl); row.appendChild(nameEl); row.appendChild(btnWrap);
+    // 버튼은 드래그 안 되게
+    bEdit.draggable = false; bDel.draggable = false;
+    bEdit.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+    bDel.addEventListener('mousedown', function(e){ e.stopPropagation(); });
     // 드래그 이벤트 (클로저로 id 고정)
     (function(rowEl, id) {
-      rowEl.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/plain', id); rowEl.style.opacity='0.4'; });
+      rowEl.addEventListener('dragstart', function(e){
+        e.dataTransfer.setData('text/plain', id);
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(function(){ rowEl.style.opacity='0.4'; }, 0);
+      });
       rowEl.addEventListener('dragend', function(){ rowEl.style.opacity='1'; });
-      rowEl.addEventListener('dragover', function(e){ e.preventDefault(); rowEl.style.background='#e8f5e9'; });
-      rowEl.addEventListener('dragleave', function(){ rowEl.style.background='#f9fafb'; });
+      rowEl.addEventListener('dragover', function(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; rowEl.style.background='#e8f5e9'; });
+      rowEl.addEventListener('dragleave', function(e){ if(!rowEl.contains(e.relatedTarget)) rowEl.style.background='#f9fafb'; });
       rowEl.addEventListener('drop', function(e){
         e.preventDefault(); rowEl.style.background='#f9fafb';
         var fromId = e.dataTransfer.getData('text/plain');
-        if (fromId === id) return;
+        if (!fromId || fromId === id) return;
         saveCatOrder(fromId, id);
       });
     })(row, cat.id);
