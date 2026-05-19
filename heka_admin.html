@@ -109,6 +109,7 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item" id="nav-members" onclick="goPage('members',this)">👥 회원 관리</div>
     <div class="nav-sep"></div>
     <div class="nav-item" id="nav-notices" onclick="goPage('notices',this)">📢 공지사항</div>
+    <div class="nav-item" id="nav-categories" onclick="goPage('categories',this)">🏷️ 업종 관리</div>
     <div class="nav-item" id="nav-cards" onclick="goPage('cards',this)">💳 카드 관리</div>
     <div class="nav-item" id="nav-add-store" onclick="goPage('add-store',this)">➕ 매장 등록</div>
     <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
@@ -211,6 +212,31 @@ tr:hover td{background:#f9fdf9}
         <button onclick="closeMemberModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#aaa">✕</button>
       </div>
       <div id="member-modal-body"></div>
+    </div>
+
+    <!-- 업종 관리 -->
+    <div class="page" id="page-categories">
+      <div class="page-title">업종 관리</div>
+      <div class="page-sub">매장 등록 시 표시되는 업종 카테고리를 관리해요</div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-head"><span class="card-title">업종 추가</span></div>
+        <div style="display:flex;gap:8px;align-items:center;padding:4px 0">
+          <input id="cat-emoji" type="text" placeholder="🍜" maxlength="2"
+            style="width:52px;padding:9px;border:1px solid #e5e7eb;border-radius:8px;font-size:20px;text-align:center;font-family:inherit;outline:none"/>
+          <input id="cat-name" type="text" placeholder="업종명 (예: 식당)"
+            style="flex:1;padding:9px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:inherit;outline:none"
+            onkeydown="if(event.key==='Enter')addCategory()"/>
+          <button class="btn-primary" onclick="addCategory()" style="font-size:13px;padding:9px 16px">추가</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">업종 목록</span>
+          <span id="cat-count" style="font-size:12px;color:#888"></span>
+        </div>
+        <div id="cat-list" style="display:flex;flex-direction:column;gap:6px;padding:4px 0"></div>
+        <div id="cat-empty" style="text-align:center;padding:32px;color:#aaa;font-size:13px;display:none">등록된 업종이 없어요</div>
+      </div>
     </div>
 
     <div class="page" id="page-cards">
@@ -522,6 +548,7 @@ function goPage(name, el) {
   try { sessionStorage.setItem('haeka_admin_page', name); } catch(e) {}
   // 해당 탭 뱃지 숨기기 + lastSeen 저장
   if (name === 'members') { loadAllMembers(); }
+  if (name === 'categories') { loadCategories(); }
   if (name === 'edit-req') {
     try { localStorage.setItem('haeka_admin_seen_edit', Date.now()); } catch(e) {}
     var b = document.getElementById('badge-edit'); if(b) b.style.display='none';
@@ -1265,6 +1292,105 @@ async function resolveDoc(colName, id, type) {
     else if (type==='err') loadErrors();
     else if (type==='editreq') loadEditReq();
   } catch(e) { alert('처리 실패: '+e.message); }
+}
+
+/* ══ 업종 관리 ══ */
+var _categories = [];
+var _DEFAULT_CATS = [
+  {emoji:'🍜',name:'식당'},{emoji:'☕',name:'카페'},{emoji:'🏪',name:'편의점'},
+  {emoji:'🛒',name:'마트'},{emoji:'🏨',name:'숙박'},{emoji:'🛍️',name:'쇼핑'},
+  {emoji:'🗺️',name:'관광'},{emoji:'🚌',name:'교통'},{emoji:'💊',name:'약국'},
+  {emoji:'🏥',name:'병원'},{emoji:'💈',name:'미용'},{emoji:'🎭',name:'엔터테인먼트'},
+  {emoji:'📦',name:'기타'}
+];
+
+async function loadCategories() {
+  if (!window._db || !window._fbFns) { setTimeout(loadCategories, 300); return; }
+  var db = window._db; var f = window._fbFns;
+  var listEl = document.getElementById('cat-list');
+  var emptyEl = document.getElementById('cat-empty');
+  listEl.innerHTML = '<div style="color:#aaa;font-size:13px;padding:12px">불러오는 중...</div>';
+  try {
+    var snap = await f.getDocs(f.query(f.collection(db, 'categories'), f.orderBy('sortOrder')));
+    if (snap.empty) {
+      // 기본 카테고리 초기화
+      var batch = _DEFAULT_CATS.map(function(cat, i) {
+        return f.addDoc(f.collection(db,'categories'), { emoji: cat.emoji, name: cat.name, sortOrder: i, createdAt: f.serverTimestamp() });
+      });
+      await Promise.all(batch);
+      snap = await f.getDocs(f.query(f.collection(db,'categories'), f.orderBy('sortOrder')));
+    }
+    _categories = [];
+    snap.forEach(function(d){ _categories.push({ id: d.id, ...d.data() }); });
+    renderCategories();
+    // 매장 등록 카테고리 select 업데이트
+    updateCategorySelect();
+  } catch(e) {
+    listEl.innerHTML = '<div style="color:#e44;font-size:13px;padding:12px">불러오기 실패: ' + e.message + '</div>';
+  }
+}
+
+function renderCategories() {
+  var listEl = document.getElementById('cat-list');
+  var emptyEl = document.getElementById('cat-empty');
+  var countEl = document.getElementById('cat-count');
+  countEl.textContent = _categories.length + '개';
+  if (!_categories.length) {
+    listEl.innerHTML = ''; emptyEl.style.display = 'block'; return;
+  }
+  emptyEl.style.display = 'none';
+  // (동적 생성으로 대체됨)
+}
+
+async function addCategory() {
+  var emoji = document.getElementById('cat-emoji').value.trim() || '📦';
+  var name = document.getElementById('cat-name').value.trim();
+  if (!name) { alert('업종명을 입력해주세요'); return; }
+  if (_categories.find(function(c){ return c.name === name; })) { alert('이미 존재하는 업종이에요'); return; }
+  if (!window._db || !window._fbFns) return;
+  var db = window._db; var f = window._fbFns;
+  try {
+    await f.addDoc(f.collection(db,'categories'), { emoji: emoji, name: name, sortOrder: _categories.length, createdAt: f.serverTimestamp() });
+    document.getElementById('cat-emoji').value = '';
+    document.getElementById('cat-name').value = '';
+    await loadCategories();
+  } catch(e) { alert('추가 실패: ' + e.message); }
+}
+
+async function deleteCategory(id, name) {
+  if (!confirm('"' + name + '" 업종을 삭제할까요?')) return;
+  if (!window._db || !window._fbFns) return;
+  var db = window._db; var f = window._fbFns;
+  try {
+    await f.deleteDoc(f.doc(db,'categories',id));
+    await loadCategories();
+  } catch(e) { alert('삭제 실패: ' + e.message); }
+}
+
+async function moveCat(id, dir) {
+  if (!window._db || !window._fbFns) return;
+  var db = window._db; var f = window._fbFns;
+  var idx = _categories.findIndex(function(c){ return c.id === id; });
+  var newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= _categories.length) return;
+  // swap sortOrder
+  var a = _categories[idx], b = _categories[newIdx];
+  try {
+    await Promise.all([
+      f.updateDoc(f.doc(db,'categories',a.id), { sortOrder: newIdx }),
+      f.updateDoc(f.doc(db,'categories',b.id), { sortOrder: idx })
+    ]);
+    await loadCategories();
+  } catch(e) { alert('순서 변경 실패'); }
+}
+
+function updateCategorySelect() {
+  var sel = document.getElementById('as-category');
+  if (!sel || !_categories.length) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">카테고리 선택</option>'
+    + _categories.map(function(c){ return '<option value="' + c.name + '">' + (c.emoji||'') + ' ' + c.name + '</option>'; }).join('');
+  if (cur) sel.value = cur;
 }
 
 /* ══ 회원 관리 ══ */
