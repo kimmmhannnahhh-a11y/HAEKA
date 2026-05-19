@@ -1300,11 +1300,11 @@ async function resolveDoc(colName, id, type) {
 /* ══ 업종 관리 ══ */
 var _categories = [];
 var _DEFAULT_CATS = [
-  {emoji:'🍜',name:'식당'},{emoji:'☕',name:'카페'},{emoji:'🏪',name:'편의점'},
-  {emoji:'🛒',name:'마트'},{emoji:'🏨',name:'숙박'},{emoji:'🛍️',name:'쇼핑'},
-  {emoji:'🗺️',name:'관광'},{emoji:'🚌',name:'교통'},{emoji:'💊',name:'약국'},
-  {emoji:'🏥',name:'병원'},{emoji:'💈',name:'미용'},{emoji:'🎭',name:'엔터테인먼트'},
-  {emoji:'📦',name:'기타'}
+  {emoji:'🍽️',name:'식당'},{emoji:'☕',name:'카페'},{emoji:'🍺',name:'펍'},
+  {emoji:'🍔',name:'패스트푸드'},{emoji:'🏮',name:'이자카야'},{emoji:'🛍️',name:'쇼핑'},
+  {emoji:'🏪',name:'편의점'},{emoji:'🛒',name:'마트'},{emoji:'🏨',name:'호텔'},
+  {emoji:'🎫',name:'입장권'},{emoji:'🚇',name:'전철 티켓'},{emoji:'🚌',name:'버스'},
+  {emoji:'🏧',name:'ATM기'},{emoji:'📦',name:'기타'}
 ];
 
 async function loadCategories() {
@@ -1368,9 +1368,15 @@ function renderCategories() {
   }
   emptyEl.style.display = 'none';
   listEl.innerHTML = '';
+  listEl.style.cssText = 'display:flex;flex-direction:column;gap:6px;padding:4px 0';
   _categories.forEach(function(cat, i) {
     var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb';
+    row.dataset.id = cat.id;
+    row.draggable = true;
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;cursor:grab;user-select:none';
+    var handle = document.createElement('span');
+    handle.textContent = '⠿';
+    handle.style.cssText = 'color:#ccc;font-size:16px;cursor:grab';
     var emojiEl = document.createElement('span');
     emojiEl.style.cssText = 'font-size:22px;width:32px;text-align:center';
     emojiEl.textContent = cat.emoji||'📦';
@@ -1379,31 +1385,29 @@ function renderCategories() {
     nameEl.textContent = cat.name;
     var btnWrap = document.createElement('div');
     btnWrap.style.cssText = 'display:flex;gap:6px';
-    if (i > 0) {
-      var bUp = document.createElement('button');
-      bUp.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px';
-      bUp.textContent = '▲';
-      bUp.onclick = (function(id){ return function(){ moveCat(id,-1); }; })(cat.id);
-      btnWrap.appendChild(bUp);
-    }
-    if (i < _categories.length-1) {
-      var bDown = document.createElement('button');
-      bDown.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px';
-      bDown.textContent = '▼';
-      bDown.onclick = (function(id){ return function(){ moveCat(id,1); }; })(cat.id);
-      btnWrap.appendChild(bDown);
-    }
     var bEdit = document.createElement('button');
     bEdit.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700;color:#374151';
     bEdit.textContent = '수정';
-    bEdit.onclick = (function(id,name,em){ return function(){ openEditCat(id,name,em); }; })(cat.id, cat.name, cat.emoji||'📦');
+    bEdit.onclick = (function(id,n,em){ return function(){ openEditCat(id,n,em); }; })(cat.id, cat.name, cat.emoji||'📦');
     var bDel = document.createElement('button');
     bDel.style.cssText = 'background:#fff;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700';
     bDel.textContent = '삭제';
-    bDel.onclick = (function(id,name){ return function(){ deleteCategory(id,name); }; })(cat.id, cat.name);
+    bDel.onclick = (function(id,n){ return function(){ deleteCategory(id,n); }; })(cat.id, cat.name);
     btnWrap.appendChild(bEdit);
     btnWrap.appendChild(bDel);
-    row.appendChild(emojiEl); row.appendChild(nameEl); row.appendChild(btnWrap);
+    row.appendChild(handle); row.appendChild(emojiEl); row.appendChild(nameEl); row.appendChild(btnWrap);
+    // 드래그 이벤트
+    row.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/plain', cat.id); row.style.opacity='0.4'; });
+    row.addEventListener('dragend', function(){ row.style.opacity='1'; });
+    row.addEventListener('dragover', function(e){ e.preventDefault(); row.style.background='#e8f5e9'; });
+    row.addEventListener('dragleave', function(){ row.style.background='#f9fafb'; });
+    row.addEventListener('drop', function(e){
+      e.preventDefault(); row.style.background='#f9fafb';
+      var fromId = e.dataTransfer.getData('text/plain');
+      var toId = cat.id;
+      if (fromId === toId) return;
+      saveCatOrder(fromId, toId);
+    });
     listEl.appendChild(row);
   });
 }
