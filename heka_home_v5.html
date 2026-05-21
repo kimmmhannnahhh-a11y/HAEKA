@@ -222,22 +222,12 @@ onAuthStateChanged(auth, async u => {
   _currentUser = u;
   window._currentUser = u;
   if (u) {
-    // 찜 변경 플래그 확인 - 다른 페이지에서 찜 변경 시 강제 리로드
-    var zzimChanged = sessionStorage.getItem('haeka_zzim_changed');
-    if (zzimChanged) {
-      sessionStorage.removeItem('haeka_zzim_changed');
-      window._zzimStores = undefined; // 강제 리로드
-    }
-    // 이미 _zzimStores가 세팅돼있으면 다시 로드 안 함
-    if (window._zzimStores !== undefined) {
-      window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
-      return;
-    }
     try {
-      var local = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
       var zzimRef = doc(db, 'zzim', u.uid);
-      var snap = await getDoc(zzimRef);
+      // localStorage 로컬 찜 마이그레이션 (최초 1회)
+      var local = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
       if (local.length > 0) {
+        var snap = await getDoc(zzimRef);
         var existing = (snap.exists() && snap.data().stores) ? snap.data().stores : [];
         var existIds = existing.map(function(s){ return s.id; });
         var merged = existing.slice();
@@ -245,12 +235,15 @@ onAuthStateChanged(auth, async u => {
         await setDoc(zzimRef, { stores: merged }, { merge: true });
         localStorage.removeItem('haeka_zzim');
       }
-      // Firestore에서 최신 찜 목록 로드 (최초 1회만)
+      // 항상 Firestore에서 최신 찜 목록 로드
       var freshSnap = await getDoc(zzimRef);
       window._zzimStores = freshSnap.exists() ? (freshSnap.data().stores || []) : [];
-      // 찜 UI 동기화
+      // 모든 찜 버튼 리셋 후 동기화
+      document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
+      var dpBtn = document.getElementById('dp-zzim');
+      if (dpBtn) dpBtn.classList.remove('on');
       window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
-    } catch(e) { console.error('zzim migration:', e); }
+    } catch(e) { console.error('zzim load:', e); }
   }
 });
 
@@ -790,29 +783,33 @@ window.addEventListener('pageshow', function(e) {
   if (e.persisted && allStores.length > 0) {
     renderNearby(sortByDistance(allStores));
   }
-  // 찜목록에서 해제 후 복귀 시 UI 재동기화
-  var zzimChanged = sessionStorage.getItem('haeka_zzim_changed');
-  if (zzimChanged) {
-    sessionStorage.removeItem('haeka_zzim_changed');
-    // window._zzimStores를 찜목록 페이지에서 이미 업데이트했으므로 바로 UI 리셋
-    // 모든 찜 버튼 OFF로 리셋
-    document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
-    var dpBtn = document.getElementById('dp-zzim');
-    if(dpBtn) dpBtn.classList.remove('on');
-    // window._zzimStores 기준으로 ON 처리
-    var currentList = window._zzimStores || [];
-    currentList.forEach(function(s){ _syncAllZzimUI(s.id, true); });
-    // Firestore에서도 재확인 (브릿지 사용)
-    if (window._currentUser && window._getDoc && window._doc && window._db) {
-      window._getDoc(window._doc(window._db,'zzim',window._currentUser.uid)).then(function(snap){
-        window._zzimStores = snap.exists() ? (snap.data().stores||[]) : [];
-        document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
-        var dp = document.getElementById('dp-zzim');
-        if(dp) dp.classList.remove('on');
-        window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
-      }).catch(function(){});
+  // 페이지 복귀 시 항상 찜 UI 재동기화
+  try { sessionStorage.removeItem('haeka_zzim_changed'); } catch(ex) {}
+  function reloadZzimUI() {
+    if (!window._getDoc || !window._doc || !window._db) return;
+    if (!window._currentUser) {
+      // currentUser 아직 없으면 최대 2초 대기
+      var tried = 0;
+      var wait = setInterval(function() {
+        tried++;
+        if (window._currentUser) {
+          clearInterval(wait);
+          reloadZzimUI();
+        } else if (tried > 20) {
+          clearInterval(wait);
+        }
+      }, 100);
+      return;
     }
+    window._getDoc(window._doc(window._db,'zzim',window._currentUser.uid)).then(function(snap){
+      window._zzimStores = snap.exists() ? (snap.data().stores||[]) : [];
+      document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
+      var dp = document.getElementById('dp-zzim');
+      if(dp) dp.classList.remove('on');
+      window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
+    }).catch(function(){});
   }
+  reloadZzimUI();
 });
 // Firebase 브릿지
 window._db = db;
@@ -1090,8 +1087,8 @@ async function toggleZzim(e, el, store){
   var list = getZzimList();
   var idx = list.findIndex(function(s){ return s.id === store.id; });
   var nowOn;
-  if(idx > -1){ list.splice(idx,1); nowOn=false; }
-  else { list.unshift(store); nowOn=true; }
+  if(idx > -1){ list.splice(idx,1); nowOn=false; showToast('찜 목록에서 제거됐어요'); }
+  else { list.unshift(store); nowOn=true; showToast('❤️ 찜 목록에 추가됐어요!'); }
   await saveZzimList(list);
   _syncAllZzimUI(store.id, nowOn);
 }
