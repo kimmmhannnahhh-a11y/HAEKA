@@ -211,7 +211,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     <div class="ni on" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni" onclick="location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="if(!window._getCurrentUser||!window._getCurrentUser()){showNearbyLoginPopup('찜목록','찜목록은 로그인 후 이용할 수 있어요');}else{location.href='heka_zzim.html';}"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -300,11 +300,19 @@ function _syncAllZzimUI(storeId, isOn){
 
 function toggleZzimStore(e, btn, idx){
   e.stopPropagation();
+  if(!window._getCurrentUser || !window._getCurrentUser()){
+    showNearbyLoginPopup('찜','찜 기능은 로그인 후 이용할 수 있어요');
+    return;
+  }
   var store = _renderedStores[idx];
   if(!store) return;
   _doZzimToggle(store);
 }
 function toggleDpZzim(){
+  if(!window._getCurrentUser || !window._getCurrentUser()){
+    showNearbyLoginPopup('찜','찜 기능은 로그인 후 이용할 수 있어요');
+    return;
+  }
   var id = window._currentStoreId;
   var store = _renderedStores.find(function(s){ return s.id===id; });
   if(!store) return;
@@ -790,5 +798,27 @@ window.nearbyVote = async function(type){
 };
 </script>
 
+
+<!-- 로그인 유도 팝업 -->
+<div id="nearby-login-overlay" onclick="closeNearbyLoginPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300"></div>
+<div id="nearby-login-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 24px;width:280px;z-index:301;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="font-size:24px;margin-bottom:10px">🔐</div>
+  <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px" id="nearby-login-title">로그인이 필요해요</div>
+  <div style="font-size:12px;color:#888;margin-bottom:20px" id="nearby-login-desc">이 기능은 로그인 후 이용할 수 있어요</div>
+  <button onclick="location.href='heka_login.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
+  <button onclick="closeNearbyLoginPopup()" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
+</div>
+<script>
+function showNearbyLoginPopup(title, desc){
+  document.getElementById('nearby-login-title').textContent = (title||'')+'하려면 로그인이 필요해요';
+  document.getElementById('nearby-login-desc').textContent = desc||'이 기능은 로그인 후 이용할 수 있어요';
+  document.getElementById('nearby-login-overlay').style.display='block';
+  document.getElementById('nearby-login-popup').style.display='block';
+}
+function closeNearbyLoginPopup(){
+  document.getElementById('nearby-login-overlay').style.display='none';
+  document.getElementById('nearby-login-popup').style.display='none';
+}
+</script>
 </body>
 </html>
