@@ -1062,7 +1062,7 @@ async function saveZzimList(list){
   if (window._currentUser) {
     window._zzimStores = list;
     try {
-      await setDoc(doc(db, 'zzim', window._currentUser.uid), { stores: list }, { merge: true });
+      await window._setDoc(window._doc(window._db, 'zzim', window._currentUser.uid), { stores: list }, { merge: true });
     } catch(e) { console.error('zzim save:', e); }
   } else {
     try{ localStorage.setItem('haeka_zzim', JSON.stringify(list)); }catch(e){}
