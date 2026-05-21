@@ -1209,6 +1209,26 @@ function openStoreModal(id) {
   document.getElementById('edit-city').value = store.city||'';
   document.getElementById('edit-address').value = store.address||'';
   document.getElementById('edit-review').value = store.review||'';
+  document.getElementById('edit-lat').value = store.lat||'';
+  document.getElementById('edit-lng').value = store.lng||'';
+  document.getElementById('edit-place-search').value = '';
+  document.getElementById('edit-place-results').style.display='none';
+  // 기존 좌표 있으면 지도 표시
+  if (store.lat && store.lng) {
+    var mw = document.getElementById('edit-map-wrap');
+    mw.style.display='block';
+    if (typeof google !== 'undefined') {
+      var mp = new google.maps.Map(document.getElementById('edit-map'), { center:{lat:store.lat,lng:store.lng}, zoom:16, disableDefaultUI:true });
+      window._editMapMarker = new google.maps.Marker({ position:{lat:store.lat,lng:store.lng}, map:mp, draggable:true });
+      window._editMap = mp;
+      window._editMapMarker.addListener('dragend', function(e){
+        document.getElementById('edit-lat').value = e.latLng.lat().toFixed(6);
+        document.getElementById('edit-lng').value = e.latLng.lng().toFixed(6);
+      });
+    }
+  } else {
+    document.getElementById('edit-map-wrap').style.display='none';
+  }
   var payOk = store.payOk||[];
   document.getElementById('edit-payok').innerHTML = CARDS.map(function(card){
     var on = payOk.indexOf(card)>-1 ? ' on' : '';
@@ -1227,6 +1247,8 @@ async function saveStore() {
   var id = document.getElementById('edit-store-id').value;
   var payOk = [];
   document.querySelectorAll('#edit-payok .card-chk.on').forEach(function(el){ payOk.push(el.dataset.card||el.textContent); });
+  var latVal = parseFloat(document.getElementById('edit-lat').value);
+  var lngVal = parseFloat(document.getElementById('edit-lng').value);
   var data = {
     name: document.getElementById('edit-name').value.trim(),
     category: document.getElementById('edit-category').value,
@@ -1235,6 +1257,7 @@ async function saveStore() {
     review: document.getElementById('edit-review').value.trim(),
     payOk: payOk
   };
+  if (!isNaN(latVal) && !isNaN(lngVal)) { data.lat = latVal; data.lng = lngVal; }
   try {
     var { doc, updateDoc } = window._fbFns2 || {};
     if (!updateDoc) { alert('Firebase updateDoc 미연결'); return; }
@@ -1753,6 +1776,18 @@ async function setMemberStatus(uid, status) {
     </div>
     <div class="form-group"><div class="form-label">도시</div><input class="form-inp" type="text" id="edit-city"/></div>
     <div class="form-group"><div class="form-label">주소</div><input class="form-inp" type="text" id="edit-address"/></div>
+    <div class="form-group">
+      <div class="form-label">위치 (좌표) <span style="font-size:11px;color:#aaa;font-weight:400">장소 검색으로 자동 입력</span></div>
+      <input class="form-inp" type="text" id="edit-place-search" placeholder="장소명으로 검색 (예: 스타벅스 시부야)" style="margin-bottom:6px"/>
+      <div id="edit-place-results" style="display:none;border:1px solid #eee;border-radius:8px;overflow:hidden;margin-bottom:6px;max-height:160px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px">
+        <input class="form-inp" type="text" id="edit-lat" placeholder="위도 (예: 35.6580)" style="flex:1"/>
+        <input class="form-inp" type="text" id="edit-lng" placeholder="경도 (예: 139.7016)" style="flex:1"/>
+      </div>
+      <div id="edit-map-wrap" style="margin-top:8px;border-radius:8px;overflow:hidden;display:none">
+        <div id="edit-map" style="width:100%;height:160px"></div>
+      </div>
+    </div>
     <div class="form-group"><div class="form-label">결제 가능 카드</div><div class="card-grid" id="edit-payok"></div></div>
     <div class="form-group"><div class="form-label">리뷰</div><textarea class="form-inp" id="edit-review" style="height:70px;resize:none"></textarea></div>
     <div class="modal-btns">
@@ -1762,6 +1797,70 @@ async function setMemberStatus(uid, status) {
   </div>
 </div>
 
+
+<script>
+// 매장 수정 모달 - 장소 검색
+var _editSearchTimer = null;
+document.addEventListener('input', function(e) {
+  if (e.target.id !== 'edit-place-search') return;
+  clearTimeout(_editSearchTimer);
+  var q = e.target.value.trim();
+  if (!q) { document.getElementById('edit-place-results').style.display='none'; return; }
+  _editSearchTimer = setTimeout(function(){ doEditPlaceSearch(q); }, 400);
+});
+
+function doEditPlaceSearch(q) {
+  if (typeof google === 'undefined') { alert('Google Maps 로딩 중이에요. 잠시 후 다시 시도해주세요.'); return; }
+  var svc = new google.maps.places.PlacesService(document.createElement('div'));
+  svc.textSearch({ query: q }, function(results, status) {
+    var el = document.getElementById('edit-place-results');
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results.length) {
+      el.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:#aaa">검색 결과가 없어요</div>';
+      el.style.display = 'block';
+      return;
+    }
+    window._editPlaceResults = results;
+    el.innerHTML = results.slice(0,5).map(function(p, i) {
+      var item = document.createElement('div');
+      item.style.cssText = 'padding:10px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid #f5f5f5';
+      item.innerHTML = '<b style="color:#111">' + p.name + '</b><div style="color:#aaa;font-size:11px;margin-top:2px">' + (p.formatted_address||'') + '</div>';
+      item.onmouseover = function(){ this.style.background='#f5f5f5'; };
+      item.onmouseout = function(){ this.style.background=''; };
+      item.onclick = (function(idx){ return function(){ selectEditPlace(idx); }; })(i);
+      return item.outerHTML;
+    }).join('');
+    el.style.display = 'block';
+  });
+}
+
+function selectEditPlace(i) {
+  var p = window._editPlaceResults[i];
+  if (!p) return;
+  var lat = p.geometry.location.lat();
+  var lng = p.geometry.location.lng();
+  document.getElementById('edit-lat').value = lat.toFixed(6);
+  document.getElementById('edit-lng').value = lng.toFixed(6);
+  document.getElementById('edit-address').value = p.formatted_address || p.name;
+  document.getElementById('edit-place-search').value = p.name;
+  document.getElementById('edit-place-results').style.display = 'none';
+  // 지도 업데이트
+  var mw = document.getElementById('edit-map-wrap');
+  mw.style.display = 'block';
+  var pos = { lat: lat, lng: lng };
+  if (window._editMap) {
+    window._editMap.setCenter(pos);
+    window._editMapMarker.setPosition(pos);
+  } else {
+    var mp = new google.maps.Map(document.getElementById('edit-map'), { center:pos, zoom:16, disableDefaultUI:true });
+    window._editMapMarker = new google.maps.Marker({ position:pos, map:mp, draggable:true });
+    window._editMap = mp;
+    window._editMapMarker.addListener('dragend', function(e){
+      document.getElementById('edit-lat').value = e.latLng.lat().toFixed(6);
+      document.getElementById('edit-lng').value = e.latLng.lng().toFixed(6);
+    });
+  }
+}
+</script>
 
 <!-- 비밀번호 변경 모달 -->
 <div id="pw-modal-overlay" onclick="closePwModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500"></div>
