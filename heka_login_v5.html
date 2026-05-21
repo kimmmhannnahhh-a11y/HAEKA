@@ -898,7 +898,14 @@ HAEKA(이하 "서비스")는 이용자의 개인정보를 중요하게 생각하
 <span style="color:#aaa;font-size:11px">문의: support@haeka.app</span>`
   }
 };
-function openLegal(type){var c=legalContent[type];document.getElementById('legal-title').textContent=c.title;document.getElementById('legal-body').innerHTML=c.body;document.getElementById('legal-overlay').classList.add('open');}
+function openLegal(type){
+  var map={
+    'privacy':'heka_terms_privacy.html',
+    'terms':'heka_terms_service.html',
+    'location':'heka_terms_location.html'
+  };
+  if(map[type]) location.href=map[type];
+}
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
 function doGoogleLogin() {
   if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
