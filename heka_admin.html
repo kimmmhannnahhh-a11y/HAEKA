@@ -112,7 +112,7 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item" id="nav-categories" onclick="goPage('categories',this)">🏷️ 업종 관리</div>
     <div class="nav-item" id="nav-cards" onclick="goPage('cards',this)">💳 카드 관리</div>
     <div class="nav-item" id="nav-add-store" onclick="goPage('add-store',this)">➕ 매장 등록</div>
-    <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
+    <div class="sidebar-logout" onclick="openPwModal()" style="margin-bottom:6px;background:#f0f9f0;color:#1A5D1A">🔑 비밀번호 변경</div><div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
   </div>
 
   <div class="main">
@@ -402,6 +402,7 @@ tr:hover td{background:#f9fdf9}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+import { getAuth, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -419,13 +420,19 @@ window._uploadBytes = uploadBytes;
 window._getDownloadURL = getDownloadURL;
 window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, where, setDoc, getDoc };
 window._fbFns2 = { doc, updateDoc };
+const auth = getAuth(app);
+window._auth = auth;
+window._signInWithEmailAndPassword = signInWithEmailAndPassword;
+window._signOut = signOut;
+window._updatePassword = updatePassword;
+window._reauthenticateWithCredential = reauthenticateWithCredential;
+window._EmailAuthProvider = EmailAuthProvider;
 // Firebase 준비 완료 이벤트
 window.dispatchEvent(new Event('fbReady'));
 </script>
 
 <script>
-var ADMIN_ID = 'haeka_admin';
-var ADMIN_PW = 'haeka2024!';
+var ADMIN_EMAIL = 'hanah0602@naver.com';
 var _pageHistory = [];
 var _origGoPage = null;
 
@@ -444,55 +451,50 @@ function showAdmin() {
   } catch(e) {}
 }
 
-// 페이지 로드 시 자동 로그인 체크
-window.addEventListener('load', function() {
-  try {
-    var saved = localStorage.getItem('haeka_admin_auth');
-    if (saved) {
-      var decoded = atob(saved);
-      var parts = decoded.split(':');
-      var sid = parts[0], spw = parts.slice(1).join(':');
-      if (sid === ADMIN_ID && spw === ADMIN_PW) {
-        showAdmin();
-        // Firebase 준비될 때까지 대기 후 대시보드 로드
-        var tries = 0;
-        var waitFb = setInterval(function() {
-          tries++;
-          if (window._db) { clearInterval(waitFb); loadDashboard(); }
-          else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
-        }, 100);
-        // 마지막 탭 복원
-        try {
-          var lastPage = sessionStorage.getItem('haeka_admin_page');
-          if (lastPage && lastPage !== 'dashboard') {
-            setTimeout(function(){
-              var navEl = document.getElementById('nav-'+lastPage);
-              if (navEl) goPage(lastPage, navEl);
-            }, 500);
-          }
-        } catch(e) {}
-      }
+// Firebase Auth 상태 감지 → 자동 로그인 유지
+window.addEventListener('fbReady', function() {
+  window._auth.onAuthStateChanged(function(user) {
+    if (user && user.email === ADMIN_EMAIL) {
+      showAdmin();
+      var tries = 0;
+      var waitFb = setInterval(function() {
+        tries++;
+        if (window._db) { clearInterval(waitFb); loadDashboard(); }
+        else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
+      }, 100);
+      try {
+        var lastPage = sessionStorage.getItem('haeka_admin_page');
+        if (lastPage && lastPage !== 'dashboard') {
+          setTimeout(function(){
+            var navEl = document.getElementById('nav-'+lastPage);
+            if (navEl) goPage(lastPage, navEl);
+          }, 500);
+        }
+      } catch(e) {}
     }
-  } catch(e) {}
+  });
 });
 
-function doLogin() {
+async function doLogin() {
   var id = document.getElementById('login-id').value.trim();
   var pw = document.getElementById('login-pw').value;
-  if (id === ADMIN_ID && pw === ADMIN_PW) {
-    try { localStorage.setItem('haeka_admin_auth', btoa(id+':'+pw)); } catch(e) {}
+  var btn = document.querySelector('.login-btn');
+  btn.disabled = true; btn.textContent = '로그인 중...';
+  try {
+    var cred = await window._signInWithEmailAndPassword(window._auth, id, pw);
+    if (cred.user.email !== ADMIN_EMAIL) {
+      await window._signOut(window._auth);
+      throw new Error('관리자 계정이 아니에요');
+    }
     document.getElementById('login-err').style.display = 'none';
     showAdmin();
     history.pushState(null, '', location.href);
-    // Firebase 준비될 때까지 대기
-    var tries = 0;
-    var waitFb = setInterval(function() {
-      tries++;
-      if (window._db) { clearInterval(waitFb); loadDashboard(); }
-      else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
-    }, 100);
-  } else {
+    loadDashboard();
+  } catch(e) {
     document.getElementById('login-err').style.display = 'block';
+    document.getElementById('login-err').textContent = '이메일 또는 비밀번호가 틀렸어요';
+  } finally {
+    btn.disabled = false; btn.textContent = '로그인';
   }
 }
 
@@ -529,8 +531,8 @@ goPage = function(name, el) {
 history.pushState(null, '', location.href);
 
 function doLogout() {
+  if (window._signOut && window._auth) window._signOut(window._auth);
   document.getElementById('admin-wrap').style.display = 'none';
-  try { localStorage.removeItem('haeka_admin_auth'); } catch(e) {}
   document.getElementById('login-wrap').style.display = 'flex';
   document.getElementById('login-id').value = '';
   document.getElementById('login-pw').value = '';
@@ -1760,5 +1762,55 @@ async function setMemberStatus(uid, status) {
   </div>
 </div>
 
+
+<!-- 비밀번호 변경 모달 -->
+<div id="pw-modal-overlay" onclick="closePwModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500"></div>
+<div id="pw-modal" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:28px 24px;width:300px;z-index:501;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+  <div style="font-size:16px;font-weight:700;color:#111;margin-bottom:20px">🔑 비밀번호 변경</div>
+  <input id="pw-current" type="password" placeholder="현재 비밀번호" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px"/>
+  <input id="pw-new" type="password" placeholder="새 비밀번호 (6자 이상)" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:10px"/>
+  <input id="pw-confirm" type="password" placeholder="새 비밀번호 확인" style="width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:inherit;outline:none;margin-bottom:16px"/>
+  <div id="pw-err" style="font-size:12px;color:#dc2626;margin-bottom:10px;display:none"></div>
+  <button onclick="doChangePw()" style="width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">변경하기</button>
+  <button onclick="closePwModal()" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:10px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
+</div>
+<script>
+function openPwModal(){
+  document.getElementById('pw-modal-overlay').style.display='block';
+  document.getElementById('pw-modal').style.display='block';
+  document.getElementById('pw-current').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-confirm').value='';
+  document.getElementById('pw-err').style.display='none';
+}
+function closePwModal(){
+  document.getElementById('pw-modal-overlay').style.display='none';
+  document.getElementById('pw-modal').style.display='none';
+}
+async function doChangePw(){
+  var cur = document.getElementById('pw-current').value;
+  var nw = document.getElementById('pw-new').value;
+  var cf = document.getElementById('pw-confirm').value;
+  var errEl = document.getElementById('pw-err');
+  if(!cur||!nw||!cf){ errEl.textContent='모든 항목을 입력해주세요'; errEl.style.display='block'; return; }
+  if(nw.length<6){ errEl.textContent='새 비밀번호는 6자 이상이어야 해요'; errEl.style.display='block'; return; }
+  if(nw!==cf){ errEl.textContent='새 비밀번호가 일치하지 않아요'; errEl.style.display='block'; return; }
+  try {
+    var user = window._auth.currentUser;
+    var credential = window._EmailAuthProvider.credential(user.email, cur);
+    await window._reauthenticateWithCredential(user, credential);
+    await window._updatePassword(user, nw);
+    closePwModal();
+    alert('✅ 비밀번호가 변경됐어요!');
+  } catch(e) {
+    if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'){
+      errEl.textContent='현재 비밀번호가 틀렸어요';
+    } else {
+      errEl.textContent='오류: '+e.message;
+    }
+    errEl.style.display='block';
+  }
+}
+</script>
 </body>
 </html>
