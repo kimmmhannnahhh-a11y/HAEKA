@@ -404,7 +404,10 @@ function initGPS() {
       try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
       if (allStores.length > 0) renderNearby(sortByDistance(allStores));
     },
-    function() {},
+    function(err) {
+      // 위치 권한 거부 또는 오류 시 대체 화면
+      showNearbyLocationFallback();
+    },
     { timeout: 5000, maximumAge: 60000 }
   );
 }
@@ -570,6 +573,48 @@ function hotplGoTo(idx){
     });
   });
 })();
+
+function showNearbyLocationFallback() {
+  var row = document.getElementById('nearby-row');
+  if (!row) return;
+  // 위치 없이 최신 등록순으로 1km 반경 대신 전체 매장 상위 6개 표시
+  row.innerHTML = '<div style="padding:10px 4px 6px;width:100%">'
+    + '<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#f8f8f8;border-radius:8px;margin-bottom:8px">'
+    + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    + '<span style="font-size:10px;color:#999">위치 권한을 허용하면 내 주변 매장을 볼 수 있어요</span>'
+    + '<button onclick="retryLocation()" style="margin-left:auto;font-size:10px;color:#1A5D1A;font-weight:700;background:none;border:none;cursor:pointer;flex-shrink:0">허용하기</button>'
+    + '</div></div>';
+  // 최신 등록 매장 6개 노출
+  if (allStores.length > 0) {
+    var recent = allStores.slice().sort(function(a,b){
+      var at = a.createdAt ? (a.createdAt.seconds||0) : 0;
+      var bt = b.createdAt ? (b.createdAt.seconds||0) : 0;
+      return bt - at;
+    }).slice(0, 6);
+    renderNearby(recent);
+    // 섹션 타이틀 변경
+    var secT = document.querySelector('.sec-t');
+    if (secT && secT.textContent.indexOf('내 주변') > -1) {
+      secT.textContent = '최근 등록 매장';
+    }
+  }
+}
+
+function retryLocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    function(p) {
+      userLat = p.coords.latitude; userLng = p.coords.longitude;
+      try { sessionStorage.setItem('haeka_gps', JSON.stringify({lat:userLat,lng:userLng})); } catch(e) {}
+      // 섹션 타이틀 복원
+      var secT = document.querySelector('.sec-t');
+      if (secT) secT.textContent = '내 주변 카드 결제 매장';
+      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    },
+    function() { showToast('위치 권한을 허용해주세요 (브라우저 설정 확인)'); },
+    { timeout: 5000 }
+  );
+}
 
 function renderNearby(stores) {
   var row = document.getElementById('nearby-row');
