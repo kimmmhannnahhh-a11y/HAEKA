@@ -65,10 +65,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .field-ok.show{display:block}
 .field-hint{font-size:10px;color:#bbb}
 
-/* 통신사 칩 */
-.carrier-row{display:flex;gap:5px}
-.carrier-chip{flex:1;padding:8px 4px;border-radius:16px;font-size:10px;font-weight:600;border:1.5px solid #e0e0e0;background:#fff;color:#717171;cursor:pointer;text-align:center;font-family:inherit;transition:.15s}
-.carrier-chip.on{background:#1A5D1A;border-color:#1A5D1A;color:#fff}
+
 
 /* 인증번호 */
 .input-row{display:flex;gap:7px}
@@ -150,15 +147,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">서비스 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><span class="check-arrow">›</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_service.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">개인정보 수집 및 이용 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><span class="check-arrow">›</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_privacy.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
       </div>
       <div class="check-item" data-req="false" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">위치 정보 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow">›</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><a href="heka_terms_location.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
       </div>
       <div class="check-item" data-req="false" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">마케팅 정보 수신 동의</span></div>
@@ -189,13 +186,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         <input class="field-input" id="inp-birth" placeholder="YYYY / MM / DD" type="text"/>
       </div>
       <div class="field-group">
-        <div class="field-label">통신사</div>
-        <div class="carrier-row">
-          <button class="carrier-chip on" onclick="selectCarrier(this)">SKT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">KT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">LG U+</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">알뜰폰</button>
-        </div>
+
       </div>
       <div class="field-group">
         <div class="field-label">휴대폰 번호</div>
@@ -357,10 +348,7 @@ function step1Next() {
 }
 
 /* ══ STEP 2 ══ */
-function selectCarrier(el) {
-  el.closest('.carrier-row').querySelectorAll('.carrier-chip').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
+
 
 function sendCode() {
   var phone = document.getElementById('inp-phone').value.trim();
