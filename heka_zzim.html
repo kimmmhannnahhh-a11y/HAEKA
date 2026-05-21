@@ -320,6 +320,8 @@ async function saveZzimList(list){
 
 async function removeZzim(id){
   var list=getZzimList().filter(function(s){return s.id!==id;});
+  // window._zzimStores 즉시 업데이트 (홈 복귀 시 참조하는 값)
+  window._zzimStores = list;
   await saveZzimList(list); _allStores=list;
   // 홈화면에 찜 변경 알림
   try { sessionStorage.setItem('haeka_zzim_changed','1'); } catch(e){}

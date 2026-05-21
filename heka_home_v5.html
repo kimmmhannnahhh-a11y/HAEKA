@@ -794,24 +794,31 @@ window.addEventListener('pageshow', function(e) {
   var zzimChanged = sessionStorage.getItem('haeka_zzim_changed');
   if (zzimChanged) {
     sessionStorage.removeItem('haeka_zzim_changed');
-    if (window._currentUser && window._db) {
-      // Firestore에서 최신 찜 목록 다시 로드 후 전체 UI 리셋
-      import("https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js").then(function(fs){
-        fs.getDoc(fs.doc(window._db,'zzim',window._currentUser.uid)).then(function(snap){
-          window._zzimStores = snap.exists() ? (snap.data().stores||[]) : [];
-          // 모든 찜 버튼 OFF로 리셋 후 현재 찜 목록만 ON
-          document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
-          var dpBtn = document.getElementById('dp-zzim');
-          if(dpBtn) dpBtn.classList.remove('on');
-          window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
-        });
-      });
+    // window._zzimStores를 찜목록 페이지에서 이미 업데이트했으므로 바로 UI 리셋
+    // 모든 찜 버튼 OFF로 리셋
+    document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
+    var dpBtn = document.getElementById('dp-zzim');
+    if(dpBtn) dpBtn.classList.remove('on');
+    // window._zzimStores 기준으로 ON 처리
+    var currentList = window._zzimStores || [];
+    currentList.forEach(function(s){ _syncAllZzimUI(s.id, true); });
+    // Firestore에서도 재확인 (브릿지 사용)
+    if (window._currentUser && window._getDoc && window._doc && window._db) {
+      window._getDoc(window._doc(window._db,'zzim',window._currentUser.uid)).then(function(snap){
+        window._zzimStores = snap.exists() ? (snap.data().stores||[]) : [];
+        document.querySelectorAll('.zzim').forEach(function(btn){ btn.classList.remove('on'); });
+        var dp = document.getElementById('dp-zzim');
+        if(dp) dp.classList.remove('on');
+        window._zzimStores.forEach(function(s){ _syncAllZzimUI(s.id, true); });
+      }).catch(function(){});
     }
   }
 });
 // Firebase 브릿지
 window._db = db;
 window._getDocs = getDocs;
+window._getDoc = getDoc;
+window._setDoc = setDoc;
 window._collection = collection;
 window._query = query;
 window._where = where;
