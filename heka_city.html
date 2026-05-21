@@ -43,6 +43,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .city-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
 .city-btn{padding:10px 6px;border-radius:10px;background:#f5f5f5;border:none;font-size:12px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;text-align:center;transition:.15s}
 .city-btn:hover{background:#e8f5e8;color:#1A5D1A}
+.city-btn-all{grid-column:1/-1;background:#e8f5e8;color:#1A5D1A;font-weight:700;border:1.5px solid #c8e6c8;}
+.city-btn-all:hover{background:#d0edcf;}
 
 /* 매장 목록 뷰 */
 .store-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
@@ -219,9 +221,10 @@ function selectCountry(name){
   if(!_currentCountry) return;
   document.getElementById('city-country-name').textContent=_currentCountry.flag+' '+_currentCountry.name;
   var grid=document.getElementById('city-grid');
-  grid.innerHTML=_currentCountry.cities.map(function(city){
-    return '<button class="city-btn" onclick="selectCity(\''+city+'\')">'+city+'</button>';
-  }).join('');
+  grid.innerHTML='<button class="city-btn city-btn-all" onclick="selectCountryAll(\''+_currentCountry.name+'\')">🗺️ 전체보기</button>'
+    +_currentCountry.cities.map(function(city){
+      return '<button class="city-btn" onclick="selectCity(\''+city+'\')">'+city+'</button>';
+    }).join('');
   showView('view-city');
 }
 
@@ -259,6 +262,28 @@ var CITY_EN_MAP={
   '뭄바이':'Mumbai','델리':'Delhi','아그라':'Agra','바라나시':'Varanasi',
   '오클랜드':'Auckland','웰링턴':'Wellington','크라이스트처치':'Christchurch','퀸스타운':'Queenstown'
 };
+
+// 나라 전체보기
+function selectCountryAll(countryName){
+  var country=COUNTRIES.find(function(c){return c.name===countryName;});
+  if(!country) return;
+  document.getElementById('store-city-name').textContent=country.flag+' '+country.name+' 전체';
+  document.getElementById('store-count').textContent='';
+  var listEl=document.getElementById('store-list');
+  listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
+  document.getElementById('store-back-btn').onclick=function(){ showView('view-city'); };
+  showView('view-stores');
+  waitForStores(function(stores){
+    var filtered=stores.filter(function(s){
+      var addr=(s.address||s.addr||'').toLowerCase();
+      var sCity=(s.city||'').toLowerCase();
+      // 나라의 모든 도시에 매칭되는 매장
+      return country.cities.some(function(city){ return cityMatches(s, city); });
+    });
+    document.getElementById('store-count').textContent=filtered.length+'개';
+    renderStores(filtered, listEl, country.name+' 전체');
+  });
+}
 
 function cityMatches(s, city){
   var cityLow=city.toLowerCase();
