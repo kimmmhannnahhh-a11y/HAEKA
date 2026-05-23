@@ -145,21 +145,21 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
           <span class="check-txt green">전체 동의</span>
         </div>
       </div>
-      <div class="check-item" data-req="true" onclick="toggleItem(this)">
-        <div class="check-left"><div class="chkbox"></div><span class="check-txt">서비스 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_service.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
+      <div class="check-item" data-req="true">
+        <div class="check-left" onclick="toggleItem(this.closest('.check-item'))"><div class="chkbox"></div><span class="check-txt">서비스 이용약관 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_service.html" style="color:#aaa;font-size:16px;text-decoration:none;padding:4px">›</a></div>
       </div>
-      <div class="check-item" data-req="true" onclick="toggleItem(this)">
-        <div class="check-left"><div class="chkbox"></div><span class="check-txt">개인정보 수집 및 이용 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_privacy.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
+      <div class="check-item" data-req="true">
+        <div class="check-left" onclick="toggleItem(this.closest('.check-item'))"><div class="chkbox"></div><span class="check-txt">개인정보 수집 및 이용 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-req">필수</span><a href="heka_terms_privacy.html" style="color:#aaa;font-size:16px;text-decoration:none;padding:4px">›</a></div>
       </div>
-      <div class="check-item" data-req="false" onclick="toggleItem(this)">
-        <div class="check-left"><div class="chkbox"></div><span class="check-txt">위치 정보 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><a href="heka_terms_location.html" onclick="event.stopPropagation()" style="color:#aaa;font-size:16px;text-decoration:none">›</a></div>
+      <div class="check-item" data-req="false">
+        <div class="check-left" onclick="toggleItem(this.closest('.check-item'))"><div class="chkbox"></div><span class="check-txt">위치 정보 이용약관 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><a href="heka_terms_location.html" style="color:#aaa;font-size:16px;text-decoration:none;padding:4px">›</a></div>
       </div>
-      <div class="check-item" data-req="false" onclick="toggleItem(this)">
-        <div class="check-left"><div class="chkbox"></div><span class="check-txt">마케팅 정보 수신 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow">›</span></div>
+      <div class="check-item" data-req="false">
+        <div class="check-left" onclick="toggleItem(this.closest('.check-item'))"><div class="chkbox"></div><span class="check-txt">마케팅 정보 수신 동의</span></div>
+        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow" style="padding:4px;cursor:pointer">›</span></div>
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">만 14세 이상입니다</span></div>
