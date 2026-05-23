@@ -842,7 +842,7 @@ async function doHekaLogin(){
   if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}
   if(!window._doFirebaseLogin){alert('잠시 후 다시 시도해주세요');return;}
   var ok = await window._doFirebaseLogin(e, p);
-  if(ok){ showToastAndGoHome('✅ 로그인 되었습니다!'); }
+  if(ok){ showToastAndGoHome(); }
   else { alert('이메일 또는 비밀번호가 틀렸어요'); }
 }
 var currentSocial='';
@@ -855,7 +855,7 @@ async function doSocialLogin(){
   if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}
   if(!window._doFirebaseLogin){alert('잠시 후 다시 시도해주세요');return;}
   var ok = await window._doFirebaseLogin(e,p);
-  if(ok){ closeSocial(); showToastAndGoHome('🎉 로그인 되었습니다!'); }
+  if(ok){ closeSocial(); showToastAndGoHome(); }
 }
 var legalContent={
   privacy:{
@@ -961,11 +961,11 @@ function doGoogleLogin() {
   if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
   window._doGoogleLogin().then(function(res) {
     if (res.blocked) { alert(res.msg); return; }
-    if (res.ok) showToastAndGoHome('✅ Google 로그인 완료!');
+    if (res.ok) showToastAndGoHome();
   });
 }
 
-function showToastAndGoHome(msg){var t=document.getElementById('login-toast');t.textContent=msg||'🎉 가입이 완료되었습니다!';t.classList.add('show');setTimeout(function(){t.classList.remove('show');setTimeout(goHome,400);},1800);}
+function showToastAndGoHome(msg){goHome();}
 function goHome(){
   var redirect = new URLSearchParams(location.search).get('redirect');
   if (redirect) { location.replace(redirect); return; }
