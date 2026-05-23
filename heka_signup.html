@@ -51,6 +51,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .badge-req{font-size:10px;color:#717171;background:#f5f5f5;padding:3px 7px;border-radius:4px;font-weight:600}
 .badge-opt{font-size:10px;color:#bbb;background:#f5f5f5;padding:3px 7px;border-radius:4px;font-weight:600}
 .check-arrow{font-size:13px;color:#ccc}
+.badge-link{cursor:pointer;transition:.15s;-webkit-tap-highlight-color:rgba(26,93,26,0.15);user-select:none}
+.badge-link:hover,.badge-link:active{background:#1A5D1A;color:#fff}
 
 /* 폼 */
 .form-wrap{padding:6px 16px;display:flex;flex-direction:column;gap:10px}
@@ -147,19 +149,19 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">서비스 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px" onclick="event.stopPropagation();location.href='heka_terms_service.html'"><span class="badge-req">필수</span><span style="color:#aaa;font-size:18px;padding:6px 4px;cursor:pointer">›</span></div>
+        <span class="badge-req badge-link" onclick="event.stopPropagation();location.href='heka_terms_service.html'">필수 ›</span>
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">개인정보 수집 및 이용 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px" onclick="event.stopPropagation();location.href='heka_terms_privacy.html'"><span class="badge-req">필수</span><span style="color:#aaa;font-size:18px;padding:6px 4px;cursor:pointer">›</span></div>
+        <span class="badge-req badge-link" onclick="event.stopPropagation();location.href='heka_terms_privacy.html'">필수 ›</span>
       </div>
       <div class="check-item" data-req="false" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">위치 정보 이용약관 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px" onclick="event.stopPropagation();location.href='heka_terms_location.html'"><span class="badge-opt">선택</span><span style="color:#aaa;font-size:18px;padding:6px 4px;cursor:pointer">›</span></div>
+        <span class="badge-opt badge-link" onclick="event.stopPropagation();location.href='heka_terms_location.html'">선택 ›</span>
       </div>
       <div class="check-item" data-req="false" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">마케팅 정보 수신 동의</span></div>
-        <div style="display:flex;align-items:center;gap:5px"><span class="badge-opt">선택</span><span class="check-arrow">›</span></div>
+        <span class="badge-opt badge-link" onclick="event.stopPropagation();location.href='heka_terms_marketing.html'">선택 ›</span>
       </div>
       <div class="check-item" data-req="true" onclick="toggleItem(this)">
         <div class="check-left"><div class="chkbox"></div><span class="check-txt">만 14세 이상입니다</span></div>
