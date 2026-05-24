@@ -1356,7 +1356,7 @@ async function loadCategories() {
     }
     _categories = [];
     snap.forEach(function(d){ _categories.push(Object.assign({ id: d.id }, d.data())); });
-    _categories.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+    _categories.sort(function(a,b){ return (a.sortOrder==null?999:a.sortOrder)-(b.sortOrder==null?999:b.sortOrder); });
     renderCategories();
     updateCategorySelect();
   } catch(e) {

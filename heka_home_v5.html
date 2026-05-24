@@ -1044,7 +1044,7 @@ window._loadCatsFromFirestore = async function(db, collection, getDocs) {
     if (!snap.empty) {
       var list = [];
       snap.forEach(function(d){ list.push(d.data()); });
-      list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+      list.sort(function(a,b){ return (a.sortOrder==null?999:a.sortOrder)-(b.sortOrder==null?999:b.sortOrder); });
       cats = list.map(function(d){ return d.name; });
       buildCatChips(cats);
       console.log('[cats] 로드 완료, 순서:', cats);
