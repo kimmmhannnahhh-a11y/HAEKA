@@ -457,15 +457,33 @@ function showAdmin() {
   } catch(e) {}
 }
 
-// Firebase Auth 상태 감지 → admin은 매번 로그인 폼 거치게 (자동 로그인 X)
-var _authChecked = false;
+// Firebase Auth 상태 감지
 window.addEventListener('fbReady', function() {
-  // 초기 로드 시 무조건 로그인 화면. 자동 로그인 안 함.
+  // 초기 진입: 무조건 로그인 화면. 기존 세션이 있으면 signOut.
   var loginEl = document.getElementById('login-wrap');
   var adminEl = document.getElementById('admin-wrap');
   if (loginEl) loginEl.style.display = '';
   if (adminEl) adminEl.style.display = 'none';
-  _authChecked = true;
+  // 다른 페이지에서 로그인된 일반 유저 세션이 있으면 강제 로그아웃 (admin과 일반앱 분리)
+  if (window._auth && window._auth.currentUser && window._signOut) {
+    if (window._auth.currentUser.email !== ADMIN_EMAIL) {
+      window._signOut(window._auth);
+    }
+  }
+  // 로그인 직후에만 admin 화면 표시
+  var _shown = false;
+  window._auth.onAuthStateChanged(function(user) {
+    if (user && user.email === ADMIN_EMAIL && !_shown) {
+      _shown = true;
+      showAdmin();
+      var tries = 0;
+      var waitFb = setInterval(function() {
+        tries++;
+        if (window._db) { clearInterval(waitFb); loadDashboard(); }
+        else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
+      }, 100);
+    }
+  });
 });
 
 async function doLogin() {
