@@ -214,9 +214,14 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 let _currentUser = null;
 
-// 업종 Firestore에서 로드
-if (window._loadCatsFromFirestore) window._loadCatsFromFirestore(db, collection, getDocs);
-else setTimeout(function(){ if(window._loadCatsFromFirestore) window._loadCatsFromFirestore(db, collection, getDocs); }, 500);
+// 업종 Firestore에서 로드 (재시도 로직 포함)
+(function tryLoadCats(retries) {
+  if (window._loadCatsFromFirestore) {
+    window._loadCatsFromFirestore(db, collection, getDocs);
+  } else if (retries > 0) {
+    setTimeout(function(){ tryLoadCats(retries - 1); }, 200);
+  }
+})(20);
 
 onAuthStateChanged(auth, async u => {
   _currentUser = u;
@@ -822,6 +827,7 @@ window._where = where;
 window._doc = doc;
 window._updateDoc = updateDoc;
 window._arrayUnion = arrayUnion;
+window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, where, arrayUnion };
 </script>
 </head>
 <body>
@@ -1041,9 +1047,17 @@ window._loadCatsFromFirestore = async function(db, collection, getDocs) {
       list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
       cats = list.map(function(d){ return d.name; });
       buildCatChips(cats);
+      console.log('[cats] 로드 완료, 순서:', cats);
     }
   } catch(e) { console.log('cat load err:', e); }
 };
+
+// 페이지 복귀 시 (다른 페이지 갔다가 돌아왔을 때) 카테고리 재로드
+window.addEventListener('pageshow', function(){
+  if (window._db && window._fbFns && window._fbFns.collection && window._fbFns.getDocs) {
+    window._loadCatsFromFirestore(window._db, window._fbFns.collection, window._fbFns.getDocs);
+  }
+});
 function toggleCat(lbl){if(selected.has(lbl))selected.delete(lbl);else selected.add(lbl);if(selected.size===0)catSelectAll();else{var as=document.getElementById('cat-all-select');if(as)as.classList.remove('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.remove('on');}window._selected=selected;if(window.applyFilters)window.applyFilters();}
 function syncAll(){wrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',selected.has(c.dataset.lbl));});sw.querySelectorAll('.sheet-chip').forEach(function(c){if(c.id==='cat-all-select')return;c.classList.toggle('on',selected.has(c.dataset.lbl));});}
 function catSelectAll(){selected.clear();document.querySelectorAll('#cat-wrap .sq-chip').forEach(function(c){c.classList.remove('on');});sw.querySelectorAll('.sheet-chip').forEach(function(c){c.classList.remove('on');});var as=document.getElementById('cat-all-select');if(as)as.classList.add('on');var btn=document.getElementById('cat-all-btn');if(btn)btn.classList.add('on');window._selected=selected;if(window.applyFilters)window.applyFilters();}
