@@ -457,36 +457,15 @@ function showAdmin() {
   } catch(e) {}
 }
 
-// Firebase Auth 상태 감지 → 자동 로그인 유지
+// Firebase Auth 상태 감지 → admin은 매번 로그인 폼 거치게 (자동 로그인 X)
 var _authChecked = false;
 window.addEventListener('fbReady', function() {
-  window._auth.onAuthStateChanged(function(user) {
-    if (user && user.email === ADMIN_EMAIL) {
-      _authChecked = true;
-      showAdmin();
-      var tries = 0;
-      var waitFb = setInterval(function() {
-        tries++;
-        if (window._db) { clearInterval(waitFb); loadDashboard(); }
-        else if (tries > 30) { clearInterval(waitFb); loadDashboard(); }
-      }, 100);
-      try {
-        var lastPage = sessionStorage.getItem('haeka_admin_page');
-        if (lastPage && lastPage !== 'dashboard') {
-          setTimeout(function(){
-            var navEl = document.getElementById('nav-'+lastPage);
-            if (navEl) goPage(lastPage, navEl);
-          }, 500);
-        }
-      } catch(e) {}
-    } else if (!_authChecked) {
-      // 최초 진입 시에만 로그인 화면 표시. 한 번이라도 로그인 인증된 적이 있으면 무시
-      var loginEl = document.getElementById('login-wrap');
-      var adminEl = document.getElementById('admin-wrap');
-      if (loginEl) loginEl.style.display = '';
-      if (adminEl) adminEl.style.display = 'none';
-    }
-  });
+  // 초기 로드 시 무조건 로그인 화면. 자동 로그인 안 함.
+  var loginEl = document.getElementById('login-wrap');
+  var adminEl = document.getElementById('admin-wrap');
+  if (loginEl) loginEl.style.display = '';
+  if (adminEl) adminEl.style.display = 'none';
+  _authChecked = true;
 });
 
 async function doLogin() {

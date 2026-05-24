@@ -306,7 +306,7 @@ window._doFirebaseLogin = async function(email, pw) {
         var status = uDoc.data().status;
         if (status === 'suspended') {
           await auth.signOut();
-          alert('정지된 계정이에요. 문의사항은 고객센터로 연락해주세요.');
+          alert('정지된 계정이에요.');
           return false;
         }
         if (status === 'banned') {
@@ -337,7 +337,7 @@ window._doGoogleLogin = async function() {
         var status = uDoc.data().status;
         if (status === 'suspended') {
           await auth.signOut();
-          return { ok: false, blocked: true, msg: '정지된 계정이에요. 문의사항은 고객센터로 연락해주세요.' };
+          return { ok: false, blocked: true, msg: '정지된 계정이에요.' };
         }
         if (status === 'banned') {
           await auth.signOut();
