@@ -312,21 +312,36 @@ async function loadStores() {
     allStores = [];
     snapshot.forEach(doc => allStores.push({ id: doc.id, ...doc.data() }));
     if (allStores.length > 0) {
-      // 핫플 동영상 모두 백그라운드 미리 버퍼링
+      // 핫플 후보 - 영상/이미지 있는 매장만
       var hotplCandidates = allStores.filter(function(s){ return (s.images && s.images[0]) || s.videoUrl; }).slice(0, 10);
-      hotplCandidates.forEach(function(s) {
-        if (s.videoUrl) {
-          var pv = document.createElement('video');
-          pv.src = s.videoUrl;
-          pv.preload = 'auto';
-          pv.muted = true;
-          pv.playsInline = true;
-          pv.load();
-          s._preloadedVideo = pv; // 재사용용 캐시
-        }
-      });
+      // 첫 번째 영상은 즉시 preload (사용자가 보는 영상)
+      var first = hotplCandidates[0];
+      if (first && first.videoUrl) {
+        var fv = document.createElement('video');
+        fv.src = first.videoUrl;
+        fv.preload = 'auto';
+        fv.muted = true;
+        fv.playsInline = true;
+        fv.load();
+        first._preloadedVideo = fv;
+      }
+      // 즉시 핫플 렌더링 (영상이 다 로드되기 전에 화면부터 표시)
       initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
+      // 나머지 영상은 1초 후 백그라운드 buffer
+      setTimeout(function(){
+        hotplCandidates.slice(1).forEach(function(s) {
+          if (s.videoUrl && !s._preloadedVideo) {
+            var pv = document.createElement('video');
+            pv.src = s.videoUrl;
+            pv.preload = 'auto';
+            pv.muted = true;
+            pv.playsInline = true;
+            pv.load();
+            s._preloadedVideo = pv;
+          }
+        });
+      }, 1000);
     }
   } catch(e) { console.error('로드 오류:', e); }
 }
@@ -471,7 +486,9 @@ function renderHotplSlide() {
     media.loop = true;
     media.setAttribute('playsinline','');
     media.setAttribute('preload','auto');
-    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer';
+    // poster 이미지 (영상 로딩 중에 표시)
+    if(store.images && store.images[0]) media.poster = store.images[0];
+    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#1a2e1a';
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
     media.play().catch(function(){});
   } else if(store.images && store.images[0]){
