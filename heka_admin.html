@@ -1454,16 +1454,18 @@ function renderCategories() {
 
 
 async function saveCatOrder(fromId, toId) {
-  if (!window._db || !window._fbFns) return;
+  console.log('[saveCatOrder] called', fromId, '->', toId);
+  if (!window._db || !window._fbFns) { console.log('[saveCatOrder] firebase 미준비'); return; }
   if (fromId === toId) return;
   var db = window._db; var f = window._fbFns;
+  if (!f.updateDoc || !f.doc) { console.log('[saveCatOrder] updateDoc/doc 함수 없음'); alert('Firebase 함수 미등록'); return; }
   // 현재 배열에서 인덱스 찾기
   var fromIdx = -1, toIdx = -1;
   for (var i=0;i<_categories.length;i++) {
     if (_categories[i].id === fromId) fromIdx = i;
     if (_categories[i].id === toId) toIdx = i;
   }
-  if (fromIdx < 0 || toIdx < 0) return;
+  if (fromIdx < 0 || toIdx < 0) { console.log('[saveCatOrder] index 못찾음', fromIdx, toIdx); return; }
   // 배열 재정렬
   var moved = _categories.splice(fromIdx, 1)[0];
   _categories.splice(toIdx, 0, moved);
@@ -1471,13 +1473,22 @@ async function saveCatOrder(fromId, toId) {
   renderCategories();
   // Firestore에 sortOrder 저장
   try {
+    console.log('[saveCatOrder] Firestore 저장 시작', _categories.length, '개');
     var ps = _categories.map(function(cat, i) {
       return f.updateDoc(f.doc(db,'categories',cat.id), { sortOrder: i });
     });
     await Promise.all(ps);
+    console.log('[saveCatOrder] 저장 완료');
+    // 토스트 알림
+    var t = document.createElement('div');
+    t.textContent = '✓ 순서가 저장되었어요';
+    t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1A5D1A;color:#fff;padding:12px 22px;border-radius:30px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.18)';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 1600);
     updateCategorySelect();
   } catch(e) {
-    alert('순서 저장 실패: ' + e.message);
+    console.error('[saveCatOrder] 저장 실패', e);
+    alert('순서 저장 실패: ' + e.message + '\n\n콘솔(F12)에서 자세한 에러를 확인하세요.');
     loadCategories();
   }
 }
