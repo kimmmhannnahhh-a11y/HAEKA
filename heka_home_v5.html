@@ -1014,8 +1014,8 @@ var wrap=document.getElementById('cat-wrap');
 var sw=document.getElementById('sheet-wrap');
 
 function buildCatChips(list) {
-  // 기존 칩 제거 (전체 버튼 제외)
-  wrap.innerHTML = '';
+  // 기존 칩만 제거 (업종 ▾ 버튼은 보존)
+  wrap.querySelectorAll('.sq-chip').forEach(function(el){ el.remove(); });
   sw.querySelectorAll('.sheet-chip:not(#cat-all-select)').forEach(function(el){ el.remove(); });
   var allChip = document.getElementById('cat-all-select');
   if (!allChip) {
