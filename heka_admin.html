@@ -26,6 +26,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-sep{height:1px;background:rgba(255,255,255,.1);margin:6px 0}
 .sidebar-logout{margin-top:auto;padding:16px 20px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer}
 .sidebar-logout:hover{color:#fff}
+.sidebar-bottom{margin-top:auto;padding:8px 0 12px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-btm-item{padding:12px 20px;font-size:12px;color:rgba(255,255,255,.55);cursor:pointer;transition:.15s}
+.sidebar-btm-item:hover{color:#fff;background:rgba(255,255,255,.05)}
 .main{margin-left:200px;padding:28px;min-height:100vh}
 .page{display:none}
 .page.on{display:block}
@@ -112,8 +115,10 @@ tr:hover td{background:#f9fdf9}
     <div class="nav-item" id="nav-categories" onclick="goPage('categories',this)">🏷️ 업종 관리</div>
     <div class="nav-item" id="nav-cards" onclick="goPage('cards',this)">💳 카드 관리</div>
     <div class="nav-item" id="nav-add-store" onclick="goPage('add-store',this)">➕ 매장 등록</div>
-    <div class="sidebar-logout" onclick="openPwModal()">비밀번호 변경</div>
-    <div class="sidebar-logout" onclick="doLogout()">로그아웃</div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-btm-item" onclick="openPwModal()">비밀번호 변경</div>
+      <div class="sidebar-btm-item" onclick="doLogout()">로그아웃</div>
+    </div>
   </div>
 
   <div class="main">
@@ -1445,6 +1450,36 @@ function renderCategories() {
     })(row, cat.id);
     listEl.appendChild(row);
   });
+}
+
+
+async function saveCatOrder(fromId, toId) {
+  if (!window._db || !window._fbFns) return;
+  if (fromId === toId) return;
+  var db = window._db; var f = window._fbFns;
+  // 현재 배열에서 인덱스 찾기
+  var fromIdx = -1, toIdx = -1;
+  for (var i=0;i<_categories.length;i++) {
+    if (_categories[i].id === fromId) fromIdx = i;
+    if (_categories[i].id === toId) toIdx = i;
+  }
+  if (fromIdx < 0 || toIdx < 0) return;
+  // 배열 재정렬
+  var moved = _categories.splice(fromIdx, 1)[0];
+  _categories.splice(toIdx, 0, moved);
+  // 즉시 화면 반영
+  renderCategories();
+  // Firestore에 sortOrder 저장
+  try {
+    var ps = _categories.map(function(cat, i) {
+      return f.updateDoc(f.doc(db,'categories',cat.id), { sortOrder: i });
+    });
+    await Promise.all(ps);
+    updateCategorySelect();
+  } catch(e) {
+    alert('순서 저장 실패: ' + e.message);
+    loadCategories();
+  }
 }
 
 
