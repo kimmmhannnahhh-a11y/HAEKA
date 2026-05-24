@@ -477,6 +477,12 @@ window.addEventListener('fbReady', function() {
           }, 500);
         }
       } catch(e) {}
+    } else {
+      // 로그인 안 됨 → 로그인 화면 표시 + admin 화면 숨김
+      var loginEl = document.getElementById('login-wrap');
+      var adminEl = document.getElementById('admin-wrap');
+      if (loginEl) loginEl.style.display = '';
+      if (adminEl) adminEl.style.display = 'none';
     }
   });
 });
@@ -1799,7 +1805,8 @@ async function setMemberStatus(uid, status) {
   var db = window._db;
   var f = window._fbFns;
   try {
-    await f.updateDoc(f.doc(db, 'users', uid), { status: status });
+    // setDoc with merge: 문서가 없으면 새로 만들고, 있으면 status 필드만 업데이트
+    await f.setDoc(f.doc(db, 'users', uid), { status: status }, { merge: true });
     var m = _allMembers.find(function(x){ return x.id === uid; });
     if (m) m.status = status;
     closeMemberModal();
