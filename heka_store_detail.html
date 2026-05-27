@@ -6,7 +6,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <style>
 :root{--hk-bg:#FAFAF8;--hk-surface:#FFFFFF;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
@@ -255,7 +255,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .hero-overlay{background:linear-gradient(180deg,rgba(0,0,0,.12) 0%,rgba(0,0,0,.02) 40%,rgba(0,0,0,.72) 100%)}
 .hero-top{padding:14px 18px}
 .hero-bottom{padding:0 20px 20px;overflow:hidden}
-.hero-name{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.06em;text-shadow:0 2px 16px rgba(0,0,0,.3);overflow:hidden;text-overflow:ellipsis;word-break:keep-all}
+.hero-name{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.06em;text-shadow:0 2px 16px rgba(0,0,0,.3);overflow:hidden;text-overflow:ellipsis;word-break:keep-all;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif}
 .hero-cat{margin-top:6px;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.02em}
 .signal-badge{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:0;box-shadow:none;backdrop-filter:none}
 .signal-green{background:#065F46;color:#fff}
@@ -265,7 +265,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 
 .scroll-wrap{height:auto;max-height:none;overflow-y:visible;overflow-x:hidden;padding:0 0 88px;background:var(--hk-bg)}
 
-.section{background:transparent;border:0;border-radius:0;margin:0;padding:24px 20px;box-shadow:none;border-bottom:1px solid var(--hk-border)}
+.section{background:transparent;border:0;border-radius:0;margin:0;padding:14px 20px;box-shadow:none;border-bottom:1px solid var(--hk-border)}
 .section:last-child,.section:last-of-type{border-bottom:0}
 .section[style*="padding:0"]{border-radius:0;margin:0;overflow:hidden;box-shadow:none}
 
@@ -276,28 +276,28 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .sec-title-red{color:#991B1B}
 
 .section.hk-pay-strip{margin:0;padding:32px 20px;background:#0F0F0F;border-bottom:0;border-radius:0;box-shadow:none}
-.section.hk-pay-strip .sec-title-blue{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.04em;text-transform:none;margin-bottom:18px}
+.section.hk-pay-strip .sec-title-blue{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.04em;text-transform:none;margin-bottom:18px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif;text-shadow:none;-webkit-text-stroke:0}
 .section.hk-pay-strip .sec-title-blue::before{content:'';display:none}
 .section.hk-pay-strip .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .section.hk-pay-strip .card-chip{border-radius:8px;padding:12px 10px;font-size:12px;font-weight:800;justify-content:center;box-shadow:none;border:0}
 .section.hk-pay-strip .card-dot{display:none}
 
 #cards-no-section{margin:0;padding:24px 20px;background:var(--hk-bg);border-radius:0;border-bottom:1px solid var(--hk-border);box-shadow:none}
-#cards-no-section .sec-title-red{font-size:18px;font-weight:700;color:var(--hk-sub);letter-spacing:-.02em;text-transform:none}
+#cards-no-section .sec-title-red{font-size:18px;font-weight:700;color:var(--hk-sub);letter-spacing:-.02em;text-transform:none;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif}
 #cards-no-section .card-grid{gap:6px}
-#cards-no-section .card-chip,#cards-no-section .card-chip-no{border-radius:6px;padding:8px 10px;font-size:11px;font-weight:700;box-shadow:none;opacity:1;background:transparent;color:var(--hk-muted);border:1.5px solid #E5E7EB}
+#cards-no-section .card-chip,#cards-no-section .card-chip-no{border-radius:6px;padding:8px 10px;font-size:11px;font-weight:700;box-shadow:none;opacity:1;background:#9CA3AF;color:#fff;border:0}
 
 .meta-row{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--hk-border);margin:0;font-size:13px;color:var(--hk-text);line-height:1.55}
 .meta-row:last-child{border-bottom:0}
 .meta-ico{width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:12px;color:var(--hk-muted);font-weight:800;letter-spacing:.05em;text-transform:uppercase;min-width:52px;flex-shrink:0;padding-top:1px}
-#meta-phone{font-size:15px!important;font-weight:700;color:var(--hk-accent)!important}
+#meta-phone{font-size:16px!important;font-weight:700;color:var(--hk-accent)!important}
 #addr-txt{font-size:15px!important;font-weight:600;color:var(--hk-text)!important;line-height:1.55!important}
 .addr-copy-btn{border-radius:6px;padding:6px 10px;background:var(--hk-bg);border:1px solid var(--hk-border)}
 
 .hours-row{padding:0;margin:0;align-items:flex-start}
 .hours-today{font-size:15px;font-weight:700;color:var(--hk-text)}
 .hours-badge-open{background:#065F46;color:#fff;border-radius:4px;font-size:11px;padding:4px 8px;font-weight:700}
-.hours-badge-close{background:#991B1B;color:#fff;border-radius:4px;font-size:11px;padding:4px 8px;font-weight:700}
+.hours-badge-close{background:#DC2626;color:#fff;border-radius:4px;font-size:11px;padding:4px 8px;font-weight:700}
 .hours-toggle{border-radius:6px;border:1px solid #E5E7EB;font-weight:700;padding:4px 10px}
 .hours-all{background:#F9FAFB;border-radius:10px;padding:12px 14px;margin-top:14px}
 .hours-day-row{font-size:13px;padding:6px 0;color:var(--hk-sub)}
@@ -315,8 +315,8 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .cat-request-txt{font-size:13px;font-weight:700;color:var(--hk-sub)}
 
 .bottom-btns{position:sticky;bottom:0;left:0;right:0;padding:14px 20px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--hk-border);box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;gap:10px;z-index:30}
-.btn-report{flex:1;padding:15px;border:0;border-radius:16px;background:var(--hk-accent);color:#fff;font-size:14px;font-weight:800;box-shadow:0 10px 26px rgba(255,56,92,.27);cursor:pointer}
-.btn-report:hover{opacity:.9}
+.btn-report{flex:1;padding:15px;border:1.5px solid #E5E7EB;border-radius:12px;background:#fff;color:var(--hk-accent);font-size:14px;font-weight:800;box-shadow:none;cursor:pointer}
+.btn-report:hover{background:#FFF7F5}
 
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
@@ -513,7 +513,6 @@ async function renderStore(store) {
     if(btns){
       var delBtn = document.createElement('button');
       delBtn.className = 'btn-report';
-      delBtn.style.cssText = 'background:#991B1B';
       delBtn.textContent = '매장 삭제';
       delBtn.onclick = async function(){
         if(!confirm('정말 이 매장을 삭제할까요?')) return;
@@ -768,8 +767,8 @@ window._arrayUnion = arrayUnion;
     <!-- 전화번호만 표시 (등록 몇분전 제거) -->
     <div class="section" id="meta-phone-section" style="display:none">
       <div class="meta-row" id="meta-phone-row">
-        <span class="meta-ico">📞</span>
-        <a id="meta-phone" href="#" style="color:#FF3900;text-decoration:none;font-size:11px"></a>
+        <span class="meta-ico">전화</span>
+        <a id="meta-phone" href="#" style="color:#FF3900;text-decoration:none;font-size:12px"></a>
       </div>
     </div>
 
@@ -796,7 +795,7 @@ window._arrayUnion = arrayUnion;
       <div class="sec-title">영업시간</div>
       <div class="hours-row">
         <div id="hours-today-txt"></div>
-        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">전체보기<span class="arr">⌄</span></button>
+        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">전체보기</button>
       </div>
       <div class="hours-all" id="hours-all">
         <div id="hours-all-content"></div>
