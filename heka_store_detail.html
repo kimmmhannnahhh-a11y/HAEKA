@@ -244,6 +244,90 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .btn-report{background:var(--hk-accent);color:#fff;border:0;box-shadow:0 8px 20px rgba(255,56,92,.25);padding:12px;font-size:13px}
 .closed-badge{background:#991B1B}
 }
+
+/* ═══ HAEKA 3.0 — Magazine-style store detail ═══ */
+.phone{height:100vh;height:100dvh;max-height:none;border-radius:0;width:100%;max-width:430px}
+.sb{position:sticky;top:0;z-index:20}
+.hero{height:280px;position:relative;border-radius:0;overflow:hidden}
+.hero:before{display:none}
+.hero-img,.hero-img img,#hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-overlay{background:linear-gradient(180deg,rgba(0,0,0,.12) 0%,rgba(0,0,0,.02) 40%,rgba(0,0,0,.72) 100%)}
+.hero-top{padding:14px 18px}
+.hero-bottom{padding:0 20px 20px}
+.hero-name{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.06em;text-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hero-cat{margin-top:6px;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.02em}
+.signal-badge{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:0;box-shadow:none;backdrop-filter:none}
+.signal-green{background:#065F46;color:#fff}
+.signal-yellow{background:#92400E;color:#fff}
+.signal-red{background:#991B1B;color:#fff}
+
+.scroll-wrap{height:auto;max-height:none;overflow-y:auto;padding:0 0 88px;background:var(--hk-bg)}
+.screen.active,.scroll-wrap{max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px)}
+
+.section{background:transparent;border:0;border-radius:0;margin:0;padding:24px 20px;box-shadow:none;border-bottom:1px solid var(--hk-border)}
+.section:last-child,.section:last-of-type{border-bottom:0}
+.section[style*="padding:0"]{border-radius:0;margin:0;overflow:hidden;box-shadow:none}
+
+.sec-title,.sec-title-blue,.sec-title-red{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.sec-title{color:var(--hk-muted)}
+.sec-title-blue{color:var(--hk-text)}
+.sec-title-blue::before{content:'';display:none}
+.sec-title-red{color:#991B1B}
+
+.section.hk-pay-strip{margin:0;padding:32px 20px;background:#0F0F0F;border-bottom:0;border-radius:0;box-shadow:none}
+.section.hk-pay-strip .sec-title-blue{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.04em;text-transform:none;margin-bottom:18px}
+.section.hk-pay-strip .sec-title-blue::before{content:'';display:none}
+.section.hk-pay-strip .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.section.hk-pay-strip .card-chip{border-radius:8px;padding:12px 10px;font-size:12px;font-weight:800;justify-content:center;box-shadow:none;border:0}
+.section.hk-pay-strip .card-dot{display:none}
+
+#cards-no-section{margin:0;padding:24px 20px;background:var(--hk-bg);border-radius:0;border-bottom:1px solid var(--hk-border);box-shadow:none}
+#cards-no-section .sec-title-red{font-size:18px;font-weight:700;color:var(--hk-sub);letter-spacing:-.02em;text-transform:none}
+#cards-no-section .card-grid{gap:6px}
+#cards-no-section .card-chip,#cards-no-section .card-chip-no{border-radius:6px;padding:8px 10px;font-size:11px;font-weight:700;box-shadow:none;opacity:1;background:transparent;color:var(--hk-muted);border:1.5px solid #E5E7EB}
+
+.meta-row{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--hk-border);margin:0;font-size:13px;color:var(--hk-text);line-height:1.55}
+.meta-row:last-child{border-bottom:0}
+.meta-ico{width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;font-size:12px;color:var(--hk-muted);font-weight:800;letter-spacing:.05em;text-transform:uppercase;min-width:52px;flex-shrink:0;padding-top:1px}
+#meta-phone{font-size:15px!important;font-weight:700;color:var(--hk-accent)!important}
+#addr-txt{font-size:15px!important;font-weight:600;color:var(--hk-text)!important;line-height:1.55!important}
+.addr-copy-btn{border-radius:6px;padding:6px 10px;background:var(--hk-bg);border:1px solid var(--hk-border)}
+
+.hours-row{padding:0;margin:0;align-items:flex-start}
+.hours-today{font-size:15px;font-weight:700;color:var(--hk-text)}
+.hours-badge-open{background:#065F46;color:#fff;border-radius:4px;font-size:11px;padding:4px 8px;font-weight:700}
+.hours-badge-close{background:#991B1B;color:#fff;border-radius:4px;font-size:11px;padding:4px 8px;font-weight:700}
+.hours-toggle{border-radius:6px;border:1px solid #E5E7EB;font-weight:700;padding:4px 10px}
+.hours-all{background:#F9FAFB;border-radius:10px;padding:12px 14px;margin-top:14px}
+.hours-day-row{font-size:13px;padding:6px 0;color:var(--hk-sub)}
+
+.rev-item{padding:16px 0;gap:12px;border-bottom:1px solid var(--hk-border)}
+.rev-av{width:28px;height:28px;font-size:12px;border-radius:6px;background:#0F0F0F;color:#fff}
+.rev-name{font-size:13px;font-weight:800}
+.rev-date{font-size:11px}
+.rev-txt{font-size:13px;line-height:1.6;color:var(--hk-sub)}
+.rev-stars{color:var(--hk-accent);font-size:13px}
+.rev-rating-btn{border-radius:6px;font-weight:700}
+
+.cat-request{border-radius:8px;border:1.5px dashed #E5E7EB;padding:14px;background:transparent}
+.cat-request:hover{border-color:var(--hk-accent);background:var(--hk-accent-bg)}
+.cat-request-txt{font-size:13px;font-weight:700;color:var(--hk-sub)}
+
+.bottom-btns{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;padding:14px 20px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--hk-border);box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;gap:10px;z-index:30}
+.btn-report{flex:1;padding:16px;border:0;border-radius:12px;background:#0F0F0F;color:#fff;font-size:15px;font-weight:700;box-shadow:none;cursor:pointer}
+.btn-report:hover{background:#2A2A2A}
+
+.toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
+.popup-box{border-radius:20px 20px 0 0;padding:20px}
+.popup-title{font-size:18px;font-weight:800}
+.popup-inp{border-radius:10px;font-size:14px;min-height:100px}
+.popup-btn{border-radius:10px;padding:16px;font-size:15px;font-weight:700;background:#0F0F0F;color:#fff;box-shadow:none}
+
+.closed-badge{border-radius:4px;font-size:11px;font-weight:700;padding:5px 12px}
+.edit-badge{border-radius:4px}
+.back-btn,.share-btn,.zzim-btn{border-radius:8px;background:rgba(15,15,15,.5);backdrop-filter:blur(10px)}
+
+@media(max-width:430px){.phone{border-radius:0;width:100vw;height:100vh;height:100dvh}}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
@@ -719,13 +803,13 @@ window._arrayUnion = arrayUnion;
 
     <!-- 결제 가능 카드 -->
     <div class="section hk-pay-strip">
-      <div class="sec-title-blue">결제 가능 카드</div>
+      <div class="sec-title-blue">결제 가능</div>
       <div class="card-grid" id="cards-ok"></div>
     </div>
 
     <!-- 결제 불가 카드 -->
     <div class="section" id="cards-no-section">
-      <div class="sec-title-red">결제 불가 카드</div>
+      <div class="sec-title-red">결제 불가</div>
       <div class="card-grid" id="cards-no"><span style="font-size:11px;color:#bbb">없음</span></div>
     </div>
 
