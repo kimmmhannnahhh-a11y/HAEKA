@@ -186,7 +186,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   0%{transform:translateY(0) rotate(-15deg);opacity:0}
   10%{opacity:0.85}
   90%{opacity:0.85}
-  100%{transform:translateY(280px) rotate(25deg);opacity:0}
+  100%{transform:translateY(120px) rotate(25deg);opacity:0}
 }
 
 
@@ -391,19 +391,18 @@ window._doGoogleLogin = async function() {
         <svg class="travel-plane" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 11.5 21 3l-6.8 18-3.4-7.8L3 11.5Z" fill="currentColor"/><path d="M10.8 13.2 21 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".75"/></svg>
       </div>
 
-      <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
-        <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
-        <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
-        <div class="rcard" style="left:38%;top:-15px;animation-delay:2.1s;background:#FCD34D"></div>
-        <div class="rcard" style="left:54%;top:-40px;animation-delay:0.6s;background:#7DD3FC"></div>
-        <div class="rcard" style="left:70%;top:-10px;animation-delay:1.8s;background:#C4B5FD"></div>
-        <div class="rcard" style="left:84%;top:-25px;animation-delay:2.6s;background:#FCA5A5"></div>
-        <div class="rcard" style="left:15%;top:-50px;animation-delay:3.2s;background:#86EFAC"></div>
-        <div class="rcard" style="left:62%;top:-35px;animation-delay:3.7s;background:#FDBA74"></div>
-      </div>
-
       <!-- 로고 -->
-      <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden">
+        <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
+          <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
+          <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
+          <div class="rcard" style="left:38%;top:-15px;animation-delay:2.1s;background:#FCD34D"></div>
+          <div class="rcard" style="left:54%;top:-40px;animation-delay:0.6s;background:#7DD3FC"></div>
+          <div class="rcard" style="left:70%;top:-10px;animation-delay:1.8s;background:#C4B5FD"></div>
+          <div class="rcard" style="left:84%;top:-25px;animation-delay:2.6s;background:#FCA5A5"></div>
+          <div class="rcard" style="left:15%;top:-50px;animation-delay:3.2s;background:#86EFAC"></div>
+          <div class="rcard" style="left:62%;top:-35px;animation-delay:3.7s;background:#FDBA74"></div>
+        </div>
         <!-- 텍스트 -->
         <div style="line-height:1.2;letter-spacing:-1.2px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif">
           <div><span style="font-size:30px;font-weight:700;color:#FF3900">해</span><span style="font-size:29px;font-weight:700;color:#222">외에서</span></div>
