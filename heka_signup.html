@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
@@ -121,7 +120,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}
 .phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"],[style*="background: #FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
-}
 /* HAEKA signup active Warm Minimal override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}
@@ -295,14 +293,6 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
   <!-- 토스트 -->
   <div class="toast" id="join-toast">가입이 완료되었습니다!</div>
 
-  <!-- 하단 네비 -->
-  <div class="bnav">
-    <div class="ni" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
-    <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni" onclick="location.href='heka_nearby_all.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="ni" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
-  </div>
 
   <!-- 팝업 -->
   <div class="popup-overlay" id="popup-overlay">
