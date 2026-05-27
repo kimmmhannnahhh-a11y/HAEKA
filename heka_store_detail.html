@@ -325,6 +325,13 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .signal-green,.signal-yellow,.signal-red{background:transparent!important;color:#A3E635!important;border:0!important}
 #hero-date,#hero-nick{color:#A3E635!important}
 
+/* 추가 수정: 매장정보 간격 압축 + 결제가능 타이틀 완전 노출 */
+.scroll-wrap>.section:not(.hk-pay-strip):not(#cards-no-section){padding:8px 20px!important;margin-bottom:0!important}
+.scroll-wrap>.section[style*="padding:0"]{padding:0!important;margin-bottom:0!important}
+.meta-row{padding:8px 0!important}
+.section.hk-pay-strip .sec-title-blue{color:#fff!important;opacity:1!important;visibility:visible!important;text-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-text-fill-color:#fff!important;background:transparent!important;-webkit-background-clip:unset!important;display:block!important}
+.section.hk-pay-strip .sec-title-blue::before{display:none!important;content:''!important}
+
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
 .popup-title{font-size:18px;font-weight:800}
