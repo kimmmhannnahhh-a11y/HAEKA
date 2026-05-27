@@ -210,11 +210,15 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 
 /* HAEKA home section title emphasis */
 .sec-t{font-size:17px!important;font-weight:800!important;color:var(--hk-text)!important;letter-spacing:-.04em}
+.sec-head{margin-top:32px!important}
+.nrow{margin-bottom:32px!important}
+.hotpl-section{margin:32px 14px 0!important}
+.ytok-wrap{padding:32px 14px 12px!important}
 .hotpl-header-row{align-items:center!important}
-.hotpl-section-title{position:relative;display:inline-flex;align-items:center;gap:1px;font-size:15px!important;font-weight:800!important;letter-spacing:-.04em;transform-origin:center;animation:wiggle 2s ease-in-out infinite}
+.hotpl-section-title{position:relative;display:inline-flex;align-items:center;gap:2px;font-size:15px!important;font-weight:800!important;letter-spacing:-.04em;transform-origin:center;animation:wiggle 2.4s ease-in-out infinite}
 .hotpl-section-title::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;margin-right:6px;padding:2px 6px;border-radius:4px;background:#FF3900;color:#fff;font-size:9px;font-weight:900;letter-spacing:.02em;transform:rotate(-3deg);box-shadow:0 4px 10px rgba(255,57,0,.18)}
-.hotpl-section-title .c1{color:#FF3900}.hotpl-section-title .c2{color:#FBBF24}.hotpl-section-title .c3{color:#22C55E}.hotpl-section-title .c4{color:#3B82F6}.hotpl-section-title .c5{color:#EC4899}.hotpl-section-title .c6{color:#8B5CF6}.hotpl-section-title .c7{color:#F59E0B}.hotpl-section-title .c8{color:#10B981}
-@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+.hotpl-section-title .hot-now{color:#FF3900}.hotpl-section-title .hot-main{color:#1A1A1A}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
 
 </style>
 
@@ -1039,11 +1043,11 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <section class="hk-pay-hero" aria-label="해외 카드결제 가능 매장 찾기">
     <h2>카드 되는 매장부터<br>빠르게 확인하세요</h2>
     <p>VISA·MASTER·JCB·AMEX 등 실제 결제 후기 기반으로 가까운 매장을 우선 보여드려요.</p>
-    <button class="hero-cta" onclick="location.href='heka_city.html'">카드결제 매장 보기</button>
+    <button class="hero-cta" onclick="location.href='heka_city.html'">지금 결제 가능한 곳 찾기</button>
   </section>
 
   <!-- 내 주변 카드 결제 매장 -->
-  <div class="sec-head" style="margin-top:12px">
+  <div class="sec-head" style="margin-top:32px">
     <span class="sec-t">내 주변 카드 결제 매장</span>
     <span class="sec-more" onclick="window.location.href='heka_nearby_all.html'">더보기</span>
   </div>
@@ -1056,7 +1060,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <!-- 실시간 핫플 -->
   <div class="hotpl-section">
     <div class="hotpl-header-row">
-      <span class="hotpl-section-title"><span class="c1">지</span><span class="c2">금</span><span>&nbsp;</span><span class="c3">여</span><span class="c4">기</span><span class="c1">!</span><span>&nbsp;</span><span class="c5">실</span><span class="c6">시</span><span class="c7">간</span><span>&nbsp;</span><span class="c8">결</span><span class="c4">제</span><span>&nbsp;</span><span class="c1">핫</span><span class="c2">플</span></span>
+      <span class="hotpl-section-title"><span class="hot-now">지금 여기!</span><span class="hot-main">실시간 결제 핫플</span></span>
       <span class="hotpl-more" onclick="window.location.href='heka_hotpl_all.html'">전체보기</span>
     </div>
     <div class="hotpl" id="hotpl-dynamic">
@@ -1076,7 +1080,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
     </div>
   </div>
 
-  <div class="divline" style="margin-top:12px"></div>
+  <div class="divline" style="margin-top:32px"></div>
 
   <!-- 여행톡 -->
   <div class="ytok-wrap">
@@ -1087,7 +1091,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <!-- 하단 네비 -->
   <div class="bnav">
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni" onclick="window.location.href='heka_city.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni" onclick="window.location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
