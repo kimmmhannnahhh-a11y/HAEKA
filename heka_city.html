@@ -82,24 +82,25 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 /* HAEKA city black/orange redesign */
 body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--hk-bg)!important}
 .phone{background:var(--hk-bg)!important}
-.sb,.topbar{background:#0F0F0F!important;color:#fff!important;border:0!important;box-shadow:none!important}
+.sb,.topbar{background:#FF3900!important;color:#fff!important;border:0!important;box-shadow:none!important}
 .sb{padding:10px 16px 5px!important}
 .topbar{padding:14px 16px 12px!important;align-items:center!important}
 .back-btn{background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.12)!important}
 #top-title{font-size:0!important;color:#fff!important}
 #top-title::before{content:'어디로 떠나볼까?';font-family:'Gowun Dodum',Pretendard,-apple-system,sans-serif;font-size:22px;font-weight:700;letter-spacing:-.04em;color:#fff}
-.search-wrap{background:#0F0F0F!important;padding:8px 14px 16px!important}
-.search-box{background:#fff!important;border:1.5px solid transparent!important;border-radius:12px!important;padding:10px 12px!important;box-shadow:0 10px 24px rgba(0,0,0,.18)!important}
-.search-box:focus-within{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,57,0,.16),0 10px 24px rgba(0,0,0,.18)!important}
+.search-wrap{background:#FF3900!important;padding:8px 14px 16px!important}
+.search-box{background:#fff!important;border:0!important;border-radius:12px!important;padding:10px 12px!important;box-shadow:0 8px 18px rgba(0,0,0,.12)!important}
+.search-box:focus-within{border:0!important;box-shadow:0 0 0 3px rgba(255,57,0,.16),0 8px 18px rgba(0,0,0,.12)!important}
 .search-box input{font-size:13px!important;color:var(--hk-text)!important}
 .search-box svg{stroke:var(--hk-accent)!important}
 .sort-bar{background:var(--hk-bg)!important;padding:12px 14px 4px!important;gap:8px!important}
 .sort-btn{border:0!important;border-radius:999px!important;background:#F3F4F6!important;color:#6B7280!important;padding:8px 13px!important;font-size:12px!important;font-weight:800!important}
-.sort-btn.on{background:#1A1A1A!important;color:#fff!important}
+.sort-btn.on{background:#FF3900!important;color:#fff!important;border-color:#FF3900!important}
 .view{background:var(--hk-bg)!important}
 .country-list{padding:8px 14px 18px!important}
 .country-item{position:relative;margin:8px 0!important;padding:14px 14px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important;gap:10px!important}
-.country-item::before{content:'🌍';font-size:21px;line-height:1;flex-shrink:0}
+.country-flag{display:none!important}
+.country-item::before{content:'';width:10px;height:10px;border-radius:999px;background:#FF3900;box-shadow:0 0 0 4px #FFF1F2;flex-shrink:0}
 .country-item:hover{background:#FFF1F2!important}
 .country-name{font-size:14px!important;font-weight:800!important;color:var(--hk-text)!important}
 .country-cities{font-size:11px!important;color:var(--hk-sub)!important;margin-top:3px!important}
