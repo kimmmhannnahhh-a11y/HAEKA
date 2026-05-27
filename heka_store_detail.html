@@ -314,9 +314,9 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .cat-request:hover{border-color:var(--hk-accent);background:var(--hk-accent-bg)}
 .cat-request-txt{font-size:13px;font-weight:700;color:var(--hk-sub)}
 
-.bottom-btns{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;padding:14px 20px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--hk-border);box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;gap:10px;z-index:30}
-.btn-report{flex:1;padding:16px;border:0;border-radius:12px;background:#0F0F0F;color:#fff;font-size:15px;font-weight:700;box-shadow:none;cursor:pointer}
-.btn-report:hover{background:#2A2A2A}
+.bottom-btns{position:sticky;bottom:0;left:0;right:0;padding:14px 20px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--hk-border);box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;gap:10px;z-index:30}
+.btn-report{flex:1;padding:15px;border:0;border-radius:16px;background:var(--hk-accent);color:#fff;font-size:14px;font-weight:800;box-shadow:0 10px 26px rgba(255,56,92,.27);cursor:pointer}
+.btn-report:hover{opacity:.9}
 
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
@@ -821,13 +821,6 @@ window._arrayUnion = arrayUnion;
         <div class="sec-title" id="review-title" style="margin-bottom:0">결제 후기</div>
       </div>
       <div id="review-list"></div>
-    </div>
-
-    <!-- 카테고리 추가 요청 -->
-    <div class="section">
-      <div class="cat-request" onclick="openCatRequest()">
-        <div class="cat-request-txt">찾으시는 카테고리가 없나요? 💬 카테고리 추가 제안하기</div>
-      </div>
     </div>
 
   </div>
