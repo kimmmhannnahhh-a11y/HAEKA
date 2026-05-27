@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8"/>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>내가 찜한 여행톡</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
+@import url('haeka_rebuild_common.css');
+@media not all{
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
 .phone{width:390px;max-width:100vw;background:#fff;min-height:100vh;position:relative;display:flex;flex-direction:column}
@@ -25,7 +31,12 @@ body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 .del-btn:hover{color:#f87171}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#bbb;font-size:13px;gap:10px}
 .empty-icon{font-size:36px}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF385C;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF385C"],[style*="background:#FF385C"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF385C"],[style*="border-color:#FF385C"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+}
 </style>
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone">
@@ -39,7 +50,7 @@ body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 </div>
 
 <script>
-var TAG_COLOR = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#1A5D1A'};
+var TAG_COLOR = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#FF385C'};
 var TAG_EMOJI = {'동행':'🎒','맛집':'🍽️','날씨':'🌤️','정보':'✈️'};
 var TAG_BG = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#eef5fb','정보':'#f0f5ee'};
 
@@ -55,7 +66,7 @@ function render(){
   }
   el.innerHTML = list.map(function(p, i){
     var tag = p.tagTxt||'정보';
-    var tagColor = TAG_COLOR[tag]||'#1A5D1A';
+    var tagColor = TAG_COLOR[tag]||'#FF385C';
     var emoji = TAG_EMOJI[tag]||'✈️';
     var bg = TAG_BG[tag]||'#f5f5f5';
     var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length>10;

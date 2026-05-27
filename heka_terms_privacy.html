@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>개인정보처리방침 - HAEKA</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
+@import url('haeka_rebuild_common.css');
+@media not all{
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; font-size: 14px; }
 
@@ -27,7 +32,7 @@
 
   .section { margin-bottom: 28px; }
   .section h2 {
-    font-size: 15px; font-weight: 700; color: #1A5D1A;
+    font-size: 15px; font-weight: 700; color: #FF385C;
     margin-bottom: 10px; padding-bottom: 6px;
     border-bottom: 1px solid #e0f0e0;
   }
@@ -37,17 +42,22 @@
 
   .table-wrap { overflow-x: auto; margin-bottom: 12px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { background: #1A5D1A; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+  th { background: #FF385C; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
   td { padding: 8px 10px; border-bottom: 1px solid #e8e8e8; color: #333; vertical-align: top; line-height: 1.6; }
   tr:last-child td { border-bottom: none; }
   tr:nth-child(even) td { background: #f9f9f9; }
 
   .highlight-box {
-    background: #f0f9f0; border-left: 3px solid #1A5D1A;
+    background: #FFF1F2; border-left: 3px solid #FF385C;
     padding: 12px 14px; border-radius: 0 8px 8px 0;
     margin-bottom: 10px; font-size: 13px; color: #2a2a2a; line-height: 1.7;
   }
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF385C;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone,main,.container{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.sb,.topbar,header{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar-title,h1{color:var(--hk-text)!important;font-weight:800!important}a,[style*="color:#FF385C"]{color:var(--hk-accent)!important}
+}
 </style>
+<script src="security.js"></script>
 </head>
 <body>
 
@@ -249,7 +259,7 @@
         </tr>
       </table>
     </div>
-    <p>Google LLC의 개인정보 처리 방침은 <a href="https://policies.google.com/privacy" target="_blank" style="color:#1A5D1A">https://policies.google.com/privacy</a>에서 확인하실 수 있습니다.</p>
+    <p>Google LLC의 개인정보 처리 방침은 <a href="https://policies.google.com/privacy" target="_blank" style="color:#FF385C">https://policies.google.com/privacy</a>에서 확인하실 수 있습니다.</p>
   </div>
 
   <div class="section">

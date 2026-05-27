@@ -2,12 +2,32 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <style>
+:root{--hk-bg:#FAFAF8;--hk-surface:#FFFFFF;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF385C;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:flex;justify-content:center;padding:30px;background:radial-gradient(circle at 50% 0,#fff 0,#FAFAF8 48%,#F4F1EF 100%);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--hk-text)}
+.phone{width:300px;height:620px;overflow:hidden;position:relative;background:var(--hk-bg);border:0;border-radius:30px;box-shadow:0 24px 70px rgba(17,24,39,.15)}
+.sb{height:28px;padding:10px 18px 6px;display:flex;justify-content:space-between;background:#fff;color:var(--hk-text);font-size:10px;font-weight:800;border-bottom:1px solid var(--hk-border)}
+.hero{height:220px;position:relative;overflow:hidden;background:linear-gradient(135deg,#111827 0,#FF385C 58%,#FF9AAD 100%);color:#fff}.hero:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 78% 18%,rgba(255,255,255,.32),transparent 32%),linear-gradient(180deg,rgba(0,0,0,.10),rgba(0,0,0,.64))}.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.68))}.hero-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;z-index:2}.back-btn,.zzim-btn,.share-btn{width:36px;height:36px;border:0;border-radius:999px;background:rgba(255,255,255,.92);color:var(--hk-text);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.12);cursor:pointer}.zzim-btn svg,.share-btn svg{width:17px;height:17px;stroke:var(--hk-accent);fill:none}.zzim-btn.on svg{fill:var(--hk-accent)}
+.hero-bottom{position:absolute!important;left:0;right:0;bottom:0;padding:0 18px 22px;z-index:2}.hero-name{font-size:24px;font-weight:800;line-height:1.08;letter-spacing:-.06em;text-shadow:0 2px 12px rgba(0,0,0,.20)}.hero-cat{margin-top:7px;font-size:12px;font-weight:700;opacity:.9}.signal-badge{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.signal-green{background:#ECFDF5;color:#065F46}.signal-yellow{background:#FFFBEB;color:#92400E}.signal-red{background:#FEF2F2;color:#991B1B}
+.scroll-wrap{height:calc(620px - 248px);overflow-y:auto;padding:26px 0 96px;scrollbar-width:none}.scroll-wrap::-webkit-scrollbar{display:none}.section{margin:0 18px 32px;padding:0 0 25px;background:transparent;border:0;border-bottom:1px solid var(--hk-border);box-shadow:none;border-radius:0}.section:last-of-type{border-bottom:0}.sec-title,.sec-title-blue,.sec-title-red{font-size:18px;font-weight:800;letter-spacing:-.04em;color:var(--hk-text);margin-bottom:14px}.sec-title-blue{color:var(--hk-accent)}.sec-title-red{color:#991B1B}
+.meta-row,.hours-row{display:flex;align-items:flex-start;gap:12px;color:var(--hk-text);font-size:13px;line-height:1.55}.meta-ico{width:26px;height:26px;border-radius:999px;background:#fff;box-shadow:var(--hk-card-shadow);display:flex;align-items:center;justify-content:center;flex-shrink:0}.addr-copy-btn,.hours-toggle{border:0;border-radius:999px;background:var(--hk-accent-bg);color:var(--hk-accent);font-size:11px;font-weight:800;padding:7px 10px;cursor:pointer}.hours-badge-open,.hours-badge-close{display:inline-flex;margin-right:7px;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800}.hours-badge-open{background:#ECFDF5;color:#065F46}.hours-badge-close{background:#FEF2F2;color:#991B1B}.hours-today{font-weight:700;color:var(--hk-text)}.hours-all{margin-top:12px;display:none}.hours-all.open{display:block}.hours-day-row{padding:7px 0;border-top:1px solid var(--hk-border);font-size:12px}
+.hk-pay-strip{margin:0 0 32px!important;padding:24px 18px 26px!important;background:linear-gradient(180deg,#FFF1F2,#fff)!important;border:0!important;border-radius:0!important;box-shadow:none!important}.card-grid{display:flex;flex-wrap:wrap;gap:8px}.card-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;border-radius:999px;background:var(--hk-accent);color:#fff;font-size:11px;font-weight:800;box-shadow:0 8px 18px rgba(255,56,92,.18)}.card-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.75)}#cards-no-section{background:#F9FAFB!important;margin:0 18px 32px!important;padding:18px!important;border:0!important;border-radius:18px!important;box-shadow:none!important}
+.rev-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--hk-border)}.rev-item:last-child{border-bottom:0}.rev-av{width:24px;height:24px;border-radius:999px;background:var(--hk-accent);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}.rev-body{flex:1}.rev-top{display:flex;justify-content:space-between;gap:8px}.rev-name{font-size:12px;font-weight:800}.rev-date{font-size:10px;color:var(--hk-muted)}.rev-txt{margin-top:6px;font-size:12px;line-height:1.55;color:var(--hk-sub)}.rev-stars{color:var(--hk-accent);font-size:12px}
+.cat-request{padding:16px 0;border-top:1px solid var(--hk-border);cursor:pointer}.cat-request-txt{font-size:12px;font-weight:800;color:var(--hk-accent)}.bottom-btns{position:absolute;left:0;right:0;bottom:0;padding:14px 18px 18px;background:linear-gradient(180deg,rgba(250,250,248,0),var(--hk-bg) 28%)}.btn-report{width:100%;padding:15px;border:0;border-radius:16px;background:var(--hk-accent);color:#fff;font-size:14px;font-weight:800;box-shadow:0 10px 26px rgba(255,56,92,.27);cursor:pointer}
+.toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%) translateY(14px);opacity:0;background:rgba(17,24,39,.88);color:#fff;border-radius:999px;padding:10px 16px;font-size:12px;font-weight:800;transition:.24s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.popup-overlay{position:absolute;inset:0;background:rgba(17,24,39,.42);backdrop-filter:blur(8px);display:none;align-items:flex-end;z-index:50}.popup-overlay.open{display:flex}.popup-box{width:100%;background:#fff;border-radius:26px 26px 0 0;padding:12px 18px 20px;box-shadow:0 -18px 40px rgba(17,24,39,.15)}.popup-handle{width:38px;height:4px;background:#E5E7EB;border-radius:999px;margin:0 auto 14px}.popup-title{font-size:17px;font-weight:800;margin-bottom:10px}.popup-inp{width:100%;min-height:96px;border:1.5px solid #E5E7EB;border-radius:16px;padding:12px;font-family:inherit;outline:none;resize:none}.popup-inp:focus{border-color:var(--hk-accent);box-shadow:0 0 0 4px rgba(255,56,92,.1)}.popup-btn{width:100%;margin-top:12px;padding:14px;border:0;border-radius:14px;background:var(--hk-accent);color:#fff;font-weight:800;box-shadow:0 10px 24px rgba(255,56,92,.25)}
+@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
 
 /* 상단 사진 영역 */
 .hero{position:relative;width:100%;height:180px;background:#1a2e1a;flex-shrink:0}
@@ -48,9 +68,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 영업시간 */
 .hours-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .hours-today{font-size:12px;font-weight:600;color:#111}
-.hours-badge-open{background:#1A5D1A;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px}
-.hours-badge-close{background:#ff3b30;color:#fff;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;margin-right:5px}
-.hours-toggle{background:none;border:none;font-size:11px;color:#888;cursor:pointer;padding:2px 4px}
+.hours-badge-open{display:inline-flex;align-items:center;background:#FF385C;color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;margin-right:5px;line-height:1;height:22px;box-sizing:border-box}
+.hours-badge-close{display:inline-flex;align-items:center;background:#ff3b30;color:#fff;font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;margin-right:5px;line-height:1;height:22px;box-sizing:border-box}
+.hours-toggle{background:#fff;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#666;cursor:pointer;padding:0 8px;display:inline-flex;align-items:center;gap:4px;font-family:inherit;line-height:1;height:22px;box-sizing:border-box}
+.hours-toggle .arr{font-size:12px;color:#999;line-height:1;transform:translateY(-2px);display:inline-block}
 .hours-all{display:none;background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-top:6px}
 .hours-day-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
 
@@ -81,7 +102,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 /* 카테고리 추가 요청 */
 .cat-request{background:#f8f8f8;border-radius:8px;padding:7px 12px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px dashed #ddd;transition:.15s;white-space:nowrap}
-.cat-request:hover{border-color:#1A5D1A;background:#f0f9f0}
+.cat-request:hover{border-color:#FF385C;background:#FFF1F2}
 .cat-request-txt{font-size:10px;color:#888;white-space:nowrap}
 
 /* 하단 버튼 */
@@ -102,8 +123,127 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .popup-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 12px}
 .popup-title{font-size:14px;font-weight:700;margin-bottom:10px}
 .popup-inp{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;resize:none;min-height:80px}
-.popup-inp:focus{border-color:#1A5D1A}
-.popup-btn{width:100%;margin-top:8px;padding:12px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.popup-inp:focus{border-color:#FF385C}
+.popup-btn{width:100%;margin-top:8px;padding:12px;border-radius:10px;background:#FF385C;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+/* HAEKA UI v2 — 상세: 결제 신뢰 정보 우선 */
+:root{
+  --haeka-primary:#10B981;
+  --haeka-primary-deep:#059669;
+  --haeka-mint:#ECFDF5;
+  --haeka-accent:#F97316;
+  --haeka-bg:#FAFAFA;
+  --haeka-text:#1F2937;
+  --haeka-muted:#6B7280;
+  --haeka-line:#E5E7EB;
+}
+body{background:var(--haeka-bg);font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--haeka-text)}
+.phone{color:var(--haeka-text);border-color:#E5E7EB;box-shadow:0 18px 48px rgba(15,23,42,.10)}
+.sb{background:linear-gradient(135deg,var(--haeka-primary),var(--haeka-primary-deep))}
+.hero-name{font-size:20px;font-weight:900;letter-spacing:-.6px}
+.hero-cat{font-size:11px;font-weight:600;color:rgba(255,255,255,.82)}
+.signal-badge{padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900;backdrop-filter:blur(6px)}
+.signal-green{background:#D1FAE5;color:#064E3B;border:1px solid #6EE7B7}
+.signal-yellow{background:#FEF3C7;color:#92400E;border:1px solid #FCD34D}
+.signal-red{background:#FEE2E2;color:#7F1D1D;border:1px solid #FCA5A5}
+.section{border-radius:16px;margin:10px 14px;padding:13px 14px;border:1px solid var(--haeka-line);box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.sec-title,.sec-title-blue{font-size:11px;font-weight:900;color:var(--haeka-primary-deep);letter-spacing:.06em;margin-bottom:10px}
+.sec-title-blue::before{content:'✓ ';color:var(--haeka-primary)}
+.sec-title-red{font-size:11px;font-weight:900;color:#DC2626;letter-spacing:.06em;margin-bottom:10px}
+.card-grid{gap:7px}
+.card-chip{border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900;box-shadow:0 3px 10px rgba(15,23,42,.10)}
+.card-dot{width:5px;height:5px;background:rgba(255,255,255,.8)}
+.hours-badge-open,.popup-btn{background:var(--haeka-primary)}
+.cat-request:hover{border-color:var(--haeka-primary);background:var(--haeka-mint)}
+.popup-inp:focus{border-color:var(--haeka-primary)}
+.bottom-btns{border-top:1px solid var(--haeka-line)}
+.btn-report{border-radius:12px;color:var(--haeka-primary-deep);border-color:rgba(16,185,129,.35);background:var(--haeka-mint);font-weight:800}
+
+/* HAEKA 2.0 Warm Minimal — store detail */
+:root{
+  --hk-bg:#FAFAF8;
+  --hk-surface:#FFFFFF;
+  --hk-text:#1A1A1A;
+  --hk-sub:#6B7280;
+  --hk-muted:#9CA3AF;
+  --hk-accent:#FF385C;
+  --hk-accent-hover:#E31C5F;
+  --hk-accent-bg:#FFF1F2;
+  --hk-border:#F3F4F6;
+  --hk-card-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
+}
+body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--hk-text)}
+.phone{background:var(--hk-bg);border:0;box-shadow:0 24px 70px rgba(17,24,39,.14)}
+.sb{background:var(--hk-surface);color:var(--hk-text);font-weight:700;border-bottom:1px solid var(--hk-border)}
+.hero-img{border-radius:0 0 24px 24px}
+.hero-name{font-size:21px;font-weight:800;letter-spacing:-.75px}
+.hero-cat{font-size:11px;font-weight:700;color:rgba(255,255,255,.78)}
+.signal-badge{padding:5px 10px;border-radius:999px;font-size:10px;font-weight:800}
+.signal-green{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.signal-yellow{background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+.signal-red{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.section{background:var(--hk-surface);border:0;border-radius:18px;margin:0 14px 24px;padding:15px 14px;box-shadow:var(--hk-card-shadow)}
+.section[style*="padding:0"]{overflow:hidden}
+.sec-title,.sec-title-blue,.sec-title-red{font-size:11px;font-weight:800;letter-spacing:.08em;margin-bottom:11px}
+.sec-title,.sec-title-blue{color:var(--hk-text)}
+.sec-title-blue::before{content:'CARD ';color:var(--hk-accent)}
+.sec-title-red{color:#991B1B}
+.card-grid{gap:7px}
+.card-chip{border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;box-shadow:0 3px 10px rgba(0,0,0,.10);border:1px solid rgba(255,255,255,.72)}
+.card-chip-no{border-radius:999px;background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.hours-badge-open{background:var(--hk-text);color:#fff;border-radius:999px}
+.hours-badge-close{background:#991B1B;color:#fff;border-radius:999px}
+.hours-toggle{border:1px solid #E5E7EB;border-radius:999px;color:var(--hk-sub);background:#fff;font-weight:800}
+.hours-day-row{color:var(--hk-sub)}
+#meta-phone{color:var(--hk-accent)!important;font-weight:800}
+.cat-request{background:#F8F8F7;border-radius:14px;border-color:#E5E7EB}
+.cat-request:hover{border-color:var(--hk-accent);background:var(--hk-accent-bg)}
+.popup-inp{border-radius:12px;background:#F9FAFB;border-color:#E5E7EB}
+.popup-inp:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,56,92,.10)}
+.popup-btn{background:var(--hk-accent);border-radius:12px;box-shadow:0 8px 20px rgba(255,56,92,.25)}
+.bottom-btns{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--hk-border)}
+.btn-report{background:transparent;color:var(--hk-text);border:1.5px solid #E5E7EB;border-radius:12px;font-weight:800}
+
+/* HAEKA 2.1 — store detail dramatic flow redesign */
+.hero{height:220px;background:#151515;border-radius:0 0 28px 28px;overflow:hidden}
+#hero-img{background:linear-gradient(135deg,#1A1A1A 0%,#3B2A30 45%,#FF385C 140%)!important}
+.hero-overlay{background:linear-gradient(to bottom,rgba(0,0,0,.26) 0%,rgba(0,0,0,.05) 38%,rgba(0,0,0,.78) 100%)}
+.hero-top{padding:13px 16px}
+.back-btn,.share-btn,.zzim-btn{background:rgba(26,26,26,.48);backdrop-filter:blur(10px);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.hero-bottom{padding:0 18px 18px}
+.hero-name{font-size:24px;font-weight:800;line-height:1.08;letter-spacing:-1px;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.hero-cat{margin-top:5px;color:rgba(255,255,255,.78)}
+.signal-badge{box-shadow:0 4px 14px rgba(0,0,0,.12);backdrop-filter:blur(10px)}
+.scroll-wrap{background:var(--hk-bg);padding:24px 0 78px}
+.section{background:transparent;border-radius:0;margin:0 18px 32px;padding:0 0 24px;border:0;border-bottom:1px solid var(--hk-border);box-shadow:none}
+.section:last-child{border-bottom:0}
+.section[style*="padding:0"]{margin-left:18px;margin-right:18px;border-radius:18px;overflow:hidden;border-bottom:0;padding:0!important;box-shadow:0 10px 24px rgba(0,0,0,.06)}
+.meta-row{font-size:12px;color:var(--hk-sub);gap:9px;line-height:1.55}
+.meta-ico{width:20px;font-size:15px}
+#meta-phone{font-size:12px!important}
+#addr-section .sec-title,.sec-title{font-size:10px;color:var(--hk-muted);font-weight:800;letter-spacing:.1em}
+#addr-txt{font-size:13px!important;color:var(--hk-text)!important;font-weight:600;line-height:1.55!important}
+.hours-row{align-items:flex-start;gap:10px}
+.hours-today{font-size:13px;color:var(--hk-text);font-weight:800;line-height:1.45}
+.hours-all{background:#F9FAFB;border-radius:14px;padding:10px 12px;margin-top:12px}
+.hours-day-row{font-size:12px;padding:5px 0;color:var(--hk-sub)}
+.section.hk-pay-strip{margin:0 0 32px;padding:20px 18px 22px;background:linear-gradient(135deg,var(--hk-accent-bg),#fff 86%);border-bottom:0}
+.section.hk-pay-strip .sec-title-blue{font-size:12px;color:var(--hk-accent);margin-bottom:14px}
+.section.hk-pay-strip .sec-title-blue::before{content:'PAYMENT ';color:var(--hk-text)}
+.section.hk-pay-strip .card-grid{gap:8px}
+.section.hk-pay-strip .card-chip{padding:9px 12px;border-radius:999px;box-shadow:0 8px 18px rgba(255,56,92,.12)}
+#cards-no-section{background:#F9FAFB;border-radius:18px;border-bottom:0;margin:0 18px 32px;padding:16px 14px}
+#cards-no-section .card-chip{opacity:.82;box-shadow:none}
+.rev-item{gap:10px;padding:13px 0;border-bottom:1px solid var(--hk-border)}
+.rev-av{width:24px;height:24px;font-size:11px;background:var(--hk-accent-bg);color:var(--hk-accent)}
+.rev-name{font-size:12px;font-weight:800;color:var(--hk-text)}
+.rev-date{font-size:10px;color:var(--hk-muted)}
+.rev-txt{font-size:12px;line-height:1.58;color:var(--hk-sub)}
+.rev-rating-btn{color:var(--hk-accent);border-color:#FFD6DE;background:#FFF7F8;border-radius:999px}
+.bottom-btns{padding:12px 18px 16px;background:rgba(255,255,255,.96);box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+.btn-report{background:var(--hk-accent);color:#fff;border:0;box-shadow:0 8px 20px rgba(255,56,92,.25);padding:12px;font-size:13px}
+.closed-badge{background:#991B1B}
+}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
@@ -318,8 +458,8 @@ async function renderStore(store) {
   var chips = okCards.map(function(c){
     return '<div class="card-chip" style="background:'+cardColor(c)+'"><div class="card-dot"></div>'+c+'</div>';
   });
-  if (hasCard) chips.push('<div class="card-chip" style="background:#4caf50"><div class="card-dot"></div>카드가능</div>');
-  if (hasCash) chips.push('<div class="card-chip" style="background:#795548"><div class="card-dot"></div>현금가능</div>');
+  if (hasCard) chips.push('<div class="card-chip" style="background:#FF385C"><div class="card-dot"></div>카드가능</div>');
+  if (hasCash) chips.push('<div class="card-chip" style="background:#6B7280"><div class="card-dot"></div>현금가능</div>');
   if (chips.length) {
     document.getElementById('cards-ok').innerHTML = chips.join('');
   }
@@ -481,7 +621,7 @@ function renderHours(hours, isOpen) {
     openBadge + '<span class="hours-today">'+todayDayName+'요일 '+todayDesc+'</span>';
   var allHtml = hours.map(function(h, i) {
     var isToday = i === todayIdx;
-    return '<div class="hours-day-row" style="color:'+(isToday?'#1A5D1A':'#555')+';font-weight:'+(isToday?'700':'400')+'">'
+    return '<div class="hours-day-row" style="color:'+(isToday?'#FF385C':'#555')+';font-weight:'+(isToday?'700':'400')+'">'
       + '<span>'+dayNames[i]+'요일</span>'
       + '<span>'+h.replace(/^[^:]+:\s*/, '')+'</span>'
       + '</div>';
@@ -499,6 +639,7 @@ window._doc = doc;
 window._updateDoc = updateDoc;
 window._arrayUnion = arrayUnion;
 </script>
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone">
@@ -542,7 +683,7 @@ window._arrayUnion = arrayUnion;
     <div class="section" id="meta-phone-section" style="display:none">
       <div class="meta-row" id="meta-phone-row">
         <span class="meta-ico">📞</span>
-        <a id="meta-phone" href="#" style="color:#1A5D1A;text-decoration:none;font-size:11px"></a>
+        <a id="meta-phone" href="#" style="color:#FF385C;text-decoration:none;font-size:11px"></a>
       </div>
     </div>
 
@@ -569,7 +710,7 @@ window._arrayUnion = arrayUnion;
       <div class="sec-title">영업시간</div>
       <div class="hours-row">
         <div id="hours-today-txt"></div>
-        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">▼ 전체</button>
+        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">전체보기<span class="arr">⌄</span></button>
       </div>
       <div class="hours-all" id="hours-all">
         <div id="hours-all-content"></div>
@@ -577,7 +718,7 @@ window._arrayUnion = arrayUnion;
     </div>
 
     <!-- 결제 가능 카드 -->
-    <div class="section">
+    <div class="section hk-pay-strip">
       <div class="sec-title-blue">결제 가능 카드</div>
       <div class="card-grid" id="cards-ok"></div>
     </div>
@@ -618,7 +759,7 @@ window._arrayUnion = arrayUnion;
     <div style="font-size:32px;margin-bottom:10px">🔐</div>
     <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px">로그인이 필요해요</div>
     <div style="font-size:12px;color:#888;margin-bottom:20px">투표는 로그인 후 이용할 수 있어요</div>
-    <button onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
+    <button onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#FF385C;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
     <button onclick="closeLoginNeedPopup()" style="width:100%;background:#f5f5f5;color:#888;border:none;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
   </div>
   <!-- 수정중 팝업 -->
@@ -628,7 +769,7 @@ window._arrayUnion = arrayUnion;
     <div style="font-size:11px;color:#aaa;margin-bottom:14px">3명이 맞아요를 누르면 자동으로 반영돼요</div>
     <div id="edit-req-body"></div>
     <div style="display:flex;gap:8px;margin-top:16px">
-      <button id="edit-agree-btn" onclick="voteEditRequest('agree')" style="flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요</button>
+      <button id="edit-agree-btn" onclick="voteEditRequest('agree')" style="flex:1;padding:11px;border-radius:10px;background:#FF385C;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요</button>
       <button onclick="voteEditRequest('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요</button>
     </div>
     <button onclick="closeEditReqPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
@@ -705,7 +846,9 @@ function toggleHours() {
   var btn = document.getElementById('hours-toggle');
   var isOpen = el.style.display !== 'none';
   el.style.display = isOpen ? 'none' : 'block';
-  btn.textContent = isOpen ? '▼ 전체' : '▲ 접기';
+  btn.innerHTML = isOpen
+    ? '전체보기<span class="arr">⌄</span>'
+    : '접기<span class="arr">⌃</span>';
 }
 
 function openCatRequest() { document.getElementById('cat-popup').classList.add('open'); }
@@ -778,7 +921,7 @@ function _doOpenEditReqPopup() {
   var _uid = (window._currentUser && window._currentUser.uid) || localStorage.getItem('haeka_uid');
   var alreadyVoted = (req.agreeUids || []).includes(_uid) || (req.disagreeUids || []).includes(_uid);
   var body = '';
-  if (req.payOk && req.payOk.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#1A5D1A;margin-bottom:4px">결제 가능 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payOk.map(function(c){ return '<span style="background:#e8f5e9;color:#1A5D1A;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
+  if (req.payOk && req.payOk.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#FF385C;margin-bottom:4px">결제 가능 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payOk.map(function(c){ return '<span style="background:#FFF1F2;color:#FF385C;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
   if (req.payNo && req.payNo.length) body += '<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가 수단</div><div style="display:flex;flex-wrap:wrap;gap:4px">' + req.payNo.map(function(c){ return '<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>'; }).join('') + '</div></div>';
   if (req.memo) body += '<div style="font-size:11px;color:#888;margin-top:4px">메모: '+req.memo+'</div>';
   body += '<div style="font-size:11px;color:#aaa;margin-top:8px">현재 맞아요 ' + agreeCount + '/3</div>';

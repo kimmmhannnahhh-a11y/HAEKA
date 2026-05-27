@@ -2,30 +2,37 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet"/>
 <style>
+:root{--hk-bg:#FAFAF8;--hk-surface:#FFFFFF;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF385C;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04)}
+
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
 .topbar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #e0e0e0;background:#fff}
 .back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1}
 .topbar-title{font-size:15px;font-weight:700;color:#111}
 .screen{display:none}.screen.active{display:block;overflow-y:auto;max-height:calc(620px - 44px);scrollbar-width:none;-ms-overflow-style:none}
 .screen.active::-webkit-scrollbar{display:none}
 .btn{width:100%;padding:15px;border-radius:10px;font-size:14px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:.15s}
-.btn-green{background:#1A5D1A;color:#fff}.btn-green:hover{background:#145014}
+.btn-green{background:#FF385C;color:#fff}.btn-green:hover{background:#E31C5F}
 .btn-kakao{background:#FEE500;color:#3C1E1E}
 .btn-white{background:#fff;color:#111;border:1.5px solid #e0e0e0}
-.btn-outline{background:#fff;color:#1A5D1A;border:2px solid #1A5D1A}
+.btn-outline{background:#fff;color:#FF385C;border:2px solid #FF385C}
 .icon-heka{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon-heka-inner{width:9px;height:9px;border-radius:50%;background:#fff}
 .dots{display:flex;gap:3px;flex-shrink:0}.dots span{width:4px;height:4px;border-radius:50%;background:#717171;display:block}
 .inp-label{font-size:10px;font-weight:700;color:#717171;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
 .inp-field{width:100%;padding:12px 13px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:13px;background:#f5f5f5;color:#111;font-family:inherit;outline:none;transition:.15s}
-.inp-field:focus{border-color:#1A5D1A;background:#fff}
+.inp-field:focus{border-color:#FF385C;background:#fff}
 .divider{display:flex;align-items:center;gap:10px;margin:4px 0}
 .divider-line{flex:1;height:1px;background:#e0e0e0}
 .divider-txt{font-size:10px;color:#bbb;white-space:nowrap;font-weight:600}
@@ -41,7 +48,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sp-logo{font-size:22px;flex-shrink:0}.sp-title{font-size:14px;font-weight:700;color:#111}.sp-sub{font-size:11px;color:#999;margin-top:1px}
 .sp-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:8px}
 .sp-inp{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;background:#f5f5f5;font-family:inherit;outline:none;transition:.15s}
-.sp-inp:focus{border-color:#1A5D1A;background:#fff}
+.sp-inp:focus{border-color:#FF385C;background:#fff}
 .sp-btn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 .sp-cancel{background:none;border:none;font-size:12px;color:#bbb;cursor:pointer;font-family:inherit;padding:2px}
 .sp-notice{font-size:10px;color:#999;text-align:center;padding:0 4px}
@@ -52,14 +59,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .legal-title{font-size:14px;font-weight:700}
 .legal-close{background:none;border:none;font-size:18px;color:#bbb;cursor:pointer}
 .legal-body{padding:12px 16px 16px;overflow-y:auto;font-size:12px;color:#555;line-height:1.7}
-.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,.95);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:rgba(255,56,92,.95);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .bnav{display:flex;border-top:.5px solid #eee;background:#fff;padding:8px 0 10px;position:absolute;bottom:0;left:0;right:0}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center}
-.npbtn{width:34px;height:34px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:34px;height:34px;border-radius:50%;background:#FF385C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF385C;font-weight:600}
 .login-inp{width:100%;padding:11px 14px;border:1px solid #ececec;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s;background:#fafafa;color:#222;letter-spacing:-.2px;box-sizing:border-box}
 .login-inp:focus{border-color:#111;background:#fff}
 .login-inp::placeholder{color:#ccc}
@@ -69,7 +76,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
 
 /* 상단 네비 */
 .topbar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #e0e0e0}
@@ -80,14 +87,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .progress{display:flex;align-items:flex-start;justify-content:center;padding:14px 18px 10px}
 .step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
 .step-circle{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-.step-circle.done{background:#1A5D1A;color:#fff}
-.step-circle.active{background:#1A5D1A;color:#fff;box-shadow:0 0 0 3px #e8f5e8}
+.step-circle.done{background:#FF385C;color:#fff}
+.step-circle.active{background:#FF385C;color:#fff;box-shadow:0 0 0 3px #FFF1F2}
 .step-circle.inactive{background:#f0f0f0;color:#bbb;border:1.5px solid #e0e0e0}
 .step-label{font-size:9px;font-weight:600;white-space:nowrap}
-.step-label.done,.step-label.active{color:#1A5D1A}
+.step-label.done,.step-label.active{color:#FF385C}
 .step-label.inactive{color:#bbb}
 .step-line{flex:1;height:2px;margin-top:12px;border-radius:2px}
-.step-line.done{background:#1A5D1A}
+.step-line.done{background:#FF385C}
 .step-line.inactive{background:#e0e0e0}
 
 /* 화면 공통 */
@@ -101,15 +108,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .check-wrap{margin:0 16px;border-radius:8px;overflow:hidden;border:.5px solid #e0e0e0}
 .check-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
 .check-item:last-child{border-bottom:none}
-.check-item.all-item{background:#e8f5e8}
+.check-item.all-item{background:#FFF1F2}
 .check-item:hover{background:#fafafa}
-.check-item.all-item:hover{background:#d8f0d8}
+.check-item.all-item:hover{background:#FFE4E8}
 .check-left{display:flex;align-items:center;gap:9px}
 .chkbox{width:18px;height:18px;border-radius:4px;border:1.5px solid #e0e0e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s}
-.chkbox.checked{background:#1A5D1A;border-color:#1A5D1A}
+.chkbox.checked{background:#FF385C;border-color:#FF385C}
 .chkbox.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
 .check-txt{font-size:12px;color:#111;font-weight:500}
-.check-txt.green{color:#1A5D1A;font-weight:700}
+.check-txt.green{color:#FF385C;font-weight:700}
 .badge-req{font-size:9px;color:#717171;background:#f5f5f5;padding:2px 6px;border-radius:4px}
 .badge-opt{font-size:9px;color:#bbb;background:#f5f5f5;padding:2px 6px;border-radius:4px}
 .check-arrow{font-size:13px;color:#ccc}
@@ -119,11 +126,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .field-group{display:flex;flex-direction:column;gap:4px}
 .field-label{font-size:10px;font-weight:700;color:#717171;letter-spacing:.08em;text-transform:uppercase}
 .field-input{width:100%;padding:11px 13px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:13px;background:#f5f5f5;color:#111;font-family:inherit;outline:none;transition:.15s}
-.field-input:focus{border-color:#1A5D1A;background:#fff}
+.field-input:focus{border-color:#FF385C;background:#fff}
 .field-input.error{border-color:#ff3b30;background:#fff8f8}
 .field-error{font-size:10px;color:#ff3b30;font-weight:500;display:none}
 .field-error.show{display:block}
-.field-ok{font-size:10px;color:#1A5D1A;font-weight:500;display:none}
+.field-ok{font-size:10px;color:#FF385C;font-weight:500;display:none}
 .field-ok.show{display:block}
 .field-hint{font-size:10px;color:#bbb}
 
@@ -132,15 +139,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 인증번호 */
 .input-row{display:flex;gap:7px}
 .input-row .field-input{flex:1}
-.send-btn{flex-shrink:0;padding:0 12px;border-radius:8px;background:#1A5D1A;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.send-btn{flex-shrink:0;padding:0 12px;border-radius:8px;background:#FF385C;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
 .send-btn:disabled{background:#bbb;cursor:default}
 .timer-wrap{position:relative}
 .timer-wrap .field-input{padding-right:46px}
-.timer{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#1A5D1A}
+.timer{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#FF385C}
 
 /* 버튼 */
-.btn-primary{width:calc(100% - 32px);margin:10px 16px 0;padding:13px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:.15s}
-.btn-primary:hover{background:#145014}
+.btn-primary{width:calc(100% - 32px);margin:10px 16px 0;padding:13px;border-radius:10px;background:#FF385C;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-primary:hover{background:#E31C5F}
 .btn-primary:disabled{background:#bbb;cursor:default}
 .btn-gray{background:#f5f5f5;color:#717171;border:1.5px solid #e0e0e0}
 
@@ -150,7 +157,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .popup{background:#fff;border-radius:16px;padding:24px 20px 16px;margin:0 20px;width:100%}
 .popup-title{font-size:15px;font-weight:700;color:#111;margin-bottom:8px;text-align:center}
 .popup-body{font-size:13px;color:#555;text-align:center;line-height:1.6;margin-bottom:18px}
-.popup-btn{width:100%;padding:12px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.popup-btn{width:100%;padding:12px;border-radius:10px;background:#FF385C;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 
 /* 완료 팝업 */
 .popup-success .popup-icon{font-size:40px;text-align:center;margin-bottom:10px}
@@ -158,14 +165,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 하단 네비 */
 .bnav{display:flex;border-top:.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#1A5D1A;font-weight:600}
+.ni.on{color:#FF385C;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center}
-.npbtn{width:34px;height:34px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:34px;height:34px;border-radius:50%;background:#FF385C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF385C;font-weight:600}
 
 /* 가입완료 토스트 */
-.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,0.95);color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(255,56,92,0.95);color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.18)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 
@@ -181,6 +188,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   90%{opacity:0.85}
   100%{transform:translateY(280px) rotate(25deg);opacity:0}
 }
+
+
+/* HAEKA 2.0 Warm Minimal login overrides */
+body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.phone{background:var(--hk-bg);border-color:#EEEDE8;box-shadow:0 18px 45px rgba(17,24,39,.08)}.sb{background:#fff;color:var(--hk-text);box-shadow:0 1px 4px rgba(0,0,0,0.06)}.topbar{background:#fff;color:var(--hk-text)}
+.btn-green,.btn-primary,.popup-btn,.send-btn{background:var(--hk-accent);color:#fff}.btn-green:hover,.btn-primary:hover{background:var(--hk-accent-hover)}.btn-outline{background:#fff;color:var(--hk-text);border:1.5px solid #E5E7EB}.login-inp,.inp-field,.field-input,.sp-inp{background:#fff;border-color:#E5E7EB;border-radius:12px}.login-inp:focus,.inp-field:focus,.field-input:focus,.sp-inp:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,56,92,.1);background:#fff}.toast{background:rgba(255,56,92,.95)}.ni.on,.nplbl,.timer,.field-ok,.check-txt.green{color:var(--hk-accent)}.npbtn,.step-circle.done,.step-circle.active,.step-line.done,.chkbox.checked{background:var(--hk-accent);border-color:var(--hk-accent)}.step-circle.active{box-shadow:0 0 0 3px rgba(255,56,92,.12)}.check-item.all-item{background:var(--hk-accent-bg)}.check-item.all-item:hover{background:#FFE4E8}
+.travel-illust{position:relative;width:164px;height:132px;margin:0 auto 14px;z-index:2}.travel-globe{position:absolute;left:50%;top:50%;width:80px;height:80px;border-radius:50%;border:2px solid #D1D5DB;background:transparent;box-shadow:none;transform:translate(-50%,-50%);z-index:1}.travel-globe:before,.travel-globe:after{content:'';position:absolute;border:1.5px solid #D1D5DB;border-radius:50%;opacity:.9}.travel-globe:before{inset:12px 22px;transform:rotate(-7deg)}.travel-globe:after{left:9px;right:9px;top:38px;height:0;transform:rotate(4deg)}.travel-card{position:absolute;left:65px;top:68px;width:60px;height:38px;border-radius:9px;background:var(--hk-accent);border:0;transform:rotate(18deg);box-shadow:0 12px 22px rgba(255,56,92,.28);z-index:2}.travel-card:before{content:'';position:absolute;left:8px;right:8px;top:9px;height:4px;border-radius:4px;background:rgba(255,255,255,.38)}.travel-card:after{content:'';position:absolute;right:8px;bottom:8px;width:14px;height:7px;border-radius:3px;background:rgba(255,255,255,.55)}.travel-plane{position:absolute;left:20px;top:50px;width:72px;height:72px;color:#1A1A1A;fill:#1A1A1A;transform:rotate(8deg);z-index:3}.social-row{display:flex!important;flex-direction:column!important;gap:8px!important;justify-content:stretch!important}.social-row button{width:100%!important;height:48px!important;border-radius:12px!important;font-size:13px!important;font-weight:800!important;gap:8px}.social-row button:first-child:after{content:'카카오로 계속하기';margin-left:8px}.social-row button:last-child:after{content:'Google로 계속하기';margin-left:8px;color:#1A1A1A}
 
 </style>
 <script type="module">
@@ -316,7 +329,7 @@ window._doFirebaseLogin = async function(email, pw) {
         }
       }
     } catch(e2) { console.log('status check err:', e2); }
-    try{ localStorage.setItem('haeka_uid', uid); localStorage.setItem('haeka_email', result.user.email||''); }catch(e){}
+    try{ localStorage.setItem('haeka_uid', uid); localStorage.setItem('haeka_email', result.user.email||''); localStorage.setItem('haeka_provider', 'password'); }catch(e){}
     return true;
   } catch(e) {
     alert('오류: ' + e.code + ' / ' + e.message);
@@ -349,6 +362,7 @@ window._doGoogleLogin = async function() {
       localStorage.setItem('haeka_uid', uid);
       localStorage.setItem('haeka_email', result.user.email||'');
       localStorage.setItem('haeka_nick', result.user.displayName||'');
+      localStorage.setItem('haeka_provider', 'google.com');
     }catch(e){}
     return { ok: true, user: result.user };
   } catch(e) {
@@ -358,6 +372,7 @@ window._doGoogleLogin = async function() {
   }
 };
 </script>
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone" id="login-phone">
@@ -366,7 +381,12 @@ window._doGoogleLogin = async function() {
     <div class="topbar" style="border-bottom:none"><button class="back-btn" onclick="history.back()">←</button><span class="topbar-title" style="color:#bbb;font-weight:500">로그인</span></div>
 
     <div style="padding:40px 24px 36px;text-align:center;position:relative;overflow:hidden">
-      <!-- 카드 비 -->
+      <div class="travel-illust" aria-hidden="true">
+        <div class="travel-globe"></div>
+        <div class="travel-card"></div>
+        <svg class="travel-plane" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 11.5 21 3l-6.8 18-3.4-7.8L3 11.5Z" fill="currentColor"/><path d="M10.8 13.2 21 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".75"/></svg>
+      </div>
+
       <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
         <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
         <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
@@ -380,41 +400,10 @@ window._doGoogleLogin = async function() {
 
       <!-- 로고 -->
       <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px">
-        <!-- 통통하고 귀여운 하늘색 비행기 -->
-        <svg width="78" height="78" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <!-- 구름 -->
-          <ellipse cx="20" cy="84" rx="13" ry="3.5" fill="#E0F2FE" opacity="0.9"/>
-          <ellipse cx="80" cy="86" rx="10" ry="3" fill="#E0F2FE" opacity="0.9"/>
-          <g transform="rotate(-18 50 50)">
-            <!-- 아래쪽 날개 (먼저 그려서 뒤로) -->
-            <ellipse cx="44" cy="68" rx="14" ry="7" fill="#38BDF8"/>
-            <ellipse cx="44" cy="66" rx="13" ry="5" fill="#7DD3FC"/>
-            <!-- 동체 (통통) -->
-            <ellipse cx="50" cy="50" rx="34" ry="14" fill="#7DD3FC"/>
-            <!-- 동체 하이라이트 -->
-            <ellipse cx="48" cy="46" rx="28" ry="5" fill="#BAE6FD" opacity="0.7"/>
-            <!-- 앞코 (밝은 부분) -->
-            <ellipse cx="78" cy="50" rx="9" ry="10" fill="#38BDF8"/>
-            <circle cx="82" cy="50" r="3" fill="#0EA5E9"/>
-            <!-- 창문들 -->
-            <circle cx="38" cy="48" r="3" fill="#fff"/>
-            <circle cx="50" cy="48" r="3" fill="#fff"/>
-            <circle cx="62" cy="48" r="3" fill="#fff"/>
-            <circle cx="38" cy="48" r="2" fill="#BAE6FD"/>
-            <circle cx="50" cy="48" r="2" fill="#BAE6FD"/>
-            <circle cx="62" cy="48" r="2" fill="#BAE6FD"/>
-            <!-- 위쪽 날개 -->
-            <ellipse cx="44" cy="34" rx="16" ry="8" fill="#38BDF8"/>
-            <ellipse cx="44" cy="34" rx="14" ry="6" fill="#7DD3FC"/>
-            <!-- 꼬리 -->
-            <path d="M 20 50 Q 10 38 12 48 Q 8 50 12 52 Q 10 62 20 50 Z" fill="#38BDF8"/>
-          </g>
-        </svg>
-
         <!-- 텍스트 -->
         <div style="line-height:1.2;letter-spacing:-1.2px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif">
-          <div><span style="font-size:30px;font-weight:700;color:#1A5D1A">해</span><span style="font-size:29px;font-weight:700;color:#222">외에서</span></div>
-          <div style="margin-top:4px"><span style="font-size:30px;font-weight:700;color:#1A5D1A">카</span><span style="font-size:29px;font-weight:700;color:#222">드결제하자</span></div>
+          <div><span style="font-size:30px;font-weight:700;color:#FF385C">해</span><span style="font-size:29px;font-weight:700;color:#222">외에서</span></div>
+          <div style="margin-top:4px"><span style="font-size:30px;font-weight:700;color:#FF385C">카</span><span style="font-size:29px;font-weight:700;color:#222">드결제하자</span></div>
         </div>
       </div>
 
@@ -427,8 +416,8 @@ window._doGoogleLogin = async function() {
       <input class="login-inp" id="main-pw" placeholder="비밀번호" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')doMainLogin()"/>
 
       <div style="display:flex;gap:8px;margin-top:6px">
-        <button onclick="location.href='heka_signup.html'" style="flex:1;padding:12px;background:#fff;color:#1A5D1A;border:1.5px solid #1A5D1A;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">회원가입</button>
-        <button onclick="doMainLogin()" style="flex:1;padding:12px;background:#fff;color:#1A5D1A;border:1.5px solid #1A5D1A;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">로그인</button>
+        <button onclick="location.href='heka_signup.html'" style="flex:1;padding:12px;background:#fff;color:#FF385C;border:1.5px solid #FF385C;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">회원가입</button>
+        <button onclick="doMainLogin()" style="flex:1;padding:12px;background:#fff;color:#FF385C;border:1.5px solid #FF385C;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">로그인</button>
       </div>
 
       <div style="display:flex;justify-content:center;align-items:center;gap:10px;padding:10px 0 0;font-size:12px;color:#aaa">
@@ -443,7 +432,7 @@ window._doGoogleLogin = async function() {
         <div style="flex:1;height:1px;background:#f0f0f0"></div>
       </div>
 
-      <div style="display:flex;gap:10px;justify-content:center">
+      <div class="social-row" style="display:flex;gap:10px;justify-content:center">
         <button onclick="openSocial('kakao')" aria-label="카카오로 시작하기" style="width:48px;height:48px;background:#FEE500;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px">💬</button>
         <button onclick="doGoogleLogin()" aria-label="구글로 시작하기" style="width:48px;height:48px;background:#fff;border:1px solid #ececec;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
           <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
@@ -505,8 +494,8 @@ window._doGoogleLogin = async function() {
         <div style="display:flex;gap:8px">
           <input id="findid-phone" type="tel" placeholder="010-0000-0000"
             style="flex:1;min-width:0;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
-            onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"/>
-          <button id="findid-send-btn" onclick="sendFindIdCode()" style="flex-shrink:0;padding:0 12px;height:48px;background:#1A5D1A;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">인증번호<br>받기</button>
+            onfocus="this.style.borderColor='#FF385C'" onblur="this.style.borderColor='#e8e8e8'"/>
+          <button id="findid-send-btn" onclick="sendFindIdCode()" style="flex-shrink:0;padding:0 12px;height:48px;background:#FF385C;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">인증번호<br>받기</button>
         </div>
       </div>
       <div id="findid-code-group" style="display:none;margin-bottom:16px">
@@ -514,18 +503,18 @@ window._doGoogleLogin = async function() {
         <div style="display:flex;gap:8px;align-items:center">
           <input id="findid-code" type="number" placeholder="6자리 입력"
             style="flex:1;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
-            onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"/>
+            onfocus="this.style.borderColor='#FF385C'" onblur="this.style.borderColor='#e8e8e8'"/>
           <span id="findid-timer" style="font-size:12px;color:#aaa;min-width:36px">3:00</span>
         </div>
       </div>
-      <button id="findid-verify-btn" onclick="verifyFindIdCode()" style="display:none;width:100%;padding:14px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
+      <button id="findid-verify-btn" onclick="verifyFindIdCode()" style="display:none;width:100%;padding:14px;background:#FF385C;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
     </div>
     <!-- 결과 -->
     <div id="findid-result" style="display:none;padding:28px 24px;text-align:center">
       <div style="font-size:44px;margin-bottom:16px">📧</div>
       <div style="font-size:17px;font-weight:800;color:#111;margin-bottom:8px">가입된 이메일</div>
-      <div id="findid-masked" style="font-size:15px;color:#1A5D1A;font-weight:700;margin-bottom:24px;background:#f0fdf4;padding:14px;border-radius:10px"></div>
-      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">로그인하러 가기</button>
+      <div id="findid-masked" style="font-size:15px;color:#FF385C;font-weight:700;margin-bottom:24px;background:#FFF1F2;padding:14px;border-radius:10px"></div>
+      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#FF385C;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">로그인하러 가기</button>
     </div>
   </div>
 
@@ -542,10 +531,10 @@ window._doGoogleLogin = async function() {
         <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600">이메일</div>
         <input id="findpw-email" type="email" placeholder="example@email.com" autocomplete="email"
           style="width:100%;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
-          onfocus="this.style.borderColor='#1A5D1A'" onblur="this.style.borderColor='#e8e8e8'"
+          onfocus="this.style.borderColor='#FF385C'" onblur="this.style.borderColor='#e8e8e8'"
           onkeydown="if(event.key==='Enter')doSendResetEmail()"/>
       </div>
-      <button onclick="doSendResetEmail()" style="width:100%;padding:14px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px">
+      <button onclick="doSendResetEmail()" style="width:100%;padding:14px;background:#FF385C;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px">
         재설정 링크 보내기
       </button>
     </div>
@@ -554,7 +543,7 @@ window._doGoogleLogin = async function() {
       <div style="font-size:44px;margin-bottom:16px">📧</div>
       <div style="font-size:17px;font-weight:800;color:#111;margin-bottom:8px">이메일을 확인해 주세요</div>
       <div id="findpw-done-email" style="font-size:13px;color:#666;margin-bottom:24px;line-height:1.6"></div>
-      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">
+      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#FF385C;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">
         로그인하러 가기
       </button>
       <button onclick="doSendResetEmail()" style="width:100%;padding:14px;background:#fff;color:#888;border:1px solid #e8e8e8;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:10px">

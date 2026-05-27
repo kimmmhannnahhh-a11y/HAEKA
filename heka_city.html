@@ -2,19 +2,26 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
+@import url('haeka_rebuild_common.css');
+@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0}
 .back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111}
 
 /* 검색창 */
 .search-wrap{padding:10px 14px 6px;flex-shrink:0}
 .search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:22px;padding:6px 12px;gap:8px;transition:.15s}
-.search-box:focus-within{border-color:#1A5D1A;background:#fff}
+.search-box:focus-within{border-color:#FF385C;background:#fff}
 .search-box input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit}
 .search-box svg{width:14px;height:14px;stroke:#aaa;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
 
@@ -26,7 +33,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 나라 선택 뷰 */
 .sort-bar{display:flex;gap:6px;padding:4px 14px 0;flex-shrink:0}
 .sort-btn{padding:4px 12px;border-radius:16px;border:1.5px solid #e0e0e0;font-size:11px;font-weight:600;color:#888;background:#fff;cursor:pointer;font-family:inherit;transition:.15s}
-.sort-btn.on{border-color:#1A5D1A;color:#1A5D1A;background:#f0f7f0}
+.sort-btn.on{border-color:#FF385C;color:#FF385C;background:#FFF1F2}
 .country-list{padding:6px 0}
 .country-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
 .country-item:hover{background:#f9f9f9}
@@ -38,17 +45,17 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 /* 도시 선택 뷰 */
 .city-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
-.city-back{font-size:12px;color:#1A5D1A;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.city-back{font-size:12px;color:#FF385C;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .city-country-name{font-size:13px;font-weight:700;color:#111}
 .city-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
 .city-btn{padding:10px 6px;border-radius:10px;background:#f5f5f5;border:none;font-size:12px;font-weight:600;color:#333;cursor:pointer;font-family:inherit;text-align:center;transition:.15s}
-.city-btn:hover{background:#e8f5e8;color:#1A5D1A}
-.city-btn-all{grid-column:1/-1;background:#e8f5e8;color:#1A5D1A;font-weight:700;border:1.5px solid #c8e6c8;}
+.city-btn:hover{background:#FFF1F2;color:#FF385C}
+.city-btn-all{grid-column:1/-1;background:#FFF1F2;color:#FF385C;font-weight:700;border:1.5px solid #FFE4E8;}
 .city-btn-all:hover{background:#d0edcf;}
 
 /* 매장 목록 뷰 */
 .store-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
-.store-back{font-size:12px;color:#1A5D1A;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
+.store-back{font-size:12px;color:#FF385C;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;padding:0}
 .store-city-name{font-size:13px;font-weight:700;color:#111}
 .store-count{font-size:11px;color:#bbb;margin-left:auto}
 .store-list{flex:1;overflow-y:auto}
@@ -69,7 +76,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 /* 검색 결과 뷰 */
 .search-empty{padding:40px 16px;text-align:center;font-size:13px;color:#bbb}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF385C;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF385C"],[style*="background:#FF385C"],[style*="background: #FF385C"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF385C"],[style*="border-color:#FF385C"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+}
 </style>
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone">
@@ -209,7 +221,7 @@ function renderCountries(list){
   var el=document.getElementById('country-list');
   el.innerHTML=sorted.map(function(c){
     var citiesPreview=c.cities.slice(0,5).join(', ')+(c.cities.length>5?' 외 '+(c.cities.length-5)+'개':'');
-    return '<div class="country-item" onclick="selectCountry(\''+c.name+'\')"><span class="country-flag">'+c.flag+'</span>'
+    return '<div class="country-item" onclick="selectCountry(\''+c.name+'\')">'
       +'<div class="country-info"><div class="country-name">'+c.name+'</div><div class="country-cities">'+citiesPreview+'</div></div>'
       +'<span class="country-arr">›</span></div>';
   }).join('');
@@ -219,9 +231,9 @@ function renderCountries(list){
 function selectCountry(name){
   _currentCountry=COUNTRIES.find(function(c){return c.name===name;});
   if(!_currentCountry) return;
-  document.getElementById('city-country-name').textContent=_currentCountry.flag+' '+_currentCountry.name;
+  document.getElementById('city-country-name').textContent=_currentCountry.name;
   var grid=document.getElementById('city-grid');
-  grid.innerHTML='<button class="city-btn city-btn-all" onclick="selectCountryAll(\''+_currentCountry.name+'\')">🗺️ 전체보기</button>'
+  grid.innerHTML='<button class="city-btn city-btn-all" onclick="selectCountryAll(\''+_currentCountry.name+'\')">전체보기</button>'
     +_currentCountry.cities.map(function(city){
       return '<button class="city-btn" onclick="selectCity(\''+city+'\')">'+city+'</button>';
     }).join('');
@@ -267,7 +279,7 @@ var CITY_EN_MAP={
 function selectCountryAll(countryName){
   var country=COUNTRIES.find(function(c){return c.name===countryName;});
   if(!country) return;
-  document.getElementById('store-city-name').textContent=country.flag+' '+country.name+' 전체';
+  document.getElementById('store-city-name').textContent=country.name+' 전체';
   document.getElementById('store-count').textContent='';
   var listEl=document.getElementById('store-list');
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
@@ -380,7 +392,7 @@ function doSearch(val){
   if(cityResults.length){
     html+='<div style="padding:10px 16px 4px;font-size:11px;color:#aaa;font-weight:600">도시 검색 결과</div>';
     html+=cityResults.map(function(m){
-      return '<div class="country-item" onclick="selectCityDirect(\''+m.country.name+'\',\''+m.city+'\')"><span class="country-flag">'+m.country.flag+'</span>'
+      return '<div class="country-item" onclick="selectCityDirect(\''+m.country.name+'\',\''+m.city+'\')">'
         +'<div class="country-info"><div class="country-name">'+m.city+'</div><div class="country-cities">'+m.country.name+'</div></div>'
         +'<span class="country-arr">›</span></div>';
     }).join('');

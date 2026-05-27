@@ -2,13 +2,20 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
+@import url('haeka_rebuild_common.css');
+@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px;isolation:isolate}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
-.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#FF385C;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
 .back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
 .gear-btn{position:absolute;right:14px;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center}
@@ -24,8 +31,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .avatar-wrap{position:relative;flex-shrink:0}
 .avatar{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.avatar-cam{position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #1A5D1A;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.avatar-cam svg{width:11px;height:11px;stroke:#1A5D1A;fill:none;stroke-width:2;stroke-linecap:round}
+.avatar-cam{position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #FF385C;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.avatar-cam svg{width:11px;height:11px;stroke:#FF385C;fill:none;stroke-width:2;stroke-linecap:round}
 .profile-info{flex:1;min-width:0}
 .nick-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .nick{font-size:16px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -37,7 +44,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .stats-row{display:flex;gap:6px}
 .stat-box{flex:1;background:#f8f8f8;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:.15s}
 .stat-box:hover{background:#f0f0f0}
-.stat-num{font-size:16px;font-weight:800;color:#1A5D1A}
+.stat-num{font-size:16px;font-weight:800;color:#FF385C}
 .stat-lbl{font-size:10px;color:#999;margin-top:2px;font-weight:500}
 
 /* 섹션 */
@@ -51,18 +58,18 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .menu-title{font-size:13px;font-weight:500;color:#111}
 .menu-sub{font-size:10px;color:#bbb;margin-top:1px}
 .menu-arr{font-size:14px;color:#ccc}
-.menu-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#1A5D1A;color:#fff}
+.menu-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#FF385C;color:#fff}
 .menu-toggle{width:36px;height:20px;border-radius:10px;background:#e0e0e0;position:relative;cursor:pointer;transition:.2s;flex-shrink:0;border:none}
-.menu-toggle.on{background:#1A5D1A}
+.menu-toggle.on{background:#FF385C}
 .menu-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .menu-toggle.on::after{left:18px}
 
 /* 가봤던 나라 */
 .countries-wrap{padding:6px 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
 .country-chip{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1.5px solid #e0e0e0;font-size:11px;color:#555;cursor:pointer;transition:.15s;background:#fff}
-.country-chip.on{border-color:#1A5D1A;background:#f0f9f0;color:#1A5D1A;font-weight:600}
+.country-chip.on{border-color:#FF385C;background:#FFF1F2;color:#FF385C;font-weight:600}
 .country-chip-add{border-style:dashed;color:#bbb}
-.country-chip-add:hover{border-color:#1A5D1A;color:#1A5D1A}
+.country-chip-add:hover{border-color:#FF385C;color:#FF385C}
 
 /* 찜 목록 미리보기 */
 .zzim-preview{display:flex;gap:7px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
@@ -76,17 +83,17 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .social-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .social-name{flex:1;font-size:12px;font-weight:500;color:#333}
 .social-connected{font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px}
-.social-on{background:#e8f5e8;color:#1A5D1A}
+.social-on{background:#FFF1F2;color:#FF385C}
 .social-off{background:#f5f5f5;color:#bbb}
 
 /* 하단 네비 */
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#1A5D1A;font-weight:600}
+.ni.on{color:#FF385C;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#FF385C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF385C;font-weight:600}
 
 /* 오버레이 공통 */
 .overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:40;display:none;align-items:flex-end;border-radius:26px}
@@ -95,10 +102,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sheet-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px}
 .sheet-title{font-size:14px;font-weight:700;color:#111;margin-bottom:12px}
 .sheet-inp{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #e0e0e0;font-size:13px;font-family:inherit;outline:none;transition:.15s}
-.sheet-inp:focus{border-color:#1A5D1A}
+.sheet-inp:focus{border-color:#FF385C}
 .sheet-err{font-size:11px;color:#dc2626;font-weight:500;margin-top:5px;display:none}
 .sheet-err.show{display:block}
-.sheet-btn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.sheet-btn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#FF385C;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 .sheet-cancel{width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
 
 /* 최근 본 항목 카드 */
@@ -125,7 +132,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
 .dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
 .dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
-.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#FF385C;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 #dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
 .toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -133,8 +140,30 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 로그아웃 버튼 */
 .logout-btn{margin:4px 16px 16px;padding:12px;border-radius:12px;background:#fff5f5;color:#dc2626;font-size:13px;font-weight:700;border:1.5px solid #fecaca;cursor:pointer;width:calc(100% - 32px);font-family:inherit;transition:.15s}
 .inq-type-btn{padding:9px 6px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;font-size:12px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:.15s}
-.inq-type-btn.on{border-color:#1A5D1A;background:#f0f7f0;color:#1A5D1A}
+.inq-type-btn.on{border-color:#FF385C;background:#FFF1F2;color:#FF385C}
 .logout-btn:hover{background:#fee2e2}
+
+/* 모바일: 폰 높이를 뷰포트에 고정 + 내부 스크롤 영역 작동시키기 */
+@media (max-width: 768px) {
+  .phone {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
+  }
+  .scroll-wrap {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 80px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF385C;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF385C"],[style*="background:#FF385C"],[style*="background: #FF385C"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF385C"],[style*="border-color:#FF385C"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
@@ -149,10 +178,18 @@ const _app = initializeApp({
 });
 const _db = getFirestore(_app);
 const _auth = getAuth(_app);
+window._db = _db; window._doc = doc; window._getDoc = getDoc;
 onAuthStateChanged(_auth, async function(u){
   window._currentUser = u||null;
   if(u) {
-    try{localStorage.setItem('haeka_uid',u.uid);localStorage.setItem('haeka_email',u.email||'');}catch(e){}
+    try{
+      localStorage.setItem('haeka_uid',u.uid);
+      localStorage.setItem('haeka_email',u.email||'');
+      // provider 자동 감지 (기존 로그인 사용자 back-fill)
+      if (u.providerData && u.providerData.length > 0) {
+        localStorage.setItem('haeka_provider', u.providerData[0].providerId);
+      }
+    }catch(e){}
     // Firestore에서 닉네임 불러오기
     try {
       var uDoc = await getDoc(doc(_db,'users',u.uid));
@@ -170,15 +207,29 @@ onAuthStateChanged(_auth, async function(u){
   }
 });
 
-window._deleteAccount = async function() {
+window._deleteAccount = async function(password) {
   var user = _auth.currentUser;
-  if (!user) return false;
+  if (!user) return { ok: false, reason: 'no-user' };
   try {
+    // 이메일/비밀번호 로그인 사용자는 재인증 필수 (탈취 토큰 방어)
+    var provider = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || '';
+    if (provider === 'password') {
+      if (!password) return { ok: false, reason: 'need-password' };
+      var cred = EmailAuthProvider.credential(user.email, password);
+      try {
+        await reauthenticateWithCredential(user, cred);
+      } catch(re) {
+        return { ok: false, reason: 'wrong-password' };
+      }
+    }
     await deleteUser(user);
-    return true;
+    return { ok: true };
   } catch(e) {
-    console.error(e);
-    return false;
+    // 최근 로그인 후 시간이 너무 지나면 Firebase가 재인증 요구
+    if (e && e.code === 'auth/requires-recent-login') {
+      return { ok: false, reason: 'need-password' };
+    }
+    return { ok: false, reason: 'error', msg: e && e.message };
   }
 };
 
@@ -237,6 +288,7 @@ window._loadNotices = async function() {
 };
 </script>
 
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone" id="phone">
@@ -328,7 +380,7 @@ window._loadNotices = async function() {
     <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni" onclick="location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
-    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF385C"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
   <!-- 닉네임 수정 시트 -->
@@ -359,13 +411,13 @@ window._loadNotices = async function() {
   <div id="settings-overlay" onclick="closeSettings()" style="position:absolute;inset:0;z-index:34;display:none;background:rgba(0,0,0,0);border-radius:26px"></div>
   <div id="settings-panel" onclick="event.stopPropagation()" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
     <!-- 설정 상단바 -->
-    <div style="background:#1A5D1A;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
-    <div style="background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="background:#FF385C;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
+    <div style="background:#FF385C;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
       <button onclick="closeSettings()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1">←</button>
       <span style="font-size:15px;font-weight:600;color:#fff">설정</span>
     </div>
     <!-- 설정 내용 -->
-    <div style="flex:1;overflow-y:auto">
+    <div class="settings-scroll" style="flex:1 1 auto;min-height:0;overflow-y:auto;padding-bottom:90px;-webkit-overflow-scrolling:touch">
 
       <!-- 알림 설정 -->
       <div style="height:10px;background:#f5f5f5"></div>
@@ -382,15 +434,13 @@ window._loadNotices = async function() {
       <!-- 계정 연동 -->
       <div style="height:10px;background:#f5f5f5"></div>
       <div style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;padding:12px 16px 6px">계정 연동 관리</div>
-      <div style="padding:10px 16px 12px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid #f5f5f5">
-        <div style="width:32px;height:32px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:14px">👤</div>
-        <div>
-          <div style="font-size:11px;color:#888;margin-bottom:1px">로그인된 계정</div>
-          <div id="settings-email" style="font-size:13px;font-weight:600;color:#111">-</div>
-        </div>
+      <div class="menu-item" id="social-google" onclick="showToast('Google 계정 연동 상태')">
+        <div class="menu-txt"><div class="menu-title">Google</div><div class="menu-sub" id="social-google-sub">연결하기</div></div>
+        <span class="menu-arr">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('Google 계정이 연결되어 있어요')">
-        <div class="menu-txt"><div class="menu-title">Google</div><div class="menu-sub">연결됨</div></div>
+
+      <div class="menu-item" id="social-email" onclick="showToast('이메일 계정')">
+        <div class="menu-txt"><div class="menu-title">이메일</div><div class="menu-sub" id="social-email-sub">연결하기</div></div>
         <span class="menu-arr">›</span>
       </div>
 
@@ -405,6 +455,12 @@ window._loadNotices = async function() {
 
       <div class="menu-item" onclick="showToast('생체인증 설정은 앱 출시 후 지원 예정이에요!')">
         <div class="menu-txt"><div class="menu-title">자동 로그인 / 생체 인증</div><div class="menu-sub">Face ID · 지문 인식</div></div>
+        <span class="menu-arr">›</span>
+      </div>
+
+      <!-- 관리자 진입 (관리자만 노출) -->
+      <div class="menu-item" id="admin-entry" style="display:none" onclick="location.href='heka_admin.html'">
+        <div class="menu-txt"><div class="menu-title" style="color:#FF385C;font-weight:700">🛠 관리자 페이지</div><div class="menu-sub">관리 전용</div></div>
         <span class="menu-arr">›</span>
       </div>
 
@@ -444,7 +500,7 @@ window._loadNotices = async function() {
         </div>
         <div style="display:flex;border-top:0.5px solid #f2f2f2">
           <button onclick="closePopup()" style="flex:1;padding:14px;background:none;border:none;font-size:13px;color:#aaa;cursor:pointer;font-family:inherit;border-right:0.5px solid #f2f2f2">취소</button>
-          <button id="popup-confirm-btn" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:600;color:#1A5D1A;cursor:pointer;font-family:inherit"></button>
+          <button id="popup-confirm-btn" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:600;color:#FF385C;cursor:pointer;font-family:inherit"></button>
         </div>
       </div>
     </div>
@@ -506,7 +562,7 @@ window._loadNotices = async function() {
         <button onclick="inviteKakao()" style="width:100%;padding:13px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
           <span style="font-size:16px">💬</span> 카카오톡으로 초대링크 보내기
         </button>
-        <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#f0f9f0;color:#1A5D1A;font-size:13px;font-weight:700;border:1.5px solid #1A5D1A;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+        <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#FFF1F3;color:#FF385C;font-size:13px;font-weight:700;border:1.5px solid #FF385C;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
           <span style="font-size:16px">🔗</span> 초대 링크 복사하기
         </button>
         <button onclick="shareInvite()" style="width:100%;padding:13px;border-radius:12px;background:#f5f5f5;color:#555;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -545,7 +601,7 @@ window._loadNotices = async function() {
       </div>
       <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">내용</div>
       <textarea id="inquiry-txt" placeholder="내용을 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
-      <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#1A5D1A;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
+      <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#FF385C;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
     </div>
   </div>
 
@@ -796,7 +852,6 @@ function saveNick() {
   document.getElementById('nick-txt').textContent = val;
   saveData();
   closeNickEdit();
-  showToast('✅ 닉네임이 변경됐어요!');
 }
 
 // ── 한줄소개 ──
@@ -819,6 +874,43 @@ function openSettings() {
   var email = localStorage.getItem('haeka_email') || '-';
   var el = document.getElementById('settings-email');
   if(el) el.textContent = email;
+
+  // 실제 로그인 제공자 표시 (Google / 이메일)
+  var provider = localStorage.getItem('haeka_provider') || '';
+  var gSub = document.getElementById('social-google-sub');
+  var eSub = document.getElementById('social-email-sub');
+  if (provider === 'google.com' || provider === 'google') {
+    if (gSub) gSub.textContent = '연결됨';
+    if (eSub) eSub.textContent = '연결하기';
+  } else if (provider === 'password' || provider === 'email') {
+    if (gSub) gSub.textContent = '연결하기';
+    if (eSub) eSub.textContent = '연결됨 (' + email + ')';
+  } else {
+    if (gSub) gSub.textContent = '연결하기';
+    if (eSub) eSub.textContent = (email && email !== '-') ? '연결됨 (' + email + ')' : '연결하기';
+  }
+
+  // 관리자만 관리자 페이지 메뉴 노출 (Firestore admin_users 컬렉션 기반)
+  var adminEntry = document.getElementById('admin-entry');
+  if (adminEntry) {
+    adminEntry.style.display = 'none';
+    var u = window._currentUser;
+    if (u && u.uid && window._db && window._getDoc && window._doc) {
+      window._getDoc(window._doc(window._db, 'admin_users', u.uid))
+        .then(function(snap){ if (snap.exists()) adminEntry.style.display = 'flex'; })
+        .catch(function(){});
+    }
+  }
+
+  // 알림 토글 상태 복원
+  ['toggle-approve','toggle-event'].forEach(function(id){
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    var saved = localStorage.getItem('haeka_'+id);
+    if (saved === '1') btn.classList.add('on');
+    else if (saved === '0') btn.classList.remove('on');
+  });
+
   document.getElementById('settings-overlay').style.display = 'block';
   document.getElementById('settings-panel').style.transform = 'translateX(0)';
 }
@@ -827,8 +919,13 @@ function closeSettings() {
   document.getElementById('settings-panel').style.transform = 'translateX(100%)';
 }
 
-// ── 토글 ──
-function toggleSwitch(btn) { btn.classList.toggle('on'); }
+// ── 토글 (localStorage에 저장) ──
+function toggleSwitch(btn) {
+  btn.classList.toggle('on');
+  if (btn.id) {
+    try { localStorage.setItem('haeka_'+btn.id, btn.classList.contains('on') ? '1' : '0'); } catch(e){}
+  }
+}
 
 // ── 언어/통화 ──
 var curLang = '한국어', curCurrency = 'KRW';
@@ -844,7 +941,7 @@ function openLangSheet() {
   });
   var cur = langMap[curLang] || 'ko';
   var curEl = document.getElementById('lang-opt-'+cur);
-  if(curEl){ curEl.style.fontWeight='700'; curEl.querySelector('span').style.color='#1A5D1A'; }
+  if(curEl){ curEl.style.fontWeight='700'; curEl.querySelector('span').style.color='#FF385C'; }
 }
 function closeLangSheet() { document.getElementById('lang-overlay').style.display='none'; }
 function saveLangDirect(val) {
@@ -876,21 +973,32 @@ function clearCache() {
   } catch(e) {}
   showToast('✅ 캐시가 삭제됐어요!');
 }
+async function _attemptDelete(password) {
+  if (!window._deleteAccount) return;
+  var result = await window._deleteAccount(password);
+  if (result && result.ok) {
+    try{ localStorage.clear(); }catch(e){}
+    showToast('탈퇴가 완료됐어요');
+    setTimeout(function(){ window.location.replace('heka_home_v5.html'); }, 1500);
+    return;
+  }
+  if (result && (result.reason === 'need-password' || result.reason === 'wrong-password')) {
+    var msg = result.reason === 'wrong-password' ? '비밀번호가 틀렸어요. 다시 입력해주세요' : '본인 확인을 위해 비밀번호를 입력해주세요';
+    var pw = prompt(msg);
+    if (pw == null || pw === '') { showToast('탈퇴가 취소됐어요'); return; }
+    _attemptDelete(pw);
+    return;
+  }
+  showToast('오류가 발생했어요. 재로그인 후 다시 시도해주세요');
+}
+
 function confirmWithdraw() {
   // 1단계
   showPopup('⚠️', '정말 탈퇴하시겠어요?', '탈퇴 시 계정 및 개인정보가 삭제됩니다.', '탈퇴 진행', function(){
     // 2단계
     showPopup('🗑️', '최종 확인', '정말로 탈퇴할까요?\n이 작업은 되돌릴 수 없어요.', '탈퇴하기', async function(){
-      if (window._deleteAccount) {
-        var ok = await window._deleteAccount();
-        if (ok) {
-          try{ localStorage.clear(); }catch(e){}
-          showToast('탈퇴가 완료됐어요');
-          setTimeout(function(){ window.location.replace('heka_home_v5.html'); }, 1500);
-        } else {
-          showToast('오류가 발생했어요. 재로그인 후 다시 시도해주세요');
-        }
-      }
+      // 이메일 로그인 사용자는 비밀번호 재확인 (토큰 탈취 방어)
+      _attemptDelete(null);
     });
   });
 }
@@ -964,7 +1072,7 @@ function openMyList(type) {
   } else {
     content.innerHTML = stores.map(function(s){
       var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.parentNode.innerHTML=\'🏬\'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏬</div>';
-      var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#e8f5e9;color:#1A5D1A;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
+      var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#FFF1F3;color:#FF385C;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
         +img
         +'<div style="flex:1;min-width:0">'

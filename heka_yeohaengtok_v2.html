@@ -2,14 +2,20 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
+@import url('haeka_rebuild_common.css');
+@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone-wrap{position:relative;width:300px}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
-.topbar{background:#1A5D1A;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15);position:relative}
+.sb{background:#FF385C;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.topbar{background:#FF385C;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15);position:relative}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
 .back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
 .live-bar{margin:10px 16px 0;display:flex;align-items:center;gap:5px}
@@ -18,25 +24,25 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .live-txt{font-size:11px;color:#4ADE80;font-weight:500}
 .search-wrap{padding:6px 16px 0}
 .search-box{display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:24px;padding:5px 10px;gap:6px;transition:.15s}
-.search-box:focus-within{border-color:#1A5D1A;background:#fff}
+.search-box:focus-within{border-color:#FF385C;background:#fff}
 .city-chip{display:flex;align-items:center;gap:3px;background:#fff;border:1px solid #ddd;border-radius:20px;padding:3px 8px 3px 6px;font-size:10px;font-weight:600;color:#333;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:.12s}
-.city-chip:hover{border-color:#1A5D1A;color:#1A5D1A}
+.city-chip:hover{border-color:#FF385C;color:#FF385C}
 .city-chip-icon{font-size:11px}
 .city-chip-arrow{font-size:8px;color:#aaa}
 .search-divider{width:1px;height:14px;background:#ddd;flex-shrink:0}
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit;min-width:0}
 .search-input::placeholder{color:#bbb}
-.search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1A5D1A;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#FF385C;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
 .search-btn:hover{background:#145014}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
 .search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
 .search-result-bar.show{display:block}
-.search-result-bar span{color:#1A5D1A;font-weight:600}
+.search-result-bar span{color:#FF385C;font-weight:600}
 .filt{display:flex;align-items:center;gap:6px;padding:6px 16px 0;overflow-x:auto;scrollbar-width:none}
 .filt::-webkit-scrollbar{display:none}
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
-.fb:hover{border-color:#1A5D1A;color:#1A5D1A}
-.fb.on{background:#1A5D1A;color:#fff;border-color:#1A5D1A;font-weight:600}
+.fb:hover{border-color:#FF385C;color:#FF385C}
+.fb.on{background:#FF385C;color:#fff;border-color:#FF385C;font-weight:600}
 .post-list{padding:8px 0}
 .fpost{padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:7px;transition:.12s}
 .fpost:last-child{border-bottom:none}
@@ -51,7 +57,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpbody{font-size:11px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
 .fpbottom{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:10px;color:#bbb}
 .fptag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;flex-shrink:0}
-.fptag-mate{background:#1A5D1A;color:#fff}
+.fptag-mate{background:#FF385C;color:#fff}
 .fptag-food{background:#ea6500;color:#fff}
 .fptag-weather{background:#3b82f6;color:#fff}
 .fptag-info{background:#eab308;color:#fff}
@@ -60,11 +66,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpost{position:relative}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#1A5D1A;font-weight:600}
+.ni.on{color:#FF385C;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.npbtn{width:36px;height:36px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#FF385C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF385C;font-weight:600}
 .side-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);z-index:20;display:none;border-radius:26px}
 .side-overlay.open{display:block}
 .side-panel{position:absolute;top:0;right:0;width:200px;height:100%;background:#fff;border-left:0.5px solid #eee;z-index:21;display:flex;flex-direction:column;border-radius:0 26px 26px 0;overflow:hidden;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
@@ -80,7 +86,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .panel-flag{font-size:14px;margin-right:6px}
 .panel-arr{font-size:10px;color:#ccc}
 .panel-back{padding:9px 14px;font-size:11px;color:#555;cursor:pointer;display:flex;align-items:center;gap:4px;border-bottom:0.5px solid #f0f0f0;background:#f9f9f9}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF385C;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF385C"],[style*="background:#FF385C"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF385C"],[style*="border-color:#FF385C"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+}
 </style>
+<script src="security.js"></script>
 </head>
 <body>
 <div class="phone-wrap">
@@ -95,7 +106,6 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <div class="search-wrap">
     <div class="search-box">
       <div class="city-chip" onclick="openPanel()">
-        <span class="city-chip-icon">🌏</span>
         <span id="city-chip-txt">도시검색</span>
         <span class="city-chip-arrow">∨</span>
       </div>
@@ -136,7 +146,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <div style="font-size:32px;margin-bottom:10px">🔐</div>
   <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px" id="login-popup-title">로그인이 필요해요</div>
   <div style="font-size:12px;color:#888;margin-bottom:20px" id="login-popup-desc">이 기능은 로그인 후 이용할 수 있어요</div>
-  <button onclick="location.href='heka_login.html'" style="width:100%;background:#1A5D1A;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
+  <button onclick="location.href='heka_login_v5.html'" style="width:100%;background:#FF385C;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
   <button onclick="closeLoginPopup()" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
 </div>
 <div class="side-overlay" id="write-overlay" onclick="closeWrite()" style="z-index:40"></div>
@@ -151,7 +161,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
     </div>
     <input id="write-title" placeholder="제목을 입력해주세요" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;margin-bottom:8px"/>
     <textarea id="write-body" placeholder="내용을 입력해주세요" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;font-family:inherit;outline:none;resize:none;height:80px;margin-bottom:10px"></textarea>
-    <button onclick="submitWrite()" style="width:100%;padding:12px;border-radius:12px;background:#1A5D1A;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">등록하기</button>
+    <button onclick="submitWrite()" style="width:100%;padding:12px;border-radius:12px;background:#FF385C;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">등록하기</button>
     <button onclick="closeWrite()" style="width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit">취소</button>
   </div>
 
@@ -171,7 +181,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <!-- 하단 네비 -->
   <div class="bnav">
     <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#1A5D1A"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni on" onclick="window.location.href='heka_city.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF385C"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni" onclick="if(!window.currentUser){showLoginPopup('찜목록','찜 기능은 로그인 후 이용할 수 있어요')}else{location.href='heka_zzim.html'}"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
     <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
@@ -361,13 +371,8 @@ function toggleF(el){
 }
 
 function filterByTag(){
-  if(_selectedTags.size === 0){
-    renderPosts(posts);
-  } else {
-    renderPosts(posts.filter(function(p){
-      return _selectedTags.has(p.tagTxt);
-    }));
-  }
+  // 태그 변경 시에도 현재 도시 필터를 함께 적용
+  applyCityFilter();
 }
 
 var countries=[{flag:'🌍',name:'전 세계'},{flag:'🇯🇵',name:'일본'},{flag:'🇫🇷',name:'프랑스'},{flag:'🇺🇸',name:'미국'},{flag:'🇹🇭',name:'태국'},{flag:'🇻🇳',name:'베트남'},{flag:'🇪🇸',name:'스페인'},{flag:'🇮🇹',name:'이탈리아'},{flag:'🇩🇪',name:'독일'},{flag:'🇭🇷',name:'크로아티아'}];
@@ -379,24 +384,56 @@ function renderCountries(){
   document.getElementById('panel-title').textContent='나라 선택';
   document.getElementById('panel-ph').textContent='나라를 검색해보세요';
   var list=document.getElementById('panel-list'); list.innerHTML='';
-  countries.forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div><span class="panel-flag">'+c.flag+'</span>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ if(c.name==='전 세계') select('전 세계','🌍'); else if(cities[c.name]) renderCities(c.name,c.flag); else select(c.name,c.flag); }; list.appendChild(div); });
+  countries.forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ if(c.name==='전 세계') select('전 세계',''); else if(cities[c.name]) renderCities(c.name,''); else select(c.name,''); }; list.appendChild(div); });
 }
 function renderCities(country,flag){
-  document.getElementById('panel-title').textContent=flag+' '+country;
+  document.getElementById('panel-title').textContent=country;
   document.getElementById('panel-ph').textContent='도시를 검색해보세요';
   var list=document.getElementById('panel-list'); list.innerHTML='';
   var back=document.createElement('div'); back.className='panel-back'; back.innerHTML='‹ 나라 선택으로'; back.onclick=renderCountries; list.appendChild(back);
   // 나라 전체보기 버튼
-  var allDiv=document.createElement('div'); allDiv.className='panel-item'; allDiv.style.cssText='background:#f0f9f0;font-weight:700;color:#1A5D1A';
-  allDiv.innerHTML='<div>'+flag+' '+country+' 전체보기</div><span class="panel-arr" style="color:#1A5D1A">›</span>';
-  allDiv.onclick=function(){ select(country+' 전체',flag); }; list.appendChild(allDiv);
-  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,flag); }; list.appendChild(div); });
+  var allDiv=document.createElement('div'); allDiv.className='panel-item'; allDiv.style.cssText='background:#FFF1F3;font-weight:700;color:#FF385C';
+  allDiv.innerHTML='<div>'+country+' 전체보기</div><span class="panel-arr" style="color:#FF385C">›</span>';
+  allDiv.onclick=function(){ select(country+' 전체',''); }; list.appendChild(allDiv);
+  (cities[country]||[]).forEach(function(c){ var div=document.createElement('div'); div.className='panel-item'; div.innerHTML='<div>'+c.name+'</div><span class="panel-arr">›</span>'; div.onclick=function(){ select(c.name,''); }; list.appendChild(div); });
 }
+var _selectedCity = null; // null = 전 세계 (전체)
 function select(name,flag){
-  var chipIcon=document.querySelector('.city-chip-icon');
-  if(name==='전 세계'){ chipIcon.textContent='🌏'; document.getElementById('city-chip-txt').textContent='전 세계'; }
-  else { chipIcon.textContent=flag; document.getElementById('city-chip-txt').textContent=name; }
+  document.getElementById('city-chip-txt').textContent=name;
+  // 도시 필터 갱신
+  if(name === '전 세계') {
+    _selectedCity = null;
+  } else if(name.endsWith(' 전체')) {
+    // "{나라이름} 전체" → 해당 나라 전체 도시
+    var countryName = name.slice(0, -' 전체'.length);
+    var cityList = (cities[countryName] || []).map(function(c){ return c.name; });
+    _selectedCity = { country: countryName, cityNames: cityList };
+  } else {
+    // 단일 도시
+    _selectedCity = { city: name };
+  }
+  applyCityFilter();
   closePanel();
+}
+
+function applyCityFilter(){
+  var base = window.posts || [];
+  var filtered;
+  if(!_selectedCity){
+    filtered = base;
+  } else if(_selectedCity.city){
+    filtered = base.filter(function(p){ return (p.city||'') === _selectedCity.city; });
+  } else if(_selectedCity.cityNames){
+    var set = _selectedCity.cityNames;
+    filtered = base.filter(function(p){ return set.indexOf(p.city||'') > -1; });
+  } else {
+    filtered = base;
+  }
+  // 태그 필터도 같이 적용
+  if(typeof _selectedTags !== 'undefined' && _selectedTags.size > 0){
+    filtered = filtered.filter(function(p){ return _selectedTags.has(p.tagTxt); });
+  }
+  renderPosts(filtered);
 }
 function showLoginPopup(title, desc){
   document.getElementById('login-popup-title').textContent = title+'하려면 로그인이 필요해요';
@@ -419,7 +456,7 @@ function closeWrite(){
 }
 function selectTag(el){
   document.querySelectorAll('.write-tag').forEach(function(b){b.style.background='#fff';b.style.color='#555';b.style.borderColor='#ddd';});
-  el.style.background='#1A5D1A';el.style.color='#fff';el.style.borderColor='#1A5D1A';
+  el.style.background='#FF385C';el.style.color='#fff';el.style.borderColor='#FF385C';
 }
 function submitWrite(){
   var title=document.getElementById('write-title').value.trim();
