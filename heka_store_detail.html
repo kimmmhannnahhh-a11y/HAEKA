@@ -352,6 +352,20 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .section.hk-pay-strip{background:transparent!important;padding:18px 20px!important}
 .section.hk-pay-strip .sec-title-blue{color:var(--hk-text)!important;-webkit-text-fill-color:var(--hk-text)!important;font-size:18px!important;font-weight:700!important}
 
+/* 추가 수정: 상세 8건 UI 정리 */
+.hero{height:260px!important}
+body,.phone,.scroll-wrap,.section,.meta-row,.hours-row,.rev-item{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif!important}
+#addr-section span:first-child{font-size:12px!important;font-weight:800!important;color:var(--hk-muted)!important}
+.section.hk-pay-strip .sec-title-blue,#cards-no-section .sec-title-red{font-size:13px!important;font-weight:800!important;margin-bottom:10px!important}
+.section.hk-pay-strip .sec-title-blue::before{content:'● '!important;display:inline!important;color:#22C55E!important}
+#cards-no-section .sec-title-red::before{content:'● '!important;display:inline!important;color:#DC2626!important}
+.section.hk-pay-strip .card-chip,#cards-no-section .card-chip,#cards-no-section .card-chip-no{padding:8px 10px!important;border-radius:6px!important;font-size:11px!important}
+.rev-item{padding:10px 0!important;gap:8px!important}
+.rev-body{display:block!important;min-width:0}
+.rev-top{display:inline-flex!important;align-items:center!important;gap:6px!important;flex-shrink:0!important;margin-bottom:0!important;vertical-align:baseline}
+.rev-body>span[style*="f5a623"]{display:inline-block!important;margin-left:4px!important;margin-right:0!important;vertical-align:baseline}
+.rev-txt{display:block!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;margin-top:4px!important;line-height:1.5!important}
+
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
 .popup-title{font-size:18px;font-weight:800}
@@ -620,7 +634,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   var previewItems = [];
   if (store.review) previewItems.push({nickname:'등록자', text:store.review, createdAt:store.createdAt, isLegacy:true});
   subReviews.forEach(function(r){ previewItems.push(r); });
-  previewItems = previewItems.slice(0,3);
+  previewItems = previewItems.slice(0,5);
 
   if (previewItems.length) {
     document.getElementById('review-list').innerHTML = previewItems.map(function(r){
@@ -955,9 +969,16 @@ function copyAddr() {
 function toggleHours() {
   var el = document.getElementById('hours-all');
   var btn = document.getElementById('hours-toggle');
-  var isOpen = el.style.display !== 'none';
-  el.style.display = isOpen ? 'none' : 'block';
-  btn.textContent = isOpen ? '▾' : '▴';
+  var isOpen = el.classList.contains('open');
+  if (isOpen) {
+    el.classList.remove('open');
+    el.style.display = 'none';
+    btn.textContent = '▾';
+  } else {
+    el.classList.add('open');
+    el.style.display = 'block';
+    btn.textContent = '▴';
+  }
 }
 
 function openCatRequest() { document.getElementById('cat-popup').classList.add('open'); }
