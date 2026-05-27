@@ -228,8 +228,8 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .hours-all{background:#F9FAFB;border-radius:14px;padding:10px 12px;margin-top:12px}
 .hours-day-row{font-size:12px;padding:5px 0;color:var(--hk-sub)}
 .section.hk-pay-strip{margin:0 0 32px;padding:20px 18px 22px;background:linear-gradient(135deg,var(--hk-accent-bg),#fff 86%);border-bottom:0}
-.section.hk-pay-strip .sec-title-blue{font-size:12px;color:var(--hk-accent);margin-bottom:14px}
-.section.hk-pay-strip .sec-title-blue::before{content:'PAYMENT ';color:var(--hk-text)}
+.section.hk-pay-strip .sec-title-blue{font-size:12px;color:#fff;margin-bottom:14px}
+.section.hk-pay-strip .sec-title-blue::before{display:none}
 .section.hk-pay-strip .card-grid{gap:8px}
 .section.hk-pay-strip .card-chip{padding:9px 12px;border-radius:999px;box-shadow:0 8px 18px rgba(255,56,92,.12)}
 #cards-no-section{background:#F9FAFB;border-radius:18px;border-bottom:0;margin:0 18px 32px;padding:16px 14px}
@@ -778,10 +778,21 @@ window._arrayUnion = arrayUnion;
 
   <div class="scroll-wrap">
 
-    <!-- 전화번호만 표시 (등록 몇분전 제거) -->
+    <!-- 영업시간 (전화 위로 이동, 타이틀 제거) -->
+    <div class="section" id="hours-section" style="display:none">
+      <div class="hours-row">
+        <div id="hours-today-txt"></div>
+        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">전체보기</button>
+      </div>
+      <div class="hours-all" id="hours-all">
+        <div id="hours-all-content"></div>
+      </div>
+    </div>
+
+    <!-- 전화번호 -->
     <div class="section" id="meta-phone-section" style="display:none">
-      <div class="meta-row" id="meta-phone-row">
-        <span class="meta-ico">전화</span>
+      <div class="meta-row" id="meta-phone-row" style="gap:6px">
+        <span class="meta-ico" style="min-width:auto">전화</span>
         <a id="meta-phone" href="#" style="color:#FF3900;text-decoration:none;font-size:12px"></a>
       </div>
     </div>
@@ -802,18 +813,6 @@ window._arrayUnion = arrayUnion;
     <!-- 지도 -->
     <div class="section" style="padding:0;cursor:pointer" onclick="openMap()">
       <div id="detail-map" style="width:100%;height:120px;background:#f0f0f0"></div>
-    </div>
-
-    <!-- 영업시간 -->
-    <div class="section" id="hours-section" style="display:none">
-      <div class="sec-title">영업시간</div>
-      <div class="hours-row">
-        <div id="hours-today-txt"></div>
-        <button class="hours-toggle" id="hours-toggle" onclick="toggleHours()">전체보기</button>
-      </div>
-      <div class="hours-all" id="hours-all">
-        <div id="hours-all-content"></div>
-      </div>
     </div>
 
     <!-- 결제 가능 카드 -->
@@ -938,9 +937,7 @@ function toggleHours() {
   var btn = document.getElementById('hours-toggle');
   var isOpen = el.style.display !== 'none';
   el.style.display = isOpen ? 'none' : 'block';
-  btn.innerHTML = isOpen
-    ? '전체보기<span class="arr">⌄</span>'
-    : '접기<span class="arr">⌃</span>';
+  btn.textContent = isOpen ? '전체보기' : '접기';
 }
 
 function openCatRequest() { document.getElementById('cat-popup').classList.add('open'); }
