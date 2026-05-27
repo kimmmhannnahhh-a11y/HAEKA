@@ -44,10 +44,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-icon-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
 .filterbar{padding:11px 0 6px 14px;border-bottom:0.5px solid #f0f0f0;display:flex;flex-direction:column;gap:5px;overflow:hidden;position:relative}
 .filter-label{font-size:9px;font-weight:700;color:#bbb;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
-.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:40vw;cursor:grab}
+.chip-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:0;cursor:grab}
 .chip-row::-webkit-scrollbar{display:none}
 .chip-row:active{cursor:grabbing}
-.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-right:40vw;cursor:grab}
+.cat-wrap{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;overflow-x:auto;scrollbar-width:none;padding-right:0;cursor:grab}
 .cat-wrap::-webkit-scrollbar{display:none}
 .cat-wrap:active{cursor:grabbing}
 .sq-chip{flex-shrink:0;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
@@ -188,7 +188,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 #dp-zzim svg{fill:none;stroke:#ccc;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
 #dp-zzim.on svg{fill:#e53935;stroke:#e53935}
 
-.chip-fade{position:relative}.chip-fade::after{content:'';position:absolute;right:0;top:0;bottom:0;width:24px;background:linear-gradient(to right,transparent 0%,rgba(255,255,255,0.6) 60%,var(--hk-surface,#fff) 100%);pointer-events:none;z-index:2}
+.chip-fade{position:relative}.chip-fade::after{content:'';position:absolute;right:0;top:0;bottom:0;width:16px;background:linear-gradient(to right,transparent 0%,rgba(255,255,255,0.5) 70%,var(--hk-surface,#fff) 100%);pointer-events:none;z-index:2}
+.chip-spacer{display:inline-block;flex-shrink:0;width:40vw;height:1px;pointer-events:none}
 
 /* HAEKA 2.0 Warm Minimal UI overrides */
 body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
@@ -983,11 +984,13 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
         <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
         <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
+        <span class="chip-spacer" aria-hidden="true"></span>
       </div>
     </div>
     <div class="chip-fade">
       <div class="cat-wrap" id="cat-wrap">
         <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleSheet()">업종 ▾</div>
+        <span class="chip-spacer" aria-hidden="true"></span>
       </div>
     </div>
   </div>
@@ -1167,6 +1170,8 @@ function buildCatChips(list) {
     var d2=document.createElement('div');d2.className='sheet-chip';d2.textContent=lbl;d2.dataset.lbl=lbl;
     d2.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d2);
   });
+  var old=wrap.querySelector('.chip-spacer');if(old)old.remove();
+  var sp=document.createElement('span');sp.className='chip-spacer';sp.setAttribute('aria-hidden','true');wrap.appendChild(sp);
 }
 
 // 초기 렌더링
