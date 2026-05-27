@@ -332,6 +332,16 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .section.hk-pay-strip .sec-title-blue{color:#fff!important;opacity:1!important;visibility:visible!important;text-shadow:none!important;filter:none!important;backdrop-filter:none!important;-webkit-text-fill-color:#fff!important;background:transparent!important;-webkit-background-clip:unset!important;display:block!important}
 .section.hk-pay-strip .sec-title-blue::before{display:none!important;content:''!important}
 
+/* 추가 수정: 결제 섹션 공간 축소 + 결제후기 한 줄 레이아웃 */
+.section.hk-pay-strip{padding:18px 20px!important}
+#cards-no-section{padding:14px 20px!important}
+.section.hk-pay-strip .sec-title-blue,#cards-no-section .sec-title-red{margin-bottom:10px!important}
+.section.hk-pay-strip .card-grid,#cards-no-section .card-grid{gap:6px!important}
+.rev-item{padding:10px 0!important;gap:8px!important}
+.rev-body{display:flex!important;align-items:baseline!important;gap:8px!important;flex-wrap:nowrap!important;min-width:0}
+.rev-top{flex-shrink:0!important;margin-bottom:0!important;gap:4px!important}
+.rev-txt{flex:1!important;margin-top:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;line-height:1.4!important;min-width:0}
+
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
 .popup-title{font-size:18px;font-weight:800}
