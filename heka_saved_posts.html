@@ -32,8 +32,8 @@ body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#bbb;font-size:13px;gap:10px}
 .empty-icon{font-size:36px}
 /* HAEKA 2.0 common override */
-:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF4D3E;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF4D3E"],[style*="background:#FF4D3E"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF4D3E"],[style*="border-color:#FF4D3E"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF5470;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF5470"],[style*="background:#FF5470"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF5470"],[style*="border-color:#FF5470"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
 }
 </style>
 <script src="security.js"></script>
@@ -50,7 +50,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </div>
 
 <script>
-var TAG_COLOR = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#FF4D3E'};
+var TAG_COLOR = {'동행':'#6366f1','맛집':'#f59e0b','날씨':'#0ea5e9','정보':'#FF5470'};
 var TAG_EMOJI = {'동행':'🎒','맛집':'🍽️','날씨':'🌤️','정보':'✈️'};
 var TAG_BG = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#eef5fb','정보':'#f0f5ee'};
 
@@ -66,7 +66,7 @@ function render(){
   }
   el.innerHTML = list.map(function(p, i){
     var tag = p.tagTxt||'정보';
-    var tagColor = TAG_COLOR[tag]||'#FF4D3E';
+    var tagColor = TAG_COLOR[tag]||'#FF5470';
     var emoji = TAG_EMOJI[tag]||'✈️';
     var bg = TAG_BG[tag]||'#f5f5f5';
     var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length>10;

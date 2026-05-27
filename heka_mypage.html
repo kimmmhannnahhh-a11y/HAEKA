@@ -14,8 +14,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px;isolation:isolate}
-.sb{background:#FF4D3E;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
-.topbar{background:#FF4D3E;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.sb{background:#FF5470;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#FF5470;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
 .back-btn{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1}
 .gear-btn{position:absolute;right:14px;background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center}
@@ -31,8 +31,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .avatar-wrap{position:relative;flex-shrink:0}
 .avatar{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
-.avatar-cam{position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #FF4D3E;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.avatar-cam svg{width:11px;height:11px;stroke:#FF4D3E;fill:none;stroke-width:2;stroke-linecap:round}
+.avatar-cam{position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #FF5470;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.avatar-cam svg{width:11px;height:11px;stroke:#FF5470;fill:none;stroke-width:2;stroke-linecap:round}
 .profile-info{flex:1;min-width:0}
 .nick-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .nick{font-size:16px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -44,7 +44,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .stats-row{display:flex;gap:6px}
 .stat-box{flex:1;background:#f8f8f8;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:.15s}
 .stat-box:hover{background:#f0f0f0}
-.stat-num{font-size:16px;font-weight:800;color:#FF4D3E}
+.stat-num{font-size:16px;font-weight:800;color:#FF5470}
 .stat-lbl{font-size:10px;color:#999;margin-top:2px;font-weight:500}
 
 /* 섹션 */
@@ -58,18 +58,18 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .menu-title{font-size:13px;font-weight:500;color:#111}
 .menu-sub{font-size:10px;color:#bbb;margin-top:1px}
 .menu-arr{font-size:14px;color:#ccc}
-.menu-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#FF4D3E;color:#fff}
+.menu-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#FF5470;color:#fff}
 .menu-toggle{width:36px;height:20px;border-radius:10px;background:#e0e0e0;position:relative;cursor:pointer;transition:.2s;flex-shrink:0;border:none}
-.menu-toggle.on{background:#FF4D3E}
+.menu-toggle.on{background:#FF5470}
 .menu-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .menu-toggle.on::after{left:18px}
 
 /* 가봤던 나라 */
 .countries-wrap{padding:6px 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
 .country-chip{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1.5px solid #e0e0e0;font-size:11px;color:#555;cursor:pointer;transition:.15s;background:#fff}
-.country-chip.on{border-color:#FF4D3E;background:#FFF1F2;color:#FF4D3E;font-weight:600}
+.country-chip.on{border-color:#FF5470;background:#FFF1F2;color:#FF5470;font-weight:600}
 .country-chip-add{border-style:dashed;color:#bbb}
-.country-chip-add:hover{border-color:#FF4D3E;color:#FF4D3E}
+.country-chip-add:hover{border-color:#FF5470;color:#FF5470}
 
 /* 찜 목록 미리보기 */
 .zzim-preview{display:flex;gap:7px;padding:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
@@ -83,17 +83,17 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .social-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .social-name{flex:1;font-size:12px;font-weight:500;color:#333}
 .social-connected{font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px}
-.social-on{background:#FFF1F2;color:#FF4D3E}
+.social-on{background:#FFF1F2;color:#FF5470}
 .social-off{background:#f5f5f5;color:#bbb}
 
 /* 하단 네비 */
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#FF4D3E;font-weight:600}
+.ni.on{color:#FF5470;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.npbtn{width:36px;height:36px;border-radius:50%;background:#FF4D3E;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#FF4D3E;font-weight:600}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#FF5470;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF5470;font-weight:600}
 
 /* 오버레이 공통 */
 .overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:40;display:none;align-items:flex-end;border-radius:26px}
@@ -102,10 +102,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sheet-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px}
 .sheet-title{font-size:14px;font-weight:700;color:#111;margin-bottom:12px}
 .sheet-inp{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #e0e0e0;font-size:13px;font-family:inherit;outline:none;transition:.15s}
-.sheet-inp:focus{border-color:#FF4D3E}
+.sheet-inp:focus{border-color:#FF5470}
 .sheet-err{font-size:11px;color:#dc2626;font-weight:500;margin-top:5px;display:none}
 .sheet-err.show{display:block}
-.sheet-btn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#FF4D3E;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.sheet-btn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#FF5470;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 .sheet-cancel{width:100%;margin-top:6px;padding:10px;border-radius:12px;background:#f5f5f5;color:#888;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
 
 /* 최근 본 항목 카드 */
@@ -132,7 +132,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-scroll{overflow-y:auto;flex:1;padding:0 15px 6px}
 .dpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:700}
 .dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
-.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#FF4D3E;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#FF5470;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 #dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
 .toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,.75);color:#fff;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -140,7 +140,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 로그아웃 버튼 */
 .logout-btn{margin:4px 16px 16px;padding:12px;border-radius:12px;background:#fff5f5;color:#dc2626;font-size:13px;font-weight:700;border:1.5px solid #fecaca;cursor:pointer;width:calc(100% - 32px);font-family:inherit;transition:.15s}
 .inq-type-btn{padding:9px 6px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;font-size:12px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;transition:.15s}
-.inq-type-btn.on{border-color:#FF4D3E;background:#FFF1F2;color:#FF4D3E}
+.inq-type-btn.on{border-color:#FF5470;background:#FFF1F2;color:#FF5470}
 .logout-btn:hover{background:#fee2e2}
 
 /* 모바일: 폰 높이를 뷰포트에 고정 + 내부 스크롤 영역 작동시키기 */
@@ -161,8 +161,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   }
 }
 /* HAEKA 2.0 common override */
-:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF4D3E;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF4D3E"],[style*="background:#FF4D3E"],[style*="background: #FF4D3E"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF4D3E"],[style*="border-color:#FF4D3E"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF5470;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF5470"],[style*="background:#FF5470"],[style*="background: #FF5470"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF5470"],[style*="border-color:#FF5470"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
 }
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
@@ -380,7 +380,7 @@ window._loadNotices = async function() {
     <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni" onclick="location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
-    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4D3E"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF5470"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
   <!-- 닉네임 수정 시트 -->
@@ -411,8 +411,8 @@ window._loadNotices = async function() {
   <div id="settings-overlay" onclick="closeSettings()" style="position:absolute;inset:0;z-index:34;display:none;background:rgba(0,0,0,0);border-radius:26px"></div>
   <div id="settings-panel" onclick="event.stopPropagation()" style="position:absolute;top:0;right:0;width:100%;height:100%;background:#fff;z-index:35;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:26px;overflow:hidden">
     <!-- 설정 상단바 -->
-    <div style="background:#FF4D3E;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
-    <div style="background:#FF4D3E;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="background:#FF5470;padding:10px 16px 6px;display:flex;justify-content:space-between;font-size:10px;color:#fff;flex-shrink:0"><span>9:41</span><span>해카</span><span>●●●</span></div>
+    <div style="background:#FF5470;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0">
       <button onclick="closeSettings()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1">←</button>
       <span style="font-size:15px;font-weight:600;color:#fff">설정</span>
     </div>
@@ -460,7 +460,7 @@ window._loadNotices = async function() {
 
       <!-- 관리자 진입 (관리자만 노출) -->
       <div class="menu-item" id="admin-entry" style="display:none" onclick="location.href='heka_admin.html'">
-        <div class="menu-txt"><div class="menu-title" style="color:#FF4D3E;font-weight:700">🛠 관리자 페이지</div><div class="menu-sub">관리 전용</div></div>
+        <div class="menu-txt"><div class="menu-title" style="color:#FF5470;font-weight:700">🛠 관리자 페이지</div><div class="menu-sub">관리 전용</div></div>
         <span class="menu-arr">›</span>
       </div>
 
@@ -500,7 +500,7 @@ window._loadNotices = async function() {
         </div>
         <div style="display:flex;border-top:0.5px solid #f2f2f2">
           <button onclick="closePopup()" style="flex:1;padding:14px;background:none;border:none;font-size:13px;color:#aaa;cursor:pointer;font-family:inherit;border-right:0.5px solid #f2f2f2">취소</button>
-          <button id="popup-confirm-btn" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:600;color:#FF4D3E;cursor:pointer;font-family:inherit"></button>
+          <button id="popup-confirm-btn" style="flex:1;padding:14px;background:none;border:none;font-size:13px;font-weight:600;color:#FF5470;cursor:pointer;font-family:inherit"></button>
         </div>
       </div>
     </div>
@@ -562,7 +562,7 @@ window._loadNotices = async function() {
         <button onclick="inviteKakao()" style="width:100%;padding:13px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
           <span style="font-size:16px">💬</span> 카카오톡으로 초대링크 보내기
         </button>
-        <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#FFF1F3;color:#FF4D3E;font-size:13px;font-weight:700;border:1.5px solid #FF4D3E;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+        <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#FFF1F3;color:#FF5470;font-size:13px;font-weight:700;border:1.5px solid #FF5470;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
           <span style="font-size:16px">🔗</span> 초대 링크 복사하기
         </button>
         <button onclick="shareInvite()" style="width:100%;padding:13px;border-radius:12px;background:#f5f5f5;color:#555;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
@@ -601,7 +601,7 @@ window._loadNotices = async function() {
       </div>
       <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:8px">내용</div>
       <textarea id="inquiry-txt" placeholder="내용을 입력해주세요" style="width:100%;height:120px;border:1px solid #e0e0e0;border-radius:10px;padding:10px;font-size:13px;font-family:inherit;resize:none;outline:none"></textarea>
-      <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#FF4D3E;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
+      <button onclick="submitInquiry()" style="width:100%;margin-top:12px;padding:13px;background:#FF5470;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">제출하기</button>
     </div>
   </div>
 
@@ -941,7 +941,7 @@ function openLangSheet() {
   });
   var cur = langMap[curLang] || 'ko';
   var curEl = document.getElementById('lang-opt-'+cur);
-  if(curEl){ curEl.style.fontWeight='700'; curEl.querySelector('span').style.color='#FF4D3E'; }
+  if(curEl){ curEl.style.fontWeight='700'; curEl.querySelector('span').style.color='#FF5470'; }
 }
 function closeLangSheet() { document.getElementById('lang-overlay').style.display='none'; }
 function saveLangDirect(val) {
@@ -1072,7 +1072,7 @@ function openMyList(type) {
   } else {
     content.innerHTML = stores.map(function(s){
       var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.parentNode.innerHTML=\'🏬\'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏬</div>';
-      var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#FFF1F3;color:#FF4D3E;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
+      var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#FFF1F3;color:#FF5470;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
         +img
         +'<div style="flex:1;min-width:0">'

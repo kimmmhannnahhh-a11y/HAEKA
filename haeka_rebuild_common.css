@@ -1,6 +1,6 @@
 :root{
   --hk-bg:#FAFAF8;--hk-surface:#FFFFFF;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;
-  --hk-accent:#FF4D3E;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;
+  --hk-accent:#FF5470;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;
   --hk-line:#E5E7EB;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
 }
 *{box-sizing:border-box;margin:0;padding:0}
