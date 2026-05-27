@@ -100,7 +100,7 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .country-list{padding:8px 14px 18px!important}
 .country-item{position:relative;margin:8px 0!important;padding:14px 14px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important;gap:10px!important}
 .country-flag{display:none!important}
-.country-item::before{display:none}
+.country-item::before{display:none!important;content:none!important}
 .country-item:hover{background:#FFF1F2!important}
 .country-name{font-size:14px!important;font-weight:800!important;color:var(--hk-text)!important}
 .country-cities{font-size:11px!important;color:var(--hk-sub)!important;margin-top:3px!important}
@@ -122,7 +122,7 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .store-cards-row{gap:4px!important}
 .sc{border-radius:999px!important;padding:3px 7px!important;font-size:8px!important;font-weight:800!important}
 .store-empty,.store-loading,.search-empty{color:var(--hk-sub)!important}
-.bnav{display:none!important}
+.bnav{display:flex!important;border-top:1px solid var(--hk-border);background:rgba(255,255,255,.94);padding:8px 0 10px;position:sticky;bottom:0;z-index:20}
 </style>
 <script src="security.js"></script>
 </head>
@@ -170,6 +170,15 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
       <span class="store-count" id="store-count"></span>
     </div>
     <div class="store-list" id="store-list"></div>
+  </div>
+
+  <!-- 하단 네비 -->
+  <div class="bnav">
+    <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><line x1="12" y1="5" x2="12" y2="19" stroke-width="1.6" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="1.6" stroke-linecap="round"/></svg>등록</div>
+    <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni" onclick="window.location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 </div>
 
