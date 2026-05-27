@@ -366,6 +366,12 @@ body,.phone,.scroll-wrap,.section,.meta-row,.hours-row,.rev-item{font-family:'Pl
 .rev-body>span[style*="f5a623"]{display:inline-block!important;margin-left:4px!important;margin-right:0!important;vertical-align:baseline}
 .rev-txt{display:block!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;margin-top:4px!important;line-height:1.5!important}
 
+/* 추가 수정: 후기 별점/날짜 재배치 */
+.rev-top{display:flex!important;align-items:center!important;gap:6px!important;margin-bottom:0!important}
+.rev-stars{color:#FBBF24!important;font-size:11px!important;letter-spacing:1px!important}
+.rev-date{display:block!important;font-size:10px!important;color:var(--hk-muted)!important;margin-top:2px!important;margin-left:0!important}
+.rev-txt{margin-top:4px!important}
+
 .toast{border-radius:8px;font-size:13px;font-weight:700;padding:12px 18px;background:rgba(15,15,15,.92)}
 .popup-box{border-radius:20px 20px 0 0;padding:20px}
 .popup-title{font-size:18px;font-weight:800}
@@ -635,6 +641,17 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   if (store.review) previewItems.push({nickname:'등록자', text:store.review, createdAt:store.createdAt, isLegacy:true});
   subReviews.forEach(function(r){ previewItems.push(r); });
   previewItems = previewItems.slice(0,5);
+  function renderStars(rating) {
+    var num = parseFloat(rating);
+    if (!num) return '';
+    var full = Math.floor(num);
+    if (full > 5) full = 5;
+    if (full < 0) full = 0;
+    var half = num % 1 >= 0.5 ? 1 : 0;
+    if (full + half > 5) half = 0;
+    var empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '★' : '') + '☆'.repeat(empty);
+  }
 
   if (previewItems.length) {
     document.getElementById('review-list').innerHTML = previewItems.map(function(r){
@@ -642,12 +659,12 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
       var avTxt = r.photoURL
         ? '<div class="rev-av" style="overflow:hidden"><img src="'+r.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=nick.charAt(0)"></div>'
         : '<div class="rev-av">'+(r.isLegacy?'🌏':nick.charAt(0))+'</div>';
-      var starTxt = r.rating ? '<span style="font-size:10px;color:#f5a623;font-weight:700;margin-right:3px">'+('★').repeat(r.rating)+'</span>' : '';
+      var starTxt = r.rating ? '<span class="rev-stars">'+renderStars(r.rating)+'</span>' : '';
       return '<div class="rev-item">'
         +avTxt
         +'<div class="rev-body">'
-        +'<div class="rev-top"><span class="rev-name">'+nick+'</span><span class="rev-date">'+timeAgo(r.createdAt)+'</span></div>'
-        +starTxt
+        +'<div class="rev-top"><span class="rev-name">'+nick+'</span>'+starTxt+'</div>'
+        +'<span class="rev-date">'+timeAgo(r.createdAt)+'</span>'
         +'<div class="rev-txt">'+(r.text||r.review||'')+'</div>'
         +'</div></div>';
     }).join('');
