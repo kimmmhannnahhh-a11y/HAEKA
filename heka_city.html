@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
@@ -78,6 +79,49 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"],[style*="background: #FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+/* HAEKA city black/orange redesign */
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--hk-bg)!important}
+.phone{background:var(--hk-bg)!important}
+.sb,.topbar{background:#0F0F0F!important;color:#fff!important;border:0!important;box-shadow:none!important}
+.sb{padding:10px 16px 5px!important}
+.topbar{padding:14px 16px 12px!important;align-items:center!important}
+.back-btn{background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.12)!important}
+#top-title{font-size:0!important;color:#fff!important}
+#top-title::before{content:'어디로 떠나볼까?';font-family:'Gowun Dodum',Pretendard,-apple-system,sans-serif;font-size:22px;font-weight:700;letter-spacing:-.04em;color:#fff}
+.search-wrap{background:#0F0F0F!important;padding:8px 14px 16px!important}
+.search-box{background:#fff!important;border:1.5px solid transparent!important;border-radius:12px!important;padding:10px 12px!important;box-shadow:0 10px 24px rgba(0,0,0,.18)!important}
+.search-box:focus-within{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,57,0,.16),0 10px 24px rgba(0,0,0,.18)!important}
+.search-box input{font-size:13px!important;color:var(--hk-text)!important}
+.search-box svg{stroke:var(--hk-accent)!important}
+.sort-bar{background:var(--hk-bg)!important;padding:12px 14px 4px!important;gap:8px!important}
+.sort-btn{border:0!important;border-radius:999px!important;background:#F3F4F6!important;color:#6B7280!important;padding:8px 13px!important;font-size:12px!important;font-weight:800!important}
+.sort-btn.on{background:#1A1A1A!important;color:#fff!important}
+.view{background:var(--hk-bg)!important}
+.country-list{padding:8px 14px 18px!important}
+.country-item{position:relative;margin:8px 0!important;padding:14px 14px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important;gap:10px!important}
+.country-item::before{content:'🌍';font-size:21px;line-height:1;flex-shrink:0}
+.country-item:hover{background:#FFF1F2!important}
+.country-name{font-size:14px!important;font-weight:800!important;color:var(--hk-text)!important}
+.country-cities{font-size:11px!important;color:var(--hk-sub)!important;margin-top:3px!important}
+.country-arr{color:var(--hk-accent)!important;font-size:22px!important;font-weight:800!important}
+.city-header,.store-header{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;padding:13px 14px!important}
+.city-back,.store-back{color:var(--hk-accent)!important;font-weight:800!important}
+.city-country-name,.store-city-name{font-size:15px!important;font-weight:800!important;color:var(--hk-text)!important}
+.city-grid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important;padding:14px!important}
+.city-btn{background:#1A1A1A!important;color:#fff!important;border:0!important;border-radius:12px!important;min-height:42px!important;padding:11px 6px!important;font-weight:800!important}
+.city-btn:hover{background:var(--hk-accent)!important;color:#fff!important}
+.city-btn-all{background:var(--hk-accent)!important;color:#fff!important;border:0!important;grid-column:1/-1!important}
+.store-list{padding:10px 0 18px!important}
+.store-item{margin:10px 14px!important;padding:12px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important;align-items:center!important}
+.store-item:hover{background:#FFF1F2!important}
+.store-thumb{width:56px!important;height:56px!important;border-radius:12px!important;background:#F3F4F6!important}
+.store-name{font-size:14px!important;font-weight:800!important;color:var(--hk-text)!important}
+.store-sub{font-size:11px!important;color:var(--hk-sub)!important}
+.store-count{font-size:12px!important;color:var(--hk-accent)!important;font-weight:800!important}
+.store-cards-row{gap:4px!important}
+.sc{border-radius:999px!important;padding:3px 7px!important;font-size:8px!important;font-weight:800!important}
+.store-empty,.store-loading,.search-empty{color:var(--hk-sub)!important}
+.bnav{display:none!important}
 </style>
 <script src="security.js"></script>
 </head>
