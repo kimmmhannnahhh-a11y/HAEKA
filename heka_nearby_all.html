@@ -13,8 +13,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px}
-.sb{background:#FF5470;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
-.topbar{background:#FF5470;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{background:#FF3900;padding:10px 16px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .back-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
 .topbar-title{font-size:15px;font-weight:600;color:#fff;flex:1}
 
@@ -26,9 +26,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cat-wrap{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;align-items:center;padding-right:20px;cursor:grab}
 .cat-wrap::-webkit-scrollbar{display:none}
 .sq-chip{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;user-select:none}
-.sq-chip.on{background:#FF5470;color:#fff;border-color:#FF5470}
-.sq-chip-all{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid #FF5470;background:#fff;color:#FF5470;white-space:nowrap;transition:.12s;user-select:none}
-.sq-chip-all.on{background:#FF5470;color:#fff}
+.sq-chip.on{background:#FF3900;color:#fff;border-color:#FF3900}
+.sq-chip-all{flex-shrink:0;padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid #FF3900;background:#fff;color:#FF3900;white-space:nowrap;transition:.12s;user-select:none}
+.sq-chip-all.on{background:#FF3900;color:#fff}
 .cc-visa.on{background:#1a1f71;border-color:#1a1f71}
 .cc-master.on{background:#eb001b;border-color:#eb001b}
 .cc-jcb.on{background:#007b40;border-color:#007b40}
@@ -40,12 +40,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 검색 + 정렬 바 */
 .search-sort-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
 .search-box{flex:1;display:flex;align-items:center;background:#f5f5f5;border:1.5px solid #e0e0e0;border-radius:20px;padding:6px 10px;gap:6px;transition:.15s}
-.search-box:focus-within{border-color:#FF5470;background:#fff}
+.search-box:focus-within{border-color:#FF3900;background:#fff}
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit}
 .search-input::placeholder{color:#bbb}
 .search-icon-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;flex-shrink:0}
 .search-icon-btn svg{width:14px;height:14px;stroke:#999;fill:none;stroke-width:2;stroke-linecap:round}
-.sort-btn{flex-shrink:0;font-size:11px;color:#FF5470;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;white-space:nowrap}
+.sort-btn{flex-shrink:0;font-size:11px;color:#FF3900;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;white-space:nowrap}
 
 /* 매장 수 */
 .count-bar{padding:6px 14px;font-size:11px;color:#999;flex-shrink:0}
@@ -63,7 +63,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .store-meta{display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap}
 .store-cat{font-size:10px;color:#999}
 .store-time{font-size:10px;color:#bbb}
-.store-dist{font-size:10px;color:#FF5470;font-weight:600}
+.store-dist{font-size:10px;color:#FF3900;font-weight:600}
 .store-cards{display:flex;gap:4px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
 .store-cards::-webkit-scrollbar{display:none}
 .cpill{font-size:8px;padding:2px 5px;border-radius:3px;font-weight:600;color:#fff;white-space:nowrap;flex-shrink:0}
@@ -87,22 +87,22 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sheet-reset{font-size:11px;color:#999;cursor:pointer;padding:2px 6px;border:.5px solid #ddd;border-radius:4px;background:none;font-family:inherit}
 .sheet-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px 18px;overflow-y:auto}
 .sheet-chip{padding:5px 11px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid #e0e0e0;background:#fff;color:#555;white-space:nowrap;transition:.12s;user-select:none}
-.sheet-chip.on{background:#FF5470;color:#fff;border-color:#FF5470}
-.sheet-done{margin:0 14px 14px;padding:10px;border-radius:8px;background:#FF5470;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;width:calc(100% - 28px);font-family:inherit}
+.sheet-chip.on{background:#FF3900;color:#fff;border-color:#FF3900}
+.sheet-done{margin:0 14px 14px;padding:10px;border-radius:8px;background:#FF3900;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;width:calc(100% - 28px);font-family:inherit}
 .sort-item{padding:13px 16px;font-size:13px;color:#333;border-bottom:.5px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
 .sort-item:last-child{border-bottom:none}
-.sort-item.on{color:#FF5470;font-weight:700}
-.sort-check{font-size:14px;color:#FF5470;display:none}
+.sort-item.on{color:#FF3900;font-weight:700}
+.sort-check{font-size:14px;color:#FF3900;display:none}
 .sort-item.on .sort-check{display:block}
 
 /* 하단 네비 */
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px;flex-shrink:0}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#FF5470;font-weight:600}
+.ni.on{color:#FF3900;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.npbtn{width:36px;height:36px;border-radius:50%;background:#FF5470;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#FF5470;font-weight:600}
+.npbtn{width:36px;height:36px;border-radius:50%;background:#FF3900;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF3900;font-weight:600}
 
 /* 매장 상세 슬라이드 패널 (홈화면과 동일) */
 .detail-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:30;display:none;border-radius:26px}
@@ -121,12 +121,12 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .dp-ico{font-size:12px;width:16px;text-align:center;flex-shrink:0;margin-top:1px}
 .dp-divider{height:1px;background:#f0f0f0;margin:10px 0}
 .dp-btn-row{display:flex;gap:8px;padding:8px 15px 14px;flex-shrink:0;border-top:.5px solid #f0f0f0}
-.dp-btn-report{flex:1;padding:11px;border-radius:10px;background:#FFF1F2;color:#FF5470;font-size:12px;font-weight:700;border:1.5px solid #FF5470;cursor:pointer;font-family:inherit}
-.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#FF5470;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.dp-btn-report{flex:1;padding:11px;border-radius:10px;background:#FFF1F2;color:#FF3900;font-size:12px;font-weight:700;border:1.5px solid #FF3900;cursor:pointer;font-family:inherit}
+.dp-btn-more{flex:1;padding:11px;border-radius:10px;background:#FF3900;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 #dp-zzim.on #dp-zzim-svg{fill:#e53935;stroke:#e53935}
 /* HAEKA 2.0 common override */
-:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF5470;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF5470"],[style*="background:#FF5470"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF5470"],[style*="border-color:#FF5470"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
 }
 </style>
 <script src="security.js"></script>
@@ -219,7 +219,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 
   <!-- 하단 네비 -->
   <div class="bnav">
-    <div class="ni on" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF5470"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni on" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
     <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="nplus" onclick="location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
     <div class="ni" onclick="if(!window._getCurrentUser||!window._getCurrentUser()){showNearbyLoginPopup('찜목록','찜목록은 로그인 후 이용할 수 있어요');}else{location.href='heka_zzim.html';}"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
@@ -487,7 +487,7 @@ window.openFirebaseDetail = async function(store) {
     var todayDayName = dayNames[todayGIdx];
     var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
     var openBadge = isOpenCalc === true
-      ? '<span style="color:#FF5470;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
+      ? '<span style="color:#FF3900;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
       : isOpenCalc === false
       ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
     hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'+openBadge+'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span></div>';
@@ -514,7 +514,7 @@ window.openFirebaseDetail = async function(store) {
 </script>
 <script>
 // ── 헬퍼 ──
-function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','카드가능':'#FF5470','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
+function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
 function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:ts),d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
@@ -770,7 +770,7 @@ window.addEventListener('DOMContentLoaded', init);
   <div style="font-size:11px;color:#aaa;margin-bottom:14px">맞아요 3명이 모이면 자동으로 반영돼요</div>
   <div id="nearby-edit-body"></div>
   <div style="display:flex;gap:8px;margin-top:16px">
-    <button id="nearby-agree-btn" onclick="nearbyVote('agree')" style="flex:1;padding:11px;border-radius:10px;background:#FF5470;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
+    <button id="nearby-agree-btn" onclick="nearbyVote('agree')" style="flex:1;padding:11px;border-radius:10px;background:#FF3900;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit">맞아요 👍</button>
     <button onclick="nearbyVote('disagree')" style="flex:1;padding:11px;border-radius:10px;background:#f5f5f5;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit">틀려요 👎</button>
   </div>
   <button onclick="closeNearbyEditPopup()" style="width:100%;margin-top:8px;padding:9px;border-radius:10px;background:none;color:#bbb;font-size:12px;border:none;cursor:pointer;font-family:inherit">닫기</button>
@@ -803,7 +803,7 @@ function openNearbyEditPopup(el) {
   var agreeCount = (req.agreeUids||[]).length;
   var alreadyVoted = (req.agreeUids||[]).includes(cu.uid)||(req.disagreeUids||[]).includes(cu.uid);
   var body = '';
-  if (req.payOk&&req.payOk.length) body+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#FF5470;margin-bottom:4px">결제 가능</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+req.payOk.map(function(c){return'<span style="background:#FFF1F3;color:#FF5470;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>';}).join('')+'</div></div>';
+  if (req.payOk&&req.payOk.length) body+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#FF3900;margin-bottom:4px">결제 가능</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+req.payOk.map(function(c){return'<span style="background:#FFF1F3;color:#FF3900;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>';}).join('')+'</div></div>';
   if (req.payNo&&req.payNo.length) body+='<div style="margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#e53e3e;margin-bottom:4px">결제 불가</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+req.payNo.map(function(c){return'<span style="background:#fff0f0;color:#e53e3e;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px">'+c+'</span>';}).join('')+'</div></div>';
   body+='<div style="font-size:11px;color:#aaa;margin-top:4px">현재 맞아요 '+agreeCount+'/3</div>';
   document.getElementById('nearby-edit-body').innerHTML=body;
@@ -866,7 +866,7 @@ window.nearbyVote = async function(type){
   <div style="font-size:24px;margin-bottom:10px">🔐</div>
   <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px" id="nearby-login-title">로그인이 필요해요</div>
   <div style="font-size:12px;color:#888;margin-bottom:20px" id="nearby-login-desc">이 기능은 로그인 후 이용할 수 있어요</div>
-  <button onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#FF5470;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
+  <button onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)" style="width:100%;background:#FF3900;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
   <button onclick="closeNearbyLoginPopup()" style="width:100%;background:#f5f5f5;color:#555;border:none;border-radius:12px;padding:10px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
 </div>
 <script>
