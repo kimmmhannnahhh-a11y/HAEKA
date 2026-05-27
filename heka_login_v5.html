@@ -186,7 +186,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   0%{transform:translateY(0) rotate(-15deg);opacity:0}
   10%{opacity:0.85}
   90%{opacity:0.85}
-  100%{transform:translateY(120px) rotate(25deg);opacity:0}
+  100%{transform:translateY(280px) rotate(25deg);opacity:0}
 }
 
 
@@ -381,6 +381,17 @@ window._doGoogleLogin = async function() {
     <div class="topbar" style="border-bottom:none"><button class="back-btn" onclick="history.back()">←</button><span class="topbar-title" style="color:#bbb;font-weight:500">로그인</span></div>
 
     <div style="padding:52px 24px 40px;text-align:center;position:relative;overflow:hidden">
+      <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0">
+        <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
+        <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
+        <div class="rcard" style="left:38%;top:-15px;animation-delay:2.1s;background:#FCD34D"></div>
+        <div class="rcard" style="left:54%;top:-40px;animation-delay:0.6s;background:#7DD3FC"></div>
+        <div class="rcard" style="left:70%;top:-10px;animation-delay:1.8s;background:#C4B5FD"></div>
+        <div class="rcard" style="left:84%;top:-25px;animation-delay:2.6s;background:#FCA5A5"></div>
+        <div class="rcard" style="left:15%;top:-50px;animation-delay:3.2s;background:#86EFAC"></div>
+        <div class="rcard" style="left:62%;top:-35px;animation-delay:3.7s;background:#FDBA74"></div>
+      </div>
+
       <div class="travel-illust" aria-hidden="true">
         <svg class="travel-globe" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#D1D5DB" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M40,5 C58,5 75,22 75,40 C75,58 58,75 40,75 C22,75 5,58 5,40 C5,22 22,5 40,5 Z"/>
@@ -392,18 +403,7 @@ window._doGoogleLogin = async function() {
       </div>
 
       <!-- 로고 -->
-      <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden">
-        <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden">
-          <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
-          <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
-          <div class="rcard" style="left:38%;top:-15px;animation-delay:2.1s;background:#FCD34D"></div>
-          <div class="rcard" style="left:54%;top:-40px;animation-delay:0.6s;background:#7DD3FC"></div>
-          <div class="rcard" style="left:70%;top:-10px;animation-delay:1.8s;background:#C4B5FD"></div>
-          <div class="rcard" style="left:84%;top:-25px;animation-delay:2.6s;background:#FCA5A5"></div>
-          <div class="rcard" style="left:15%;top:-50px;animation-delay:3.2s;background:#86EFAC"></div>
-          <div class="rcard" style="left:62%;top:-35px;animation-delay:3.7s;background:#FDBA74"></div>
-        </div>
-        <!-- 텍스트 -->
+      <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px">
         <div style="line-height:1.2;letter-spacing:-1.2px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif">
           <div><span style="font-size:30px;font-weight:700;color:#FF3900">해</span><span style="font-size:29px;font-weight:700;color:#222">외에서</span></div>
           <div style="margin-top:4px"><span style="font-size:30px;font-weight:700;color:#FF3900">카</span><span style="font-size:29px;font-weight:700;color:#222">드결제하자</span></div>
