@@ -246,23 +246,24 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 }
 
 /* ═══ HAEKA 3.0 — Magazine-style store detail ═══ */
-.phone{height:100vh;height:100dvh;max-height:none;border-radius:0;width:100%;max-width:430px}
-.sb{position:sticky;top:0;z-index:20}
-.hero{height:280px;position:relative;border-radius:0;overflow:hidden}
+.phone{height:100vh;height:100dvh;max-height:none;border-radius:0;width:100%;max-width:430px;overflow-y:auto;overflow-x:hidden}
+.sb{position:relative;top:auto;z-index:20}
+.hero{height:280px;position:relative;border-radius:0;overflow:hidden;flex-shrink:0}
 .hero:before{display:none}
 .hero-img,.hero-img img,#hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#hero-img img{display:block;width:100%;height:100%;object-fit:cover}
 .hero-overlay{background:linear-gradient(180deg,rgba(0,0,0,.12) 0%,rgba(0,0,0,.02) 40%,rgba(0,0,0,.72) 100%)}
 .hero-top{padding:14px 18px}
-.hero-bottom{padding:0 20px 20px}
-.hero-name{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.06em;text-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hero-bottom{padding:0 20px 20px;overflow:hidden}
+.hero-name{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-.06em;text-shadow:0 2px 16px rgba(0,0,0,.3);overflow:hidden;text-overflow:ellipsis;word-break:keep-all}
 .hero-cat{margin-top:6px;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.02em}
 .signal-badge{padding:5px 12px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:0;box-shadow:none;backdrop-filter:none}
 .signal-green{background:#065F46;color:#fff}
 .signal-yellow{background:#92400E;color:#fff}
 .signal-red{background:#991B1B;color:#fff}
+.hero-bottom>div:last-child{max-width:40%;overflow:hidden;text-overflow:ellipsis}
 
-.scroll-wrap{height:auto;max-height:none;overflow-y:auto;padding:0 0 88px;background:var(--hk-bg)}
-.screen.active,.scroll-wrap{max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px)}
+.scroll-wrap{height:auto;max-height:none;overflow-y:visible;overflow-x:hidden;padding:0 0 88px;background:var(--hk-bg)}
 
 .section{background:transparent;border:0;border-radius:0;margin:0;padding:24px 20px;box-shadow:none;border-bottom:1px solid var(--hk-border)}
 .section:last-child,.section:last-of-type{border-bottom:0}
@@ -511,7 +512,8 @@ async function renderStore(store) {
     var btns = document.getElementById('bottom-btns');
     if(btns){
       var delBtn = document.createElement('button');
-      delBtn.style.cssText = 'flex:1;padding:11px;border-radius:10px;background:#fff;color:#e53935;font-size:12px;font-weight:600;border:1px solid #ddd;cursor:pointer;font-family:inherit';
+      delBtn.className = 'btn-report';
+      delBtn.style.cssText = 'background:#991B1B';
       delBtn.textContent = '매장 삭제';
       delBtn.onclick = async function(){
         if(!confirm('정말 이 매장을 삭제할까요?')) return;
