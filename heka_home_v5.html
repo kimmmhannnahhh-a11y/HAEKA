@@ -228,6 +228,17 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .hotpl-section-title::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;margin-right:6px;padding:2px 6px;border-radius:4px;background:#FF3900;color:#fff;font-size:9px;font-weight:900;letter-spacing:.02em;transform:rotate(-3deg);box-shadow:0 4px 10px rgba(255,57,0,.18)}
 .hotpl-section-title .hot-now{color:#FF3900}.hotpl-section-title .hot-main{color:#1A1A1A}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
+.hotpl{background:#0F0F0F!important;border:0!important;border-radius:16px!important;box-shadow:0 12px 26px rgba(0,0,0,.16)!important}
+.hotpl-img{height:132px!important;background:#0F0F0F!important}
+.hotpl-overlay{background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.86) 58%,rgba(0,0,0,.94))!important;padding:12px 14px 13px!important}
+.live-badge{background:rgba(255,57,0,.16)!important;border:1px solid rgba(255,57,0,.45)!important;border-radius:999px!important;padding:3px 9px!important}
+.ld{background:#FF3900!important;box-shadow:0 0 0 4px rgba(255,57,0,.18)!important;animation:hotpl-live-blink .8s ease-in-out infinite!important}
+.live-txt{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif!important;font-size:9px!important;font-weight:800!important;letter-spacing:.08em!important;color:#fff!important}
+.hotpl-title{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif!important;font-size:15px!important;font-weight:800!important;line-height:1.35!important;letter-spacing:-.03em!important;color:#fff!important;animation:hotpl-ticker 3.8s ease-in-out infinite!important;text-shadow:0 2px 10px rgba(0,0,0,.35)!important}
+.hotpl-success{color:#A3E635!important;font-weight:900!important;text-shadow:0 0 12px rgba(163,230,53,.32)!important}
+.hotpl-reporter,.hotpl-dots{position:relative;z-index:2}
+@keyframes hotpl-live-blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.42;transform:scale(.82)}}
+@keyframes hotpl-ticker{0%{opacity:0;transform:translateY(12px)}16%,78%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
 .ytok-head{justify-content:flex-start!important;gap:6px!important;align-items:center!important;margin-bottom:10px!important}
 .ytok-head::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;background:#FF3900;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;line-height:1.2;animation:ytok-pulse 2s ease-in-out infinite}
 .ytok-t{font-size:17px!important;font-weight:800!important;color:var(--hk-text)!important;letter-spacing:-.04em}
@@ -673,7 +684,7 @@ function renderHotplSlide() {
   var overlay = imgEl.querySelector('.hotpl-overlay');
   if(overlay){
     var _e = window._esc || function(x){return x;};
-    overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+', '+_e(timeAgo(store.createdAt))+' 결제 성공!"';
+    overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+', '+_e(timeAgo(store.createdAt))+' <span class="hotpl-success">결제 성공!</span>"';
     overlay.querySelector('.rep-name').textContent = nick;
     overlay.querySelector('.hotpl-dots').innerHTML = dots;
   }
@@ -1108,7 +1119,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
         </div>
         <div class="hotpl-overlay">
           <div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>
-          <div class="hotpl-title">"도쿄 이치란 라멘,<br>10분 전 비자카드 결제 완료!"</div>
+          <div class="hotpl-title">"도쿄 이치란 라멘,<br>10분 전 <span class="hotpl-success">비자카드 결제 완료!</span>"</div>
           <div class="hotpl-reporter"><div class="rep-av">여</div><span class="rep-txt">제보자 <span class="rep-name">여행러_민지</span>님</span></div>
           <div class="hotpl-dots"><div class="dot-i on"></div><div class="dot-i"></div><div class="dot-i"></div></div>
         </div>
