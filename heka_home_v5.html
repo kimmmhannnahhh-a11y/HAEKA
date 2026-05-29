@@ -227,17 +227,6 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .hotpl-section-title::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;margin-right:6px;padding:2px 6px;border-radius:4px;background:#FF3900;color:#fff;font-size:9px;font-weight:900;letter-spacing:.02em;transform:rotate(-3deg);box-shadow:0 4px 10px rgba(255,57,0,.18)}
 .hotpl-section-title .hot-now{color:#FF3900}.hotpl-section-title .hot-main{color:#1A1A1A}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
-.ytok-head{justify-content:flex-start!important;gap:6px!important;align-items:center!important;margin-bottom:10px!important}
-.ytok-head::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;background:#FF3900;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;line-height:1.2}
-.ytok-t{font-size:17px!important;font-weight:800!important;color:var(--hk-text)!important;letter-spacing:-.04em}
-.ytok-more{margin-left:auto!important;color:var(--hk-muted)!important;font-weight:700!important}
-.ycard{display:flex!important;justify-content:space-between!important;align-items:flex-start!important;gap:8px!important;margin-bottom:10px!important;padding:12px!important;background:#fff!important;border-radius:12px!important;box-shadow:var(--hk-card-shadow)!important;cursor:pointer!important;transition:transform .18s ease,box-shadow .18s ease!important}
-.ycard:hover{transform:scale(1.01)!important;box-shadow:0 6px 18px rgba(0,0,0,.10)!important}
-.ytitle{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;margin-bottom:6px!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;white-space:normal!important}
-.ybody{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
-.yfoot{font-size:10px!important;color:var(--hk-muted)!important;gap:5px!important}
-.yfoot span[style*="font-size:10px"]{font-size:12px!important;font-weight:700!important;color:var(--hk-text)!important}
-.ytok-cta{width:100%;padding:14px;margin-top:12px;border:1.5px dashed var(--hk-accent);border-radius:12px;background:var(--hk-accent-bg);color:var(--hk-accent);font-size:13px;font-weight:800;cursor:pointer;text-align:center;font-family:inherit}
 
 </style>
 
@@ -459,7 +448,7 @@ const catBadgeMap = {'동행':'yb-mate','맛집':'yb-food','날씨':'yb-weather'
 const catEmojiMap2 = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
 const catBgMap2 = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f5ff','정보':'#f0f5ee'};
 
-const postsQ = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(10));
+const postsQ = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(5));
 onSnapshot(postsQ, function(snapshot){
   if(snapshot.empty) return;
   var wrap = document.querySelector('.ytok-wrap');
@@ -1109,7 +1098,6 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <div class="ytok-wrap">
     <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more" onclick="window.location.href='heka_yeohaengtok_v2.html'">전체보기</span></div>
     <div id="ytok-list"><div style="padding:16px;text-align:center;font-size:12px;color:#bbb">불러오는 중...</div></div>
-    <button class="ytok-cta" onclick="window.location.href='heka_write.html'">나도 글쓰기</button>
   </div>
 
   <!-- 하단 네비 -->
