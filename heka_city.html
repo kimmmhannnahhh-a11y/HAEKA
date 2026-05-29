@@ -80,15 +80,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"],[style*="background: #FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
 /* HAEKA city black/orange redesign */
-body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:var(--hk-bg)!important}
-.phone{background:var(--hk-bg)!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch}.phone::-webkit-scrollbar{display:none}
-.sb,.topbar{background:#FF3900!important;color:#fff!important;border:0!important;box-shadow:none!important}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;background:#0B0B0C!important}
+.phone{background:#0B0B0C!important;overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch}.phone::-webkit-scrollbar{display:none}
+.sb,.topbar{background:#0F0F0F!important;color:#fff!important;border:0!important;box-shadow:none!important}
 .sb{padding:10px 16px 5px!important}
 .topbar{padding:14px 16px 12px!important;align-items:center!important}
-.back-btn{background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.12)!important}
+.back-btn{background:rgba(255,255,255,.08)!important;color:#fff!important;border:1px solid rgba(163,230,53,.22)!important}
 #top-title{font-size:0!important;color:#fff!important}
-#top-title::before{content:'어디로 떠나볼까?';font-family:'Gowun Dodum',Pretendard,-apple-system,sans-serif;font-size:22px;font-weight:700;letter-spacing:-.05em;color:#fff}
-.search-wrap{background:#FF3900!important;padding:8px 14px 16px!important}
+#top-title::before{content:'실시간 결제 안심 도시';font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif;font-size:21px;font-weight:900;letter-spacing:-.055em;color:#fff}
+.search-wrap{background:#0F0F0F!important;padding:8px 14px 12px!important}
 .search-box{background:#fff!important;border:0!important;border-radius:12px!important;padding:10px 12px!important;box-shadow:0 8px 18px rgba(0,0,0,.12)!important}
 .search-box:focus-within{border:0!important;box-shadow:0 0 0 3px rgba(255,57,0,.16),0 8px 18px rgba(0,0,0,.12)!important}
 .search-box input{font-size:13px!important;color:var(--hk-text)!important}
@@ -124,11 +124,19 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .store-cards-row{gap:4px!important}
 .sc{border-radius:999px!important;padding:3px 7px!important;font-size:8px!important;font-weight:800!important}
 .store-empty,.store-loading,.search-empty{color:var(--hk-sub)!important}
-.city-img-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 14px 90px}
-.city-img-card{position:relative;border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:4/3;box-shadow:0 4px 12px rgba(0,0,0,.08);background:#F3F4F6}
+.pay-ticker{background:#0F0F0F;border-top:1px solid #242424;border-bottom:1px solid #242424;overflow:hidden;padding:8px 0}
+.pay-ticker-track{display:flex;gap:26px;width:max-content;animation:payTicker 18s linear infinite;color:#A3E635;font-size:11px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;text-transform:uppercase}
+.pay-ticker-track span{display:inline-flex;align-items:center;gap:6px;text-shadow:0 0 12px rgba(163,230,53,.35)}
+@keyframes payTicker{0%{transform:translateX(14px)}100%{transform:translateX(-50%)}}
+.city-img-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:14px 14px 90px;background:#0F0F0F}
+.city-img-card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;aspect-ratio:4/3;box-shadow:0 10px 24px rgba(0,0,0,.36);background:#111;border:1px solid rgba(163,230,53,.16)}
 .city-img-card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
 .city-img-card:hover img{transform:scale(1.05)}
-.city-img-name{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;font-size:15px;font-weight:800;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));letter-spacing:-.02em}
+.city-img-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.28) 42%,rgba(0,0,0,.78));pointer-events:none;z-index:1}
+.city-img-card::before{content:'H-SIGNAL SAFE';position:absolute;right:8px;top:8px;z-index:2;padding:4px 7px;border-radius:999px;background:rgba(15,15,15,.72);border:1px solid rgba(163,230,53,.55);color:#A3E635;font-size:8px;font-weight:900;letter-spacing:.02em;box-shadow:0 0 14px rgba(163,230,53,.22)}
+.city-img-name{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 12px 24px;font-size:16px;font-weight:900;color:#fff;background:none;letter-spacing:-.03em;text-shadow:0 2px 10px rgba(0,0,0,.55)}
+.city-img-name::after{content:'Acceptance ' attr(data-rate);display:block;margin-top:3px;color:#A3E635;font-size:11px;font-weight:900;letter-spacing:-.01em;text-shadow:0 0 12px rgba(163,230,53,.35)}
+.city-img-name::before{content:'';position:absolute;left:12px;right:12px;bottom:12px;height:4px;border-radius:999px;background:linear-gradient(90deg,#A3E635 82%,rgba(255,255,255,.24) 82%);box-shadow:0 0 12px rgba(163,230,53,.28)}
 #view-country{display:none!important}
 #view-city{display:none!important}
 .bnav{display:flex!important;border-top:1px solid var(--hk-border);background:rgba(255,255,255,.94);padding:8px 0 10px;position:sticky;bottom:0;z-index:20}
@@ -152,54 +160,61 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
     </div>
   </div>
 
+  <div class="pay-ticker" aria-hidden="true">
+    <div class="pay-ticker-track">
+      <span>LIVE · 도쿄 VISA 결제 성공</span><span>SAFE · 오사카 MASTER 승인</span><span>H-SIGNAL · 방콕 97%</span><span>NOW · 파리 AMEX 확인</span>
+      <span>LIVE · 도쿄 VISA 결제 성공</span><span>SAFE · 오사카 MASTER 승인</span><span>H-SIGNAL · 방콕 97%</span><span>NOW · 파리 AMEX 확인</span>
+    </div>
+  </div>
+
   <div class='city-img-grid' id='city-img-grid'>
     <div class='city-img-card' onclick="selectCityDirect('일본','도쿄')">
       <img src='https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=300&fit=crop' alt='도쿄'/>
-      <span class='city-img-name'>도쿄</span>
+      <span class='city-img-name' data-rate='98%'>도쿄</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('일본','오사카')">
       <img src='https://images.unsplash.com/photo-1590559899731-a382839e5549?w=400&h=300&fit=crop' alt='오사카'/>
-      <span class='city-img-name'>오사카</span>
+      <span class='city-img-name' data-rate='97%'>오사카</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('태국','방콕')">
       <img src='https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&h=300&fit=crop' alt='방콕'/>
-      <span class='city-img-name'>방콕</span>
+      <span class='city-img-name' data-rate='96%'>방콕</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('베트남','호치민')">
       <img src='https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400&h=300&fit=crop' alt='호치민'/>
-      <span class='city-img-name'>호치민</span>
+      <span class='city-img-name' data-rate='94%'>호치민</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('프랑스','파리')">
       <img src='https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop' alt='파리'/>
-      <span class='city-img-name'>파리</span>
+      <span class='city-img-name' data-rate='95%'>파리</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('영국','런던')">
       <img src='https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=300&fit=crop' alt='런던'/>
-      <span class='city-img-name'>런던</span>
+      <span class='city-img-name' data-rate='96%'>런던</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('스페인','바르셀로나')">
       <img src='https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=300&fit=crop' alt='바르셀로나'/>
-      <span class='city-img-name'>바르셀로나</span>
+      <span class='city-img-name' data-rate='93%'>바르셀로나</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('이탈리아','로마')">
       <img src='https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&h=300&fit=crop' alt='로마'/>
-      <span class='city-img-name'>로마</span>
+      <span class='city-img-name' data-rate='94%'>로마</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('미국','뉴욕')">
       <img src='https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=300&fit=crop' alt='뉴욕'/>
-      <span class='city-img-name'>뉴욕</span>
+      <span class='city-img-name' data-rate='97%'>뉴욕</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('싱가포르','싱가포르')">
       <img src='https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=300&fit=crop' alt='싱가포르'/>
-      <span class='city-img-name'>싱가포르</span>
+      <span class='city-img-name' data-rate='99%'>싱가포르</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('호주','시드니')">
       <img src='https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&h=300&fit=crop' alt='시드니'/>
-      <span class='city-img-name'>시드니</span>
+      <span class='city-img-name' data-rate='96%'>시드니</span>
     </div>
     <div class='city-img-card' onclick="selectCityDirect('체코','프라하')">
       <img src='https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=400&h=300&fit=crop' alt='프라하'/>
-      <span class='city-img-name'>프라하</span>
+      <span class='city-img-name' data-rate='92%'>프라하</span>
     </div>
   </div>
 
