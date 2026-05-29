@@ -257,7 +257,8 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .ybody{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
 .yfoot{font-size:10px!important;color:var(--hk-muted)!important;gap:5px!important}
 .yfoot span[style*="font-size:10px"]{font-size:12px!important;font-weight:700!important;color:var(--hk-text)!important}
-.ytok-cta{width:100%;padding:14px;margin-top:12px;border:1.5px dashed var(--hk-accent);border-radius:12px;background:var(--hk-accent-bg);color:var(--hk-accent);font-size:13px;font-weight:800;cursor:pointer;text-align:center;font-family:inherit}
+.ytok-cta{width:100%;padding:14px;margin-top:12px;border:0;border-radius:12px;background:#FF3900;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:center;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.02em;box-shadow:0 10px 24px rgba(255,57,0,.32)}
+.ytok-cta-icon{width:17px;height:17px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @keyframes ytok-pulse{0%,100%{opacity:.85}50%{opacity:.4}}
 
 </style>
@@ -1133,7 +1134,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <div class="ytok-wrap">
     <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more" onclick="window.location.href='heka_yeohaengtok_v2.html'">더보기</span></div>
     <div id="ytok-list"><div style="padding:16px;text-align:center;font-size:12px;color:#bbb">불러오는 중...</div></div>
-    <button class="ytok-cta" onclick="window.location.href='heka_write.html'">지금 톡 참여하기</button>
+    <button class="ytok-cta" onclick="window.location.href='heka_write.html'"><svg class="ytok-cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 14.5a2.5 2.5 0 0 1-2.5 2.5H8l-5 4V5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v9Z"/><path d="M8 9h8M8 12.5h5"/></svg><span>지금 톡 참여하기</span></button>
   </div>
 
   <!-- 하단 네비 -->
