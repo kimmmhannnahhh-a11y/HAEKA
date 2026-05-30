@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px;display:flex;flex-direction:column}
@@ -74,7 +73,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .err-txt.show{display:block}
 .reg-btn-wrap{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0}
 .reg-btn{width:100%;padding:13px;border-radius:14px;background:#FF3900;color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:inherit;transition:.15s}
-.reg-btn:hover{background:#145014}
+.reg-btn:hover{background:#FF3900}
 .prog-overlay{position:absolute;inset:0;background:rgba(255,255,255,.95);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:26px}
 .prog-overlay.show{display:flex}
 .prog-spinner{width:38px;height:38px;border:3px solid #e0e0e0;border-top-color:#FF3900;border-radius:50%;animation:spin .8s linear infinite}
@@ -82,7 +81,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .prog-txt{font-size:12px;font-weight:700;color:#FF3900}
 .prog-bar-wrap{width:160px;height:5px;background:#e0e0e0;border-radius:3px;overflow:hidden}
 .prog-bar{height:100%;background:#FF3900;border-radius:3px;width:0;transition:width .3s}
-.toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,.95);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:22px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
+.toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:rgba(26,26,26,.88);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:22px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 
@@ -130,7 +129,60 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"],[style*="background: #FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
-}
+
+/* HAEKA Guided Report Form */
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}
+.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}
+.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}
+.topbar{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}
+.back-btn{color:var(--hk-text)!important}
+.topbar-title{font-size:15px!important;font-weight:800!important;color:var(--hk-text)!important}
+.scroll-wrap{background:var(--hk-bg)!important;overflow-y:auto!important;flex:1!important;padding:14px 14px 18px!important}
+.reg-hero{margin:0 0 12px;padding:18px 16px;border-radius:22px;background:#fff;box-shadow:var(--hk-card-shadow)}
+.reg-kicker{font-size:11px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em}
+.reg-hero h1{font-size:21px;line-height:1.22;font-weight:900;letter-spacing:-.06em;color:var(--hk-text);margin-top:6px}
+.reg-hero p{font-size:12px;line-height:1.55;color:var(--hk-sub);margin-top:8px}
+.reg-stepper{display:flex;gap:6px;margin:0 0 12px}
+.reg-stepper span{flex:1;text-align:center;border-radius:999px;padding:7px 4px;background:#F3F4F6;color:#9CA3AF;font-size:10px;font-weight:800}
+.reg-stepper span.on{background:#111;color:#fff}
+.reg-step-head{margin:16px 2px 8px;display:flex;flex-direction:column;gap:2px}
+.reg-step-head span{font-size:10px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em}
+.reg-step-head strong{font-size:17px;font-weight:900;color:var(--hk-text);letter-spacing:-.04em}
+.reg-step-head em{font-style:normal;font-size:11px;font-weight:600;color:var(--hk-sub)}
+.section{margin:0 0 10px!important;padding:16px!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important}
+.divider{display:none!important}
+.sec-label,.block-label{font-size:11px!important;font-weight:900!important;letter-spacing:.04em!important;color:var(--hk-sub)!important;margin-bottom:8px!important}
+.row-label{gap:8px!important;align-items:center!important}
+.inline-input,.cat-dropdown,.cat-etc-inp,.review-inp,.map-inp{border-radius:12px!important;border:1.5px solid #E5E7EB!important;background:#fff!important;color:var(--hk-text)!important;font-size:12px!important}
+.inline-input:focus,.cat-etc-inp:focus,.review-inp:focus,.map-inp:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,57,0,.10)!important}
+.map-box{height:154px!important;border:1.5px solid #E5E7EB!important;border-radius:16px!important;background:#F3F4F6!important;overflow:hidden!important}
+.map-box-placeholder{background:linear-gradient(135deg,#fff,#FAFAF8)!important}
+.map-placeholder-txt{font-size:12px!important;font-weight:700!important;color:var(--hk-sub)!important}
+.selected-addr{background:var(--hk-accent-bg)!important;color:var(--hk-accent)!important;border-radius:12px!important}
+.card-grid{gap:8px!important}
+.chk-item{border:0!important;border-radius:999px!important;background:#F3F4F6!important;color:var(--hk-sub)!important;padding:9px 12px!important;gap:6px!important}
+.chk-box{display:none!important}
+.chk-txt{font-size:12px!important;font-weight:800!important;color:#6B7280!important}
+.chk-item.on{background:var(--hk-accent)!important;color:#fff!important;box-shadow:0 8px 18px rgba(255,57,0,.20)!important}
+.chk-item.on .chk-txt{color:#fff!important}
+.pay-ok-section{padding:18px 16px 20px!important;border:1.5px solid rgba(255,57,0,.14)!important;box-shadow:0 10px 28px rgba(255,57,0,.10)!important}
+.pay-accepted-kicker{font-size:12px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.pay-accepted-title{font-size:18px;font-weight:900;color:var(--hk-text);letter-spacing:-.05em;margin-bottom:12px}
+.pay-ok-section .card-grid{gap:9px!important}
+.pay-ok-section .chk-item{padding:12px 18px!important;border-radius:999px!important}
+.pay-ok-section .chk-txt{font-size:13px!important;font-weight:900!important}
+.pay-no-section{background:#FAFAF8!important;box-shadow:none!important;border:1px solid #F3F4F6!important}
+.pay-no-label{font-size:11px!important;color:#9CA3AF!important}
+.pay-no-section .chk-item{background:#fff!important;border:1px solid #E5E7EB!important;padding:8px 10px!important}
+.pay-no-section .chk-txt{font-size:11px!important;font-weight:800!important}
+.img-add-btn{width:72px!important;height:72px!important;border-radius:14px!important;background:#fff!important;border:1.5px dashed #D1D5DB!important}
+.review-inp{min-height:84px!important}
+.err-txt{color:#DC2626!important;font-size:11px!important;font-weight:700!important}
+.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important}
+.map-search-btn,.media-confirm,.send-btn,.popup-btn{background:var(--hk-accent)!important;border-radius:12px!important}
+.reg-btn-wrap{position:sticky!important;bottom:0!important;left:auto!important;right:auto!important;padding:14px 16px 20px!important;background:rgba(255,255,255,.95)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;border-top:1px solid rgba(243,244,246,.9)!important;z-index:50!important}
+.reg-btn{width:100%!important;border-radius:12px!important;background:#FF3900!important;font-size:15px!important;font-weight:800!important;box-shadow:0 10px 24px rgba(255,57,0,.24)!important}
+.reg-btn:hover{background:#FF3900!important}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta"></script>
@@ -246,7 +298,7 @@ window.saveToFirestore = async function(data) {
       if (d.name === data.name && d.address === data.address) duplicate = true;
     });
     if (duplicate) {
-      showToast('⚠️ 이미 등록된 매장이에요!');
+      showToast('이미 등록된 매장이에요!');
       return null;
     }
     const docRef = await addDoc(collection(db, 'stores'), {
@@ -267,9 +319,27 @@ window.saveToFirestore = async function(data) {
   <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
   <div class="topbar">
     <button class="back-btn" onclick="goBack()">←</button>
-    <span class="topbar-title">새로운 장소를 추가해주세요</span>
+    <span class="topbar-title">카드 매장 제보</span>
   </div>
   <div class="scroll-wrap" id="scroll-wrap">
+
+    <section class="reg-hero" aria-label="매장 제보 안내">
+      <div class="reg-kicker">HAEKA REPORT</div>
+      <h1>카드 되는 매장을 제보해주세요</h1>
+      <p>해외에서 카드 거절 없이 결제할 수 있도록 실제 결제 경험을 남겨주세요.</p>
+    </section>
+
+    <div class="reg-stepper" aria-hidden="true">
+      <span class="on">01 장소</span>
+      <span class="on">02 결제</span>
+      <span>03 후기</span>
+    </div>
+
+    <div class="reg-step-head">
+      <span>STEP 1</span>
+      <strong>장소 정보</strong>
+      <em>지금 어디를 제보하나요?</em>
+    </div>
 
     <!-- 장소 검색 -->
     <div class="section">
@@ -319,9 +389,16 @@ window.saveToFirestore = async function(data) {
 
     <div class="divider"></div>
 
+    <div class="reg-step-head reg-pay-head">
+      <span>STEP 2</span>
+      <strong>결제 정보</strong>
+      <em>핵심 데이터만 빠르게 선택해주세요.</em>
+    </div>
+
     <!-- 결제 가능 수단 -->
-    <div class="section" style="padding-top:12px">
-      <div class="block-label label-blue">결제 가능 수단<span class="req-star">*</span></div>
+    <div class="section pay-ok-section" style="padding-top:12px">
+      <div class="pay-accepted-kicker">CARD ACCEPTED HERE</div>
+      <div class="pay-accepted-title">어떤 카드가 됐나요?<span class="req-star">*</span></div>
       <div class="card-grid" id="reg-grid-ok"></div>
       <div class="err-txt" id="err-pay-ok">결제 가능 수단을 선택해주세요</div>
     </div>
@@ -329,13 +406,19 @@ window.saveToFirestore = async function(data) {
     <div class="divider"></div>
 
     <!-- 결제 불가 수단 -->
-    <div class="section" style="padding-top:12px">
-      <div class="block-label label-red">결제 불가 수단<span class="req-star">*</span></div>
+    <div class="section pay-no-section" style="padding-top:12px">
+      <div class="block-label label-red pay-no-label">결제 불가 수단<span class="req-star">*</span></div>
       <div class="card-grid" id="reg-grid-no"></div>
       <div class="err-txt" id="err-pay-no">결제 불가 수단을 선택해주세요</div>
     </div>
 
     <div class="divider"></div>
+
+    <div class="reg-step-head">
+      <span>STEP 3</span>
+      <strong>사진과 후기</strong>
+      <em>결제 경험을 더 믿을 수 있게 남겨주세요.</em>
+    </div>
 
     <!-- 사진/동영상 업로드 -->
     <div class="section" style="padding-top:12px">
@@ -544,8 +627,8 @@ async function searchPlace() {
 
   el.innerHTML = combined.map(function(p, i) {
     var badge = p._source === 'google'
-      ? '<span class="source-badge source-google">🌐 구글</span>'
-      : '<span class="source-badge source-haeka">✅ 헤카 DB</span>';
+      ? '<span class="source-badge source-google">구글</span>'
+      : '<span class="source-badge source-haeka">헤카 DB</span>';
     return '<div class="map-result" onclick="selectPlace('+i+')">'
       + badge
       + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
@@ -618,13 +701,13 @@ async function selectPlace(i) {
       return s.name === p.name && s.address === p.addr;
     });
     if (dup) {
-      alert('⚠️ 이미 등록된 매장이에요!\n다른 매장을 선택해주세요.');
+      alert('이미 등록된 매장이에요!\n다른 매장을 선택해주세요.');
       return;
     }
   }
 
   var a = document.getElementById('selected-addr');
-  a.textContent = '✅ '+p.name+' · '+p.addr;
+  a.textContent = p.name+' · '+p.addr;
   a.classList.add('show');
   document.getElementById('inp-name').value = p.name;
   selectedCity = extractCity(p.addr);
@@ -842,7 +925,7 @@ function submitReg(){
 }
 
 async function saveStore(){
-  var addrEl = document.getElementById('selected-addr').textContent.replace('✅ ','');
+  var addrEl = document.getElementById('selected-addr').textContent.trim();
   var parts = addrEl.split(' · ');
 
   // 사진 먼저 업로드
@@ -886,7 +969,7 @@ async function saveStore(){
 function startProgress(){
   var ov=document.getElementById('prog-overlay'),bar=document.getElementById('prog-bar'),txt=document.getElementById('prog-txt');
   ov.classList.add('show');
-  var steps=[{p:20,m:'위치 정보 확인 중...'},{p:45,m:'중복 매장 체크 중...'},{p:70,m:'사진 업로드 중...'},{p:90,m:'매장 정보 저장 중...'},{p:100,m:'등록 완료! 🎉'}];
+  var steps=[{p:20,m:'위치 정보 확인 중...'},{p:45,m:'중복 매장 체크 중...'},{p:70,m:'사진 업로드 중...'},{p:90,m:'매장 정보 저장 중...'},{p:100,m:'등록 완료!'}];
   var i=0;
   function next(){if(i>=steps.length){finish();return;}var s=steps[i++];bar.style.width=s.p+'%';txt.textContent=s.m;setTimeout(next,600);}
   setTimeout(next,200);
@@ -895,7 +978,7 @@ function finish(){
   saveStore().then(function(){
     setTimeout(function(){
       document.getElementById('prog-overlay').classList.remove('show');
-      showToast('🎉 등록이 완료되었습니다!');
+      showToast('등록이 완료되었습니다!');
       setTimeout(function(){ location.href='heka_home_v5.html'; }, 1200);
     },400);
   });
