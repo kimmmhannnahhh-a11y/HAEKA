@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;background:#fff;overflow:hidden}
 
@@ -54,34 +53,38 @@ html,body{width:100%;height:100%;background:#fff;overflow:hidden}
 /* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF3900;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
-}
+
+/* HAEKA Splash Minimal */
+html,body{background:var(--hk-bg)!important}
+.splash{background:var(--hk-bg)!important;gap:20px!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+.plane{width:118px;height:118px;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px) scale(.96);animation:splashMarkIn .55s cubic-bezier(.22,1,.36,1) .08s forwards}
+.splash-illust{width:118px;height:118px;display:block;filter:drop-shadow(0 14px 24px rgba(255,57,0,.10))}
+.splash-card{transform-origin:80px 76px;animation:splashCard .7s ease-out .2s both}
+.splash-plane{transform-origin:34px 70px;animation:splashPlane .7s ease-out .18s both}
+@keyframes splashMarkIn{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes splashCard{0%{transform:translateY(8px) rotate(-13deg);opacity:0}100%{transform:translateY(0) rotate(-9deg);opacity:1}}
+@keyframes splashPlane{0%{transform:translate(-6px,6px) rotate(2deg);opacity:0}100%{transform:translate(0,0) rotate(8deg);opacity:1}}
+.txt{font-family:'Gowun Dodum',Pretendard,-apple-system,sans-serif!important;letter-spacing:-1.3px!important;animation:txtIn .45s ease .42s forwards!important}
+.green{color:var(--hk-accent)!important;font-size:32px!important;font-weight:700!important}
+.black{color:var(--hk-text)!important;font-size:31px!important;font-weight:700!important}
 </style>
 <script src="security.js"></script>
 </head>
 <body>
 <div class="splash" id="splash">
 
-  <!-- 통통하고 귀여운 하늘색 비행기 -->
+  <!-- 해카 미니멀 일러스트 -->
   <div class="plane">
-    <svg width="110" height="110" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="20" cy="84" rx="13" ry="3.5" fill="#E0F2FE" opacity="0.9"/>
-      <ellipse cx="80" cy="86" rx="10" ry="3" fill="#E0F2FE" opacity="0.9"/>
-      <g transform="rotate(-18 50 50)">
-        <ellipse cx="44" cy="68" rx="14" ry="7" fill="#38BDF8"/>
-        <ellipse cx="44" cy="66" rx="13" ry="5" fill="#7DD3FC"/>
-        <ellipse cx="50" cy="50" rx="34" ry="14" fill="#7DD3FC"/>
-        <ellipse cx="48" cy="46" rx="28" ry="5" fill="#BAE6FD" opacity="0.7"/>
-        <ellipse cx="78" cy="50" rx="9" ry="10" fill="#38BDF8"/>
-        <circle cx="82" cy="50" r="3" fill="#0EA5E9"/>
-        <circle cx="38" cy="48" r="3" fill="#fff"/>
-        <circle cx="50" cy="48" r="3" fill="#fff"/>
-        <circle cx="62" cy="48" r="3" fill="#fff"/>
-        <circle cx="38" cy="48" r="2" fill="#BAE6FD"/>
-        <circle cx="50" cy="48" r="2" fill="#BAE6FD"/>
-        <circle cx="62" cy="48" r="2" fill="#BAE6FD"/>
-        <ellipse cx="44" cy="34" rx="16" ry="8" fill="#38BDF8"/>
-        <ellipse cx="44" cy="34" rx="14" ry="6" fill="#7DD3FC"/>
-        <path d="M 20 50 Q 10 38 12 48 Q 8 50 12 52 Q 10 62 20 50 Z" fill="#38BDF8"/>
+    <svg class="splash-illust" viewBox="0 0 118 118" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="57" cy="56" r="37" fill="none" stroke="#D1D5DB" stroke-width="2"/>
+      <path d="M22 56h70M57 19c-12 11-18 23-18 37s6 26 18 37M57 19c12 11 18 23 18 37s-6 26-18 37" fill="none" stroke="#D1D5DB" stroke-width="1.6" stroke-linecap="round" opacity=".72"/>
+      <g class="splash-card">
+        <rect x="58" y="60" width="44" height="29" rx="7" fill="#FF3900"/>
+        <path d="M65 69h28M66 79h11" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".72"/>
+      </g>
+      <g class="splash-plane" transform="translate(17 55) rotate(8)">
+        <path d="M3 11.5 21 3l-6.8 18-3.4-7.8L3 11.5Z" fill="#1A1A1A"/>
+        <path d="M10.8 13.2 21 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".75"/>
       </g>
     </svg>
   </div>
