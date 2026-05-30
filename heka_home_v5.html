@@ -230,7 +230,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .hotpl-section-title .hot-now{color:#FF3900}.hotpl-section-title .hot-main{color:var(--hk-text)}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
 .hotpl{background:transparent!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}
-.hotpl-img{height:180px!important;background:#F3F4F6!important}
+.hotpl-img{height:218px!important;background:#F3F4F6!important}
 .hotpl-overlay{background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.40) 58%,rgba(0,0,0,.50))!important;padding:12px 14px 13px!important}
 .live-badge{background:rgba(255,57,0,.16)!important;border:1px solid rgba(255,57,0,.45)!important;border-radius:999px!important;padding:3px 9px!important}
 .ld{background:#FF3900!important;box-shadow:0 0 0 4px rgba(255,57,0,.18)!important;animation:hotpl-live-blink .8s ease-in-out infinite!important}
@@ -457,6 +457,15 @@ async function loadStores() {
           first._preloadedVideo = fv;
         }
       }
+      // 모든 핫플 이미지 즉시 preload (슬라이드 전환 시 검은화면 방지)
+      hotplCandidates.forEach(function(s){
+        if(s.images && s.images[0]){
+          var preimg = new Image();
+          preimg.decoding = 'async';
+          preimg.src = s.images[0];
+          s._preloadedImage = preimg;
+        }
+      });
       // 즉시 핫플 렌더링 (영상이 다 로드되기 전에 화면부터 표시)
       initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
@@ -651,13 +660,10 @@ function renderHotplSlide() {
   }).join('');
 
   var imgEl = el.querySelector('.hotpl-img') || el;
-  // 이미지/비디오 교체
   var existing = imgEl.querySelector('img, video, .ramen-scene');
-  if(existing) existing.remove();
 
   var media;
   if(store.videoUrl){
-    // 미리 버퍼링된 video 재사용 → 즉시 재생
     media = store._preloadedVideo || document.createElement('video');
     media.src = store.videoUrl;
     media.autoplay = true;
@@ -665,23 +671,25 @@ function renderHotplSlide() {
     media.loop = true;
     media.setAttribute('playsinline','');
     media.setAttribute('preload','auto');
-    // poster 이미지 (영상 로딩 중에 표시)
     if(store.images && store.images[0]) media.poster = store.images[0];
-    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#1a2e1a';
+    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#F3F4F6';
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
     media.play().catch(function(){});
   } else if(store.images && store.images[0]){
     media = document.createElement('img');
     media.src = store.images[0];
-    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer';
+    media.decoding = 'async';
+    media.loading = 'eager';
+    media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#F3F4F6';
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
   } else {
     media = document.createElement('div');
-    media.style.cssText = 'position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer';
+    media.style.cssText = 'position:absolute;inset:0;background:#F3F4F6;display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer';
     media.textContent = catEmoji(store.category);
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
   }
   imgEl.insertBefore(media, imgEl.firstChild);
+  if(existing) existing.remove();
 
   // 오버레이 텍스트 업데이트
   var overlay = imgEl.querySelector('.hotpl-overlay');
