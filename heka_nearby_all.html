@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px}
@@ -127,7 +126,53 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
-}
+
+/* HAEKA Immediate Pay List */
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}
+.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}
+.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}
+.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}
+.back-btn{color:var(--hk-text)!important}
+.topbar-title{font-size:16px!important;font-weight:800!important;color:var(--hk-text)!important}
+.filterbar{background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--hk-border)!important;padding:10px 0 8px 14px!important;gap:8px!important}
+.chip-row,.cat-wrap{gap:7px!important;padding-right:18px!important}
+.sq-chip,.sq-chip-all,.sheet-chip{border:0!important;border-radius:999px!important;background:#F3F4F6!important;color:var(--hk-sub)!important;font-size:11px!important;font-weight:800!important;padding:8px 12px!important;letter-spacing:-.02em!important}
+.sq-chip.on,.sq-chip-all.on,.sheet-chip.on{background:var(--hk-text)!important;color:#fff!important;box-shadow:0 8px 18px rgba(0,0,0,.12)!important}
+.search-sort-bar{background:rgba(255,255,255,.96)!important;border-bottom:1px solid var(--hk-border)!important;padding:10px 14px!important;gap:10px!important}
+.search-box{background:#fff!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important;padding:9px 12px!important}
+.search-box:focus-within{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,57,0,.10)!important}
+.search-input{font-size:13px!important;color:var(--hk-text)!important}
+.sort-btn{background:#F3F4F6!important;color:var(--hk-text)!important;border-radius:999px!important;padding:9px 12px!important;font-size:11px!important;font-weight:800!important}
+.count-bar{padding:10px 14px 4px!important;font-size:11px!important;font-weight:800!important;color:var(--hk-muted)!important;background:var(--hk-bg)!important}
+.store-list{background:var(--hk-bg)!important;padding:6px 14px 14px!important}
+.store-item{display:flex!important;gap:12px!important;align-items:flex-start!important;margin:0 0 10px!important;padding:12px!important;border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important}
+.store-item:hover{background:#fff!important;transform:translateY(-1px)}
+.store-thumb{width:96px!important;height:96px!important;border-radius:12px!important;font-size:22px!important;font-weight:900!important;color:var(--hk-text)!important;letter-spacing:-.04em!important;background:#F3F4F6!important}
+.store-thumb img{width:100%!important;height:100%!important;object-fit:cover!important}
+.store-info{min-width:0!important;min-height:96px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;flex:1!important;padding:2px 0!important}
+.store-name{font-size:16px!important;font-weight:800!important;line-height:1.3!important;color:var(--hk-text)!important;margin:0 28px 4px 0!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+.store-meta{display:flex!important;align-items:center!important;gap:5px!important;margin:0!important;flex-wrap:wrap!important;font-size:12px!important}
+.store-dist{order:-1!important;color:#A3E635!important;font-size:12px!important;font-weight:900!important;text-shadow:0 0 1px rgba(0,0,0,.12)!important}
+.store-cat{font-size:12px!important;font-weight:700!important;color:var(--hk-sub)!important}
+.store-time{font-size:11px!important;font-weight:600!important;color:var(--hk-muted)!important}
+.store-status{display:inline-flex!important;align-items:center!important;gap:4px!important;font-size:10px!important;font-weight:800!important}
+.store-status i{width:6px!important;height:6px!important;border-radius:50%!important;display:inline-block!important}
+.store-status-open{color:#5DA82F!important}
+.store-status-open i{background:#A3E635!important}
+.store-status-close{color:#9CA3AF!important}
+.store-status-close i{background:#9CA3AF!important}
+.store-cards{gap:4px!important;margin-top:8px!important;overflow:hidden!important;flex-wrap:wrap!important}
+.cpill{background:#F3F4F6!important;color:var(--hk-text)!important;border:1px solid #E5E7EB!important;border-radius:999px!important;font-size:9px!important;font-weight:900!important;padding:3px 7px!important}
+.store-zzim{position:absolute!important;right:10px!important;top:10px!important;background:#fff!important;border-radius:999px!important;box-shadow:0 4px 12px rgba(0,0,0,.08)!important}
+.store-zzim svg{width:17px!important;height:17px!important}
+.empty-state{height:auto!important;min-height:260px!important;margin:12px 14px!important;border-radius:18px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important;padding:42px 22px!important}
+.empty-emoji{display:none!important}
+.empty-state::before{content:'';width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--hk-accent),#FFB199);display:block;margin-bottom:14px}
+.empty-txt{font-size:15px!important;font-weight:800!important;color:var(--hk-text)!important}
+.empty-txt::after{content:'\A 필터를 줄이거나 새 매장을 제보해주세요';white-space:pre;display:block;margin-top:7px;font-size:12px;font-weight:700;color:var(--hk-sub)}
+.bottom-sheet{border-radius:22px 22px 0 0!important}
+.sheet-title{font-size:14px!important;font-weight:800!important;color:var(--hk-text)!important}
+.sheet-done{background:var(--hk-accent)!important;border-radius:12px!important;font-size:13px!important;font-weight:800!important}
 </style>
 <script src="security.js"></script>
 </head>
@@ -354,7 +399,7 @@ async function toggleDpZzim(){
   var store = _renderedStores.find(function(s){ return s.id===id; });
   if(!store) return;
   var nowOn = await _doZzimToggle(store);
-  showToast(nowOn ? '❤️ 찜 목록에 추가됐어요!' : '찜 목록에서 제거됐어요');
+  showToast(nowOn ? '찜 목록에 추가됐어요!' : '찜 목록에서 제거됐어요');
 }
 function goToDetail(){var id=window._currentStoreId;if(id)window.location.href='heka_store_detail.html?id='+id;else window.location.href='heka_store_detail.html';}
 function toggleHours(){var el=document.getElementById('hours-full');var arrow=document.getElementById('hours-arrow');if(!el)return;window._hoursOpen=!window._hoursOpen;el.style.display=window._hoursOpen?'block':'none';arrow.textContent=window._hoursOpen?'전체 ▲':'전체 ▼';}
@@ -515,7 +560,7 @@ window.openFirebaseDetail = async function(store) {
 <script>
 // ── 헬퍼 ──
 function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
-function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
+function catEmoji(c){return (c||'매장').slice(0,1);}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:ts),d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
 function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
@@ -536,7 +581,7 @@ function showGpsBanner(){
   var banner = document.createElement('div');
   banner.id = 'gps-banner';
   banner.style.cssText = 'background:#fff8e1;border-bottom:.5px solid #ffe082;padding:8px 14px;font-size:11px;color:#7a5c00;display:flex;align-items:center;justify-content:space-between;flex-shrink:0';
-  banner.innerHTML = '<span>📍 위치 권한이 없어 거리 표시가 제한돼요</span>'
+  banner.innerHTML = '<span>위치 권한이 없어 거리 표시가 제한돼요</span>'
     +'<button onclick="document.getElementById(\'gps-banner\').remove()" style="background:none;border:none;font-size:14px;cursor:pointer;color:#aaa;padding:0">✕</button>';
   var countBar = document.getElementById('count-bar');
   countBar.parentNode.insertBefore(banner, countBar);
@@ -574,7 +619,7 @@ function renderList(stores){
   _renderedStores = stores;
   var el=document.getElementById('store-list');
   document.getElementById('count-bar').textContent='전체 '+stores.length+'개';
-  if(!stores.length){el.innerHTML='<div class="empty-state"><div class="empty-emoji">🔍</div><div class="empty-txt">해당 조건의 매장이 없어요</div></div>';return;}
+  if(!stores.length){el.innerHTML='<div class="empty-state"><div class="empty-txt">조건에 맞는 매장이 없어요</div></div>';return;}
   el.innerHTML=stores.map(function(s,idx){
     var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards=(s.payOk||[]);
@@ -582,9 +627,12 @@ function renderList(stores){
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
+    var status='';
+    var storeHours=s.businessHours||s.hours||s.openingHours;
+    if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
     var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
-    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+s.id+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+s.name+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span>'+dist+'</div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+s.id+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+s.name+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+status+'<span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
@@ -842,7 +890,7 @@ window.nearbyVote = async function(type){
         delete _nearbyEditMap[req.storeId];
         var badge=document.querySelector('[data-edit-store-id="'+req.storeId+'"]');
         if(badge) badge.style.display='none';
-        alert('✅ 맞아요 3명 달성! 정보가 자동 업데이트됐어요');
+        alert('맞아요 3명 달성! 정보가 자동 업데이트됐어요');
       }
     } else {
       var newDisagree=[...(req.disagreeUids||[]),uid];
