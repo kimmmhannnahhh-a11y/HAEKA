@@ -180,6 +180,16 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 .err-txt{color:#DC2626!important;font-size:11px!important;font-weight:700!important}
 .toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important}
 .map-search-btn,.media-confirm,.send-btn,.popup-btn{background:var(--hk-accent)!important;border-radius:12px!important}
+.map-section-label{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--hk-muted);letter-spacing:.06em;padding:12px 16px 6px}
+.map-empty-soft{background:#FAFAF8;color:var(--hk-sub);line-height:1.45}
+.map-result{margin:0 10px 8px;padding:12px 14px!important;border:0!important;border-radius:14px;background:#fff;box-shadow:var(--hk-card-shadow)}
+.map-result:hover{background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.map-result-haeka{position:relative;background:#F9FAFB!important;opacity:.72;padding:10px 12px!important;box-shadow:none!important;border:1px solid #F3F4F6!important}
+.map-result-haeka:hover{background:#F3F4F6!important;opacity:.9}
+.map-result-haeka .map-result-name{font-size:11px;font-weight:800;color:var(--hk-text);padding-right:70px}
+.map-result-haeka .map-result-addr{font-size:9px;color:var(--hk-muted)}
+.registered-badge{position:absolute;top:10px;right:12px;font-size:10px;font-weight:800;color:var(--hk-accent)}
+.map-result-guide{font-size:10px;font-weight:700;color:var(--hk-muted);margin-top:4px}
 .reg-btn-wrap{position:static!important;padding:20px 16px 24px!important;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-top:0!important;z-index:auto!important}
 .reg-btn{width:100%!important;border-radius:12px!important;background:#FF3900!important;font-size:15px!important;font-weight:800!important;box-shadow:0 10px 24px rgba(255,57,0,.24)!important}
 .reg-btn:hover{background:#FF3900!important}
@@ -616,13 +626,12 @@ async function searchPlace() {
     if (window.searchFirestore) {
       var raw = await window.searchFirestore(kw);
       haekaResults = raw.map(function(r) {
-        return { name: r.name||'', addr: r.address||'', cat: r.category||r.cat||'', lat: r.lat||null, lng: r.lng||null, _source:'haeka' };
+        return { id: r.id||'', name: r.name||'', addr: r.address||'', cat: r.category||r.cat||'', lat: r.lat||null, lng: r.lng||null, _source:'haeka' };
       });
     }
   }
 
-  // 합치기 (헤카 먼저, 구글 뒤)
-  var combined = haekaResults.concat(googleResults);
+  var combined = googleResults.concat(haekaResults);
   window._r = combined;
 
   if (!combined.length) {
@@ -630,17 +639,47 @@ async function searchPlace() {
     return;
   }
 
-  el.innerHTML = combined.map(function(p, i) {
-    var badge = p._source === 'google'
-      ? '<span class="source-badge source-google">구글</span>'
-      : '<span class="source-badge source-haeka">헤카 DB</span>';
-    return '<div class="map-result" onclick="selectPlace('+i+')">'
-      + badge
-      + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
-      + '<div class="map-result-name">'+p.name+'</div>'
-      + '<div class="map-result-addr">'+p.addr+'</div>'
-      + '</div>';
-  }).join('');
+  var html = '';
+
+  if (googleResults.length) {
+    html += '<div class="map-section-label">새로 등록 가능한 장소</div>';
+    html += googleResults.map(function(p, i) {
+      return '<div class="map-result" onclick="selectPlace('+i+')">'
+        + '<span class="source-badge source-google">구글</span>'
+        + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
+        + '<div class="map-result-name">'+p.name+'</div>'
+        + '<div class="map-result-addr">'+p.addr+'</div>'
+        + '</div>';
+    }).join('');
+  } else if (haekaResults.length) {
+    html += '<div class="map-empty map-empty-soft">새로 등록 가능한 장소가 없어요<br><span style="font-size:10px">다른 검색어를 시도하거나, 아래 등록된 매장을 확인해보세요</span></div>';
+  }
+
+  if (haekaResults.length) {
+    html += '<div class="map-section-label">이미 등록된 매장</div>';
+    html += haekaResults.map(function(p, i) {
+      var idx = googleResults.length + i;
+      return '<div class="map-result map-result-haeka" onclick="openRegisteredPlace('+idx+')">'
+        + '<span class="registered-badge">이미 제보됨</span>'
+        + '<span class="source-badge source-haeka">헤카 DB</span>'
+        + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
+        + '<div class="map-result-name">'+p.name+'</div>'
+        + '<div class="map-result-addr">'+p.addr+'</div>'
+        + '<div class="map-result-guide">등록된 매장 정보 보기</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
+}
+
+function openRegisteredPlace(i) {
+  var p = window._r[i];
+  if (p && p.id) {
+    location.href = 'heka_store_detail.html?id=' + encodeURIComponent(p.id);
+    return;
+  }
+  showToast('이미 등록된 매장이에요.');
 }
 
 var googleMap = null;
@@ -698,18 +737,6 @@ var selectedCity = '';
 
 async function selectPlace(i) {
   var p = window._r[i];
-
-  // 중복 체크
-  if (window.searchFirestore) {
-    var existing = await window.searchFirestore(p.name);
-    var dup = existing && existing.some(function(s){
-      return s.name === p.name && s.address === p.addr;
-    });
-    if (dup) {
-      alert('이미 등록된 매장이에요!\n다른 매장을 선택해주세요.');
-      return;
-    }
-  }
 
   var a = document.getElementById('selected-addr');
   a.textContent = p.name+' · '+p.addr;
