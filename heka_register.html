@@ -334,21 +334,21 @@ window.saveToFirestore = async function(data) {
   <div class="scroll-wrap" id="scroll-wrap">
 
     <section class="reg-hero" aria-label="매장 제보 안내">
-      <div class="reg-kicker">HAEKA REPORT</div>
-      <h1>카드 되는 매장을 제보해주세요</h1>
-      <p>해외에서 카드 거절 없이 결제할 수 있도록 실제 결제 경험을 남겨주세요.</p>
+      <div class="reg-kicker">LIVE SIGNAL</div>
+      <h1>당신의 0.1초 제보가<br>누군가의 여행을 구합니다</h1>
+      <p>방금 카드 결제 성공하셨나요? 따끈따끈한 경험을 공유하고 실패 없는 여행 지도를 함께 그려주세요.</p>
     </section>
 
     <div class="reg-stepper" aria-hidden="true">
-      <span class="on">01 장소</span>
-      <span class="on">02 결제</span>
-      <span>03 후기</span>
+      <span class="on">01 WHERE</span>
+      <span class="on">02 PAYMENT</span>
+      <span>03 VIBE</span>
     </div>
 
     <div class="reg-step-head">
       <span>STEP 1</span>
-      <strong>장소 정보</strong>
-      <em>지금 어디를 제보하나요?</em>
+      <strong>01. WHERE</strong>
+      <em>지금 어디에 계신가요?</em>
     </div>
 
     <!-- 장소 검색 -->
@@ -447,14 +447,14 @@ window.saveToFirestore = async function(data) {
     <!-- 리뷰 -->
     <div class="section" style="padding-top:12px;padding-bottom:12px">
       <div class="sec-label" style="margin-bottom:8px">리뷰</div>
-      <textarea class="review-inp" id="review-inp" maxlength="300" placeholder="결제 경험을 자유롭게 작성해주세요" oninput="countReview()"></textarea>
+      <textarea class="review-inp" id="review-inp" maxlength="300" placeholder="결제할 때 특이사항이 있었나요? 다른 여행자에게 큰 도움이 됩니다!" oninput="countReview()"></textarea>
       <div class="review-count" id="review-count">0 / 300</div>
     </div>
 
   </div>
 
   <div class="reg-btn-wrap">
-    <button class="reg-btn" onclick="submitReg()">등록하기</button>
+    <button class="reg-btn" onclick="submitReg()">제보 완료하기</button>
   </div>
 
   <div class="prog-overlay" id="prog-overlay">
