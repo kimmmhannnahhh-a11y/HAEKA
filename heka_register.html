@@ -534,17 +534,22 @@ async function searchGooglePlaces(keyword) {
       maxResultCount: 8,
     };
     const { places } = await Place.searchByText(request);
-    return places.map(function(r) {
-      var translatedCat = r.primaryType ? translateType(r.primaryType) : null;
-      return {
-        name: r.displayName || '',
-        addr: r.formattedAddress || '',
-        cat: translatedCat,
-        lat: r.location ? r.location.lat() : null,
-        lng: r.location ? r.location.lng() : null,
-        _source: 'google'
-      };
-    });
+    return places
+      .filter(function(r){
+        var a = (r.formattedAddress || '');
+        return !(/대한민국|한국|Korea|South Korea|Republic of Korea/i.test(a));
+      })
+      .map(function(r) {
+        var translatedCat = r.primaryType ? translateType(r.primaryType) : null;
+        return {
+          name: r.displayName || '',
+          addr: r.formattedAddress || '',
+          cat: translatedCat,
+          lat: r.location ? r.location.lat() : null,
+          lng: r.location ? r.location.lng() : null,
+          _source: 'google'
+        };
+      });
   } catch(e) {
     console.error('Places 검색 오류:', e);
     return [];
@@ -598,7 +603,7 @@ async function searchPlace() {
   var kw = document.getElementById('map-search-inp').value.trim();
   var el = document.getElementById('map-results');
   if (!kw) { el.innerHTML='<div class="map-empty">검색어를 입력해주세요</div>'; return; }
-  el.innerHTML = '<div class="map-empty">검색 중... 🔍</div>';
+  el.innerHTML = '<div class="map-empty">검색 중...</div>';
 
   var googleResults = [];
   var haekaResults = [];
@@ -633,7 +638,7 @@ async function searchPlace() {
       + badge
       + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
       + '<div class="map-result-name">'+p.name+'</div>'
-      + '<div class="map-result-addr">📍 '+p.addr+'</div>'
+      + '<div class="map-result-addr">'+p.addr+'</div>'
       + '</div>';
   }).join('');
 }
@@ -724,7 +729,7 @@ async function selectPlace(i) {
     showRealMap(p.lat, p.lng, p.name);
   }
 
-  showToast('📍 위치가 설정되었어요!');
+  showToast('위치가 설정되었어요');
 }
 
 function toggleCatMenu(){document.getElementById('cat-menu').classList.toggle('open');document.getElementById('cat-dropdown').classList.toggle('open');}
@@ -914,6 +919,12 @@ function delVideo(i){URL.revokeObjectURL(uploadedVideos[i].objUrl);uploadedVideo
 function countReview(){document.getElementById('review-count').textContent=document.getElementById('review-inp').value.length+' / 300';}
 
 function submitReg(){
+  // 한국 주소 등록 차단 (해카는 해외 결제 매장 전용)
+  var _addrCheck = (document.getElementById('selected-addr')||{}).textContent || '';
+  if (/대한민국|한국|Korea|South Korea|Republic of Korea/i.test(_addrCheck)) {
+    showToast('해카는 해외 매장만 등록할 수 있어요');
+    return;
+  }
   var ok=true;
   if(!locationSelected){document.getElementById('err-location').classList.add('show');document.getElementById('map-box').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
   if(!document.getElementById('inp-name').value.trim()){document.getElementById('err-name').classList.add('show');if(ok)document.getElementById('inp-name').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
