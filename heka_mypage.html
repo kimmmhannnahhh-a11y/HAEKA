@@ -10,10 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
+@media all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;display:flex;flex-direction:column;height:680px;isolation:isolate}
+@media (max-width:480px){html,body{height:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0!important;background:#fff!important}.phone{width:100%!important;height:100vh!important;min-height:100vh!important;border-radius:0!important;border:0!important;box-shadow:none!important}.scroll-wrap{flex:1!important;overflow-y:auto!important}}
 .sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
 .topbar{background:#FF3900;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
@@ -323,7 +324,7 @@ window._loadNotices = async function() {
             </button>
           </div>
           <div class="badge-row">
-            <span class="badge-txt" id="badge-txt">🌱 여행 새싹</span>
+            <span class="badge-txt" id="badge-txt">여행 새싹</span>
             <button onclick="openBadgeInfo()" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;opacity:0.5;display:flex;align-items:center">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </button>
@@ -537,16 +538,16 @@ window._loadNotices = async function() {
       <div class="sheet-title">🏅 뱃지 등급 안내</div>
       <div style="font-size:11px;color:#888;margin-bottom:10px">제보 승인 건수 기준으로 자동 부여돼요</div>
       <div style="display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🌱 여행 새싹</span><span style="color:#bbb">1 ~ 3건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🎒 여행 루키</span><span style="color:#bbb">4 ~ 8건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>✈️ 여행자</span><span style="color:#bbb">9 ~ 15건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🗺️ 여행 탐험가</span><span style="color:#bbb">16 ~ 25건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>⭐ 여행 스타</span><span style="color:#bbb">26 ~ 40건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🧭 여행 베테랑</span><span style="color:#bbb">41 ~ 60건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>🥇 여행 달인</span><span style="color:#bbb">61 ~ 90건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>💎 여행 고수</span><span style="color:#bbb">91 ~ 130건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>👑 여행 레전드</span><span style="color:#bbb">131 ~ 170건</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span>🔥 여행 마스터</span><span style="color:#bbb">171 ~ 200건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 새싹</span><span style="color:#bbb">1 ~ 3건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 루키</span><span style="color:#bbb">4 ~ 8건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행자</span><span style="color:#bbb">9 ~ 15건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 탐험가</span><span style="color:#bbb">16 ~ 25건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 스타</span><span style="color:#bbb">26 ~ 40건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 베테랑</span><span style="color:#bbb">41 ~ 60건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 달인</span><span style="color:#bbb">61 ~ 90건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 고수</span><span style="color:#bbb">91 ~ 130건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid #f5f5f5;font-size:12px"><span>여행 레전드</span><span style="color:#bbb">131 ~ 170건</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px"><span>여행 마스터</span><span style="color:#bbb">171 ~ 200건</span></div>
       </div>
       <button class="sheet-cancel" onclick="closeBadgeInfo()" style="margin-top:12px">닫기</button>
     </div>
@@ -556,17 +557,17 @@ window._loadNotices = async function() {
   <div class="overlay" id="invite-overlay">
     <div class="sheet">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">친구 초대하기 👋</div>
+      <div class="sheet-title">친구 초대하기</div>
       <div style="font-size:12px;color:#888;margin-bottom:14px">해카를 친구에게 공유해보세요!</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <button onclick="inviteKakao()" style="width:100%;padding:13px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
-          <span style="font-size:16px">💬</span> 카카오톡으로 초대링크 보내기
+          카카오톡으로 초대링크 보내기
         </button>
         <button onclick="copyInviteLink()" style="width:100%;padding:13px;border-radius:12px;background:#FFF1F3;color:#FF3900;font-size:13px;font-weight:700;border:1.5px solid #FF3900;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
-          <span style="font-size:16px">🔗</span> 초대 링크 복사하기
+          초대 링크 복사하기
         </button>
         <button onclick="shareInvite()" style="width:100%;padding:13px;border-radius:12px;background:#f5f5f5;color:#555;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
-          <span style="font-size:16px">···</span> 더보기
+          더보기
         </button>
       </div>
       <button class="sheet-cancel" onclick="closeInvite()">취소</button>
@@ -611,23 +612,23 @@ window._loadNotices = async function() {
 <script>
 // ── 뱃지 계산 ──
 var BADGES = [
-  {min:1,  max:3,   txt:'🌱 여행 새싹'},
-  {min:4,  max:8,   txt:'🎒 여행 루키'},
-  {min:9,  max:15,  txt:'✈️ 여행자'},
-  {min:16, max:25,  txt:'🗺️ 여행 탐험가'},
-  {min:26, max:40,  txt:'⭐ 여행 스타'},
-  {min:41, max:60,  txt:'🧭 여행 베테랑'},
-  {min:61, max:90,  txt:'🥇 여행 달인'},
-  {min:91, max:130, txt:'💎 여행 고수'},
-  {min:131,max:170, txt:'👑 여행 레전드'},
-  {min:171,max:200, txt:'🔥 여행 마스터'},
+  {min:1,  max:3,   txt:'여행 새싹'},
+  {min:4,  max:8,   txt:'여행 루키'},
+  {min:9,  max:15,  txt:'여행자'},
+  {min:16, max:25,  txt:'여행 탐험가'},
+  {min:26, max:40,  txt:'여행 스타'},
+  {min:41, max:60,  txt:'여행 베테랑'},
+  {min:61, max:90,  txt:'여행 달인'},
+  {min:91, max:130, txt:'여행 고수'},
+  {min:131,max:170, txt:'여행 레전드'},
+  {min:171,max:200, txt:'여행 마스터'},
 ];
 function getBadge(count) {
-  if (count < 1) return '🌱 여행 새싹';
+  if (count < 1) return '여행 새싹';
   for (var i = 0; i < BADGES.length; i++) {
     if (count >= BADGES[i].min && count <= BADGES[i].max) return BADGES[i].txt;
   }
-  return '🔥 여행 마스터';
+  return '여행 마스터';
 }
 
 // ── 상태 ──
@@ -668,7 +669,7 @@ function saveData() {
 
 // ── 최근 본 항목 ──
 function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
-function catEmoji(c){var m={'식당':'🍽️','카페':'☕','펍':'🍺','패스트푸드':'🍔','이자카야':'🏮','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM기':'🏧'};return m[c]||'🏬';}
+function catEmoji(c){return c?c.slice(0,1):'店';}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','펍':'#F0F8FF','패스트푸드':'#FFF4E8','이자카야':'#FFF0F4','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM기':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(typeof ts==='number'?ts:Date.now());var d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
 
@@ -740,7 +741,7 @@ function inviteKakao() {
 function copyInviteLink() {
   var link = 'https://kimmmhannnahhh-a11y.github.io/HAEKA/heka_home_v5.html';
   navigator.clipboard.writeText(link).then(function(){
-    showToast('🔗 초대 링크가 복사됐어요!');
+    showToast('초대 링크가 복사됐어요');
   }).catch(function(){
     showToast('링크: ' + link);
   });
@@ -866,7 +867,7 @@ function saveBio() {
   document.getElementById('bio-txt').textContent = val || '아직 소개글이 없어요';
   saveData();
   closeBioEdit();
-  showToast('✅ 소개글이 저장됐어요!');
+  showToast('소개글이 저장됐어요');
 }
 
 // ── 설정 패널 ──
@@ -950,7 +951,7 @@ function saveLangDirect(val) {
   try{ localStorage.setItem('haeka_user', JSON.stringify(userData)); }catch(e){}
   document.getElementById('lang-sub').textContent = val;
   closeLangSheet();
-  showToast('✅ 언어가 저장됐어요!');
+  showToast('언어가 저장됐어요');
 }
 
 // ── 기타 ──
@@ -971,7 +972,7 @@ function clearCache() {
     if(zzim) localStorage.setItem('haeka_zzim', zzim);
     if(saved) localStorage.setItem('haeka_saved_posts', saved);
   } catch(e) {}
-  showToast('✅ 캐시가 삭제됐어요!');
+  showToast('캐시가 삭제됐어요');
 }
 async function _attemptDelete(password) {
   if (!window._deleteAccount) return;
@@ -994,7 +995,7 @@ async function _attemptDelete(password) {
 
 function confirmWithdraw() {
   // 1단계
-  showPopup('⚠️', '정말 탈퇴하시겠어요?', '탈퇴 시 계정 및 개인정보가 삭제됩니다.', '탈퇴 진행', function(){
+  showPopup('', '정말 탈퇴하시겠어요?', '탈퇴 시 계정 및 개인정보가 삭제됩니다.', '탈퇴 진행', function(){
     // 2단계
     showPopup('🗑️', '최종 확인', '정말로 탈퇴할까요?\n이 작업은 되돌릴 수 없어요.', '탈퇴하기', async function(){
       // 이메일 로그인 사용자는 비밀번호 재확인 (토큰 탈취 방어)
@@ -1003,7 +1004,7 @@ function confirmWithdraw() {
   });
 }
 function logout() {
-  showPopup('👋', '로그아웃', '로그아웃 하시겠습니까?', '로그아웃', function(){
+  showPopup('', '로그아웃', '로그아웃 하시겠습니까?', '로그아웃', function(){
     try{ 
       localStorage.removeItem('haeka_uid');
       localStorage.removeItem('haeka_email');
@@ -1051,7 +1052,7 @@ async function submitInquiry() {
   if (!txt) { showToast('내용을 입력해주세요'); return; }
   if (window._submitInquiry) {
     var ok = await window._submitInquiry(_inqType, txt);
-    if (ok) { closeInquiry(); showToast('✅ 문의가 접수됐어요!'); }
+    if (ok) { closeInquiry(); showToast('문의가 접수됐어요'); }
     else showToast('오류가 발생했어요. 다시 시도해주세요');
   }
 }
@@ -1071,7 +1072,7 @@ function openMyList(type) {
     content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">아직 없어요</div>';
   } else {
     content.innerHTML = stores.map(function(s){
-      var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.parentNode.innerHTML=\'🏬\'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">🏬</div>';
+      var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.parentNode.innerHTML=\'店\'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#999;font-weight:700">店</div>';
       var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#FFF1F3;color:#FF3900;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
         +img
