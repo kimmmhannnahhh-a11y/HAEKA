@@ -13,7 +13,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone-wrap{position:relative;width:300px}
-.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:visible;color:#111;position:relative}
+@media (max-width:480px){html,body{height:auto;overflow-y:auto;-webkit-overflow-scrolling:touch}.phone-wrap,.phone{width:100%!important;border-radius:0!important;border:0!important;min-height:100vh}}
 .sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
 .topbar{background:#FF3900;padding:10px 16px 12px;display:flex;align-items:center;justify-content:center;border-bottom:0.5px solid rgba(255,255,255,0.15);position:relative}
 .topbar-title{font-size:15px;font-weight:600;color:#fff}
