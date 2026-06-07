@@ -69,6 +69,11 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
 .fpthumb{width:100%;border-radius:12px;overflow:hidden;background:#F3F4F6;margin-top:2px}
 .fpthumb img{width:100%;height:auto;max-height:260px;object-fit:cover;display:block}
+.write-fab{position:fixed;right:18px;bottom:78px;width:54px;height:54px;border-radius:50%;background:#FF3900;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(255,57,0,.35),0 2px 6px rgba(0,0,0,.12);z-index:30;transition:transform .15s,box-shadow .15s}
+.write-fab:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(255,57,0,.45),0 4px 10px rgba(0,0,0,.15)}
+.write-fab:active{transform:translateY(0)}
+.write-fab svg{width:22px;height:22px}
+@media (min-width:481px){.write-fab{position:absolute;right:18px;bottom:78px}}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#FF3900;font-weight:600}
@@ -139,14 +144,11 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     <button class="fb" onclick="toggleF(this)">정보</button>
   </div>
 
-  <div style="display:flex;justify-content:flex-end;padding:10px 16px 0">
-    <button onclick="if(!window.currentUser){showLoginPopup('글쓰기','글쓰기는 로그인 후 이용할 수 있어요');}else{window.location.href='heka_write.html';}" style="background:none;border:none;font-size:11px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      글쓰기
-    </button>
-  </div>
-
   <div class="post-list" id="post-list"></div>
+
+  <button class="write-fab" aria-label="글쓰기" onclick="if(!window.currentUser){showLoginPopup('글쓰기','글쓰기는 로그인 후 이용할 수 있어요');}else{window.location.href='heka_write.html';}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  </button>
 
   <div id="login-popup-overlay" onclick="closeLoginPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200"></div>
 <div id="login-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 24px;width:280px;z-index:201;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18)">
