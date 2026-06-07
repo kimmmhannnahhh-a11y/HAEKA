@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
+@media all{
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone-wrap{position:relative;width:300px}
@@ -33,7 +33,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .search-input{flex:1;border:none;background:transparent;font-size:12px;color:#333;outline:none;font-family:inherit;min-width:0}
 .search-input::placeholder{color:#bbb}
 .search-btn{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#FF3900;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
-.search-btn:hover{background:#145014}
+.search-btn:hover{background:#E31C5F}
 .search-btn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
 .search-result-bar{display:none;padding:8px 16px 0;font-size:11px;color:#999}
 .search-result-bar.show{display:block}
@@ -43,27 +43,31 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fb{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;font-size:11px;font-weight:500;color:#555;background:#fff;cursor:pointer;white-space:nowrap;transition:.15s;font-family:inherit}
 .fb:hover{border-color:#FF3900;color:#FF3900}
 .fb.on{background:#FF3900;color:#fff;border-color:#FF3900;font-weight:600}
-.post-list{padding:8px 0}
-.fpost{padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:7px;transition:.12s}
-.fpost:last-child{border-bottom:none}
-.fpost:hover{background:#fafafa}
-.new-dot{width:5px;height:5px;border-radius:50%;background:#e53935;display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0}
-.fpav{width:20px;height:20px;border-radius:50%;background:#c8c8c8;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
-.fpmain{flex:1;min-width:0}
-.fphead{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.fpu{font-size:10px;color:#bbb}
-.fpd{font-size:10px;color:#999;flex-shrink:0}
-.fptitle{font-size:11px;font-weight:600;line-height:1.4;margin-bottom:3px;color:#111}
-.fpbody{font-size:11px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
-.fpbottom{display:flex;align-items:center;gap:5px;margin-top:3px;font-size:10px;color:#bbb}
-.fptag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;flex-shrink:0}
-.fptag-mate{background:#FF3900;color:#fff}
-.fptag-food{background:#ea6500;color:#fff}
-.fptag-weather{background:#3b82f6;color:#fff}
-.fptag-info{background:#eab308;color:#fff}
+.post-list{padding:8px 12px 80px;display:flex;flex-direction:column;gap:10px}
+.fpost{padding:14px;background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:.15s;position:relative}
+.fpost:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06)}
+.new-dot{width:6px;height:6px;border-radius:50%;background:#FF3900;display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0}
+.fpav{width:28px;height:28px;border-radius:50%;background:#FFF1F2;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;font-size:14px}
+.fpmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.fphead{display:flex;align-items:center;gap:6px}
+.fpu{font-size:12px;color:#1A1A1A;font-weight:700}
+.fpd{font-size:11px;color:#9CA3AF;flex-shrink:0}
+.fptitle{font-size:15px;font-weight:800;line-height:1.35;color:#1A1A1A;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fpbody{font-size:13px;color:#6B7280;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fpbottom{display:flex;align-items:center;gap:10px;font-size:11px;color:#9CA3AF}
+.fpbottom .meta{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+.fpbottom .meta svg{width:13px;height:13px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fpbottom .meta.liked svg{fill:#FF3900;stroke:#FF3900}
+.fptag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;flex-shrink:0;letter-spacing:.02em}
+.fptag-mate{background:#FFF1F2;color:#FF3900}
+.fptag-food{background:#FFF7E6;color:#D97706}
+.fptag-weather{background:#E0F2FE;color:#0369A1}
+.fptag-info{background:#FEF3C7;color:#92400E}
+.fptag-success{background:#DCFCE7;color:#15803D}
+.fptag-fail{background:#FEE2E2;color:#B91C1C}
 .fpfooter-info{display:flex;align-items:center;gap:6px;font-size:10px;color:#bbb}
-.fpthumb{width:40px;height:40px;min-width:40px;border-radius:8px;overflow:hidden;flex-shrink:0;align-self:center}
-.fpost{position:relative}
+.fpthumb{width:100%;border-radius:12px;overflow:hidden;background:#F3F4F6;margin-top:2px}
+.fpthumb img{width:100%;height:auto;max-height:260px;object-fit:cover;display:block}
 .bnav{display:flex;border-top:0.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni.on{color:#FF3900;font-weight:600}
@@ -126,6 +130,8 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 
   <div class="filt">
     <button class="fb on" onclick="toggleF(this)">전체</button>
+    <button class="fb" onclick="toggleF(this)">카드성공</button>
+    <button class="fb" onclick="toggleF(this)">카드거절</button>
     <button class="fb" onclick="toggleF(this)">동행</button>
     <button class="fb" onclick="toggleF(this)">맛집</button>
     <button class="fb" onclick="toggleF(this)">날씨</button>
@@ -143,7 +149,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 
   <div id="login-popup-overlay" onclick="closeLoginPopup()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200"></div>
 <div id="login-popup" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 24px;width:280px;z-index:201;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.18)">
-  <div style="font-size:32px;margin-bottom:10px">🔐</div>
+  <div style="margin-bottom:10px;display:flex;justify-content:center"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF3900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
   <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:6px" id="login-popup-title">로그인이 필요해요</div>
   <div style="font-size:12px;color:#888;margin-bottom:20px" id="login-popup-desc">이 기능은 로그인 후 이용할 수 있어요</div>
   <button onclick="location.href='heka_login_v5.html'" style="width:100%;background:#FF3900;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">로그인하기</button>
@@ -154,6 +160,8 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     <div style="width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 14px"></div>
     <div style="font-size:14px;font-weight:700;margin-bottom:12px">여행톡 글쓰기</div>
     <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+      <button onclick="selectTag(this,'카드성공')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">카드성공</button>
+      <button onclick="selectTag(this,'카드거절')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">카드거절</button>
       <button onclick="selectTag(this,'동행')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">동행</button>
       <button onclick="selectTag(this,'맛집')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">맛집</button>
       <button onclick="selectTag(this,'날씨')" class="write-tag" style="padding:5px 12px;border-radius:20px;border:1px solid #ddd;font-size:11px;background:#fff;color:#555;cursor:pointer;font-family:inherit">날씨</button>
@@ -211,9 +219,9 @@ let currentUser = null;
 window.currentUser = null;
 onAuthStateChanged(auth, function(u){ currentUser = u; window.currentUser = u; });
 
-const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info'};
-const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee'};
-const catEmojiMap = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
+const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info','카드성공':'success','카드거절':'fail'};
+const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee','카드성공':'#DCFCE7','카드거절':'#FEE2E2'};
+const catEmojiMap = {'동행':'동','맛집':'맛','날씨':'☀','정보':'i','카드성공':'✓','카드거절':'✕'};
 
 function timeAgo(ts){
   if(!ts) return '방금 전';
@@ -246,7 +254,7 @@ onSnapshot(q, function(snapshot){
     var tag = catTagMap[d.category] || 'info';
     fbPosts.push({
       id: doc.id,
-      av: catEmojiMap[d.category]||'✈️',
+      av: catEmojiMap[d.category]||'톡',
       user: d.nickname || '여행자',
       date: d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleDateString('ko',{month:'2-digit',day:'2-digit'}).replace(/\./g,'').replace(' ','') : '',
       city: d.city || '',
@@ -255,7 +263,7 @@ onSnapshot(q, function(snapshot){
       tag: tag,
       tagTxt: d.category || '정보',
       images: d.images || [],
-      thumb: d.images&&d.images[0] ? '<img src="'+d.images[0]+'" style="width:100%;height:auto;object-fit:contain;border-radius:8px;display:block">' : (catEmojiMap[d.category]||'✈️'),
+      thumb: d.images&&d.images[0] ? '<img src="'+d.images[0]+'" style="width:100%;height:auto;object-fit:contain;border-radius:8px;display:block">' : (catEmojiMap[d.category]||'톡'),
       thumbBg: catBgMap[d.category]||'#f5f5f5',
       time: timeAgo(d.createdAt),
       cmts: d.commentCount||0,
@@ -278,20 +286,38 @@ function markRead(id){ try{ var s=getReadSet(); s.add(id); localStorage.setItem(
 
 function renderPosts(list){
   var el = document.getElementById('post-list');
-  if(!list.length){ el.innerHTML='<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">검색 결과가 없어요</div>'; return; }
+  if(!list.length){ el.innerHTML='<div style="padding:48px 16px;text-align:center;font-size:13px;color:#9CA3AF">아직 글이 없어요<br><span style="font-size:11px;color:#bbb">첫 번째 여행톡을 남겨보세요</span></div>'; return; }
   var readSet = getReadSet();
+  var heartSvg = '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+  var commentSvg = '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>';
   el.innerHTML = list.map(function(p){
-    var tagClass = p.tag==='mate'?'fptag-mate':p.tag==='food'?'fptag-food':p.tag==='weather'?'fptag-weather':'fptag-info';
+    var tagClassMap = {'mate':'fptag-mate','food':'fptag-food','weather':'fptag-weather','info':'fptag-info','success':'fptag-success','fail':'fptag-fail'};
+    var tagClass = tagClassMap[p.tag] || 'fptag-info';
     var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length > 10;
     var thumbHtml = hasImg
-      ? '<div class="fpthumb"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block;border-radius:8px" loading="eager" decoding="async" onerror="this.style.display=\'none\'"/></div>'
+      ? '<div class="fpthumb"><img src="'+p.images[0]+'" loading="lazy" decoding="async" onerror="this.parentNode.style.display=\'none\'"/></div>'
       : '';
     var isNew = p.id && !readSet.has(p.id);
-    var dotHtml = isNew ? '<div class="new-dot"></div>' : '';
+    var dotHtml = isNew ? '<span class="new-dot"></span>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
-    var bmBtn = '';
-    return '<div class="fpost" onclick="'+onclickFn+'" style="cursor:pointer"><div class="fpmain"><div class="fptitle"><span class="fptag '+tagClass+'" style="flex-shrink:0">'+p.tagTxt+'</span>'+dotHtml+p.title+'</div><div class="fpbottom"><div class="fpav">'+p.av+'</div><span class="fpu">'+p.user+'</span><span class="fpd" style="margin:0 2px">·</span><span>♥ '+(p.likes||0)+'</span><span>💬 '+(p.cmts||0)+'</span><span class="fpd" style="margin:0 2px">·</span><span class="fpd">'+p.time+'</span></div></div>'+thumbHtml+bmBtn+'</div>';
+    return '<div class="fpost" onclick="'+onclickFn+'">'
+      + '<div class="fphead">'
+        + '<div class="fpav">'+p.av+'</div>'
+        + '<span class="fpu">'+p.user+'</span>'
+        + '<span class="fpd">·</span>'
+        + '<span class="fpd">'+p.time+'</span>'
+      + '</div>'
+      + '<div class="fpmain">'
+        + '<div class="fptitle"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span>'+dotHtml+'<span>'+p.title+'</span></div>'
+        + (p.body ? '<div class="fpbody">'+p.body+'</div>' : '')
+        + thumbHtml
+        + '<div class="fpbottom">'
+          + '<span class="meta">'+heartSvg+(p.likes||0)+'</span>'
+          + '<span class="meta">'+commentSvg+(p.cmts||0)+'</span>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
   }).join('');
 }
 window.renderPosts = renderPosts;
