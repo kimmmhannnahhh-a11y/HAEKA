@@ -217,9 +217,11 @@ let currentUser = null;
 window.currentUser = null;
 onAuthStateChanged(auth, function(u){ currentUser = u; window.currentUser = u; });
 
-const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info','카드성공':'success','카드거절':'fail'};
-const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee','카드성공':'#DCFCE7','카드거절':'#FEE2E2'};
-const catEmojiMap = {'동행':'동','맛집':'맛','날씨':'☀','정보':'i','카드성공':'✓','카드거절':'✕'};
+const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info'};
+const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee'};
+const catEmojiMap = {'동행':'동','맛집':'맛','날씨':'☀','정보':'i'};
+// 카드성공/카드거절 → 정보로 강제 변환 (지원 종료된 카테고리)
+function normalizeCategory(c){ if(c==='카드성공'||c==='카드거절') return '정보'; return c||'정보'; }
 
 function timeAgo(ts){
   if(!ts) return '방금 전';
@@ -249,20 +251,21 @@ onSnapshot(q, function(snapshot){
   var fbPosts = [];
   snapshot.forEach(function(doc){
     var d = doc.data();
-    var tag = catTagMap[d.category] || 'info';
+    var normCat = normalizeCategory(d.category);
+    var tag = catTagMap[normCat] || 'info';
     fbPosts.push({
       id: doc.id,
-      av: catEmojiMap[d.category]||'톡',
+      av: catEmojiMap[normCat]||'톡',
       user: d.nickname || '여행자',
       date: d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleDateString('ko',{month:'2-digit',day:'2-digit'}).replace(/\./g,'').replace(' ','') : '',
       city: d.city || '',
       title: d.title || '',
       body: d.body || '',
       tag: tag,
-      tagTxt: d.category || '정보',
+      tagTxt: normCat,
       images: d.images || [],
-      thumb: d.images&&d.images[0] ? '<img src="'+d.images[0]+'" style="width:100%;height:auto;object-fit:contain;border-radius:8px;display:block">' : (catEmojiMap[d.category]||'톡'),
-      thumbBg: catBgMap[d.category]||'#f5f5f5',
+      thumb: d.images&&d.images[0] ? '<img src="'+d.images[0]+'" style="width:100%;height:auto;object-fit:contain;border-radius:8px;display:block">' : (catEmojiMap[normCat]||'톡'),
+      thumbBg: catBgMap[normCat]||'#f5f5f5',
       time: timeAgo(d.createdAt),
       cmts: d.commentCount||0,
       likes: d.likeCount||0,
