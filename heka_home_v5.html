@@ -291,6 +291,29 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
   box-shadow:12px 14px 0 -8px rgba(255,57,0,.42),-18px 15px 0 -7px rgba(255,57,0,.18);
 }
 
+/* 홈 진입 광고 팝업 (제휴 광고용) */
+.hk-promo-overlay{position:fixed;inset:0;background:rgba(15,15,15,.55);backdrop-filter:blur(4px);z-index:9998;display:none;align-items:flex-end;justify-content:center;animation:hkPromoFade .25s ease-out}
+.hk-promo-overlay.show{display:flex}
+@keyframes hkPromoFade{from{opacity:0}to{opacity:1}}
+.hk-promo-card{width:100%;max-width:430px;background:#0F0F0F;border-radius:24px 24px 0 0;overflow:hidden;color:#fff;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif;animation:hkPromoSlide .32s cubic-bezier(.22,1,.36,1);position:relative}
+@keyframes hkPromoSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.hk-promo-label{position:absolute;top:18px;left:20px;font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.06em;z-index:2}
+.hk-promo-counter{position:absolute;top:14px;right:20px;font-size:11px;color:#fff;font-weight:700;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:999px;z-index:2}
+.hk-promo-head{padding:50px 24px 8px;text-align:center}
+.hk-promo-title{font-size:22px;font-weight:800;line-height:1.3;letter-spacing:-.04em;margin-bottom:8px}
+.hk-promo-title b{color:#FF3900}
+.hk-promo-sub{font-size:12.5px;color:rgba(255,255,255,.62);font-weight:500;line-height:1.5}
+.hk-promo-media{position:relative;margin:18px 20px 0;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#1F1F1F,#2A2A2A);aspect-ratio:16/10;display:flex;align-items:center;justify-content:center}
+.hk-promo-media img{width:100%;height:100%;object-fit:cover;display:block}
+.hk-promo-media-placeholder{font-size:11px;color:rgba(255,255,255,.4);text-align:center;padding:24px;line-height:1.5}
+.hk-promo-badge{position:absolute;top:12px;right:12px;background:#FF3900;color:#fff;font-size:10px;font-weight:800;padding:5px 11px;border-radius:999px;letter-spacing:.04em;z-index:1}
+.hk-promo-cta{margin:18px 20px 20px;background:#fff;color:#0F0F0F;padding:16px;border-radius:14px;font-size:14px;font-weight:800;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;border:0;width:calc(100% - 40px);font-family:inherit;transition:transform .12s}
+.hk-promo-cta:hover{transform:translateY(-1px)}
+.hk-promo-cta svg{width:14px;height:14px;stroke:#0F0F0F;fill:none;stroke-width:2.2;stroke-linecap:round}
+.hk-promo-footer{display:flex;align-items:center;justify-content:space-between;padding:14px 24px 22px;border-top:1px solid rgba(255,255,255,.08);background:#0F0F0F}
+.hk-promo-footer button{background:none;border:0;color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 0}
+.hk-promo-footer button:hover{color:#fff}
+
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
@@ -1547,6 +1570,55 @@ window.closeHomeEditPopup = closeHomeEditPopup;
     setTimeout(waitInitGPS, 30);
   }
 })();
+</script>
+
+<!-- 홈 진입 광고 팝업 (제휴광고: 마리얼·클룩 등) -->
+<div class="hk-promo-overlay" id="hk-promo-overlay" onclick="if(event.target.id==='hk-promo-overlay')hkPromoClose()">
+  <div class="hk-promo-card" role="dialog" aria-label="제휴 광고">
+    <span class="hk-promo-label">AD</span>
+    <span class="hk-promo-counter" id="hk-promo-counter">1/1</span>
+    <div class="hk-promo-head">
+      <div class="hk-promo-title" id="hk-promo-title">해외에서 카드 되는 곳<br><b>지금 바로 찾기</b></div>
+      <div class="hk-promo-sub" id="hk-promo-sub">제휴 파트너 특가 모음을 가장 먼저 확인하세요</div>
+    </div>
+    <div class="hk-promo-media">
+      <span class="hk-promo-badge">LIVE</span>
+      <div class="hk-promo-media-placeholder" id="hk-promo-media">제휴 광고 영역<br>(마리얼·클룩 등 배너 이미지)</div>
+    </div>
+    <button class="hk-promo-cta" id="hk-promo-cta" onclick="hkPromoClick()">
+      자세히 보기
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="hk-promo-footer">
+      <button onclick="hkPromoSkipToday()">1일간 보지 않기</button>
+      <button onclick="hkPromoClose()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SKIP_KEY = 'haeka_promo_skip_until';
+  var skipUntil = parseInt(localStorage.getItem(SKIP_KEY) || '0', 10);
+  if (Date.now() < skipUntil) return;
+  setTimeout(function(){
+    var el = document.getElementById('hk-promo-overlay');
+    if(el) el.classList.add('show');
+  }, 500);
+})();
+function hkPromoClose(){
+  var el = document.getElementById('hk-promo-overlay');
+  if(el) el.classList.remove('show');
+}
+function hkPromoSkipToday(){
+  localStorage.setItem('haeka_promo_skip_until', String(Date.now() + 24*60*60*1000));
+  hkPromoClose();
+}
+function hkPromoClick(){
+  // 제휴 광고 클릭 시 이동할 URL (운영자가 채워넣음)
+  // 예: window.location.href = 'https://partner-link';
+  hkPromoClose();
+}
 </script>
 
 </body>
