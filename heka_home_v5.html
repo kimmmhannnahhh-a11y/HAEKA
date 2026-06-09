@@ -149,10 +149,10 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .ycontent{flex:1;min-width:0;overflow:hidden}
 .ytop{display:flex;align-items:center;gap:4px;margin-bottom:2px}
 .ybadge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600}
-.yb-mate{background:#FF3900;color:#fff}
-.yb-food{background:#ea6500;color:#fff}
-.yb-weather{background:#3b82f6;color:#fff}
-.yb-info{background:#eab308;color:#fff}
+.yb-mate{background:#F0FDF4;color:#16A34A}
+.yb-food{background:#FFF7E6;color:#D97706}
+.yb-weather{background:#E0F2FE;color:#0369A1}
+.yb-info{background:#F3E8FF;color:#7E22CE}
 .ycity{font-size:10px;color:#999}
 .ytitle{font-size:11px;font-weight:600;color:#111;line-height:1.4;margin-bottom:1px;white-space:normal;word-break:keep-all}
 .ybody{font-size:10px;color:#777;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -213,7 +213,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .sec-head{margin-top:4px}.nrow{gap:10px;padding:0 14px 2px;margin-bottom:12px}.ncard{flex:0 0 142px;border-radius:16px;border:0;background:var(--hk-surface);box-shadow:var(--hk-card-shadow)}.ncard:hover{box-shadow:0 8px 22px rgba(0,0,0,.1);transform:translateY(-2px)}.nimg{height:160px;font-size:42px}.nbody{padding:9px 10px 11px}.nn{font-size:12px;font-weight:700;color:var(--hk-text)}
 .bnav{background:var(--hk-surface);border-top:1px solid var(--hk-border)}.ni.on,.nplbl{color:var(--hk-accent)}.npbtn{background:var(--hk-accent);box-shadow:0 8px 16px rgba(255,56,92,.25)}
 .dp-btn-report{background:var(--hk-accent-bg);color:var(--hk-accent);border-color:var(--hk-accent)}.dp-btn-more{background:var(--hk-accent)}
-.qcard:hover{background:var(--hk-accent-bg)}.yb-mate{background:var(--hk-accent)}
+.qcard:hover{background:var(--hk-accent-bg)}
 
 /* HAEKA home section title emphasis */
 .sec-t{font-size:21px!important;font-weight:800!important;color:var(--hk-text)!important;letter-spacing:-.04em}
@@ -551,8 +551,8 @@ async function loadStores() {
 
 // 여행톡 실시간 불러오기
 const catBadgeMap = {'동행':'yb-mate','맛집':'yb-food','날씨':'yb-weather','정보':'yb-info'};
-const catEmojiMap2 = {'동행':'🤝','맛집':'🍽️','날씨':'☀️','정보':'ℹ️'};
-const catBgMap2 = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f5ff','정보':'#f0f5ee'};
+const catEmojiMap2 = {'동행':'동','맛집':'맛','날씨':'날','정보':'정'};
+const catBgMap2 = {'동행':'#F0FDF4','맛집':'#FFF7E6','날씨':'#E0F2FE','정보':'#F3E8FF'};
 
 const postsQ = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(6));
 onSnapshot(postsQ, function(snapshot){
@@ -566,7 +566,7 @@ onSnapshot(postsQ, function(snapshot){
   snapshot.docs.forEach(function(doc){
     var p = doc.data();
     var badge = catBadgeMap[p.category]||'yb-info';
-    var emoji = catEmojiMap2[p.category]||'✈️';
+    var emoji = catEmojiMap2[p.category]||'톡';
     var bg = catBgMap2[p.category]||'#f5f5f5';
     var ago = timeAgo(p.createdAt);
     // 좌측: 프사(아바타 이니셜), 우측: 사진 첨부된 글만 썸네일

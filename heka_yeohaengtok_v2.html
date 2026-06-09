@@ -192,12 +192,12 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     <div class="panel-list" id="panel-list"></div>
   </div>
 
-  <!-- 하단 네비 -->
+  <!-- 하단 네비 (홈 표준) -->
   <div class="bnav">
     <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni on" onclick="window.location.href='heka_city.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
-    <div class="nplus" onclick="window.location.href='heka_register.html'"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni" onclick="if(!window.currentUser){showLoginPopup('찜목록','찜 기능은 로그인 후 이용할 수 있어요')}else{location.href='heka_zzim.html'}"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -226,8 +226,8 @@ window.currentUser = null;
 onAuthStateChanged(auth, function(u){ currentUser = u; window.currentUser = u; });
 
 const catTagMap = {'동행':'mate','맛집':'food','날씨':'weather','정보':'info'};
-const catBgMap = {'동행':'#eef0f8','맛집':'#f5f0e8','날씨':'#e8f0f8','정보':'#f0f5ee'};
-const catEmojiMap = {'동행':'동','맛집':'맛','날씨':'☀','정보':'i'};
+const catBgMap = {'동행':'#F0FDF4','맛집':'#FFF7E6','날씨':'#E0F2FE','정보':'#F3E8FF'};
+const catEmojiMap = {'동행':'동','맛집':'맛','날씨':'날','정보':'정'};
 // 카드성공/카드거절 → 정보로 강제 변환 (지원 종료된 카테고리)
 function normalizeCategory(c){ if(c==='카드성공'||c==='카드거절') return '정보'; return c||'정보'; }
 
