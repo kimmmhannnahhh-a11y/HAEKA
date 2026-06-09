@@ -203,7 +203,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .phone{background:var(--hk-bg);border-color:#EEEDE8;box-shadow:0 18px 45px rgba(17,24,39,.08)}
 .sb,.topbar{background:var(--hk-surface);color:var(--hk-text);box-shadow:0 1px 4px rgba(0,0,0,0.06);border-bottom:none}
 .logo{color:var(--hk-text)}.logo-sub{color:var(--hk-sub)}
-.search-icon-btn{background:#F8F8F6;border-color:#ECEBE7}.search-icon-btn svg{stroke:var(--hk-text)}
+.search-icon-btn{background:#FF3900!important;border-color:#FF3900!important;width:38px!important;height:38px!important;box-shadow:0 4px 12px rgba(255,57,0,.30)}.search-icon-btn svg{stroke:#fff!important;width:18px!important;height:18px!important;stroke-width:2.4!important}
 .filterbar{background:var(--hk-surface);border-bottom:1px solid var(--hk-border)}
 .sq-chip,.sq-chip-all,.sheet-chip{border-radius:999px;border:0;background:#F3F4F6;color:#4B5563;padding:7px 12px;font-weight:700}
 .sq-chip.on,.sq-chip-all.on,.sq-chip-all.open,.sheet-chip.on{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
@@ -225,7 +225,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .nbody{flex:1!important;min-width:0!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:2px 0!important}
 .nn{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:normal!important;font-size:16px!important;font-weight:800!important;color:var(--hk-text)!important;line-height:1.3!important;margin-bottom:0!important}
 .nm-meta{font-size:12px!important;font-weight:600!important;color:var(--hk-sub)!important;margin-top:4px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-.nm-dist{color:#A3E635!important;font-weight:800!important}
+.nm-dist{color:#16A34A!important;font-weight:800!important}
 .nm-cards{display:flex!important;gap:4px!important;flex-wrap:wrap!important;margin-top:8px!important;overflow:visible!important;cursor:default!important}
 .cpill{font-size:9px!important;font-weight:800!important;padding:3px 7px!important;border-radius:999px!important}
 .hotpl-section{margin:40px 14px 0!important;padding:0!important;background:transparent!important;border-radius:0!important;box-shadow:none!important}
@@ -254,7 +254,10 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .sec-more,.hotpl-more,.ytok-more{font-size:14px!important;font-weight:800!important;color:#FF3900!important;display:inline-flex!important;align-items:center!important;gap:2px!important}
 .sec-more::after,.hotpl-more::after,.ytok-more::after{content:'›';font-size:18px;line-height:1;margin-left:1px;font-weight:600}
 .ytok-more{margin-left:auto!important}
-.ycard{display:flex!important;flex-direction:column!important;gap:6px!important;margin-bottom:8px!important;padding:12px!important;background:#fff!important;border-radius:12px!important;box-shadow:var(--hk-card-shadow)!important;cursor:pointer!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.ycard{display:flex!important;flex-direction:row!important;gap:10px!important;margin-bottom:8px!important;padding:12px!important;background:#fff!important;border-radius:12px!important;box-shadow:var(--hk-card-shadow)!important;cursor:pointer!important;transition:transform .18s ease,box-shadow .18s ease!important;align-items:flex-start!important}
+.ycard-left{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ycard .ythumb-r{flex-shrink:0;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#F3F4F6}
+.ycard .ythumb-r img{width:64px!important;height:64px!important;object-fit:cover!important;display:block!important}
 .ycard:hover{transform:scale(1.01)!important;box-shadow:0 6px 18px rgba(0,0,0,.10)!important}
 .ycard-head{display:flex;align-items:center;gap:8px;width:100%}
 .ycard-icon{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#FF3900,#FFD600);display:inline-block;flex-shrink:0}
@@ -267,7 +270,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .ybody{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
 .yfoot{font-size:10px!important;color:var(--hk-muted)!important;gap:5px!important}
 .yfoot span[style*="font-size:10px"]{font-size:12px!important;font-weight:700!important;color:var(--hk-text)!important}
-.ytok-cta{width:100%;padding:14px;margin-top:12px;border:0;border-radius:12px;background:#FF3900;color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-align:center;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.02em;box-shadow:0 10px 24px rgba(255,57,0,.32)}
+.ytok-cta{width:100%;padding:14px;margin-top:12px;border:1.5px solid #E5E7EB;border-radius:12px;background:#fff;color:var(--hk-text);font-size:13px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.02em;box-shadow:0 1px 3px rgba(0,0,0,.04)}.ytok-cta:hover{background:#FAFAF8;border-color:#D1D5DB}
 .ytok-cta-icon{width:17px;height:17px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @keyframes ytok-pulse{0%,100%{opacity:.85}50%{opacity:.4}}
 
@@ -575,9 +578,11 @@ onSnapshot(postsQ, function(snapshot){
     var likes = p.likeCount||0;
     var comments = p.commentCount||0;
     html += '<div class="ycard" onclick="window.location.href=\'heka_post_detail.html?id='+doc.id+'\'">'
-      +'<div class="ycard-head">'+avatarHtml+'<span class="ycard-icon"></span><span class="ycard-nick">'+(window._esc?window._esc(nick):nick)+'</span><span class="ycard-time">'+ago+'</span></div>'
-      +'<div class="ycard-body"><span class="ybadge '+badge+'" style="margin-right:5px;vertical-align:middle">'+(window._esc?window._esc(p.category||'정보'):(p.category||'정보'))+'</span>'+(window._esc?window._esc(p.title):p.title)+'</div>'
-      +'<div class="ycard-stats"><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'+likes+'</span><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+comments+'</span></div>'
+      +'<div class="ycard-left">'
+        +'<div class="ycard-head">'+avatarHtml+'<span class="ycard-icon"></span><span class="ycard-nick">'+(window._esc?window._esc(nick):nick)+'</span><span class="ycard-time">'+ago+'</span></div>'
+        +'<div class="ycard-body"><span class="ybadge '+badge+'" style="margin-right:5px;vertical-align:middle">'+(window._esc?window._esc(p.category||'정보'):(p.category||'정보'))+'</span>'+(window._esc?window._esc(p.title):p.title)+'</div>'
+        +'<div class="ycard-stats"><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'+likes+'</span><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+comments+'</span></div>'
+      +'</div>'
       +thumb+'</div>';
   });
   listEl.innerHTML = html;
@@ -1094,8 +1099,8 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
   <div class="topbar">
     <div>
-      <div class="logo"><span style="font-size:20px;font-weight:800">해</span><span style="font-size:11px;font-weight:500;letter-spacing:-0.2px">외에서 </span><span style="font-size:20px;font-weight:800">카</span><span style="font-size:11px;font-weight:500;letter-spacing:-0.2px;margin-left:2px">드결제하자!</span></div>
-      <div class="logo-sub">카드 거절 걱정 없이, 지금 바로 결제되는 곳</div>
+      <div class="logo"><span style="font-size:26px;font-weight:800">해</span><span style="font-size:16px;font-weight:600;letter-spacing:-0.2px">외에서 </span><span style="font-size:26px;font-weight:800">카</span><span style="font-size:16px;font-weight:600;letter-spacing:-0.2px;margin-left:2px">드결제하자!</span></div>
+      <div class="logo-sub" style="font-size:13px;font-weight:500;margin-top:4px">카드 거절 걱정 없이, 지금 바로 결제되는 곳</div>
     </div>
     <div class="topbar-right">
       <div class="search-icon-btn" onclick="location.href='heka_city.html'"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg></div>
@@ -1198,15 +1203,15 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
   <div class="ytok-wrap">
     <div class="ytok-head"><span class="ytok-t">여행톡 실시간</span><span class="ytok-more" onclick="window.location.href='heka_yeohaengtok_v2.html'">더보기</span></div>
     <div id="ytok-list"><div style="padding:16px;text-align:center;font-size:12px;color:#bbb">불러오는 중...</div></div>
-    <button class="ytok-cta" onclick="window.location.href='heka_write.html'"><svg class="ytok-cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 14.5a2.5 2.5 0 0 1-2.5 2.5H8l-5 4V5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v9Z"/><path d="M8 9h8M8 12.5h5"/></svg><span>지금 톡 참여하기</span></button>
+    <button class="ytok-cta" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg class="ytok-cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 14.5a2.5 2.5 0 0 1-2.5 2.5H8l-5 4V5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v9Z"/><path d="M8 9h8M8 12.5h5"/></svg><span>여행톡 전체보기</span></button>
   </div>
 
   <!-- 하단 네비 -->
   <div class="bnav">
     <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
-    <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><line x1="12" y1="5" x2="12" y2="19" stroke-width="1.6" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-width="1.6" stroke-linecap="round"/></svg>등록</div>
+    <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
     <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
-    <div class="ni" onclick="window.location.href='heka_zzim.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>찜목록</div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
     <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
