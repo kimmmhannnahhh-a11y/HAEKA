@@ -16,39 +16,77 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:480px;margin:0 auto;min-height:100vh}
-.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:52px;border-bottom:1px solid #eee}
-.back-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px;border:none;background:none;font-size:18px;color:#222}
-.topbar-title{font-size:16px;font-weight:700;color:#111;flex:1}
-.store-header{background:#fff;padding:14px 16px 12px;border-bottom:1px solid #f0f0f0;margin-bottom:8px}
-.store-name{font-size:14px;font-weight:700;color:#111;margin-bottom:4px}
-.store-rating{display:flex;align-items:center;gap:6px}
-.rating-big{font-size:22px;font-weight:800;color:#111}
-.rating-stars{color:#f5a623;font-size:14px}
-.rating-count{font-size:12px;color:#888}
-.section-bar{padding:10px 16px 6px;font-size:11px;color:#aaa;font-weight:600;letter-spacing:.3px}
-.rev-item{background:#fff;margin:0 0 1px;padding:14px 16px}
-.rev-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.rev-av{width:32px;height:32px;border-radius:50%;background:#FFF1F2;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#FF3900;flex-shrink:0;overflow:hidden}
-.rev-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.rev-info{flex:1}
-.rev-name{font-size:12px;font-weight:700;color:#222}
-.rev-meta{font-size:10px;color:#bbb;margin-top:1px}
-.rev-star{font-size:11px;color:#f5a623;font-weight:700}
-.rev-txt{font-size:13px;color:#444;line-height:1.6;margin-bottom:6px}
-.rev-imgs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.rev-img{width:72px;height:72px;border-radius:8px;object-fit:cover;background:#eee}
-.rev-cards{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.rev-card-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:#FFF1F2;color:#FF3900}
-.empty{text-align:center;padding:60px 20px;color:#bbb;font-size:13px}
-.empty-icon{font-size:40px;margin-bottom:10px}
-.write-btn{position:fixed;bottom:24px;right:20px;background:#FF3900;color:#fff;border:none;border-radius:50px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(26,93,26,.35);font-family:inherit;display:flex;align-items:center;gap:6px}
-.loading{text-align:center;padding:40px;color:#bbb;font-size:13px}
-/* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--hk-bg);max-width:480px;margin:0 auto;min-height:100vh;color:var(--hk-text)}
+
+.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:54px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035)}
+.back-btn{width:34px;height:34px;border-radius:50%;background:#F5F5F3;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:10px;border:none;font-size:17px;color:var(--hk-text);flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em}
+
+/* 매장 헤더 카드 */
+.store-header{background:#fff;margin:14px 14px 10px;border-radius:16px;padding:16px 18px;box-shadow:var(--hk-card-shadow)}
+.store-name{font-size:16px;font-weight:800;color:var(--hk-text);margin-bottom:8px;letter-spacing:-.02em}
+.store-rating{display:flex;align-items:center;gap:8px}
+.rating-big{font-size:26px;font-weight:900;color:#F59E0B;letter-spacing:-.03em;line-height:1;display:inline-flex;align-items:center;gap:4px}
+.rating-big .star-mark{font-size:22px;color:#F59E0B}
+.rating-count{font-size:12.5px;color:var(--hk-sub);font-weight:600}
+
+.section-bar{padding:14px 18px 8px;font-size:11.5px;color:var(--hk-muted);font-weight:700;letter-spacing:.04em}
+
+/* 리뷰 아이템 카드 */
+.rev-item{background:#fff;margin:0 14px 10px;padding:16px 16px 14px;border-radius:16px;box-shadow:var(--hk-card-shadow)}
+.rev-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rev-av{width:40px;height:40px;border-radius:50%;background:var(--hk-accent-bg);border:2px solid var(--hk-accent-bg);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--hk-accent);flex-shrink:0;overflow:hidden}
+.rev-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.rev-info{flex:1;min-width:0}
+.rev-name{font-size:14px;font-weight:800;color:var(--hk-text);letter-spacing:-.01em}
+.rev-meta{font-size:11.5px;color:var(--hk-muted);margin-top:2px;font-weight:500}
+.rev-star{font-size:13px;color:#F59E0B;font-weight:800;letter-spacing:1px;display:inline-block;margin-bottom:8px}
+.rev-txt{font-size:14.5px;color:#374151;line-height:1.65;margin-bottom:8px;letter-spacing:-.01em;font-weight:500;word-break:break-word}
+.rev-imgs{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.rev-img{width:78px;height:78px;border-radius:12px;object-fit:cover;background:#F3F4F6;cursor:pointer}
+.rev-cards{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.rev-card-badge{font-size:11px;font-weight:800;padding:3px 7px;border-radius:5px;color:#fff;letter-spacing:.01em}
+.cb-visa{background:#1a1f71}
+.cb-master{background:#eb001b}
+.cb-jcb{background:#007b40}
+.cb-amex{background:#007bc1}
+.cb-tlog{background:#FF6B00}
+.cb-twallet{background:#FFD600;color:#1F2937}
+.cb-union{background:#e21836}
+.cb-cash{background:#6B7280}
+.cb-etc{background:#9CA3AF}
+
+.empty{text-align:center;padding:80px 24px;color:var(--hk-muted);font-size:14px;font-weight:500;line-height:1.7}
+.empty .empty-stars{display:inline-flex;gap:4px;margin-bottom:14px}
+.empty .empty-stars svg{width:24px;height:24px;fill:#E5E7EB}
+.empty .empty-title{font-size:15px;font-weight:700;color:var(--hk-sub);margin-bottom:6px}
+.empty .empty-sub{font-size:13px;color:var(--hk-muted);font-weight:500}
+
+/* FAB 후기 쓰기 */
+.write-btn{position:fixed;bottom:96px;right:18px;background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:13px 20px 13px 16px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(255,57,0,.32);font-family:inherit;display:inline-flex;align-items:center;gap:7px;z-index:50;letter-spacing:-.01em;transition:transform .15s ease}
+.write-btn:active{transform:scale(.96)}
+.write-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.loading{text-align:center;padding:60px;color:var(--hk-muted);font-size:14px;font-weight:500}
+
+/* 하단 네비 (홈 표준) */
+.bnav{display:flex;border-top:1px solid var(--hk-border);background:#FFFFFF;padding:8px 0 10px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:40}
+.bnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#999;gap:3px;font-weight:600}
+.bnav .ni svg{width:22px;height:22px}
+.bnav .ni.on{color:var(--hk-accent)}
+.bnav .ni.on svg{stroke:var(--hk-accent)}
+.bnav .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.bnav .npbtn{width:36px;height:36px;border-radius:50%;background:var(--hk-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px;box-shadow:0 8px 16px rgba(255,57,0,.25)}
+.bnav .nplbl{font-size:10px;color:var(--hk-accent);font-weight:700}
+
+/* body 하단 네비 가림 방지 */
+body{padding-bottom:84px}
+
+/* 모바일 풀폭 */
+@media (max-width:480px){
+  body{max-width:100%!important;background:var(--hk-bg)!important}
 }
 </style>
 <script src="security.js"></script>
@@ -72,7 +110,16 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
   <div class="loading">불러오는 중...</div>
 </div>
 
-<button class="write-btn" onclick="goWrite()">✏️ 후기 쓰기</button>
+<button class="write-btn" onclick="goWrite()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>후기 쓰기</button>
+
+<!-- 하단 네비 (홈 표준) -->
+<div class="bnav">
+  <div class="ni on" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+  <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+  <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+  <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+  <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -157,11 +204,16 @@ async function loadAll() {
       }
     } catch(e) {
       console.error(e);
-      wrap.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>불러오기 실패</div>';
+      wrap.innerHTML = '<div class="empty"><div class="empty-title">불러오기 실패</div><div class="empty-sub">잠시 후 다시 시도해주세요</div></div>';
     }
   } else {
-    wrap.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div>매장 정보가 없어요</div>';
+    wrap.innerHTML = '<div class="empty"><div class="empty-title">매장 정보가 없어요</div></div>';
   }
+}
+
+function cardBadgeClass(name){
+  var map = {'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb','AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union','현금':'cb-cash'};
+  return map[name] || 'cb-etc';
 }
 
 function renderReviews(wrap, items, avgRating) {
@@ -169,7 +221,15 @@ function renderReviews(wrap, items, avgRating) {
   if (countEl) countEl.textContent = '후기 ' + items.length + '개';
 
   if (!items.length) {
-    wrap.innerHTML = '<div class="empty"><div class="empty-icon">💳</div>아직 결제 후기가 없어요<br><br>첫 번째 후기를 남겨보세요!</div>';
+    wrap.innerHTML = '<div class="empty">'
+      + '<div class="empty-stars">'
+      +   '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+      +   '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+      +   '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+      + '</div>'
+      + '<div class="empty-title">아직 결제 후기가 없어요</div>'
+      + '<div class="empty-sub">첫 번째 후기를 남겨보세요</div>'
+      + '</div>';
     return;
   }
 
@@ -179,7 +239,7 @@ function renderReviews(wrap, items, avgRating) {
         ? '<div class="rev-av"><img src="'+r.photoURL+'" onerror="this.parentNode.textContent=\''+initials(r.nickname || '?')+'\'" /></div>'
         : '<div class="rev-av">'+initials(r.nickname || '등록자')+'</div>';
 
-      var starHtml = r.rating ? '<span class="rev-star">★'.repeat(Math.round(r.rating))+'</span> ' : '';
+      var starHtml = r.rating ? '<span class="rev-star">'+'★'.repeat(Math.round(r.rating))+'</span>' : '';
 
       var imgHtml = '';
       if (r.images && r.images.length) {
@@ -191,7 +251,7 @@ function renderReviews(wrap, items, avgRating) {
       var cardHtml = '';
       if (r.cards && r.cards.length) {
         cardHtml = '<div class="rev-cards">'
-          + r.cards.map(function(c){ return '<span class="rev-card-badge">'+c+'</span>'; }).join('')
+          + r.cards.map(function(c){ return '<span class="rev-card-badge '+cardBadgeClass(c)+'">'+c+'</span>'; }).join('')
           + '</div>';
       }
 
