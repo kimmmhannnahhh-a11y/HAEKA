@@ -16,57 +16,76 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;min-height:620px;display:flex;flex-direction:column}
-.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0}
-.back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111;line-height:1}
+body{background:var(--hk-bg);display:flex;justify-content:center;padding:30px;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--hk-text)}
+.phone{width:300px;background:var(--hk-bg);border-radius:26px;border:0;overflow:hidden;color:var(--hk-text);position:relative;min-height:620px;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(17,24,39,.14)}
+.sb{background:#fff;color:var(--hk-text);font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--hk-border)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fff;flex-shrink:0;box-shadow:0 1px 10px rgba(0,0,0,.04);border-bottom:1px solid var(--hk-border)}
+.back-btn{width:32px;height:32px;border-radius:50%;background:#F5F5F3;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:var(--hk-text);line-height:1;flex-shrink:0}
 
-.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:16px}
+/* 상단바 타이틀 — 홈 핫플섹션과 통일 */
+.hotpl-topbar-title{display:inline-flex;align-items:center;gap:5px;font-size:16px;font-weight:800;letter-spacing:-.03em;color:var(--hk-text);flex:1;justify-content:center;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hotpl-topbar-title .hot-live{display:inline-flex;align-items:center;justify-content:center;padding:2px 5px;border-radius:4px;background:var(--hk-accent);color:#fff;font-size:8px;font-weight:900;letter-spacing:.04em;transform:rotate(-3deg);box-shadow:0 3px 8px rgba(255,57,0,.22);margin-right:1px}
+.hotpl-topbar-title .hot-now{color:var(--hk-accent)}
+.hotpl-topbar-title .hot-main{color:var(--hk-text)}
+
+.scroll-wrap{flex:1;overflow-y:auto;padding-bottom:84px;-webkit-overflow-scrolling:touch}
 .scroll-wrap::-webkit-scrollbar{display:none}
 
+.live-meta-caption{text-align:center;padding:10px 16px 2px;font-size:11px;color:#16A34A;font-weight:700;letter-spacing:.01em}
+
 /* 카드 */
-.hotpl-card{margin:12px 14px 0;border-radius:12px;overflow:hidden;border:.5px solid #e8e8e8;cursor:pointer;background:#fff}
+.hotpl-card{margin:14px 14px 0;border-radius:18px;overflow:hidden;border:0;cursor:pointer;background:#fff;box-shadow:var(--hk-card-shadow);transition:transform .18s ease,box-shadow .18s ease}
 .hotpl-card:first-child{margin-top:14px}
-.hotpl-media{width:100%;height:161px;position:relative;overflow:hidden;background:#1a2e1a}
+.hotpl-card:active{transform:scale(.992)}
+.hotpl-media{width:100%;height:200px;position:relative;overflow:hidden;background:#1a2e1a}
 .hotpl-media img,.hotpl-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.hotpl-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:8px 12px 10px}
-.live-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;margin-bottom:4px}
-.live-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+.hotpl-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%,rgba(0,0,0,.55) 55%,rgba(0,0,0,.85) 100%);padding:14px 14px 12px}
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.22);backdrop-filter:blur(8px);border-radius:999px;padding:4px 10px;margin-bottom:6px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite;box-shadow:0 0 8px rgba(74,222,128,.6)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hotpl-title{font-size:12px;font-weight:500;color:#fff;line-height:1.4;margin-bottom:4px}
-.hotpl-reporter{display:flex;align-items:center;gap:4px}
-.rep-av{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff}
-.rep-name{font-size:10px;color:rgba(255,255,255,.85)}
+.hotpl-title{font-size:13.5px;font-weight:600;color:#fff;line-height:1.45;margin-bottom:6px;letter-spacing:-.01em}
+.hotpl-success{color:#16A34A;font-weight:900;text-shadow:0 1px 6px rgba(0,0,0,.55),0 0 14px rgba(22,163,74,.55)}
+.hotpl-reporter{display:flex;align-items:center;gap:6px}
+.rep-av{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.rep-name{font-size:11.5px;color:rgba(255,255,255,.92);font-weight:600}
 
 /* 정보 영역 */
-.hotpl-info{padding:7px 12px 10px}
-.hotpl-name{font-size:12px;font-weight:700;color:#111;margin-bottom:3px;display:flex;justify-content:space-between;align-items:center}
+.hotpl-info{padding:11px 14px 13px}
+.hotpl-name{font-size:15px;font-weight:800;color:var(--hk-text);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;letter-spacing:-.02em}
 .hotpl-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.hotpl-cat{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;background:#f0f0f0;color:#555}
-.cat-restaurant{}
-.cat-cafe{}
-.cat-pub{}
-.cat-etc{}
-.hotpl-city{font-size:10px;color:#999}
-.hotpl-cards{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
-.card-badge{font-size:9px;padding:2px 5px;border-radius:3px;font-weight:700;color:#fff}
+.hotpl-cat{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:700;background:#F3F4F6;color:#4B5563;letter-spacing:-.01em}
+.hotpl-city{font-size:12.5px;color:var(--hk-sub);font-weight:500}
+.hotpl-cards{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.card-badge{font-size:11px;padding:3px 7px;border-radius:5px;font-weight:800;color:#fff;letter-spacing:.01em}
 .cb-visa{background:#1a1f71}
 .cb-master{background:#eb001b}
 .cb-jcb{background:#007b40}
 .cb-amex{background:#007bc1}
 .cb-tlog{background:#FF6B00}
-.cb-twallet{background:#FFD600;color:#333}
+.cb-twallet{background:#FFD600;color:#1F2937}
 .cb-union{background:#e21836}
-.hotpl-time{font-size:10px;color:#bbb}
+.cb-etc{background:#6B7280}
+.hotpl-time{font-size:11.5px;color:var(--hk-muted);font-weight:500}
 
-.empty{padding:60px 16px;text-align:center;font-size:13px;color:#bbb}
-.loading{padding:40px 16px;text-align:center;font-size:12px;color:#bbb}
-/* HAEKA 2.0 common override */
-:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+.empty{padding:80px 16px;text-align:center;font-size:14px;color:var(--hk-muted);line-height:1.6;font-weight:500}
+.loading{padding:60px 16px;text-align:center;font-size:14px;color:var(--hk-muted);font-weight:500}
+
+/* 하단 네비 (홈 표준) */
+.bnav{display:flex;border-top:1px solid var(--hk-border);background:#FFFFFF;padding:8px 0 10px;flex-shrink:0;position:sticky;bottom:0;z-index:20}
+.bnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#999;gap:3px;font-weight:600}
+.bnav .ni svg{width:22px;height:22px}
+.bnav .ni.on{color:var(--hk-accent)}
+.bnav .ni.on svg{stroke:var(--hk-accent)}
+.bnav .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.bnav .npbtn{width:36px;height:36px;border-radius:50%;background:var(--hk-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px;box-shadow:0 8px 16px rgba(255,57,0,.25)}
+.bnav .nplbl{font-size:10px;color:var(--hk-accent);font-weight:700}
+
+/* 모바일 풀폭 */
+@media (max-width:480px){
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;border:0!important;box-shadow:none!important;min-height:100vh!important}
 }
 </style>
 <script src="security.js"></script>
@@ -76,13 +95,22 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
-    <span style="font-size:13px;font-weight:700;color:#111">지금 여기! 실시간 결제 핫플</span>
-    <div style="width:30px"></div>
+    <span class="hotpl-topbar-title"><span class="hot-live">LIVE</span><span class="hot-now">지금 여기!</span><span class="hot-main">실시간 결제 핫플</span></span>
+    <div style="width:32px;flex-shrink:0"></div>
   </div>
   <div class="scroll-wrap" id="scroll-wrap">
     <div class="loading" id="loading">불러오는 중...</div>
-    <div style="text-align:center;padding:6px 16px 4px;font-size:10px;color:#4ADE80;font-weight:600">· 실시간 최근 50개 표시 중 ·</div>
+    <div class="live-meta-caption">· 실시간 최근 50개 표시 중 ·</div>
     <div id="hotpl-list"></div>
+  </div>
+
+  <!-- 하단 네비 (홈 표준) -->
+  <div class="bnav">
+    <div class="ni on" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="window.location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 </div>
 
@@ -206,13 +234,13 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-media">'
       +media
       +'<div class="hotpl-overlay">'
-      +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:9px;color:#fff;font-weight:500">LIVE</span></div>'
-      +'<div class="hotpl-title">"'+s.name+', '+ago+' 결제 성공!"</div>'
+      +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:10px;color:#fff;font-weight:900;letter-spacing:.04em">LIVE</span></div>'
+      +'<div class="hotpl-title">"'+s.name+', '+ago+' <span class="hotpl-success">결제 성공!</span>"</div>'
       +'<div class="hotpl-reporter"><div class="rep-av">'+letter+'</div><span class="rep-name">'+nick+'</span></div>'
       +'</div></div>'
       +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="flex:1;min-width:0">'
-      +'<div class="hotpl-name">'+(s.name)+'<span style="font-size:10px;color:#bbb;font-weight:400;margin-left:6px">'+getCity(s)+'</span></div>'
+      +'<div class="hotpl-name">'+(s.name)+'<span class="hotpl-city" style="margin-left:8px">'+getCity(s)+'</span></div>'
       
       +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
       +'</div>'
