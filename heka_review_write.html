@@ -16,66 +16,77 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:100px}
-.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:52px;border-bottom:1px solid #eee}
-.back-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;background:none;font-size:18px;color:#222;margin-right:8px}
-.topbar-title{font-size:16px;font-weight:700;color:#111;flex:1}
-.submit-btn-top{background:#FF3900;color:#fff;border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-.submit-btn-top:disabled{background:#ccc;cursor:not-allowed}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--hk-bg);max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:96px;color:var(--hk-text)}
 
-.store-info{background:#fff;padding:14px 16px;border-bottom:1px solid #f0f0f0;margin-bottom:8px}
-.store-info-name{font-size:13px;font-weight:700;color:#111}
-.store-info-sub{font-size:11px;color:#aaa;margin-top:2px}
+.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:56px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035)}
+.back-btn{width:34px;height:34px;border-radius:50%;background:#F5F5F3;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-size:17px;color:var(--hk-text);margin-right:10px;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em}
+.submit-btn-top{background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.01em;box-shadow:0 4px 12px rgba(255,57,0,.22);transition:transform .12s ease}
+.submit-btn-top:active{transform:scale(.96)}
+.submit-btn-top:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed;box-shadow:none}
 
-.section{background:#fff;padding:16px;margin-bottom:8px}
-.sec-label{font-size:12px;font-weight:700;color:#555;margin-bottom:10px}
-.required{color:#e53e3e;margin-left:2px}
+/* 매장 헤더 카드 */
+.store-info{background:#fff;margin:14px 14px 10px;padding:14px 18px;border-radius:16px;box-shadow:var(--hk-card-shadow)}
+.store-info-name{font-size:15.5px;font-weight:800;color:var(--hk-text);letter-spacing:-.02em}
+.store-info-sub{font-size:12px;color:var(--hk-sub);margin-top:3px;font-weight:600}
+
+/* 섹션 카드 */
+.section{background:#fff;margin:0 14px 10px;padding:18px 18px 16px;border-radius:16px;box-shadow:var(--hk-card-shadow)}
+.sec-label{font-size:13px;font-weight:800;color:var(--hk-text);margin-bottom:12px;letter-spacing:-.01em;display:flex;align-items:center;gap:4px}
+.sec-label-sub{font-size:11.5px;color:var(--hk-muted);font-weight:500;margin-left:4px}
+.required{color:var(--hk-accent);margin-left:2px;font-weight:900}
 
 /* 별점 */
-.stars{display:flex;gap:6px;margin-bottom:4px}
-.star{font-size:34px;cursor:pointer;color:#ddd;transition:color .15s;line-height:1;user-select:none}
-.star.on{color:#f5a623}
-.star-label{font-size:12px;color:#888;height:18px}
+.stars{display:flex;gap:8px;margin-bottom:6px}
+.star{font-size:38px;cursor:pointer;color:#E5E7EB;transition:color .15s ease,transform .12s ease;line-height:1;user-select:none}
+.star.on{color:#F59E0B}
+.star:active{transform:scale(1.15)}
+.star-label{font-size:14px;color:var(--hk-accent);font-weight:700;height:20px;letter-spacing:-.01em;margin-top:2px}
 
 /* 텍스트 */
-textarea{width:100%;border:1.5px solid #eee;border-radius:10px;padding:12px;font-size:14px;font-family:inherit;resize:none;height:120px;outline:none;line-height:1.6;color:#222}
-textarea:focus{border-color:#FF3900}
-.char-count{text-align:right;font-size:11px;color:#bbb;margin-top:4px}
+textarea{width:100%;border:1.5px solid #E5E7EB;border-radius:14px;padding:14px;font-size:14.5px;font-family:inherit;resize:none;height:130px;outline:none;line-height:1.65;color:var(--hk-text);background:#fff;transition:border-color .15s ease,box-shadow .15s ease;letter-spacing:-.01em}
+textarea::placeholder{color:var(--hk-muted);font-weight:500}
+textarea:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,57,0,.10)}
+.char-count{text-align:right;font-size:11.5px;color:var(--hk-muted);margin-top:6px;font-weight:600}
 
 /* 사진 첨부 */
 .photo-wrap{display:flex;gap:8px;flex-wrap:wrap}
-.photo-add{width:72px;height:72px;border:2px dashed #ddd;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#bbb;font-size:10px;gap:2px;flex-shrink:0}
-.photo-add-icon{font-size:22px}
-.photo-thumb{position:relative;width:72px;height:72px;border-radius:10px;overflow:hidden;flex-shrink:0}
+.photo-add{width:76px;height:76px;border:1.5px solid #E5E7EB;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--hk-muted);font-size:11.5px;gap:4px;flex-shrink:0;background:#FAFAF8;transition:border-color .15s ease,background .15s ease;font-weight:600}
+.photo-add:hover{border-color:var(--hk-accent);background:#FFF8F6}
+.photo-add svg{width:22px;height:22px;stroke:var(--hk-sub);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.photo-add-count{font-size:11.5px;color:var(--hk-muted);font-weight:700}
+.photo-thumb{position:relative;width:76px;height:76px;border-radius:14px;overflow:hidden;flex-shrink:0;box-shadow:var(--hk-card-shadow)}
 .photo-thumb img{width:100%;height:100%;object-fit:cover}
-.photo-del{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:11px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-.photo-count{font-size:10px;color:#aaa;margin-top:4px}
+.photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700}
 
 /* 카드 선택 */
-.card-grid{display:flex;flex-wrap:wrap;gap:6px}
-.card-chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:.15s;color:#fff}
-.card-chip.off{opacity:.35;filter:grayscale(.5)}
-.card-chip.on{opacity:1;filter:none;box-shadow:0 0 0 2px #fff, 0 0 0 4px #FF3900}
+.card-grid{display:flex;flex-wrap:wrap;gap:7px}
+.card-chip{padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:800;cursor:pointer;border:2px solid transparent;transition:all .15s ease;letter-spacing:-.01em;background:#F3F4F6;color:#4B5563;display:inline-flex;align-items:center;gap:5px}
+.card-chip.off{background:#F3F4F6!important;color:#4B5563!important;border-color:transparent!important}
+.card-chip.on{color:#fff!important;border:2px solid var(--hk-accent)!important;box-shadow:0 4px 10px rgba(255,57,0,.18)}
+.card-chip.on::before{content:'';display:inline-block;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.25);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");background-position:center;background-repeat:no-repeat;background-size:11px}
 
 /* 하단 제출 */
-.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid #eee;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-.submit-full{width:100%;background:#FF3900;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-.submit-full:disabled{background:#ccc;cursor:not-allowed}
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--hk-border);padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));z-index:50;box-shadow:0 -2px 14px rgba(0,0,0,.04)}
+.submit-full{width:100%;background:var(--hk-accent);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(255,57,0,.22);transition:transform .12s ease}
+.submit-full:active{transform:scale(.99)}
+.submit-full:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed;box-shadow:none}
 
 /* 로그인 필요 */
-.login-wall{background:#fff;margin:20px 16px;border-radius:14px;padding:30px 20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.login-wall-icon{font-size:36px;margin-bottom:10px}
-.login-wall-txt{font-size:14px;color:#555;margin-bottom:16px;line-height:1.6}
-.login-btn{background:#FF3900;color:#fff;border:none;border-radius:10px;padding:11px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.login-wall{background:#fff;margin:30px 14px;border-radius:18px;padding:36px 24px;text-align:center;box-shadow:var(--hk-card-shadow)}
+.login-wall-txt{font-size:15.5px;color:var(--hk-text);margin-bottom:20px;line-height:1.65;font-weight:500;letter-spacing:-.01em}
+.login-btn{background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:13px 32px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.01em;box-shadow:0 6px 16px rgba(255,57,0,.22);transition:transform .12s ease}
+.login-btn:active{transform:scale(.97)}
 
 /* 토스트 */
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:rgba(26,26,26,.92);backdrop-filter:blur(10px);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s ease;pointer-events:none;letter-spacing:-.01em}
 .toast.show{opacity:1}
-/* HAEKA 2.0 common override */
-:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
-body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+
+/* 모바일 풀폭 */
+@media (max-width:480px){
+  body{max-width:100%!important;background:var(--hk-bg)!important}
 }
 </style>
 <script src="security.js"></script>
@@ -198,7 +209,7 @@ function renderPhotos() {
   const wrap = document.getElementById('photo-wrap');
   wrap.innerHTML = photoURLs.map((u, i) =>
     `<div class="photo-thumb"><img src="${u}"><button class="photo-del" onclick="_removePhoto(${i})">×</button></div>`
-  ).join('') + (photoFiles.length < 4 ? `<div class="photo-add" onclick="_addPhoto()"><span class="photo-add-icon">📷</span><span>${photoFiles.length}/4</span></div>` : '');
+  ).join('') + (photoFiles.length < 4 ? `<div class="photo-add" onclick="_addPhoto()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="photo-add-count">${photoFiles.length}/4</span></div>` : '');
 }
 
 // 제출
@@ -260,7 +271,6 @@ function renderLoginWall() {
       <div class="store-info-sub">결제 후기 작성</div>
     </div>
     <div class="login-wall">
-      <div class="login-wall-icon">🔐</div>
       <div class="login-wall-txt">후기를 쓰려면<br>로그인이 필요해요</div>
       <button class="login-btn" onclick="location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href)">로그인하기</button>
     </div>`;
@@ -282,23 +292,23 @@ function renderForm() {
     </div>
 
     <div class="section">
-      <div class="sec-label">후기<span class="required">*</span> </div>
-      <textarea id="rev-text" placeholder="결제 경험을 자유롭게 적어주세요 😊" oninput="document.getElementById('char-cnt').textContent=this.value.length+'자';_checkSubmit()"></textarea>
+      <div class="sec-label">후기<span class="required">*</span></div>
+      <textarea id="rev-text" placeholder="결제 경험을 자유롭게 적어주세요" oninput="document.getElementById('char-cnt').textContent=this.value.length+'자';_checkSubmit()"></textarea>
       <div class="char-count" id="char-cnt">0자</div>
     </div>
 
     <div class="section">
-      <div class="sec-label">사진 <span style="font-size:10px;color:#aaa;font-weight:400">최대 4장</span></div>
+      <div class="sec-label">사진<span class="sec-label-sub">최대 4장</span></div>
       <div class="photo-wrap" id="photo-wrap">
         <div class="photo-add" onclick="_addPhoto()">
-          <span class="photo-add-icon">📷</span>
-          <span>0/4</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span class="photo-add-count">0/4</span>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <div class="sec-label">사용한 카드 <span style="font-size:10px;color:#aaa;font-weight:400">선택</span></div>
+      <div class="sec-label">사용한 카드<span class="sec-label-sub">선택</span></div>
       <div class="card-grid">
         ${CARD_LIST.map(c=>`<div class="card-chip off" data-card="${c.name}" style="background:${c.color}" onclick="_toggleCard('${c.name}')">${c.name}</div>`).join('')}
       </div>
