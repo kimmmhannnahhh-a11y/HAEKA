@@ -18,9 +18,12 @@
 @import url('haeka_rebuild_common.css');
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--hk-bg);max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:96px;color:var(--hk-text)}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;display:flex;justify-content:center;padding:30px;min-height:100vh;color:var(--hk-text)}
+.phone{width:300px!important;height:620px!important;background:var(--hk-bg)!important;border-radius:30px!important;border:0!important;overflow:hidden!important;color:var(--hk-text)!important;position:relative!important;display:flex!important;flex-direction:column!important;box-shadow:0 24px 70px rgba(17,24,39,.15)!important}
 
-.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:56px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035)}
+.topbar{flex-shrink:0;background:#fff;display:flex;align-items:center;padding:0 16px;height:56px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035);z-index:10}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:84px}
+.scroll-area::-webkit-scrollbar{display:none}
 .back-btn{width:34px;height:34px;border-radius:50%;background:#F5F5F3;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-size:17px;color:var(--hk-text);margin-right:10px;flex-shrink:0}
 .topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em}
 .submit-btn-top{background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.01em;box-shadow:0 4px 12px rgba(255,57,0,.22);transition:transform .12s ease}
@@ -68,8 +71,8 @@ textarea:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,57,0,
 .card-chip.on{color:#fff!important;border:2px solid var(--hk-accent)!important;box-shadow:0 4px 10px rgba(255,57,0,.18)}
 .card-chip.on::before{content:'';display:inline-block;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.25);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");background-position:center;background-repeat:no-repeat;background-size:11px}
 
-/* 하단 제출 */
-.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:1px solid var(--hk-border);padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom));z-index:50;box-shadow:0 -2px 14px rgba(0,0,0,.04)}
+/* 하단 제출 (.phone 안 absolute) */
+.bottom-bar{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--hk-border);padding:12px 14px;padding-bottom:calc(12px + env(safe-area-inset-bottom));z-index:50;box-shadow:0 -2px 14px rgba(0,0,0,.04)}
 .submit-full{width:100%;background:var(--hk-accent);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(255,57,0,.22);transition:transform .12s ease}
 .submit-full:active{transform:scale(.99)}
 .submit-full:disabled{background:#E5E7EB;color:#9CA3AF;cursor:not-allowed;box-shadow:none}
@@ -80,18 +83,20 @@ textarea:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,57,0,
 .login-btn{background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:13px 32px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-.01em;box-shadow:0 6px 16px rgba(255,57,0,.22);transition:transform .12s ease}
 .login-btn:active{transform:scale(.97)}
 
-/* 토스트 */
-.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:rgba(26,26,26,.92);backdrop-filter:blur(10px);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s ease;pointer-events:none;letter-spacing:-.01em}
+/* 토스트 (.phone 안 absolute) */
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(26,26,26,.92);backdrop-filter:blur(10px);color:#fff;padding:12px 22px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s ease;pointer-events:none;letter-spacing:-.01em}
 .toast.show{opacity:1}
 
 /* 모바일 풀폭 */
 @media (max-width:480px){
-  body{max-width:100%!important;background:var(--hk-bg)!important}
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
 }
 </style>
 <script src="security.js"></script>
 </head>
 <body>
+<div class="phone">
 
 <div class="topbar">
   <button class="back-btn" onclick="history.back()">←</button>
@@ -99,8 +104,12 @@ textarea:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,57,0,
   <button class="submit-btn-top" id="submit-top" onclick="submitReview()" disabled>등록</button>
 </div>
 
-<div id="main-wrap"><div class="loading" style="text-align:center;padding:60px;color:#9CA3AF;font-size:14px;font-weight:500">불러오는 중...</div></div>
+<div class="scroll-area">
+  <div id="main-wrap"><div class="loading" style="text-align:center;padding:60px;color:#9CA3AF;font-size:14px;font-weight:500">불러오는 중...</div></div>
+</div>
 <div class="toast" id="toast"></div>
+
+</div><!-- /.phone -->
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";

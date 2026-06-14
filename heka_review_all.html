@@ -18,9 +18,12 @@
 @import url('haeka_rebuild_common.css');
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--hk-bg);max-width:480px;margin:0 auto;min-height:100vh;color:var(--hk-text)}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;display:flex;justify-content:center;padding:30px;min-height:100vh;color:var(--hk-text)}
+.phone{width:300px!important;height:620px!important;background:var(--hk-bg)!important;border-radius:30px!important;border:0!important;overflow:hidden!important;color:var(--hk-text)!important;position:relative!important;display:flex!important;flex-direction:column!important;box-shadow:0 24px 70px rgba(17,24,39,.15)!important}
 
-.topbar{position:sticky;top:0;z-index:100;background:#fff;display:flex;align-items:center;padding:0 16px;height:54px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035)}
+.topbar{flex-shrink:0;background:#fff;display:flex;align-items:center;padding:0 16px;height:54px;border-bottom:1px solid var(--hk-border);box-shadow:0 1px 10px rgba(0,0,0,.035);z-index:10}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-area::-webkit-scrollbar{display:none}
 .back-btn{width:34px;height:34px;border-radius:50%;background:#F5F5F3;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:10px;border:none;font-size:17px;color:var(--hk-text);flex-shrink:0}
 .topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em}
 
@@ -64,15 +67,15 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .empty .empty-title{font-size:15px;font-weight:700;color:var(--hk-sub);margin-bottom:6px}
 .empty .empty-sub{font-size:13px;color:var(--hk-muted);font-weight:500}
 
-/* FAB 후기 쓰기 */
-.write-btn{position:fixed;bottom:96px;right:18px;background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:13px 20px 13px 16px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(255,57,0,.32);font-family:inherit;display:inline-flex;align-items:center;gap:7px;z-index:50;letter-spacing:-.01em;transition:transform .15s ease}
+/* FAB 후기 쓰기 (.phone 안 absolute) */
+.write-btn{position:absolute;bottom:62px;right:14px;background:var(--hk-accent);color:#fff;border:none;border-radius:999px;padding:11px 16px 11px 13px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(255,57,0,.32);font-family:inherit;display:inline-flex;align-items:center;gap:6px;z-index:50;letter-spacing:-.01em;transition:transform .15s ease}
 .write-btn:active{transform:scale(.96)}
 .write-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 .loading{text-align:center;padding:60px;color:var(--hk-muted);font-size:14px;font-weight:500}
 
 /* 하단 네비 (홈 표준) */
-.bnav{display:flex;border-top:1px solid var(--hk-border);background:#FFFFFF;padding:8px 0 10px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:40}
+.bnav{display:flex;border-top:1px solid var(--hk-border);background:#FFFFFF;padding:8px 0 10px;flex-shrink:0;z-index:40}
 .bnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#999;gap:3px;font-weight:600}
 .bnav .ni svg{width:22px;height:22px}
 .bnav .ni.on{color:var(--hk-accent)}
@@ -81,33 +84,34 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .bnav .npbtn{width:36px;height:36px;border-radius:50%;background:var(--hk-accent);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px;box-shadow:0 8px 16px rgba(255,57,0,.25)}
 .bnav .nplbl{font-size:10px;color:var(--hk-accent);font-weight:700}
 
-/* body 하단 네비 가림 방지 */
-body{padding-bottom:84px}
-
 /* 모바일 풀폭 */
 @media (max-width:480px){
-  body{max-width:100%!important;background:var(--hk-bg)!important}
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
 }
 </style>
 <script src="security.js"></script>
 </head>
 <body>
+<div class="phone">
 
 <div class="topbar">
   <button class="back-btn" onclick="history.back()">←</button>
   <div class="topbar-title">결제 후기</div>
 </div>
 
-<div class="store-header" id="store-header" style="display:none">
-  <div class="store-name" id="store-name-txt"></div>
-  <div class="store-rating">
-    <span class="rating-big" id="rating-big">★-</span>
-    <span class="rating-count" id="rating-count"></span>
+<div class="scroll-area">
+  <div class="store-header" id="store-header" style="display:none">
+    <div class="store-name" id="store-name-txt"></div>
+    <div class="store-rating">
+      <span class="rating-big" id="rating-big">★-</span>
+      <span class="rating-count" id="rating-count"></span>
+    </div>
   </div>
-</div>
 
-<div id="review-wrap">
-  <div class="loading">불러오는 중...</div>
+  <div id="review-wrap">
+    <div class="loading">불러오는 중...</div>
+  </div>
 </div>
 
 <button class="write-btn" onclick="goWrite()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>후기 쓰기</button>
@@ -120,6 +124,8 @@ body{padding-bottom:84px}
   <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
   <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
 </div>
+
+</div><!-- /.phone -->
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
