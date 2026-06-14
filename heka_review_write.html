@@ -136,7 +136,15 @@ const STAR_LABELS = ['','별로예요','그저 그래요','보통이에요','좋
 
 const params = new URLSearchParams(location.search);
 const storeId = params.get('id') || '';
-const storeName = decodeURIComponent(params.get('name') || '');
+let storeName = '';
+try {
+  storeName = decodeURIComponent(params.get('name') || '');
+} catch(e) {
+  storeName = params.get('name') || '';
+}
+if (!storeId) {
+  document.getElementById('main-wrap').innerHTML = '<div class="login-wall" style="margin:30px 14px"><div class="login-wall-txt">매장 정보가 없어요<br>매장 상세 페이지에서 다시 시도해주세요</div><button class="login-btn" onclick="history.back()">뒤로 가기</button></div>';
+}
 
 let currentUser = null;
 let selectedStar = 0;
