@@ -172,7 +172,11 @@ async function loadAll() {
   if (storeId) {
     try {
       const snap = await getDoc(doc(db, 'stores', storeId));
-      if (snap.exists()) {
+      if (!snap.exists()) {
+        wrap.innerHTML = '<div class="empty"><div class="empty-title">매장을 찾을 수 없어요</div><div class="empty-sub">삭제됐거나 잘못된 링크일 수 있어요</div></div>';
+        return;
+      }
+      {
         const s = snap.data();
         const hdr = document.getElementById('store-header');
         document.getElementById('store-name-txt').textContent = s.name || storeName;
