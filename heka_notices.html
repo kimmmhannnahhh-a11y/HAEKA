@@ -17,7 +17,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <style>
 @import url('haeka_rebuild_common.css');
-@media not all{
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center}
 .phone{width:390px;max-width:100vw;background:#fff;min-height:100vh;display:flex;flex-direction:column}
@@ -37,6 +36,10 @@ body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 /* HAEKA 2.0 common override */
 :root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF3900;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
 body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+
+@media (max-width:480px){
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
 }
 </style>
 <script src="security.js"></script>
@@ -50,7 +53,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     <div style="width:28px"></div>
   </div>
   <div class="scroll-wrap" id="notice-list">
-    <div class="empty"><div style="font-size:36px">📢</div><div>불러오는 중...</div></div>
+    <div class="empty"><div>불러오는 중...</div></div>
   </div>
 </div>
 
@@ -79,7 +82,7 @@ async function load() {
   try {
     var snap = await getDocs(query(collection(db,'notices'), orderBy('createdAt','desc'), limit(30)));
     if (snap.empty) {
-      el.innerHTML = '<div class="empty"><div style="font-size:36px">📢</div><div>공지사항이 없어요</div></div>';
+      el.innerHTML = '<div class="empty"><div>공지사항이 없어요</div></div>';
       return;
     }
     el.innerHTML = '';
@@ -98,7 +101,7 @@ async function load() {
       el.appendChild(div);
     });
   } catch(e) {
-    el.innerHTML = '<div class="empty"><div style="font-size:36px">📢</div><div>불러오기 실패</div></div>';
+    el.innerHTML = '<div class="empty"><div>불러오기 실패</div></div>';
   }
 }
 load();
