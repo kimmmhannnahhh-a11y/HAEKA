@@ -391,26 +391,9 @@ body,.phone,.scroll-wrap,.section,.meta-row,.hours-row,.rev-item{font-family:'Pl
 
 @media(max-width:430px){.phone{border-radius:0;width:100vw;height:100vh;height:100dvh}}
 
-/* ═══ 최종 합의 v3 — 칸 분리 명확 (사용자: '도화지같다' 피드백) ═══ */
-.scroll-wrap{background:#D8D2C2!important}
-.section{margin:0 14px 20px!important;padding:20px!important;background:#fff!important;border:2px solid #A89F8A!important;border-bottom:2px solid #A89F8A!important;border-radius:14px!important;box-shadow:0 4px 12px rgba(0,0,0,.10),0 14px 30px rgba(0,0,0,.12)!important}
-.section:last-of-type{border-bottom:2px solid #A89F8A!important;margin-bottom:24px!important}
-.section.hk-pay-strip,.hk-pay-strip{margin:0 14px 20px!important;padding:20px 20px 20px 24px!important;background:#FFE4DA!important;border:2px solid var(--hk-accent)!important;border-left:6px solid var(--hk-accent)!important;border-radius:14px!important;box-shadow:0 4px 14px rgba(255,57,0,.18),0 14px 32px rgba(255,57,0,.16)!important}
-#cards-no-section{margin:0 14px 20px!important;padding:20px!important;background:#F0EEE8!important;border:2px solid #A89F8A!important;border-radius:14px!important;box-shadow:0 4px 12px rgba(0,0,0,.10),0 14px 30px rgba(0,0,0,.12)!important}
-#cards-no-section .sec-title-red{color:#6B7280!important}
-#cards-no-section .card-grid span{color:#9CA3AF!important}
-#cards-no-section .card-chip{background:#E5E7EB!important;color:#6B7280!important}
-
-/* P0 버그 픽스 + P1 명도 + 사용자 신규 요청 v2 — 강도 UP */
+/* P0 버그 픽스만 유지 — card-chip 텍스트 사라짐 + ::before ● 제거 (디자인 변경 원복) */
+#cards-no-section .card-chip{background:#F3F4F6!important;color:#9CA3AF!important}
 .section.hk-pay-strip .sec-title-blue::before,#cards-no-section .sec-title-red::before{content:''!important;display:none!important}
-.section.hk-pay-strip .sec-title-blue{color:var(--hk-accent)!important;font-size:19px!important;font-weight:900!important;letter-spacing:-.03em!important}
-.section .sec-title{font-size:19px!important;font-weight:900!important;letter-spacing:-.03em!important;color:var(--hk-text)!important}
-#cards-no-section .sec-title-red{font-size:19px!important;font-weight:900!important;letter-spacing:-.03em!important}
-#detail-map{background:#E8E8E5!important;border:1.5px solid #C9C5BC!important;border-radius:12px!important}
-
-/* v4 — 결제 후기 연한 베이지 배경 (사용자 요청) */
-#review-section{background:#FAF3E4!important;border:2px solid #C9BC9F!important;box-shadow:0 4px 12px rgba(166,138,78,.10),0 14px 30px rgba(166,138,78,.12)!important}
-#review-section .sec-title{color:#7A5C20!important}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
