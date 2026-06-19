@@ -155,7 +155,7 @@ body{background:var(--haeka-bg);font-family:Pretendard,-apple-system,BlinkMacSys
 .signal-red{background:#FEE2E2;color:#7F1D1D;border:1px solid #FCA5A5}
 .section{border-radius:16px;margin:10px 14px;padding:13px 14px;border:1px solid var(--haeka-line);box-shadow:0 4px 14px rgba(15,23,42,.04)}
 .sec-title,.sec-title-blue{font-size:11px;font-weight:900;color:var(--haeka-primary-deep);letter-spacing:.06em;margin-bottom:10px}
-.sec-title-blue::before{content:'✓ ';color:var(--haeka-primary)}
+.sec-title-blue::before{content:'';color:var(--haeka-primary)}
 .sec-title-red{font-size:11px;font-weight:900;color:#DC2626;letter-spacing:.06em;margin-bottom:10px}
 .card-grid{gap:7px}
 .card-chip{border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900;box-shadow:0 3px 10px rgba(15,23,42,.10)}
@@ -678,7 +678,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
       var nick = r.nickname || r.nick || '익명';
       var avTxt = r.photoURL
         ? '<div class="rev-av" style="overflow:hidden"><img src="'+r.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=nick.charAt(0)"></div>'
-        : '<div class="rev-av">'+(r.isLegacy?'🌏':nick.charAt(0))+'</div>';
+        : '<div class="rev-av">'+(r.isLegacy?'L':nick.charAt(0))+'</div>';
       var starTxt = r.rating ? '<span class="rev-stars">'+renderStars(r.rating)+'</span>' : '';
       return '<div class="rev-item">'
         +avTxt
@@ -986,7 +986,7 @@ function shareStore() {
     navigator.share({ title: document.getElementById('hero-name').textContent, url: url });
   } else {
     navigator.clipboard.writeText(url).then(function() {
-      showToast('🔗 링크가 복사됐어요!');
+      showToast('링크가 복사됐어요');
     });
   }
 }
@@ -999,7 +999,7 @@ function openMap() {
 
 function copyAddr() {
   var addr = document.getElementById('addr-txt').textContent;
-  navigator.clipboard.writeText(addr).then(function() { showToast('📋 주소가 복사됐어요!'); });
+  navigator.clipboard.writeText(addr).then(function() { showToast('주소가 복사됐어요'); });
 }
 
 function toggleHours() {
@@ -1112,7 +1112,7 @@ function showClosedBadge() {
   var badge = document.createElement('div');
   badge.id = 'closed-badge';
   badge.className = 'closed-badge';
-  badge.textContent = '🚫 폐업';
+  badge.textContent = '폐업';
   heroEl.appendChild(badge);
 }
 
@@ -1161,7 +1161,7 @@ window.voteEditRequest = async function(type) {
         await updateDoc(reqRef, { resolved: true });
         if (badge) badge.remove();
         _editReqData = null;
-        showToast('✅ 맞아요 3명 달성! 정보가 자동 업데이트됐어요');
+        showToast('맞아요 3명 달성. 정보가 자동 업데이트됐어요');
       }
     } else {
       var newDisagree = [...(req.disagreeUids||[]), uid];
