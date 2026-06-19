@@ -391,9 +391,9 @@ body,.phone,.scroll-wrap,.section,.meta-row,.hours-row,.rev-item{font-family:'Pl
 
 @media(max-width:430px){.phone{border-radius:0;width:100vw;height:100vh;height:100dvh}}
 
-/* P0 버그 픽스만 유지 — card-chip 텍스트 사라짐 + ::before ● 제거 (디자인 변경 원복) */
-#cards-no-section .card-chip{background:#F3F4F6!important;color:#9CA3AF!important}
+/* 최소 픽스 — ::before ● 차단만 (cardColor 인라인 카드 표준색 살림) + 결제후기 글씨 색 진하게 */
 .section.hk-pay-strip .sec-title-blue::before,#cards-no-section .sec-title-red::before{content:''!important;display:none!important}
+#review-title span{color:var(--hk-text)!important;font-size:13px!important;font-weight:800!important;letter-spacing:.04em!important}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
