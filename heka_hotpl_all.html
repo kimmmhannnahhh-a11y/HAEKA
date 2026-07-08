@@ -216,31 +216,37 @@ window.renderHotpl = function(stores){
     el.innerHTML='<div class="empty">등록된 핫플이 없어요</div>';
     return;
   }
+  var _e = window._esc || function(x){return x==null?'':String(x);};
+  var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   el.innerHTML = stores.map(function(s){
     var nick = s.nickname||s.nick||'해카마왕';
     var letter = nick.charAt(0);
     var ago = timeAgo(s.createdAt);
     var catTxt = s.category||'기타';
+    var sName = _e(s.name);
+    var sId = _e(s.id);
 
-    // 미디어
+    // 미디어 (https만 허용)
     var media = '';
     if(s.videoUrl){
-      media = '<video src="'+s.videoUrl+'" autoplay muted loop playsinline preload="auto" loading="eager" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></video>';
+      var vSrc = _u(s.videoUrl);
+      if(vSrc) media = '<video src="'+vSrc+'" autoplay muted loop playsinline preload="auto" loading="eager" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></video>';
     } else if(s.images && s.images[0]){
-      media = '<img src="'+s.images[0]+'" loading="eager" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>';
+      var iSrc = _u(s.images[0]);
+      if(iSrc) media = '<img src="'+iSrc+'" loading="eager" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>';
     }
 
-    return '<div class="hotpl-card" onclick="window.location.href=\'heka_store_detail.html?id='+s.id+'\'">'
+    return '<div class="hotpl-card" onclick="window.location.href=\'heka_store_detail.html?id='+encodeURIComponent(s.id||'')+'\'">'
       +'<div class="hotpl-media">'
       +media
       +'<div class="hotpl-overlay">'
       +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:10px;color:#fff;font-weight:900;letter-spacing:.04em">LIVE</span></div>'
-      +'<div class="hotpl-title">"'+s.name+', '+ago+' <span class="hotpl-success">결제 성공!</span>"</div>'
-      +'<div class="hotpl-reporter"><div class="rep-av">'+letter+'</div><span class="rep-name">'+nick+'</span></div>'
+      +'<div class="hotpl-title">"'+sName+', '+_e(ago)+' <span class="hotpl-success">결제 성공!</span>"</div>'
+      +'<div class="hotpl-reporter"><div class="rep-av">'+_e(letter)+'</div><span class="rep-name">'+_e(nick)+'</span></div>'
       +'</div></div>'
       +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="flex:1;min-width:0">'
-      +'<div class="hotpl-name">'+(s.name)+'<span class="hotpl-city" style="margin-left:8px">'+getCity(s)+'</span></div>'
+      +'<div class="hotpl-name">'+sName+'<span class="hotpl-city" style="margin-left:8px">'+_e(getCity(s))+'</span></div>'
       
       +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
       +'</div>'
