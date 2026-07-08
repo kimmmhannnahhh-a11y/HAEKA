@@ -204,9 +204,10 @@ function cardBadges(store){
     'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb',
     'AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union'
   };
+  var _e = window._esc || function(x){return x==null?'':String(x);};
   return cards.map(function(c){
     var cls = map[c]||'cb-etc';
-    return '<span class="card-badge '+cls+'">'+c+'</span>';
+    return '<span class="card-badge '+cls+'">'+_e(c)+'</span>';
   }).join('');
 }
 
@@ -251,8 +252,8 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-cards">'+cardBadges(s)+'</div>'
       +'</div>'
       +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-left:8px;flex-shrink:0">'
-      +'<span class="hotpl-cat '+catClass(catTxt)+'">'+catTxt+'</span>'
-      +'<span class="hotpl-time">'+ago+'</span>'
+      +'<span class="hotpl-cat '+catClass(catTxt)+'">'+_e(catTxt)+'</span>'
+      +'<span class="hotpl-time">'+_e(ago)+'</span>'
       +'</div>'
       +'</div></div>';
   }).join('');
