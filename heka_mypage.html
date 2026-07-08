@@ -697,22 +697,26 @@ function renderRecent() {
     head.style.display = 'flex';
     row.style.display = 'flex';
     row.innerHTML = '';
+    var _e = window._esc || function(x){return x==null?'':String(x);};
+    var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
     var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     recent.forEach(function(store) {
       var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
       cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
-      var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
-      var imgHtml = store.images&&store.images[0]
-        ?'<div class="nimg" style="background:url('+store.images[0]+') center/cover no-repeat"></div>'
-        :'<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
+      var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
+      var imgSrc = (store.images&&store.images[0])?_u(store.images[0]):'';
+      var imgHtml = imgSrc
+        ?'<div class="nimg" style="background-image:url(\''+imgSrc.replace(/'/g,'%27')+'\');background-position:center;background-size:cover;background-repeat:no-repeat"></div>'
+        :'<div class="nimg" style="background:'+catBg(store.category)+'">'+_e(catEmoji(store.category))+'</div>';
       var fakeStore = Object.assign({},store);
       if(typeof store.createdAt==='number') fakeStore.createdAt={toMillis:function(){return store.createdAt;}};
       var card = document.createElement('div');
       card.className = 'ncard';
       card.style.position = 'relative';
+      var storeIdSafe = String(store.id||'').replace(/[^a-zA-Z0-9_-]/g,'');
       card.innerHTML = imgHtml
-        +'<button onclick="event.stopPropagation();removeRecent(\''+store.id+'\')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;padding:0"><svg width="9" height="9" viewBox="0 0 10 10" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>'
-        +'<div class="nbody"><div class="nn">'+store.name+'</div><div class="nm-time">'+timeAgo(fakeStore.createdAt)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+        +'<button onclick="event.stopPropagation();removeRecent(\''+storeIdSafe+'\')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;padding:0"><svg width="9" height="9" viewBox="0 0 10 10" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>'
+        +'<div class="nbody"><div class="nn">'+_e(store.name)+'</div><div class="nm-time">'+_e(timeAgo(fakeStore.createdAt))+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
       card.onclick = function(){ openRecentDetail(fakeStore); };
       row.appendChild(card);
     });

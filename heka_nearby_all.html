@@ -655,19 +655,23 @@ function renderList(stores){
   var el=document.getElementById('store-list');
   document.getElementById('count-bar').textContent='전체 '+stores.length+'개';
   if(!stores.length){el.innerHTML='<div class="empty-state"><div class="empty-txt">조건에 맞는 매장이 없어요</div></div>';return;}
+  var _e = window._esc || function(x){return x==null?'':String(x);};
+  var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   el.innerHTML=stores.map(function(s,idx){
     var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards=(s.payOk||[]);
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);ai=ai<0?99:ai;bi=bi<0?99:bi;return ai-bi;});
-    var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
+    var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
     var dist='';
-    if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+distLbl(m)+'</span>';}
+    if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+_e(distLbl(m))+'</span>';}
     var status='';
     var storeHours=s.businessHours||s.hours||s.openingHours;
     if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
-    var thumb=s.images&&s.images[0]?'<div class="store-thumb"><img src="'+s.images[0]+'" alt=""></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
+    var imgSrc=(s.images&&s.images[0])?_u(s.images[0]):'';
+    var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
-    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+s.id+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+s.name+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+status+'<span class="store-cat">'+(s.category||'')+'</span><span class="store-time"> · '+timeAgo(s.createdAt)+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+s.id+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    var sIdSafe = _e(s.id||'');
+    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+sIdSafe+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+_e(s.name)+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+status+'<span class="store-cat">'+_e(s.category||'')+'</span><span class="store-time"> · '+_e(timeAgo(s.createdAt))+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+sIdSafe+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
