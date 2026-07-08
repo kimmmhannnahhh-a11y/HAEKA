@@ -243,36 +243,40 @@ function renderReviews(wrap, items, avgRating) {
     return;
   }
 
+  var _e = window._esc || function(x){return x==null?'':String(x);};
+  var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   wrap.innerHTML = '<div class="section-bar">후기 ' + items.length + '개</div>'
     + items.map(function(r) {
-      var avHtml = r.photoURL
-        ? '<div class="rev-av"><img src="'+r.photoURL+'" onerror="this.parentNode.textContent=\''+initials(r.nickname || '?')+'\'" /></div>'
-        : '<div class="rev-av">'+initials(r.nickname || '등록자')+'</div>';
+      var nick = r.nickname||r.nick||'익명';
+      var photoSrc = _u(r.photoURL);
+      var avHtml = photoSrc
+        ? '<div class="rev-av"><img src="'+photoSrc+'" onerror="this.style.display=\'none\'" /></div>'
+        : '<div class="rev-av">'+_e(initials(nick))+'</div>';
 
       var starHtml = r.rating ? '<span class="rev-star">'+'★'.repeat(Math.round(r.rating))+'</span>' : '';
 
       var imgHtml = '';
       if (r.images && r.images.length) {
         imgHtml = '<div class="rev-imgs">'
-          + r.images.slice(0,4).map(function(u){ return '<img class="rev-img" src="'+u+'" onerror="this.style.display=\'none\'">'; }).join('')
+          + r.images.slice(0,4).map(function(u){ var s=_u(u); return s?'<img class="rev-img" src="'+s+'" onerror="this.style.display=\'none\'">':''; }).join('')
           + '</div>';
       }
 
       var cardHtml = '';
       if (r.cards && r.cards.length) {
         cardHtml = '<div class="rev-cards">'
-          + r.cards.map(function(c){ return '<span class="rev-card-badge '+cardBadgeClass(c)+'">'+c+'</span>'; }).join('')
+          + r.cards.map(function(c){ return '<span class="rev-card-badge '+cardBadgeClass(c)+'">'+_e(c)+'</span>'; }).join('')
           + '</div>';
       }
 
       return '<div class="rev-item">'
         + '<div class="rev-top">'
         + avHtml
-        + '<div class="rev-info"><div class="rev-name">'+(r.nickname||r.nick||'익명')+'</div>'
-        + '<div class="rev-meta">'+timeAgo(r.createdAt)+'</div></div>'
+        + '<div class="rev-info"><div class="rev-name">'+_e(nick)+'</div>'
+        + '<div class="rev-meta">'+_e(timeAgo(r.createdAt))+'</div></div>'
         + '</div>'
         + starHtml
-        + '<div class="rev-txt">'+(r.text||r.review||'')+'</div>'
+        + '<div class="rev-txt">'+_e(r.text||r.review||'')+'</div>'
         + imgHtml
         + cardHtml
         + '</div>';
