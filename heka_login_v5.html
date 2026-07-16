@@ -212,7 +212,8 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-functions.js";
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -222,7 +223,9 @@ const app = initializeApp({
 });
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app, 'asia-northeast3');
 window._db = db;
+window._fbAuth = auth;
 window._fbFns = { collection, query, where, getDocs };
 
 // 회원가입 - Firebase Auth + Firestore 저장
@@ -392,14 +395,14 @@ window._doGoogleLogin = async function() {
   }
 };
 
-// 카카오 로그인 (client-only, Firebase Auth 이메일+결정적 PW)
+// 카카오 로그인 (Cloud Function 커스텀 토큰)
 window._doKakaoLogin = async function() {
   if (!window.Kakao || !Kakao.isInitialized()) {
     alert('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
     return { ok: false };
   }
   try {
-    // 1. 카카오 로그인
+    // 1. 카카오 로그인 → access_token
     var authObj = await new Promise(function(resolve, reject){
       Kakao.Auth.login({
         scope: 'profile_nickname',
@@ -407,45 +410,20 @@ window._doKakaoLogin = async function() {
         fail: reject
       });
     });
-    // 2. 카카오 프로필 조회
-    var kakaoUser = await new Promise(function(resolve, reject){
-      Kakao.API.request({
-        url: '/v2/user/me',
-        success: resolve,
-        fail: reject
-      });
-    });
-    var kakaoId = String(kakaoUser.id||'');
-    var email = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
-    var nick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
-    var avatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
-    // 3. Firebase Auth 결정적 PW (client-only 한계, Cloud Function 추후 마이그레이션)
-    var pw = 'kakao_v1_' + kakaoId + '_hkacc';
-    var cred;
-    try {
-      cred = await signInWithEmailAndPassword(auth, email, pw);
-    } catch(inner) {
-      if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
-        cred = await createUserWithEmailAndPassword(auth, email, pw);
-        // 신규 유저 → Firestore 저장
-        try {
-          await setDoc(doc(db, 'users', cred.user.uid), {
-            uid: cred.user.uid,
-            email: email,
-            nickname: nick,
-            avatar: avatar,
-            provider: 'kakao',
-            kakao_id: kakaoId,
-            createdAt: new Date(),
-            status: 'active'
-          });
-        } catch(e){ console.error('users 저장 실패:', e); }
-      } else {
-        throw inner;
-      }
-    }
+    var kakaoAccessToken = authObj && authObj.access_token;
+    if (!kakaoAccessToken) throw new Error('Kakao access_token 없음');
+
+    // 2. Cloud Function 호출 → Firebase Custom Token
+    var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
+    var resp = await kakaoSignIn({ kakaoAccessToken: kakaoAccessToken });
+    var payload = resp && resp.data;
+    if (!payload || !payload.customToken) throw new Error('customToken 없음');
+
+    // 3. Firebase Auth Custom Token 로그인
+    var cred = await signInWithCustomToken(auth, payload.customToken);
     var uid = cred.user.uid;
-    // 정지/강퇴 체크
+
+    // 4. 정지/강퇴 체크
     try {
       var uDoc = await getDoc(doc(db, 'users', uid));
       if (uDoc.exists()) {
@@ -462,15 +440,20 @@ window._doKakaoLogin = async function() {
     } catch(e2) { console.log('status check err:', e2); }
     try{
       localStorage.setItem('haeka_uid', uid);
-      localStorage.setItem('haeka_email', email);
-      localStorage.setItem('haeka_nick', nick);
+      localStorage.setItem('haeka_email', payload.email || '');
+      localStorage.setItem('haeka_nick', payload.nickname || '');
       localStorage.setItem('haeka_provider', 'kakao');
     }catch(e){}
-    return { ok: true, user: cred.user };
+    return { ok: true, user: cred.user, isNewUser: payload.isNewUser };
   } catch(e) {
     console.error('카카오 로그인 오류:', e);
     if (e && e.error === 'access_denied') return { ok: false, cancelled: true };
-    alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
+    var msg = (e && e.message) || '';
+    if (msg.indexOf('functions/') > -1 || msg.indexOf('NOT_FOUND') > -1) {
+      alert('카카오 로그인 서버 준비 중이에요. 잠시 후 다시 시도해주세요.');
+    } else {
+      alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
+    }
     return { ok: false };
   }
 };
