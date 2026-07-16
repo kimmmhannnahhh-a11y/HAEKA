@@ -476,7 +476,7 @@ window._doKakaoLogin = async function() {
 };
 </script>
 <script src="security.js"></script>
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script>
 try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee3074ad9d647f71'); } catch(e){ console.error('Kakao init 실패:', e); }
 </script>
@@ -520,7 +520,7 @@ try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee
 
     <div style="padding:0 24px;display:flex;flex-direction:column;gap:10px">
       <input class="login-inp" id="main-email" placeholder="이메일" type="email" autocomplete="email"/>
-      <input class="login-inp" id="main-pw" placeholder="비밀번호" type="password" autocomplete="current-password" onkeydown="if(event.key===\'Enter\')doMainLogin()"/>
+      <input class="login-inp" id="main-pw" placeholder="비밀번호" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doMainLogin()"/>
 
       <div style="display:flex;gap:8px;margin-top:6px">
         <button onclick="location.href='heka_signup.html'" style="flex:1;padding:12px;background:#fff;color:#FF3900;border:1.5px solid #FF3900;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">회원가입</button>
