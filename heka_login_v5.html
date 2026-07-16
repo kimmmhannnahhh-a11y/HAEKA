@@ -395,7 +395,31 @@ window._doGoogleLogin = async function() {
   }
 };
 
-// 카카오 로그인 (Cloud Function 커스텀 토큰)
+// 카카오 프로필 → Firebase 로그인 (fallback: 결정적 PW)
+async function _kakaoFallbackFirebase(kakaoUser) {
+  var kakaoId = String(kakaoUser.id||'');
+  var email = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
+  var nick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
+  var avatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
+  var pw = 'kakao_v1_' + kakaoId + '_hkacc';
+  var cred;
+  try {
+    cred = await signInWithEmailAndPassword(auth, email, pw);
+  } catch(inner) {
+    if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
+      cred = await createUserWithEmailAndPassword(auth, email, pw);
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          uid: cred.user.uid, email: email, nickname: nick, avatar: avatar,
+          provider: 'kakao', kakao_id: kakaoId, createdAt: new Date(), status: 'active'
+        });
+      } catch(e){ console.error('users 저장 실패:', e); }
+    } else { throw inner; }
+  }
+  return { cred: cred, email: email, nickname: nick };
+}
+
+// 카카오 로그인 (Cloud Function 우선, 실패 시 fallback)
 window._doKakaoLogin = async function() {
   if (!window.Kakao || !Kakao.isInitialized()) {
     alert('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
@@ -404,56 +428,55 @@ window._doKakaoLogin = async function() {
   try {
     // 1. 카카오 로그인 → access_token
     var authObj = await new Promise(function(resolve, reject){
-      Kakao.Auth.login({
-        scope: 'profile_nickname',
-        success: resolve,
-        fail: reject
-      });
+      Kakao.Auth.login({ scope: 'profile_nickname', success: resolve, fail: reject });
     });
     var kakaoAccessToken = authObj && authObj.access_token;
     if (!kakaoAccessToken) throw new Error('Kakao access_token 없음');
 
-    // 2. Cloud Function 호출 → Firebase Custom Token
-    var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
-    var resp = await kakaoSignIn({ kakaoAccessToken: kakaoAccessToken });
-    var payload = resp && resp.data;
-    if (!payload || !payload.customToken) throw new Error('customToken 없음');
+    var uid, email, nick;
 
-    // 3. Firebase Auth Custom Token 로그인
-    var cred = await signInWithCustomToken(auth, payload.customToken);
-    var uid = cred.user.uid;
+    // 2. Cloud Function 시도 → 실패 시 fallback
+    try {
+      var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
+      var resp = await kakaoSignIn({ kakaoAccessToken: kakaoAccessToken });
+      var payload = resp && resp.data;
+      if (!payload || !payload.customToken) throw new Error('customToken 없음');
+      var cred = await signInWithCustomToken(auth, payload.customToken);
+      uid = cred.user.uid;
+      email = payload.email;
+      nick = payload.nickname;
+    } catch(cfErr) {
+      console.warn('Cloud Function 실패, fallback:', cfErr && cfErr.message);
+      // Fallback: 카카오 프로필 조회 + 결정적 PW Firebase Auth
+      var kakaoUser = await new Promise(function(resolve, reject){
+        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
+      });
+      var fb = await _kakaoFallbackFirebase(kakaoUser);
+      uid = fb.cred.user.uid;
+      email = fb.email;
+      nick = fb.nickname;
+    }
 
-    // 4. 정지/강퇴 체크
+    // 3. 정지/강퇴 체크
     try {
       var uDoc = await getDoc(doc(db, 'users', uid));
       if (uDoc.exists()) {
         var status = uDoc.data().status;
-        if (status === 'suspended') {
-          await auth.signOut();
-          return { ok: false, blocked: true, msg: '정지된 계정이에요.' };
-        }
-        if (status === 'banned') {
-          await auth.signOut();
-          return { ok: false, blocked: true, msg: '강퇴된 계정이에요.' };
-        }
+        if (status === 'suspended') { await auth.signOut(); return { ok: false, blocked: true, msg: '정지된 계정이에요.' }; }
+        if (status === 'banned') { await auth.signOut(); return { ok: false, blocked: true, msg: '강퇴된 계정이에요.' }; }
       }
     } catch(e2) { console.log('status check err:', e2); }
     try{
       localStorage.setItem('haeka_uid', uid);
-      localStorage.setItem('haeka_email', payload.email || '');
-      localStorage.setItem('haeka_nick', payload.nickname || '');
+      localStorage.setItem('haeka_email', email || '');
+      localStorage.setItem('haeka_nick', nick || '');
       localStorage.setItem('haeka_provider', 'kakao');
     }catch(e){}
-    return { ok: true, user: cred.user, isNewUser: payload.isNewUser };
+    return { ok: true };
   } catch(e) {
     console.error('카카오 로그인 오류:', e);
     if (e && e.error === 'access_denied') return { ok: false, cancelled: true };
-    var msg = (e && e.message) || '';
-    if (msg.indexOf('functions/') > -1 || msg.indexOf('NOT_FOUND') > -1) {
-      alert('카카오 로그인 서버 준비 중이에요. 잠시 후 다시 시도해주세요.');
-    } else {
-      alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
-    }
+    alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
     return { ok: false };
   }
 };
