@@ -402,7 +402,7 @@ window._doKakaoLogin = async function() {
     // 1. 카카오 로그인
     var authObj = await new Promise(function(resolve, reject){
       Kakao.Auth.login({
-        scope: 'profile_nickname,profile_image,account_email',
+        scope: 'profile_nickname',
         success: resolve,
         fail: reject
       });
