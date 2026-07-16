@@ -118,7 +118,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKLXQn3rRzCo",
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain: "card-store-finder.firebaseapp.com",
   projectId: "card-store-finder",
   storageBucket: "card-store-finder.firebasestorage.app",
@@ -224,9 +224,26 @@ window._removePhoto = function(i) {
 
 function renderPhotos() {
   const wrap = document.getElementById('photo-wrap');
-  wrap.innerHTML = photoURLs.map((u, i) =>
-    `<div class="photo-thumb"><img src="${u}"><button class="photo-del" onclick="_removePhoto(${i})">×</button></div>`
-  ).join('') + (photoFiles.length < 4 ? `<div class="photo-add" onclick="_addPhoto()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="photo-add-count">${photoFiles.length}/4</span></div>` : '');
+  wrap.innerHTML = '';
+  photoURLs.forEach(function(u, i){
+    var div = document.createElement('div');
+    div.className = 'photo-thumb';
+    var img = document.createElement('img');
+    img.src = u; // blob: URL from URL.createObjectURL — 로컬 blob 안전
+    var btn = document.createElement('button');
+    btn.className = 'photo-del';
+    btn.textContent = '×';
+    btn.onclick = function(){ _removePhoto(i); };
+    div.appendChild(img); div.appendChild(btn);
+    wrap.appendChild(div);
+  });
+  if (photoFiles.length < 4) {
+    var add = document.createElement('div');
+    add.className = 'photo-add';
+    add.onclick = _addPhoto;
+    add.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="photo-add-count">'+photoFiles.length+'/4</span>';
+    wrap.appendChild(add);
+  }
 }
 
 // 제출
@@ -284,7 +301,7 @@ window.submitReview = async function() {
 function renderLoginWall() {
   document.getElementById('main-wrap').innerHTML = `
     <div class="store-info">
-      <div class="store-info-name">${storeName}</div>
+      <div class="store-info-name">${(window._esc||function(x){return String(x||'')})(storeName)}</div>
       <div class="store-info-sub">결제 후기 작성</div>
     </div>
     <div class="login-wall">
@@ -296,7 +313,7 @@ function renderLoginWall() {
 function renderForm() {
   document.getElementById('main-wrap').innerHTML = `
     <div class="store-info">
-      <div class="store-info-name">${storeName}</div>
+      <div class="store-info-name">${(window._esc||function(x){return String(x||'')})(storeName)}</div>
       <div class="store-info-sub">결제 후기 작성</div>
     </div>
 
