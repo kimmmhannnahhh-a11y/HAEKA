@@ -391,8 +391,95 @@ window._doGoogleLogin = async function() {
     return { ok: false };
   }
 };
+
+// 카카오 로그인 (client-only, Firebase Auth 이메일+결정적 PW)
+window._doKakaoLogin = async function() {
+  if (!window.Kakao || !Kakao.isInitialized()) {
+    alert('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
+    return { ok: false };
+  }
+  try {
+    // 1. 카카오 로그인
+    var authObj = await new Promise(function(resolve, reject){
+      Kakao.Auth.login({
+        scope: 'profile_nickname,profile_image,account_email',
+        success: resolve,
+        fail: reject
+      });
+    });
+    // 2. 카카오 프로필 조회
+    var kakaoUser = await new Promise(function(resolve, reject){
+      Kakao.API.request({
+        url: '/v2/user/me',
+        success: resolve,
+        fail: reject
+      });
+    });
+    var kakaoId = String(kakaoUser.id||'');
+    var email = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
+    var nick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
+    var avatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
+    // 3. Firebase Auth 결정적 PW (client-only 한계, Cloud Function 추후 마이그레이션)
+    var pw = 'kakao_v1_' + kakaoId + '_hkacc';
+    var cred;
+    try {
+      cred = await signInWithEmailAndPassword(auth, email, pw);
+    } catch(inner) {
+      if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
+        cred = await createUserWithEmailAndPassword(auth, email, pw);
+        // 신규 유저 → Firestore 저장
+        try {
+          await setDoc(doc(db, 'users', cred.user.uid), {
+            uid: cred.user.uid,
+            email: email,
+            nickname: nick,
+            avatar: avatar,
+            provider: 'kakao',
+            kakao_id: kakaoId,
+            createdAt: new Date(),
+            status: 'active'
+          });
+        } catch(e){ console.error('users 저장 실패:', e); }
+      } else {
+        throw inner;
+      }
+    }
+    var uid = cred.user.uid;
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var status = uDoc.data().status;
+        if (status === 'suspended') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '정지된 계정이에요.' };
+        }
+        if (status === 'banned') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '강퇴된 계정이에요.' };
+        }
+      }
+    } catch(e2) { console.log('status check err:', e2); }
+    try{
+      localStorage.setItem('haeka_uid', uid);
+      localStorage.setItem('haeka_email', email);
+      localStorage.setItem('haeka_nick', nick);
+      localStorage.setItem('haeka_provider', 'kakao');
+    }catch(e){}
+    return { ok: true, user: cred.user };
+  } catch(e) {
+    console.error('카카오 로그인 오류:', e);
+    if (e && e.error === 'access_denied') return { ok: false, cancelled: true };
+    alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
+    return { ok: false };
+  }
+};
 </script>
 <script src="security.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
+<script>
+try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee3074ad9d647f71'); } catch(e){ console.error('Kakao init 실패:', e); }
+</script>
 </head>
 <body>
 <div class="phone" id="login-phone">
@@ -453,7 +540,7 @@ window._doGoogleLogin = async function() {
       </div>
 
       <div class="social-row" style="display:flex;gap:10px;justify-content:center">
-        <button onclick="alert('카카오 로그인 준비 중이에요. 곧 만나요.')" aria-label="카카오 준비중" style="width:48px;height:48px;background:#F3F4F6;border:none;border-radius:50%;cursor:not-allowed;display:flex;align-items:center;justify-content:center;color:#9CA3AF;position:relative" disabled title="준비 중"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
+        <button onclick="doKakaoLogin()" aria-label="카카오로 시작하기" style="width:48px;height:48px;background:#FEE500;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" title="카카오로 시작"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.77 1.79 5.21 4.5 6.65L5 22l4.87-2.62c.7.1 1.42.15 2.13.15 5.52 0 10-3.58 10-8s-4.48-8-10-8z" fill="#3C1E1E"/></svg></button>
         <button onclick="doGoogleLogin()" aria-label="구글로 시작하기" style="width:48px;height:48px;background:#fff;border:1px solid #ececec;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
           <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         </button>
@@ -969,6 +1056,13 @@ function closeLegal(){document.getElementById('legal-overlay').classList.remove(
 function doGoogleLogin() {
   if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
   window._doGoogleLogin().then(function(res) {
+    if (res.blocked) { alert(res.msg); return; }
+    if (res.ok) showToastAndGoHome();
+  });
+}
+function doKakaoLogin() {
+  if (!window._doKakaoLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  window._doKakaoLogin().then(function(res) {
     if (res.blocked) { alert(res.msg); return; }
     if (res.ok) showToastAndGoHome();
   });
