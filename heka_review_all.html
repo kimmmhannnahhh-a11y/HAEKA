@@ -143,6 +143,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+window._db = db;
+window._fbAuth = auth;
 
 function timeAgo(ts) {
   if (!ts) return '방금 전';
@@ -269,7 +271,10 @@ function renderReviews(wrap, items, avgRating) {
           + '</div>';
       }
 
-      return '<div class="rev-item">'
+      var rIdSafe = _e(r.id||'');
+      var reportBtn = r.id ? '<button class="rev-report-btn" data-rid="'+rIdSafe+'" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:16px;color:#9CA3AF;cursor:pointer;padding:4px" title="신고" aria-label="신고">⋮</button>' : '';
+      return '<div class="rev-item" style="position:relative">'
+        + reportBtn
         + '<div class="rev-top">'
         + avHtml
         + '<div class="rev-info"><div class="rev-name">'+_e(nick)+'</div>'
@@ -281,7 +286,36 @@ function renderReviews(wrap, items, avgRating) {
         + cardHtml
         + '</div>';
     }).join('');
+
+  // 신고 버튼 이벤트 바인딩
+  wrap.querySelectorAll('.rev-report-btn').forEach(function(btn){
+    btn.onclick = function(e){
+      e.stopPropagation();
+      var rid = btn.getAttribute('data-rid');
+      openReportSheet('review', rid);
+    };
+  });
 }
+
+// 신고 시트 (공통)
+window.openReportSheet = function(targetType, targetId){
+  if (!window._fbAuth || !window._fbAuth.currentUser){
+    if (confirm('신고는 로그인 후 이용할 수 있어요. 로그인하시겠어요?')) location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href);
+    return;
+  }
+  var reason = prompt('신고 사유를 선택해주세요:\n1. 스팸/광고\n2. 욕설/비방\n3. 부적절한 콘텐츠\n4. 잘못된 정보\n5. 기타\n\n번호 입력 (또는 직접 입력):');
+  if (reason == null || reason.trim() === '') return;
+  var map = {'1':'스팸/광고','2':'욕설/비방','3':'부적절한 콘텐츠','4':'잘못된 정보','5':'기타'};
+  var reasonText = map[reason.trim()] || reason.trim();
+  if (window._report) {
+    window._report(targetType, targetId, reasonText).then(function(){
+      alert('신고가 접수되었어요. 검토 후 조치할게요.');
+    }).catch(function(err){
+      console.error('report err', err);
+      alert('신고 접수 실패. 잠시 후 다시 시도해주세요.');
+    });
+  }
+};
 
 loadAll();
 </script>

@@ -143,7 +143,8 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
     <span style="font-size:13px;font-weight:700;color:#111">여행톡</span>
-    <div id="post-del-btn" style="width:30px"></div>
+    <button onclick="reportPost()" style="background:none;border:none;font-size:20px;color:#6B7280;cursor:pointer;padding:4px 8px" title="글 신고" aria-label="글 신고">⋮</button>
+    <div id="post-del-btn" style="display:none;width:30px"></div>
   </div>
   <div class="scroll-wrap" id="scroll-wrap">
     <div class="loading" id="loading">불러오는 중...</div>
@@ -160,6 +161,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, doc, getDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -170,6 +172,9 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const _auth = getAuth(app);
+window._db = db;
+window._fbAuth = _auth;
 const params = new URLSearchParams(location.search);
 const postId = params.get('id');
 window._postId = postId;
@@ -287,6 +292,27 @@ var heartSvg='<svg viewBox="0 0 24 24" stroke="#aaa" stroke-width="1.8" stroke-l
 var bookmarkSvg='<svg viewBox="0 0 24 24" stroke="#aaa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>';
 var shareSvg='<svg viewBox="0 0 24 24" stroke="#aaa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
 var sendSvg='<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+
+window.reportPost = function(){
+  var pid = window._postId;
+  if (!pid) { alert('글 정보 없음'); return; }
+  if (!window._fbAuth || !window._fbAuth.currentUser){
+    if (confirm('신고는 로그인 후 이용할 수 있어요. 로그인하시겠어요?')) location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href);
+    return;
+  }
+  var reason = prompt('신고 사유를 선택해주세요:\n1. 스팸/광고\n2. 욕설/비방\n3. 부적절한 콘텐츠\n4. 잘못된 정보\n5. 기타\n\n번호 입력:');
+  if (reason == null || reason.trim() === '') return;
+  var map = {'1':'스팸/광고','2':'욕설/비방','3':'부적절한 콘텐츠','4':'잘못된 정보','5':'기타'};
+  var reasonText = map[reason.trim()] || reason.trim();
+  if (window._report) {
+    window._report('post', pid, reasonText).then(function(){
+      alert('신고가 접수되었어요.');
+    }).catch(function(err){
+      console.error('report err', err);
+      alert('신고 접수 실패.');
+    });
+  }
+};
 
 window.renderPost=function(p){
   _images=p.images||[];
