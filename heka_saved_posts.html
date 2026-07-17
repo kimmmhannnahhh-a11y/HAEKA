@@ -90,7 +90,7 @@ function render(){
       +thumb
       +'<div class="post-body">'
       +'<span class="post-tag" style="background:'+tagColor+'">'+tag+'</span>'
-      +'<div class="post-title">'+p.title+'</div>'
+      +'<div class="post-title">'+(window._esc?window._esc(p.title):String(p.title||''))+'</div>'
       +'<div class="post-meta">'+p.user+' · '+p.time+'</div>'
       +'</div>'
       +'<button class="del-btn" onclick="event.stopPropagation();removeSaved('+i+')" aria-label="삭제"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg></button>'

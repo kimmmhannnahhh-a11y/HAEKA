@@ -466,7 +466,7 @@ function renderStores(stores, el, city){
     return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
-      +'<div class="store-name">'+s.name+'</div>'
+      +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
       +'<div class="store-sub">'+(s.category||'')+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
       +'<div class="store-cards-row">'+cards+'</div>'
       +'</div></div>';
@@ -517,7 +517,7 @@ function doSearch(val){
       return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
         +'<div class="store-thumb">'+thumb+'</div>'
         +'<div class="store-info">'
-        +'<div class="store-name">'+s.name+'</div>'
+        +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
         +'<div class="store-sub">'+(s.category||'')+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
         +'</div></div>';
     }).join('');

@@ -407,7 +407,7 @@ function renderList(list){
     return'<div class="store-item" onclick="openDetail('+realIdx+')">'
       +thumb
       +'<div class="store-info">'
-      +'<div class="store-name">'+s.name+'</div>'
+      +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
       +'<div class="store-meta"><span class="store-cat">'+(s.category||'')+'</span>'
       +(s.address?'<span class="store-addr"> · '+s.address+'</span>':'')
       +dist+'</div>'

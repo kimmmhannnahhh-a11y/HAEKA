@@ -95,7 +95,7 @@ async function load() {
       div.innerHTML =
         '<span class="notice-tag" style="background:'+color+'">'+tag+'</span>'
         +'<div class="notice-title">'+n.title+'</div>'
-        +'<div class="notice-body">'+n.content+'</div>'
+        +'<div class="notice-body">'+(window._esc?window._esc(n.content):String(n.content||''))+'</div>'
         +'<div class="notice-date">'+formatDate(n.createdAt)+'</div>';
       div.onclick = function(){ this.classList.toggle('open'); };
       el.appendChild(div);

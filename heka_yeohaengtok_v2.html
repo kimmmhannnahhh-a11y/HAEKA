@@ -319,7 +319,7 @@ function renderPosts(list){
           + '<span class="fpd">'+p.time+'</span>'
         + '</div>'
         + '<div class="fpmain">'
-          + '<div class="fptitle"><span class="fptag '+tagClass+'">'+p.tagTxt+'</span>'+dotHtml+'<span>'+p.title+'</span></div>'
+          + '<div class="fptitle"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+'<span>'+(window._esc?window._esc(p.title):String(p.title||''))+'</span></div>'
           + (p.body ? '<div class="fpbody">'+p.body+'</div>' : '')
           + '<div class="fpbottom">'
             + '<span class="meta">'+heartSvg+(p.likes||0)+'</span>'
