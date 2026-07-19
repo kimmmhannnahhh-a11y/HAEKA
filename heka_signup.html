@@ -517,6 +517,9 @@ function doJoin() {
   if (usedEmails.indexOf(email) > -1) { showPopup('','이메일 중복','이미 사용 중인 이메일이에요.','확인'); return; }
   var emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailReg.test(email)) { showPopup('','이메일 형식 오류','올바른 이메일을 입력해주세요.','확인'); return; }
+  // 예약 도메인 차단 (소셜 로그인 fake 이메일 선점 방지)
+  var reservedDomains = /@(kakao|google|apple|naver|facebook)\.haeka\.local$/i;
+  if (reservedDomains.test(email)) { showPopup('','사용할 수 없는 이메일','해당 이메일은 사용할 수 없어요. 다른 이메일을 입력해주세요.','확인'); return; }
   var pwReg = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
   if (!pwReg.test(pw)) { showPopup('','비밀번호 형식 오류','8자 이상, 영문+숫자 조합으로 입력해주세요.','확인'); return; }
   if (pw !== pw2) { showPopup('','비밀번호 불일치','비밀번호가 일치하지 않아요.','확인'); return; }
