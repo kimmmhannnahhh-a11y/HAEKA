@@ -200,9 +200,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* HAEKA 2.0 Warm Minimal login overrides */
 body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.phone{background:var(--hk-bg);border-color:#EEEDE8;box-shadow:0 18px 45px rgba(17,24,39,.08);height:100vh;height:100dvh;max-height:none}.screen.active{max-height:calc(100vh - 44px);max-height:calc(100dvh - 44px)}.sb{background:#fff;color:var(--hk-text);box-shadow:0 1px 4px rgba(0,0,0,0.06)}.topbar{background:#fff;color:var(--hk-text)}
 .btn-green,.btn-primary,.popup-btn,.send-btn{background:var(--hk-accent);color:#fff}.btn-green:hover,.btn-primary:hover{background:var(--hk-accent-hover)}.btn-outline{background:#fff;color:var(--hk-text);border:1.5px solid #E5E7EB}.login-inp,.inp-field,.field-input,.sp-inp{background:#fff;border-color:#E5E7EB;border-radius:12px}.login-inp:focus,.inp-field:focus,.field-input:focus,.sp-inp:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,56,92,.1);background:#fff}.toast{background:rgba(255,56,92,.95)}.ni.on,.nplbl,.timer,.field-ok,.check-txt.green{color:var(--hk-accent)}.npbtn,.step-circle.done,.step-circle.active,.step-line.done,.chkbox.checked{background:var(--hk-accent);border-color:var(--hk-accent)}.step-circle.active{box-shadow:0 0 0 3px rgba(255,56,92,.12)}.check-item.all-item{background:var(--hk-accent-bg)}.check-item.all-item:hover{background:#FFE4E8}
-.travel-illust{position:relative;width:180px;height:180px;margin:0 auto 14px;z-index:2;display:flex;align-items:center;justify-content:center}
-.haeka-logo-img{position:relative;z-index:3;width:120px;height:120px;object-fit:contain;animation:logoFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 14px 28px rgba(255,57,0,.22))}
-.haeka-logo-ring{position:absolute;left:50%;top:50%;width:170px;height:170px;transform:translate(-50%,-50%) rotate(-90deg);z-index:2;pointer-events:none}
+.travel-illust{position:relative;width:118px;height:118px;margin:0 auto 2px;z-index:2;display:flex;align-items:center;justify-content:center}
+.haeka-logo-img{position:relative;z-index:3;width:92px;height:92px;object-fit:contain;animation:logoFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 14px 28px rgba(255,57,0,.22))}
+.haeka-logo-ring{position:absolute;left:50%;top:50%;width:132px;height:132px;transform:translate(-50%,-50%) rotate(-90deg);z-index:2;pointer-events:none}
 .haeka-logo-ring circle{fill:none;stroke:var(--hk-accent);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;animation:ringDraw 1.6s cubic-bezier(.65,.05,.36,1) .25s forwards,ringPulse 3s ease-in-out 1.9s infinite}
 @keyframes ringDraw{to{stroke-dashoffset:0}}
 @keyframes ringPulse{0%,100%{opacity:1;transform:translate(-50%,-50%) rotate(-90deg) scale(1)}50%{opacity:.55;transform:translate(-50%,-50%) rotate(-90deg) scale(1.04)}}
@@ -395,88 +395,50 @@ window._doGoogleLogin = async function() {
   }
 };
 
-// 카카오 프로필 → Firebase 로그인 (fallback: 결정적 PW)
-async function _kakaoFallbackFirebase(kakaoUser) {
-  var kakaoId = String(kakaoUser.id||'');
-  var email = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
-  var nick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
-  var avatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
-  var pw = 'kakao_v1_' + kakaoId + '_hkacc';
-  var cred;
-  try {
-    cred = await signInWithEmailAndPassword(auth, email, pw);
-  } catch(inner) {
-    if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
-      cred = await createUserWithEmailAndPassword(auth, email, pw);
-      try {
-        await setDoc(doc(db, 'users', cred.user.uid), {
-          uid: cred.user.uid, email: email, nickname: nick, avatar: avatar,
-          provider: 'kakao', kakao_id: kakaoId, createdAt: new Date(), status: 'active'
-        });
-      } catch(e){ console.error('users 저장 실패:', e); }
-    } else { throw inner; }
-  }
-  return { cred: cred, email: email, nickname: nick };
-}
-
-// 카카오 로그인 (Cloud Function 우선, 실패 시 fallback)
+// 카카오 로그인 — 네이티브 SDK(capacitor-kakao-login-plugin)로 카톡 앱 핸드오프 → accessToken → CF(kakaoSignIn) 커스텀토큰
+// (앱: 카톡 앱으로 슉 넘어갔다 자동 복귀. WebView 팝업/리다이렉트 방식은 매끄럽지 않아 네이티브 SDK 사용)
 window._doKakaoLogin = async function() {
-  if (!window.Kakao || !Kakao.isInitialized()) {
-    alert('카카오 로그인 준비 중이에요. 잠시 후 다시 시도해주세요.');
+  var KakaoLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.KakaoLoginPlugin;
+  if (!KakaoLogin) {
+    alert('카카오 로그인은 앱에서만 가능해요.');
     return { ok: false };
   }
   try {
-    // 1. 카카오 로그인 → access_token
-    var authObj = await new Promise(function(resolve, reject){
-      Kakao.Auth.login({ scope: 'profile_nickname', success: resolve, fail: reject });
-    });
-    var kakaoAccessToken = authObj && authObj.access_token;
-    if (!kakaoAccessToken) throw new Error('Kakao access_token 없음');
+    var tokenRes = await KakaoLogin.goLogin();
+    var accessToken = tokenRes && tokenRes.accessToken;
+    if (!accessToken) throw new Error('accessToken 없음');
 
-    var uid, email, nick;
+    // access_token → CF 서버검증 → 커스텀 토큰
+    var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
+    var resp = await kakaoSignIn({ kakaoAccessToken: accessToken });
+    var payload = resp && resp.data;
+    if (!payload || !payload.customToken) throw new Error('customToken 없음');
+    var cred = await signInWithCustomToken(auth, payload.customToken);
+    var uid = cred.user.uid;
 
-    // 2. Cloud Function 시도 → 실패 시 fallback
-    try {
-      var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
-      var resp = await kakaoSignIn({ kakaoAccessToken: kakaoAccessToken });
-      var payload = resp && resp.data;
-      if (!payload || !payload.customToken) throw new Error('customToken 없음');
-      var cred = await signInWithCustomToken(auth, payload.customToken);
-      uid = cred.user.uid;
-      email = payload.email;
-      nick = payload.nickname;
-    } catch(cfErr) {
-      console.warn('Cloud Function 실패, fallback:', cfErr && cfErr.message);
-      // Fallback: 카카오 프로필 조회 + 결정적 PW Firebase Auth
-      var kakaoUser = await new Promise(function(resolve, reject){
-        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
-      });
-      var fb = await _kakaoFallbackFirebase(kakaoUser);
-      uid = fb.cred.user.uid;
-      email = fb.email;
-      nick = fb.nickname;
-    }
-
-    // 3. 정지/강퇴 체크
+    // 정지/강퇴 체크
     try {
       var uDoc = await getDoc(doc(db, 'users', uid));
       if (uDoc.exists()) {
-        var status = uDoc.data().status;
-        if (status === 'suspended') { await auth.signOut(); return { ok: false, blocked: true, msg: '정지된 계정이에요.' }; }
-        if (status === 'banned') { await auth.signOut(); return { ok: false, blocked: true, msg: '강퇴된 계정이에요.' }; }
+        var st = uDoc.data().status;
+        if (st === 'suspended' || st === 'banned') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: st === 'banned' ? '강퇴된 계정이에요.' : '정지된 계정이에요.' };
+        }
       }
-    } catch(e2) { console.log('status check err:', e2); }
-    try{
+    } catch(e2){}
+    try {
       localStorage.setItem('haeka_uid', uid);
-      localStorage.setItem('haeka_email', email || '');
-      localStorage.setItem('haeka_nick', nick || '');
+      localStorage.setItem('haeka_email', payload.email || '');
+      localStorage.setItem('haeka_nick', payload.nickname || '');
       localStorage.setItem('haeka_provider', 'kakao');
-    }catch(e){}
+    } catch(e){}
     return { ok: true };
   } catch(e) {
     console.error('카카오 로그인 오류:', e);
-    if (e && e.error === 'access_denied') return { ok: false, cancelled: true };
-    alert('카카오 로그인 오류. 잠시 후 다시 시도해주세요.');
+    var msg = ((e && (e.message || e.errorMessage)) || '') + '';
+    if (msg.toLowerCase().indexOf('cancel') >= 0) return { ok: false, cancelled: true };
+    alert('카카오 로그인 오류. 다시 시도해주세요.');
     return { ok: false };
   }
 };
@@ -493,7 +455,7 @@ try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee
   <div class="screen active" id="s-main">
     <div class="topbar" style="border-bottom:none"><button class="back-btn" onclick="history.back()">←</button><span class="topbar-title" style="color:#bbb;font-weight:500">로그인</span></div>
 
-    <div style="padding:52px 24px 40px;text-align:center;position:relative;overflow:hidden">
+    <div style="padding:20px 24px 14px;text-align:center;position:relative;overflow:hidden">
       <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0">
         <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
         <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
@@ -513,10 +475,10 @@ try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee
       </div>
 
       <!-- 로고 -->
-      <div style="position:relative;z-index:2;margin-bottom:18px;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="position:relative;z-index:2;margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:14px">
         <div style="line-height:1.2;letter-spacing:-1.2px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif">
-          <div><span style="font-size:30px;font-weight:700;color:#FF3900">해</span><span style="font-size:29px;font-weight:700;color:#222">외에서</span></div>
-          <div style="margin-top:4px"><span style="font-size:30px;font-weight:700;color:#FF3900">카</span><span style="font-size:29px;font-weight:700;color:#222">드결제하자</span></div>
+          <div><span style="font-size:26px;font-weight:700;color:#FF3900">해</span><span style="font-size:25px;font-weight:700;color:#222">외에서</span></div>
+          <div style="margin-top:3px"><span style="font-size:26px;font-weight:700;color:#FF3900">카</span><span style="font-size:25px;font-weight:700;color:#222">드결제하자</span></div>
         </div>
       </div>
 
@@ -539,7 +501,7 @@ try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee
         <button class="find-link" style="font-size:12px;color:#999;padding:0" onclick="goScreen('s-findpw')">비밀번호 찾기</button>
       </div>
 
-      <div style="display:flex;align-items:center;gap:12px;margin:24px 0 16px">
+      <div style="display:flex;align-items:center;gap:12px;margin:14px 0 12px">
         <div style="flex:1;height:1px;background:#f0f0f0"></div>
         <span style="font-size:11px;color:#ccc;letter-spacing:.05em">소셜 로그인</span>
         <div style="flex:1;height:1px;background:#f0f0f0"></div>
@@ -1077,7 +1039,19 @@ function doKakaoLogin() {
 function showToastAndGoHome(msg){goHome();}
 function goHome(){
   var redirect = new URLSearchParams(location.search).get('redirect');
-  if (redirect) { location.replace(redirect); return; }
+  if (redirect) {
+    // Open redirect 방지: heka_*.html 상대경로 or 동일 origin URL만 허용
+    var safe = false;
+    try {
+      if (/^heka_[a-z0-9_]+\.html(\?[^#]*)?(#.*)?$/i.test(redirect)) {
+        safe = true;
+      } else {
+        var u = new URL(redirect, location.origin);
+        if (u.origin === location.origin && /^\/heka_[a-z0-9_]+\.html/i.test(u.pathname)) safe = true;
+      }
+    } catch(e) { safe = false; }
+    if (safe) { location.replace(redirect); return; }
+  }
   location.href = 'heka_home_v5.html';
 }
 /* 회원가입 JS */
