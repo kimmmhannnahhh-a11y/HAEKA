@@ -395,26 +395,64 @@ window._doGoogleLogin = async function() {
   }
 };
 
-// 카카오 로그인 — 네이티브 SDK(capacitor-kakao-login-plugin)로 카톡 앱 핸드오프 → accessToken → CF(kakaoSignIn) 커스텀토큰
-// (앱: 카톡 앱으로 슉 넘어갔다 자동 복귀. WebView 팝업/리다이렉트 방식은 매끄럽지 않아 네이티브 SDK 사용)
+// 카카오 로그인 — 앱: 네이티브 SDK 우선. 웹: Kakao JS SDK v1 팝업 fallback
 window._doKakaoLogin = async function() {
+  var accessToken = null;
   var KakaoLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.KakaoLoginPlugin;
-  if (!KakaoLogin) {
-    alert('카카오 로그인은 앱에서만 가능해요.');
-    return { ok: false };
-  }
   try {
-    var tokenRes = await KakaoLogin.goLogin();
-    var accessToken = tokenRes && tokenRes.accessToken;
+    if (KakaoLogin) {
+      // 앱: 네이티브 카톡 앱 핸드오프
+      var tokenRes = await KakaoLogin.goLogin();
+      accessToken = tokenRes && tokenRes.accessToken;
+    } else if (window.Kakao && Kakao.Auth) {
+      // 웹: Kakao JS SDK v1 팝업
+      if (!Kakao.isInitialized()) { alert('카카오 로그인 준비 중이에요. 새로고침 후 다시 시도해주세요.'); return { ok: false }; }
+      var authObj = await new Promise(function(resolve, reject){
+        Kakao.Auth.login({ scope: 'profile_nickname', success: resolve, fail: reject });
+      });
+      accessToken = authObj && authObj.access_token;
+    } else {
+      alert('카카오 SDK 로드 실패. 새로고침해주세요.');
+      return { ok: false };
+    }
     if (!accessToken) throw new Error('accessToken 없음');
 
-    // access_token → CF 서버검증 → 커스텀 토큰
-    var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
-    var resp = await kakaoSignIn({ kakaoAccessToken: accessToken });
-    var payload = resp && resp.data;
-    if (!payload || !payload.customToken) throw new Error('customToken 없음');
-    var cred = await signInWithCustomToken(auth, payload.customToken);
-    var uid = cred.user.uid;
+    // access_token → CF 서버검증 → 커스텀 토큰 (CF 배포 안 됐으면 client fallback)
+    var uid, cred, payload;
+    try {
+      var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
+      var resp = await kakaoSignIn({ kakaoAccessToken: accessToken });
+      payload = resp && resp.data;
+      if (!payload || !payload.customToken) throw new Error('customToken 없음');
+      cred = await signInWithCustomToken(auth, payload.customToken);
+      uid = cred.user.uid;
+    } catch(cfErr) {
+      console.warn('Cloud Function 실패, fallback:', cfErr && cfErr.message);
+      // Fallback: 카카오 프로필 조회 + Firebase Auth 결정적 PW
+      var kakaoUser = await new Promise(function(resolve, reject){
+        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
+      });
+      var kakaoId = String(kakaoUser.id||'');
+      var kEmail = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
+      var kNick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
+      var kAvatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
+      var kPw = 'kakao_v1_' + kakaoId + '_hkacc';
+      try {
+        cred = await signInWithEmailAndPassword(auth, kEmail, kPw);
+      } catch(inner) {
+        if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
+          cred = await createUserWithEmailAndPassword(auth, kEmail, kPw);
+          try {
+            await setDoc(doc(db, 'users', cred.user.uid), {
+              uid: cred.user.uid, email: kEmail, nickname: kNick, avatar: kAvatar,
+              provider: 'kakao', kakao_id: kakaoId, createdAt: new Date(), status: 'active'
+            });
+          } catch(e){ console.error('users 저장 실패:', e); }
+        } else { throw inner; }
+      }
+      uid = cred.user.uid;
+      payload = { email: kEmail, nickname: kNick };
+    }
 
     // 정지/강퇴 체크
     try {
@@ -1021,19 +1059,26 @@ function openLegal(type){
   if(map[type]) location.href=map[type];
 }
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
+var _loginBusy = false;
 function doGoogleLogin() {
+  if (_loginBusy) return;
   if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  _loginBusy = true;
   window._doGoogleLogin().then(function(res) {
+    _loginBusy = false;
     if (res.blocked) { alert(res.msg); return; }
     if (res.ok) showToastAndGoHome();
-  });
+  }).catch(function(){ _loginBusy = false; });
 }
 function doKakaoLogin() {
+  if (_loginBusy) return;
   if (!window._doKakaoLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  _loginBusy = true;
   window._doKakaoLogin().then(function(res) {
+    _loginBusy = false;
     if (res.blocked) { alert(res.msg); return; }
     if (res.ok) showToastAndGoHome();
-  });
+  }).catch(function(){ _loginBusy = false; });
 }
 
 function showToastAndGoHome(msg){goHome();}
