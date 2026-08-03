@@ -395,29 +395,99 @@ window._doGoogleLogin = async function() {
   }
 };
 
-// 카카오 로그인 — 앱: 네이티브 SDK 우선. 웹: Kakao JS SDK v1 팝업 fallback
+// 카카오 로그인 — 앱: 네이티브 SDK 우선, 실패하면 웹 SDK 로 이어서 시도. 웹: Kakao JS SDK v1 팝업
+// ※ 오류 원인(KOE### 등)을 삼키지 말 것. 삼키면 "그냥 안 된다" 밖에 안 남아 원인을 못 찾는다.
+function _kakaoErrText(e) {
+  if (!e) return '알 수 없는 오류';
+  var m = (e.message || e.errorMessage || e.msg || (typeof e === 'string' ? e : '')) + '';
+  if (!m || m === 'undefined') { try { m = JSON.stringify(e); } catch(_) { m = String(e); } }
+  var koe = m.match(/KOE\d+/i);
+  return (e.code ? '[' + e.code + '] ' : '') + (koe ? koe[0].toUpperCase() + ' — ' : '') + m;
+}
+function _kakaoCancelled(e) {
+  return /cancel/i.test(((e && (e.message || e.errorMessage)) || '') + '');
+}
+// 프로필 조회. 네이티브로 받은 토큰은 JS SDK 가 모르므로 REST 로도 갈 수 있어야 한다.
+async function _kakaoProfile(accessToken) {
+  if (window.Kakao && Kakao.API && Kakao.isInitialized && Kakao.isInitialized()) {
+    try { if (Kakao.Auth && Kakao.Auth.setAccessToken) Kakao.Auth.setAccessToken(accessToken); } catch(e){}
+    try {
+      return await new Promise(function(resolve, reject){
+        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
+      });
+    } catch(e) { console.warn('[KakaoLogin] JS SDK 프로필 실패 → REST 재시도:', _kakaoErrText(e)); }
+  }
+  var r = await fetch('https://kapi.kakao.com/v2/user/me', {
+    method: 'GET', headers: { Authorization: 'Bearer ' + accessToken }
+  });
+  if (!r.ok) throw new Error('카카오 프로필 조회 실패 (' + r.status + ')');
+  return await r.json();
+}
 window._doKakaoLogin = async function() {
-  var accessToken = null;
-  var KakaoLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.KakaoLoginPlugin;
-  try {
-    if (KakaoLogin) {
-      // 앱: 네이티브 카톡 앱 핸드오프
+  var C = window.Capacitor;
+  var isNative = !!(C && typeof C.isNativePlatform === 'function' && C.isNativePlatform());
+  var platform = (C && typeof C.getPlatform === 'function') ? C.getPlatform() : 'web';
+  var KakaoLogin = (C && C.Plugins && C.Plugins.KakaoLoginPlugin) || null;
+  if (!KakaoLogin && isNative && C && typeof C.registerPlugin === 'function') {
+    try { KakaoLogin = C.registerPlugin('KakaoLoginPlugin'); } catch(e){}
+  }
+  var hasNative = !!(KakaoLogin && typeof KakaoLogin.goLogin === 'function');
+  console.log('[KakaoLogin] diag', {
+    isNative: isNative, platform: platform, hasNative: hasNative,
+    pluginKeys: (C && C.Plugins) ? Object.keys(C.Plugins) : [],
+    hasKakaoJs: !!(window.Kakao && window.Kakao.Auth),
+    kakaoInited: !!(window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized())
+  });
+
+  var accessToken = null, firstErr = null, via = '';
+  // 1) 네이티브(앱). 키해시·앱키 문제면 여기서 KOE### 로 터진다.
+  if (hasNative) {
+    try {
       var tokenRes = await KakaoLogin.goLogin();
-      accessToken = tokenRes && tokenRes.accessToken;
-    } else if (window.Kakao && Kakao.Auth) {
-      // 웹: Kakao JS SDK v1 팝업
-      if (!Kakao.isInitialized()) { alert('카카오 로그인 준비 중이에요. 새로고침 후 다시 시도해주세요.'); return { ok: false }; }
+      accessToken = tokenRes && (tokenRes.accessToken || tokenRes.access_token);
+      via = 'native';
+    } catch(e) {
+      if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+      firstErr = e;
+      console.error('[KakaoLogin] 네이티브 실패 → 웹 SDK 로 이어서 시도:', _kakaoErrText(e));
+    }
+  }
+  // 2) 웹 SDK. 브라우저의 정상 경로이자, 앱에서 네이티브가 죽었을 때의 우회로.
+  if (!accessToken && window.Kakao && Kakao.Auth) {
+    if (!Kakao.isInitialized()) { alert('카카오 로그인 준비 중이에요. 새로고침 후 다시 시도해주세요.'); return { ok: false }; }
+    try {
       var authObj = await new Promise(function(resolve, reject){
-        Kakao.Auth.login({ scope: 'profile_nickname', success: resolve, fail: reject });
+        var done = false;
+        var t = setTimeout(function(){
+          if (done) return; done = true;
+          reject(new Error('카카오 로그인 창이 열리지 않았어요(시간 초과)'));
+        }, 90000);
+        Kakao.Auth.login({
+          scope: 'profile_nickname',
+          success: function(r){ if (done) return; done = true; clearTimeout(t); resolve(r); },
+          fail:    function(r){ if (done) return; done = true; clearTimeout(t); reject(r); }
+        });
       });
       accessToken = authObj && authObj.access_token;
-    } else {
-      alert('카카오 SDK 로드 실패. 새로고침해주세요.');
-      return { ok: false };
+      via = 'web';
+    } catch(e) {
+      if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+      if (!firstErr) firstErr = e;
     }
-    if (!accessToken) throw new Error('accessToken 없음');
+  }
+  if (!accessToken) {
+    var why = _kakaoErrText(firstErr);
+    if (isNative && !hasNative) {
+      why = 'NATIVE_PLUGIN_MISSING — 앱에 카카오 플러그인이 안 붙었어요' + (firstErr ? (' / ' + why) : '');
+    }
+    console.error('[KakaoLogin] 토큰 확보 실패:', why);
+    alert('카카오 로그인 오류\n' + why + '\n\n계속 안 되면 이 문구를 그대로 알려주세요.');
+    return { ok: false };
+  }
+  console.log('[KakaoLogin] access_token 확보 (' + via + ')');
 
-    // access_token → CF 서버검증 → 커스텀 토큰 (CF 배포 안 됐으면 client fallback)
+  try {
+    // access_token → CF 서버검증 → 커스텀 토큰 (CF 실패 시 client fallback)
     var uid, cred, payload;
     try {
       var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
@@ -427,11 +497,9 @@ window._doKakaoLogin = async function() {
       cred = await signInWithCustomToken(auth, payload.customToken);
       uid = cred.user.uid;
     } catch(cfErr) {
-      console.warn('Cloud Function 실패, fallback:', cfErr && cfErr.message);
+      console.warn('Cloud Function 실패, fallback:', _kakaoErrText(cfErr));
       // Fallback: 카카오 프로필 조회 + Firebase Auth 결정적 PW
-      var kakaoUser = await new Promise(function(resolve, reject){
-        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
-      });
+      var kakaoUser = await _kakaoProfile(accessToken);
       var kakaoId = String(kakaoUser.id||'');
       var kEmail = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
       var kNick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
@@ -474,9 +542,8 @@ window._doKakaoLogin = async function() {
     return { ok: true };
   } catch(e) {
     console.error('카카오 로그인 오류:', e);
-    var msg = ((e && (e.message || e.errorMessage)) || '') + '';
-    if (msg.toLowerCase().indexOf('cancel') >= 0) return { ok: false, cancelled: true };
-    alert('카카오 로그인 오류. 다시 시도해주세요.');
+    if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+    alert('카카오 로그인 오류\n' + _kakaoErrText(e) + '\n\n계속 안 되면 이 문구를 그대로 알려주세요.');
     return { ok: false };
   }
 };
