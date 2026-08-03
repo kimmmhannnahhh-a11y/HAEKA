@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="HAEKA"/>
 <meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet"/>
 <style>
+:root{--hk-bg:#FAFAF8;--hk-surface:#FFFFFF;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04)}
+
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
 .topbar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #e0e0e0;background:#fff}
 .back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1}
 .topbar-title{font-size:15px;font-weight:700;color:#111}
-.screen{display:none}.screen.active{display:block;overflow-y:auto;max-height:calc(620px - 44px)}
+.screen{display:none}.screen.active{display:block;overflow-y:auto;max-height:calc(620px - 44px);scrollbar-width:none;-ms-overflow-style:none}
+.screen.active::-webkit-scrollbar{display:none}
 .btn{width:100%;padding:15px;border-radius:10px;font-size:14px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;transition:.15s}
-.btn-green{background:#1A5D1A;color:#fff}.btn-green:hover{background:#145014}
+.btn-green{background:#FF3900;color:#fff}.btn-green:hover{background:#E31C5F}
 .btn-kakao{background:#FEE500;color:#3C1E1E}
 .btn-white{background:#fff;color:#111;border:1.5px solid #e0e0e0}
-.btn-naver{background:#03C75A;color:#fff}
-.btn-outline{background:#fff;color:#1A5D1A;border:2px solid #1A5D1A}
+.btn-outline{background:#fff;color:#FF3900;border:2px solid #FF3900}
 .icon-heka{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon-heka-inner{width:9px;height:9px;border-radius:50%;background:#fff}
 .dots{display:flex;gap:3px;flex-shrink:0}.dots span{width:4px;height:4px;border-radius:50%;background:#717171;display:block}
 .inp-label{font-size:10px;font-weight:700;color:#717171;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
 .inp-field{width:100%;padding:12px 13px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:13px;background:#f5f5f5;color:#111;font-family:inherit;outline:none;transition:.15s}
-.inp-field:focus{border-color:#1A5D1A;background:#fff}
+.inp-field:focus{border-color:#FF3900;background:#fff}
 .divider{display:flex;align-items:center;gap:10px;margin:4px 0}
 .divider-line{flex:1;height:1px;background:#e0e0e0}
 .divider-txt{font-size:10px;color:#bbb;white-space:nowrap;font-weight:600}
@@ -40,7 +55,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sp-logo{font-size:22px;flex-shrink:0}.sp-title{font-size:14px;font-weight:700;color:#111}.sp-sub{font-size:11px;color:#999;margin-top:1px}
 .sp-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:8px}
 .sp-inp{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;background:#f5f5f5;font-family:inherit;outline:none;transition:.15s}
-.sp-inp:focus{border-color:#1A5D1A;background:#fff}
+.sp-inp:focus{border-color:#FF3900;background:#fff}
 .sp-btn{width:100%;padding:11px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 .sp-cancel{background:none;border:none;font-size:12px;color:#bbb;cursor:pointer;font-family:inherit;padding:2px}
 .sp-notice{font-size:10px;color:#999;text-align:center;padding:0 4px}
@@ -51,20 +66,24 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .legal-title{font-size:14px;font-weight:700}
 .legal-close{background:none;border:none;font-size:18px;color:#bbb;cursor:pointer}
 .legal-body{padding:12px 16px 16px;overflow-y:auto;font-size:12px;color:#555;line-height:1.7}
-.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,.95);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:rgba(255,56,92,.95);color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .bnav{display:flex;border-top:.5px solid #eee;background:#fff;padding:8px 0 10px;position:absolute;bottom:0;left:0;right:0}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center}
-.npbtn{width:34px;height:34px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:34px;height:34px;border-radius:50%;background:#FF3900;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF3900;font-weight:600}
+.login-inp{width:100%;padding:11px 14px;border:1px solid #ececec;border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:.15s;background:#fafafa;color:#222;letter-spacing:-.2px;box-sizing:border-box}
+.login-inp:focus{border-color:#111;background:#fff}
+.login-inp::placeholder{color:#ccc}
+
 /* 회원가입 */
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative}
-.sb{background:#1A5D1A;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
+.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between}
 
 /* 상단 네비 */
 .topbar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:.5px solid #e0e0e0}
@@ -75,14 +94,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .progress{display:flex;align-items:flex-start;justify-content:center;padding:14px 18px 10px}
 .step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
 .step-circle{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-.step-circle.done{background:#1A5D1A;color:#fff}
-.step-circle.active{background:#1A5D1A;color:#fff;box-shadow:0 0 0 3px #e8f5e8}
+.step-circle.done{background:#FF3900;color:#fff}
+.step-circle.active{background:#FF3900;color:#fff;box-shadow:0 0 0 3px #FFF1F2}
 .step-circle.inactive{background:#f0f0f0;color:#bbb;border:1.5px solid #e0e0e0}
 .step-label{font-size:9px;font-weight:600;white-space:nowrap}
-.step-label.done,.step-label.active{color:#1A5D1A}
+.step-label.done,.step-label.active{color:#FF3900}
 .step-label.inactive{color:#bbb}
 .step-line{flex:1;height:2px;margin-top:12px;border-radius:2px}
-.step-line.done{background:#1A5D1A}
+.step-line.done{background:#FF3900}
 .step-line.inactive{background:#e0e0e0}
 
 /* 화면 공통 */
@@ -96,15 +115,15 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .check-wrap{margin:0 16px;border-radius:8px;overflow:hidden;border:.5px solid #e0e0e0}
 .check-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:.1s}
 .check-item:last-child{border-bottom:none}
-.check-item.all-item{background:#e8f5e8}
+.check-item.all-item{background:#FFF1F2}
 .check-item:hover{background:#fafafa}
-.check-item.all-item:hover{background:#d8f0d8}
+.check-item.all-item:hover{background:#FFE4E8}
 .check-left{display:flex;align-items:center;gap:9px}
 .chkbox{width:18px;height:18px;border-radius:4px;border:1.5px solid #e0e0e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s}
-.chkbox.checked{background:#1A5D1A;border-color:#1A5D1A}
+.chkbox.checked{background:#FF3900;border-color:#FF3900}
 .chkbox.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
 .check-txt{font-size:12px;color:#111;font-weight:500}
-.check-txt.green{color:#1A5D1A;font-weight:700}
+.check-txt.green{color:#FF3900;font-weight:700}
 .badge-req{font-size:9px;color:#717171;background:#f5f5f5;padding:2px 6px;border-radius:4px}
 .badge-opt{font-size:9px;color:#bbb;background:#f5f5f5;padding:2px 6px;border-radius:4px}
 .check-arrow{font-size:13px;color:#ccc}
@@ -114,31 +133,28 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .field-group{display:flex;flex-direction:column;gap:4px}
 .field-label{font-size:10px;font-weight:700;color:#717171;letter-spacing:.08em;text-transform:uppercase}
 .field-input{width:100%;padding:11px 13px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:13px;background:#f5f5f5;color:#111;font-family:inherit;outline:none;transition:.15s}
-.field-input:focus{border-color:#1A5D1A;background:#fff}
+.field-input:focus{border-color:#FF3900;background:#fff}
 .field-input.error{border-color:#ff3b30;background:#fff8f8}
 .field-error{font-size:10px;color:#ff3b30;font-weight:500;display:none}
 .field-error.show{display:block}
-.field-ok{font-size:10px;color:#1A5D1A;font-weight:500;display:none}
+.field-ok{font-size:10px;color:#FF3900;font-weight:500;display:none}
 .field-ok.show{display:block}
 .field-hint{font-size:10px;color:#bbb}
 
-/* 통신사 칩 */
-.carrier-row{display:flex;gap:5px}
-.carrier-chip{flex:1;padding:8px 4px;border-radius:16px;font-size:10px;font-weight:600;border:1.5px solid #e0e0e0;background:#fff;color:#717171;cursor:pointer;text-align:center;font-family:inherit;transition:.15s}
-.carrier-chip.on{background:#1A5D1A;border-color:#1A5D1A;color:#fff}
+
 
 /* 인증번호 */
 .input-row{display:flex;gap:7px}
 .input-row .field-input{flex:1}
-.send-btn{flex-shrink:0;padding:0 12px;border-radius:8px;background:#1A5D1A;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.send-btn{flex-shrink:0;padding:0 12px;border-radius:8px;background:#FF3900;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
 .send-btn:disabled{background:#bbb;cursor:default}
 .timer-wrap{position:relative}
 .timer-wrap .field-input{padding-right:46px}
-.timer{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#1A5D1A}
+.timer{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#FF3900}
 
 /* 버튼 */
-.btn-primary{width:calc(100% - 32px);margin:10px 16px 0;padding:13px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:.15s}
-.btn-primary:hover{background:#145014}
+.btn-primary{width:calc(100% - 32px);margin:10px 16px 0;padding:13px;border-radius:10px;background:#FF3900;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-primary:hover{background:#E31C5F}
 .btn-primary:disabled{background:#bbb;cursor:default}
 .btn-gray{background:#f5f5f5;color:#717171;border:1.5px solid #e0e0e0}
 
@@ -148,7 +164,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .popup{background:#fff;border-radius:16px;padding:24px 20px 16px;margin:0 20px;width:100%}
 .popup-title{font-size:15px;font-weight:700;color:#111;margin-bottom:8px;text-align:center}
 .popup-body{font-size:13px;color:#555;text-align:center;line-height:1.6;margin-bottom:18px}
-.popup-btn{width:100%;padding:12px;border-radius:10px;background:#1A5D1A;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.popup-btn{width:100%;padding:12px;border-radius:10px;background:#FF3900;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 
 /* 완료 팝업 */
 .popup-success .popup-icon{font-size:40px;text-align:center;margin-bottom:10px}
@@ -156,41 +172,459 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 /* 하단 네비 */
 .bnav{display:flex;border-top:.5px solid #eee;background:#fff;padding:8px 0 10px}
 .ni{flex:1;text-align:center;font-size:9px;color:#999;cursor:pointer;padding:3px 0;display:flex;flex-direction:column;align-items:center;gap:2px}
-.ni.on{color:#1A5D1A;font-weight:600}
+.ni.on{color:#FF3900;font-weight:600}
 .ni svg{width:17px;height:17px}
 .nplus{flex:1;display:flex;flex-direction:column;align-items:center}
-.npbtn{width:34px;height:34px;border-radius:50%;background:#1A5D1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
-.nplbl{font-size:9px;color:#1A5D1A;font-weight:600}
+.npbtn{width:34px;height:34px;border-radius:50%;background:#FF3900;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border:none;margin-bottom:2px;margin-top:-4px}
+.nplbl{font-size:9px;color:#FF3900;font-weight:600}
 
 /* 가입완료 토스트 */
-.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(26,93,26,0.95);color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.toast{position:absolute;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(255,56,92,0.95);color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99;box-shadow:0 4px 16px rgba(0,0,0,.18)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 
 .su-screen{display:none;padding-bottom:80px}.su-screen.su-active{display:block;overflow-y:auto;max-height:100%}
 
+/* 카드 비 */
+.rcard{position:absolute;width:18px;height:12px;border-radius:2.5px;opacity:0.85;animation:cardFall 4.5s linear infinite;box-shadow:0 1px 2px rgba(0,0,0,0.08)}
+.rcard::before{content:'';position:absolute;top:2.5px;left:0;right:0;height:2px;background:rgba(0,0,0,0.15)}
+.rcard::after{content:'';position:absolute;bottom:2px;right:2.5px;width:5px;height:3px;border-radius:1px;background:rgba(255,255,255,0.5)}
+@keyframes cardFall{
+  0%{transform:translateY(0) rotate(-15deg);opacity:0}
+  10%{opacity:0.85}
+  90%{opacity:0.85}
+  100%{transform:translateY(280px) rotate(25deg);opacity:0}
+}
+
+
+/* HAEKA 2.0 Warm Minimal login overrides */
+body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.phone{background:var(--hk-bg);border-color:#EEEDE8;box-shadow:0 18px 45px rgba(17,24,39,.08);height:100vh;height:100dvh;max-height:none}.screen.active{max-height:calc(100vh - 44px);max-height:calc(100dvh - 44px)}.sb{background:#fff;color:var(--hk-text);box-shadow:0 1px 4px rgba(0,0,0,0.06)}.topbar{background:#fff;color:var(--hk-text)}
+.btn-green,.btn-primary,.popup-btn,.send-btn{background:var(--hk-accent);color:#fff}.btn-green:hover,.btn-primary:hover{background:var(--hk-accent-hover)}.btn-outline{background:#fff;color:var(--hk-text);border:1.5px solid #E5E7EB}.login-inp,.inp-field,.field-input,.sp-inp{background:#fff;border-color:#E5E7EB;border-radius:12px}.login-inp:focus,.inp-field:focus,.field-input:focus,.sp-inp:focus{border-color:var(--hk-accent);box-shadow:0 0 0 3px rgba(255,56,92,.1);background:#fff}.toast{background:rgba(255,56,92,.95)}.ni.on,.nplbl,.timer,.field-ok,.check-txt.green{color:var(--hk-accent)}.npbtn,.step-circle.done,.step-circle.active,.step-line.done,.chkbox.checked{background:var(--hk-accent);border-color:var(--hk-accent)}.step-circle.active{box-shadow:0 0 0 3px rgba(255,56,92,.12)}.check-item.all-item{background:var(--hk-accent-bg)}.check-item.all-item:hover{background:#FFE4E8}
+.travel-illust{position:relative;width:118px;height:118px;margin:0 auto 2px;z-index:2;display:flex;align-items:center;justify-content:center}
+.haeka-logo-img{position:relative;z-index:3;width:92px;height:92px;object-fit:contain;animation:logoFloat 3.2s ease-in-out infinite;filter:drop-shadow(0 14px 28px rgba(255,57,0,.22))}
+.haeka-logo-ring{position:absolute;left:50%;top:50%;width:132px;height:132px;transform:translate(-50%,-50%) rotate(-90deg);z-index:2;pointer-events:none}
+.haeka-logo-ring circle{fill:none;stroke:var(--hk-accent);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;animation:ringDraw 1.6s cubic-bezier(.65,.05,.36,1) .25s forwards,ringPulse 3s ease-in-out 1.9s infinite}
+@keyframes ringDraw{to{stroke-dashoffset:0}}
+@keyframes ringPulse{0%,100%{opacity:1;transform:translate(-50%,-50%) rotate(-90deg) scale(1)}50%{opacity:.55;transform:translate(-50%,-50%) rotate(-90deg) scale(1.04)}}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}.social-row{display:flex!important;flex-direction:column!important;gap:8px!important;justify-content:stretch!important}.social-row button{width:100%!important;height:48px!important;border-radius:12px!important;font-size:13px!important;font-weight:800!important;gap:8px}.social-row button:first-child:after{content:'카카오로 계속하기';margin-left:8px}.social-row button:last-child:after{content:'Google로 계속하기';margin-left:8px;color:#1A1A1A}
+
 </style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, RecaptchaVerifier, signInWithPhoneNumber, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-functions.js";
+const app = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app",
+  appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+const functions = getFunctions(app, 'asia-northeast3');
+window._db = db;
+window._fbAuth = auth;
+window._fbFns = { collection, query, where, getDocs };
+
+// 회원가입 - Firebase Auth + Firestore 저장
+window._doSignup = async function(email, pw, nick, phone, name, birth) {
+  try {
+    var cred = await createUserWithEmailAndPassword(auth, email, pw);
+    var uid = cred.user.uid;
+    await setDoc(doc(db, 'users', uid), {
+      uid: uid,
+      email: email,
+      nick: nick,
+      phone: phone || '',
+      name: name || '',
+      birth: birth || '',
+      createdAt: new Date().toISOString()
+    });
+    return { ok: true, uid: uid };
+  } catch(e) {
+    return { ok: false, code: e.code };
+  }
+};
+
+// 아이디 찾기 - 휴대폰으로 이메일 조회
+window._doFindEmail = async function(phone) {
+  try {
+    var e164 = phone.replace(/-/g,'');
+    if (e164.startsWith('0')) e164 = '+82' + e164.slice(1);
+    var q = query(collection(db, 'users'), where('phone', '==', phone.replace(/-/g,'')));
+    var snap = await getDocs(q);
+    if (snap.empty) {
+      // e164로도 시도
+      var q2 = query(collection(db, 'users'), where('phone', '==', e164));
+      snap = await getDocs(q2);
+    }
+    if (snap.empty) return { ok: false, code: 'not-found' };
+    var email = snap.docs[0].data().email;
+    // 마스킹: abc***@gmail.com
+    var at = email.indexOf('@');
+    var local = email.slice(0, at);
+    var domain = email.slice(at);
+    var masked = local.slice(0, Math.max(2, Math.floor(local.length/2))) + '***' + domain;
+    return { ok: true, masked: masked };
+  } catch(e) {
+    return { ok: false, code: e.code };
+  }
+};
+// reCAPTCHA 초기화 (보이지 않는 방식)
+window._initRecaptcha = function(btnId) {
+  if (window._recaptchaVerifier) {
+    try { window._recaptchaVerifier.clear(); } catch(e) {}
+  }
+  window._recaptchaVerifier = new RecaptchaVerifier(auth, btnId, { size: 'invisible' });
+};
+
+window._doSendSMS = async function(phoneNumber) {
+  try {
+    if (!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'send-btn', { size: 'invisible' });
+    }
+    var result = await signInWithPhoneNumber(auth, phoneNumber, window._recaptchaVerifier);
+    window._confirmationResult = result;
+    return { ok: true };
+  } catch(e) {
+    console.error(e);
+    try { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; } catch(e2) {}
+    return { ok: false, code: e.code, message: e.message };
+  }
+};
+
+window._doVerifySMS = async function(code) {
+  try {
+    if (!window._confirmationResult) return { ok: false, code: 'no-result' };
+    var result = await window._confirmationResult.confirm(code);
+    return { ok: true, user: result.user };
+  } catch(e) {
+    return { ok: false, code: e.code };
+  }
+};
+
+// 이메일 중복 체크 (Firestore users 컬렉션에서 직접 확인)
+window._checkEmailExists = async function(email) {
+  try {
+    var q = query(collection(db, 'users'), where('email', '==', email));
+    var snap = await getDocs(q);
+    return { exists: !snap.empty };
+  } catch(e) {
+    return { exists: false };
+  }
+};
+
+window._doSendResetEmail = async function(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, code: e.code };
+  }
+};
+window._doFirebaseLogin = async function(email, pw) {
+  try {
+    var result = await signInWithEmailAndPassword(auth, email, pw);
+    var uid = result.user.uid;
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var status = uDoc.data().status;
+        if (status === 'suspended') {
+          await auth.signOut();
+          alert('정지된 계정이에요.');
+          return false;
+        }
+        if (status === 'banned') {
+          await auth.signOut();
+          alert('강퇴된 계정이에요. 서비스 이용이 불가합니다.');
+          return false;
+        }
+      }
+    } catch(e2) { console.log('status check err:', e2); }
+    try{ localStorage.setItem('haeka_uid', uid); localStorage.setItem('haeka_email', result.user.email||''); localStorage.setItem('haeka_provider', 'password'); }catch(e){}
+    return true;
+  } catch(e) {
+    var code = e && e.code || '';
+    if (code === 'auth/too-many-requests') {
+      alert('너무 많은 시도가 있었어요. 잠시 후 다시 시도해주세요.');
+    } else if (code === 'auth/network-request-failed') {
+      alert('네트워크 연결을 확인해주세요.');
+    } else {
+      alert('이메일 또는 비밀번호가 잘못되었어요.');
+    }
+    return false;
+  }
+};
+
+
+window._doGoogleLogin = async function() {
+  try {
+    var provider = new GoogleAuthProvider();
+    var result = await signInWithPopup(auth, provider);
+    var uid = result.user.uid;
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var status = uDoc.data().status;
+        if (status === 'suspended') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '정지된 계정이에요.' };
+        }
+        if (status === 'banned') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: '강퇴된 계정이에요. 서비스 이용이 불가합니다.' };
+        }
+      }
+    } catch(e2) { console.log('status check err:', e2); }
+    try{
+      localStorage.setItem('haeka_uid', uid);
+      localStorage.setItem('haeka_email', result.user.email||'');
+      localStorage.setItem('haeka_nick', result.user.displayName||'');
+      localStorage.setItem('haeka_provider', 'google.com');
+    }catch(e){}
+    return { ok: true, user: result.user };
+  } catch(e) {
+    if (e.code === 'auth/popup-closed-by-user') return { ok: false, cancelled: true };
+    alert('Google 로그인 오류: ' + e.message);
+    return { ok: false };
+  }
+};
+
+// 카카오 로그인 — 앱: 네이티브 SDK 우선, 실패하면 웹 SDK 로 이어서 시도. 웹: Kakao JS SDK v1 팝업
+// ※ 오류 원인(KOE### 등)을 삼키지 말 것. 삼키면 "그냥 안 된다" 밖에 안 남아 원인을 못 찾는다.
+function _kakaoErrText(e) {
+  if (!e) return '알 수 없는 오류';
+  var m = (e.message || e.errorMessage || e.msg || (typeof e === 'string' ? e : '')) + '';
+  if (!m || m === 'undefined') { try { m = JSON.stringify(e); } catch(_) { m = String(e); } }
+  var koe = m.match(/KOE\d+/i);
+  return (e.code ? '[' + e.code + '] ' : '') + (koe ? koe[0].toUpperCase() + ' — ' : '') + m;
+}
+function _kakaoCancelled(e) {
+  return /cancel/i.test(((e && (e.message || e.errorMessage)) || '') + '');
+}
+// 프로필 조회. 네이티브로 받은 토큰은 JS SDK 가 모르므로 REST 로도 갈 수 있어야 한다.
+async function _kakaoProfile(accessToken) {
+  if (window.Kakao && Kakao.API && Kakao.isInitialized && Kakao.isInitialized()) {
+    try { if (Kakao.Auth && Kakao.Auth.setAccessToken) Kakao.Auth.setAccessToken(accessToken); } catch(e){}
+    try {
+      return await new Promise(function(resolve, reject){
+        Kakao.API.request({ url: '/v2/user/me', success: resolve, fail: reject });
+      });
+    } catch(e) { console.warn('[KakaoLogin] JS SDK 프로필 실패 → REST 재시도:', _kakaoErrText(e)); }
+  }
+  var r = await fetch('https://kapi.kakao.com/v2/user/me', {
+    method: 'GET', headers: { Authorization: 'Bearer ' + accessToken }
+  });
+  if (!r.ok) throw new Error('카카오 프로필 조회 실패 (' + r.status + ')');
+  return await r.json();
+}
+window._doKakaoLogin = async function() {
+  var C = window.Capacitor;
+  var isNative = !!(C && typeof C.isNativePlatform === 'function' && C.isNativePlatform());
+  var platform = (C && typeof C.getPlatform === 'function') ? C.getPlatform() : 'web';
+  var KakaoLogin = (C && C.Plugins && C.Plugins.KakaoLoginPlugin) || null;
+  if (!KakaoLogin && isNative && C && typeof C.registerPlugin === 'function') {
+    try { KakaoLogin = C.registerPlugin('KakaoLoginPlugin'); } catch(e){}
+  }
+  var hasNative = !!(KakaoLogin && typeof KakaoLogin.goLogin === 'function');
+  console.log('[KakaoLogin] diag', {
+    isNative: isNative, platform: platform, hasNative: hasNative,
+    pluginKeys: (C && C.Plugins) ? Object.keys(C.Plugins) : [],
+    hasKakaoJs: !!(window.Kakao && window.Kakao.Auth),
+    kakaoInited: !!(window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized())
+  });
+
+  var accessToken = null, firstErr = null, via = '';
+  // 1) 네이티브(앱). 키해시·앱키 문제면 여기서 KOE### 로 터진다.
+  if (hasNative) {
+    try {
+      var tokenRes = await KakaoLogin.goLogin();
+      accessToken = tokenRes && (tokenRes.accessToken || tokenRes.access_token);
+      via = 'native';
+    } catch(e) {
+      if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+      firstErr = e;
+      console.error('[KakaoLogin] 네이티브 실패 → 웹 SDK 로 이어서 시도:', _kakaoErrText(e));
+    }
+  }
+  // 2) 웹 SDK. 브라우저의 정상 경로이자, 앱에서 네이티브가 죽었을 때의 우회로.
+  if (!accessToken && window.Kakao && Kakao.Auth) {
+    if (!Kakao.isInitialized()) { alert('카카오 로그인 준비 중이에요. 새로고침 후 다시 시도해주세요.'); return { ok: false }; }
+    try {
+      var authObj = await new Promise(function(resolve, reject){
+        var done = false;
+        var t = setTimeout(function(){
+          if (done) return; done = true;
+          reject(new Error('카카오 로그인 창이 열리지 않았어요(시간 초과)'));
+        }, 90000);
+        Kakao.Auth.login({
+          scope: 'profile_nickname',
+          success: function(r){ if (done) return; done = true; clearTimeout(t); resolve(r); },
+          fail:    function(r){ if (done) return; done = true; clearTimeout(t); reject(r); }
+        });
+      });
+      accessToken = authObj && authObj.access_token;
+      via = 'web';
+    } catch(e) {
+      if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+      if (!firstErr) firstErr = e;
+    }
+  }
+  if (!accessToken) {
+    var why = _kakaoErrText(firstErr);
+    if (isNative && !hasNative) {
+      why = 'NATIVE_PLUGIN_MISSING — 앱에 카카오 플러그인이 안 붙었어요' + (firstErr ? (' / ' + why) : '');
+    }
+    console.error('[KakaoLogin] 토큰 확보 실패:', why);
+    alert('카카오 로그인 오류\n' + why + '\n\n계속 안 되면 이 문구를 그대로 알려주세요.');
+    return { ok: false };
+  }
+  console.log('[KakaoLogin] access_token 확보 (' + via + ')');
+
+  try {
+    // access_token → CF 서버검증 → 커스텀 토큰 (CF 실패 시 client fallback)
+    var uid, cred, payload;
+    try {
+      var kakaoSignIn = httpsCallable(functions, 'kakaoSignIn');
+      var resp = await kakaoSignIn({ kakaoAccessToken: accessToken });
+      payload = resp && resp.data;
+      if (!payload || !payload.customToken) throw new Error('customToken 없음');
+      cred = await signInWithCustomToken(auth, payload.customToken);
+      uid = cred.user.uid;
+    } catch(cfErr) {
+      console.warn('Cloud Function 실패, fallback:', _kakaoErrText(cfErr));
+      // Fallback: 카카오 프로필 조회 + Firebase Auth 결정적 PW
+      var kakaoUser = await _kakaoProfile(accessToken);
+      var kakaoId = String(kakaoUser.id||'');
+      var kEmail = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
+      var kNick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
+      var kAvatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
+      var kPw = 'kakao_v1_' + kakaoId + '_hkacc';
+      try {
+        cred = await signInWithEmailAndPassword(auth, kEmail, kPw);
+      } catch(inner) {
+        if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
+          cred = await createUserWithEmailAndPassword(auth, kEmail, kPw);
+          try {
+            await setDoc(doc(db, 'users', cred.user.uid), {
+              uid: cred.user.uid, email: kEmail, nickname: kNick, avatar: kAvatar,
+              provider: 'kakao', kakao_id: kakaoId, createdAt: new Date(), status: 'active'
+            });
+          } catch(e){ console.error('users 저장 실패:', e); }
+        } else { throw inner; }
+      }
+      uid = cred.user.uid;
+      payload = { email: kEmail, nickname: kNick };
+    }
+
+    // 정지/강퇴 체크
+    try {
+      var uDoc = await getDoc(doc(db, 'users', uid));
+      if (uDoc.exists()) {
+        var st = uDoc.data().status;
+        if (st === 'suspended' || st === 'banned') {
+          await auth.signOut();
+          return { ok: false, blocked: true, msg: st === 'banned' ? '강퇴된 계정이에요.' : '정지된 계정이에요.' };
+        }
+      }
+    } catch(e2){}
+    try {
+      localStorage.setItem('haeka_uid', uid);
+      localStorage.setItem('haeka_email', payload.email || '');
+      localStorage.setItem('haeka_nick', payload.nickname || '');
+      localStorage.setItem('haeka_provider', 'kakao');
+    } catch(e){}
+    return { ok: true };
+  } catch(e) {
+    console.error('카카오 로그인 오류:', e);
+    if (_kakaoCancelled(e)) return { ok: false, cancelled: true };
+    alert('카카오 로그인 오류\n' + _kakaoErrText(e) + '\n\n계속 안 되면 이 문구를 그대로 알려주세요.');
+    return { ok: false };
+  }
+};
+</script>
+<script src="security.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script>
+try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init('53803347469de213ee3074ad9d647f71'); } catch(e){ console.error('Kakao init 실패:', e); }
+</script>
 </head>
 <body>
 <div class="phone" id="login-phone">
   <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
   <div class="screen active" id="s-main">
-    <div class="topbar"><span class="topbar-title">로그인</span></div>
-    <div style="padding:26px 16px 20px;text-align:center">
-      <div style="display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:16px;background:#fff;border:1px solid #e0e0e0;box-shadow:0 6px 20px rgba(0,0,0,.06);margin-bottom:14px;transform:rotate(3deg)">
-        <div style="width:32px;height:32px;border-radius:50%;border:2px solid #1A5D1A;display:flex;align-items:center;justify-content:center">
-          <div style="width:14px;height:14px;border-radius:50%;background:#1A5D1A"></div>
+    <div class="topbar" style="border-bottom:none"><button class="back-btn" onclick="history.back()">←</button><span class="topbar-title" style="color:#bbb;font-weight:500">로그인</span></div>
+
+    <div style="padding:20px 24px 14px;text-align:center;position:relative;overflow:hidden">
+      <div class="card-rain" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0">
+        <div class="rcard" style="left:8%;top:-20px;animation-delay:0s;background:#4ADE80"></div>
+        <div class="rcard" style="left:22%;top:-30px;animation-delay:1.3s;background:#F9A8D4"></div>
+        <div class="rcard" style="left:38%;top:-15px;animation-delay:2.1s;background:#FCD34D"></div>
+        <div class="rcard" style="left:54%;top:-40px;animation-delay:0.6s;background:#7DD3FC"></div>
+        <div class="rcard" style="left:70%;top:-10px;animation-delay:1.8s;background:#C4B5FD"></div>
+        <div class="rcard" style="left:84%;top:-25px;animation-delay:2.6s;background:#FCA5A5"></div>
+        <div class="rcard" style="left:15%;top:-50px;animation-delay:3.2s;background:#86EFAC"></div>
+        <div class="rcard" style="left:62%;top:-35px;animation-delay:3.7s;background:#FDBA74"></div>
+      </div>
+
+      <div class="travel-illust" aria-hidden="true">
+        <svg class="haeka-logo-ring" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="90" cy="90" r="80"/>
+        </svg>
+        <img class="haeka-logo-img" src="haeka-logo.png" alt="해카"/>
+      </div>
+
+      <!-- 로고 -->
+      <div style="position:relative;z-index:2;margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div style="line-height:1.2;letter-spacing:-1.2px;font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif">
+          <div><span style="font-size:26px;font-weight:700;color:#FF3900">해</span><span style="font-size:25px;font-weight:700;color:#222">외에서</span></div>
+          <div style="margin-top:3px"><span style="font-size:26px;font-weight:700;color:#FF3900">카</span><span style="font-size:25px;font-weight:700;color:#222">드결제하자</span></div>
         </div>
       </div>
-      <div style="font-size:20px;font-weight:800;color:#111;margin-bottom:5px">함께 떠나볼까요?</div>
-      <div style="font-size:12px;color:#717171">새로운 여행의 시작을 함께해요</div>
+
+      <div style="position:relative;z-index:2;font-family:'Gowun Dodum',-apple-system,sans-serif;font-size:17px;font-weight:400;color:#555;line-height:1.4;letter-spacing:-.3px;margin-bottom:4px">함께 떠나볼까요?</div>
+      <div style="position:relative;z-index:2;font-size:12px;color:#bbb;letter-spacing:.2px">새로운 여행의 시작, 해카와 함께</div>
     </div>
-    <div style="padding:0 16px 10px;display:flex;flex-direction:column;gap:9px">
-      <button class="btn btn-green" onclick="goScreen('s-heka')"><div class="icon-heka"><div class="icon-heka-inner"></div></div>해카 아이디로 시작하기</button>
-      <button class="btn btn-kakao" onclick="openSocial('kakao')"><span style="font-size:16px">💬</span>카카오 계정으로 계속하기</button>
-      <button class="btn btn-white" onclick="goScreen('s-other')"><div class="dots"><span></span><span></span><span></span></div>다른 방법으로 계속하기</button>
+
+    <div style="padding:0 24px;display:flex;flex-direction:column;gap:10px">
+      <input class="login-inp" id="main-email" placeholder="이메일" type="email" autocomplete="email"/>
+      <input class="login-inp" id="main-pw" placeholder="비밀번호" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doMainLogin()"/>
+
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button onclick="location.href='heka_signup.html'" style="flex:1;padding:12px;background:#fff;color:#FF3900;border:1.5px solid #FF3900;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">회원가입</button>
+        <button onclick="doMainLogin()" style="flex:1;padding:12px;background:#fff;color:#FF3900;border:1.5px solid #FF3900;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.2px">로그인</button>
+      </div>
+
+      <div style="display:flex;justify-content:center;align-items:center;gap:10px;padding:14px 0 0;font-size:12px;color:#aaa">
+        <button class="find-link" style="font-size:12px;color:#999;padding:0" onclick="goScreen('s-findid')">아이디 찾기</button>
+        <span style="color:#e5e5e5">|</span>
+        <button class="find-link" style="font-size:12px;color:#999;padding:0" onclick="goScreen('s-findpw')">비밀번호 찾기</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin:14px 0 12px">
+        <div style="flex:1;height:1px;background:#f0f0f0"></div>
+        <span style="font-size:11px;color:#ccc;letter-spacing:.05em">소셜 로그인</span>
+        <div style="flex:1;height:1px;background:#f0f0f0"></div>
+      </div>
+
+      <div class="social-row" style="display:flex;gap:10px;justify-content:center">
+        <button onclick="doKakaoLogin()" aria-label="카카오로 시작하기" style="width:48px;height:48px;background:#FEE500;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center" title="카카오로 시작"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.77 1.79 5.21 4.5 6.65L5 22l4.87-2.62c.7.1 1.42.15 2.13.15 5.52 0 10-3.58 10-8s-4.48-8-10-8z" fill="#3C1E1E"/></svg></button>
+        <button onclick="doGoogleLogin()" aria-label="구글로 시작하기" style="width:48px;height:48px;background:#fff;border:1px solid #ececec;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="terms-bar"><button class="terms-link" onclick="openLegal('privacy')">개인정보처리방침</button> | <button class="terms-link" onclick="openLegal('terms')">이용약관</button></div>
+
+    <div style="text-align:center;font-size:10.5px;color:#bbb;padding:32px 24px 16px;letter-spacing:-.1px">
+      <button class="terms-link" onclick="openLegal('privacy')" style="color:#999">개인정보처리방침</button>
+      <span style="margin:0 6px;color:#e5e5e5">·</span>
+      <button class="terms-link" onclick="openLegal('terms')" style="color:#999">이용약관</button>
+    </div>
   </div>
   <div class="screen" id="s-heka">
     <div class="topbar"><button class="back-btn" onclick="goScreen('s-main')">←</button><span class="topbar-title">해카 로그인</span></div>
@@ -202,9 +636,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       <div><div class="inp-label">이메일</div><input class="inp-field" id="heka-email" placeholder="example@travel.com" type="email"/></div>
       <div><div class="inp-label">비밀번호</div><input class="inp-field" id="heka-pw" placeholder="••••••••" type="password"/></div>
       <button class="btn btn-green" style="margin-top:2px" onclick="doHekaLogin()">로그인</button>
-      <div class="find-links"><button class="find-link">아이디 찾기</button><div class="find-sep"></div><button class="find-link">비밀번호 찾기</button></div>
+      <div class="find-links"><button class="find-link" onclick="goScreen('s-findid')">아이디 찾기</button><div class="find-sep"></div><button class="find-link" onclick="goScreen('s-findpw')">비밀번호 찾기</button></div>
       <div class="divider"><div class="divider-line"></div><span class="divider-txt">아직 계정이 없으신가요?</span><div class="divider-line"></div></div>
-      <button class="btn btn-outline" onclick="goScreen('s-signup')">이메일로 회원가입</button>
+      <button class="btn btn-outline" onclick="location.href='heka_signup.html'">이메일로 회원가입</button>
     </div>
     <div class="terms-bar"><button class="terms-link" onclick="openLegal('privacy')">개인정보처리방침</button> | <button class="terms-link" onclick="openLegal('terms')">이용약관</button></div>
   </div>
@@ -215,17 +649,89 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
       <div style="font-size:11px;color:#717171">아래 방법 중 하나를 선택해주세요</div>
     </div>
     <div style="padding:8px 16px;display:flex;flex-direction:column;gap:9px">
-      <button class="btn btn-white" onclick="openSocial('google')">
+      <button class="btn btn-white" onclick="doGoogleLogin()">
         <svg width="17" height="17" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         구글 계정으로 계속하기
       </button>
-      <button class="btn btn-naver" onclick="openSocial('naver')"><span style="font-size:16px;font-weight:800">N</span>네이버 계정으로 계속하기</button>
-      <button class="btn btn-white" onclick="goScreen('s-signup')"><span style="font-size:15px">✉️</span>이메일로 회원가입하기</button>
+      
+      <button class="btn btn-white" onclick="location.href='heka_signup.html'"><span style="font-size:15px">✉️</span>이메일로 회원가입하기</button>
     </div>
     <div style="margin:4px 16px 0;padding-top:10px;border-top:.5px solid #e0e0e0">
       <div class="terms-bar" style="padding:4px 0 70px">가입 시 <button class="terms-link" onclick="openLegal('privacy')">개인정보처리방침</button> 및 <button class="terms-link" onclick="openLegal('terms')">이용약관</button>에 동의하게 됩니다</div>
     </div>
   </div>
+  <!-- 아이디 찾기 -->
+  <div class="screen" id="s-findid" style="overflow-y:auto">
+    <div class="topbar">
+      <button class="back-btn" onclick="goScreen('s-main')">←</button>
+      <span class="topbar-title">아이디 찾기</span>
+    </div>
+    <div id="findid-form" style="padding:28px 24px 0">
+      <div style="font-size:18px;font-weight:800;color:#111;line-height:1.4;margin-bottom:6px">가입 시 등록한<br>휴대폰으로 인증해 주세요</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:28px">인증 후 가입한 이메일을 확인할 수 있어요</div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600">휴대폰 번호</div>
+        <div style="display:flex;gap:8px">
+          <input id="findid-phone" type="tel" placeholder="010-0000-0000"
+            style="flex:1;min-width:0;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
+            onfocus="this.style.borderColor='#FF3900'" onblur="this.style.borderColor='#e8e8e8'"/>
+          <button id="findid-send-btn" onclick="sendFindIdCode()" style="flex-shrink:0;padding:0 12px;height:48px;background:#FF3900;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">인증번호<br>받기</button>
+        </div>
+      </div>
+      <div id="findid-code-group" style="display:none;margin-bottom:16px">
+        <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600">인증번호</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="findid-code" type="number" placeholder="6자리 입력"
+            style="flex:1;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
+            onfocus="this.style.borderColor='#FF3900'" onblur="this.style.borderColor='#e8e8e8'"/>
+          <span id="findid-timer" style="font-size:12px;color:#aaa;min-width:36px">3:00</span>
+        </div>
+      </div>
+      <button id="findid-verify-btn" onclick="verifyFindIdCode()" style="display:none;width:100%;padding:14px;background:#FF3900;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
+    </div>
+    <!-- 결과 -->
+    <div id="findid-result" style="display:none;padding:28px 24px;text-align:center">
+      <div style="font-size:44px;margin-bottom:16px">📧</div>
+      <div style="font-size:17px;font-weight:800;color:#111;margin-bottom:8px">가입된 이메일</div>
+      <div id="findid-masked" style="font-size:15px;color:#FF3900;font-weight:700;margin-bottom:24px;background:#FFF1F2;padding:14px;border-radius:10px"></div>
+      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#FF3900;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">로그인하러 가기</button>
+    </div>
+  </div>
+
+  <!-- 비밀번호 찾기 -->
+  <div class="screen" id="s-findpw" style="overflow-y:auto">
+    <div class="topbar">
+      <button class="back-btn" onclick="goScreen('s-main')">←</button>
+      <span class="topbar-title">비밀번호 찾기</span>
+    </div>
+    <div id="findpw-form" style="padding:28px 24px 0">
+      <div style="font-size:18px;font-weight:800;color:#111;line-height:1.4;margin-bottom:6px">가입한 이메일을<br>입력해 주세요</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:28px">입력한 이메일로 비밀번호 재설정 링크를 보내드려요</div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:#888;margin-bottom:6px;font-weight:600">이메일</div>
+        <input id="findpw-email" type="email" placeholder="example@email.com" autocomplete="email"
+          style="width:100%;padding:13px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;color:#111"
+          onfocus="this.style.borderColor='#FF3900'" onblur="this.style.borderColor='#e8e8e8'"
+          onkeydown="if(event.key==='Enter')doSendResetEmail()"/>
+      </div>
+      <button onclick="doSendResetEmail()" style="width:100%;padding:14px;background:#FF3900;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px">
+        재설정 링크 보내기
+      </button>
+    </div>
+    <!-- 전송 완료 상태 -->
+    <div id="findpw-done" style="display:none;padding:28px 24px;text-align:center">
+      <div style="font-size:44px;margin-bottom:16px">📧</div>
+      <div style="font-size:17px;font-weight:800;color:#111;margin-bottom:8px">이메일을 확인해 주세요</div>
+      <div id="findpw-done-email" style="font-size:13px;color:#666;margin-bottom:24px;line-height:1.6"></div>
+      <button onclick="goScreen('s-main')" style="width:100%;padding:14px;background:#FF3900;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">
+        로그인하러 가기
+      </button>
+      <button onclick="doSendResetEmail()" style="width:100%;padding:14px;background:#fff;color:#888;border:1px solid #e8e8e8;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:10px">
+        재전송
+      </button>
+    </div>
+  </div>
+
   <div class="screen" id="s-signup" style="overflow-y:auto;height:calc(620px - 44px)">
 <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
   <div class="topbar">
@@ -303,15 +809,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
         <div class="field-label">생년월일</div>
         <input class="field-input" id="inp-birth" placeholder="YYYY / MM / DD" type="text"/>
       </div>
-      <div class="field-group">
-        <div class="field-label">통신사</div>
-        <div class="carrier-row">
-          <button class="carrier-chip on" onclick="selectCarrier(this)">SKT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">KT</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">LG U+</button>
-          <button class="carrier-chip" onclick="selectCarrier(this)">알뜰폰</button>
-        </div>
-      </div>
+
       <div class="field-group">
         <div class="field-label">휴대폰 번호</div>
         <div class="input-row">
@@ -374,9 +872,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <!-- 하단 네비 -->
   <div class="bnav">
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
-    <div class="nplus"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 
@@ -412,32 +910,261 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
   <div class="toast" id="login-toast"></div>
   <div class="bnav">
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
-    <div class="nplus"><button class="npbtn">+</button><span class="nplbl">등록</span></div>
-    <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><circle cx="11" cy="11" r="7" stroke-width="1.6"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="1.6" stroke-linecap="round"/></svg>검색</div>
     <div class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
   </div>
 </div>
 <script>
 var homeB64 = "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImtvIj4KPGhlYWQ+CjxtZXRhIGNoYXJzZXQ9InV0Zi04Ii8+CjxtZXRhIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiIG5hbWU9InZpZXdwb3J0Ii8+CjxzdHlsZT4KKntib3gtc2l6aW5nOmJvcmRlci1ib3g7bWFyZ2luOjA7cGFkZGluZzowfQpib2R5e2JhY2tncm91bmQ6I2YwZjBmMDtkaXNwbGF5OmZsZXg7anVzdGlmeS1jb250ZW50OmNlbnRlcjtwYWRkaW5nOjMwcHg7Zm9udC1mYW1pbHk6LWFwcGxlLXN5c3RlbSxCbGlua01hY1N5c3RlbUZvbnQsJ1NlZ29lIFVJJyxzYW5zLXNlcmlmfQoucGhvbmV7d2lkdGg6MzAwcHg7YmFja2dyb3VuZDojZmZmO2JvcmRlci1yYWRpdXM6MjZweDtib3JkZXI6MXB4IHNvbGlkICNlMGUwZTA7b3ZlcmZsb3c6aGlkZGVuO2NvbG9yOiMxMTE7cG9zaXRpb246cmVsYXRpdmV9Ci5zYntiYWNrZ3JvdW5kOiMxQTVEMUE7Y29sb3I6I2ZmZjtmb250LXNpemU6MTBweDtwYWRkaW5nOjEwcHggMTZweCA2cHg7ZGlzcGxheTpmbGV4O2p1c3RpZnktY29udGVudDpzcGFjZS1iZXR3ZWVufQoudG9wYmFye2JhY2tncm91bmQ6IzFBNUQxQTtwYWRkaW5nOjEycHggMTZweCAxNHB4O2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OnNwYWNlLWJldHdlZW47Ym9yZGVyLWJvdHRvbTowLjVweCBzb2xpZCByZ2JhKDI1NSwyNTUsMjU1LDAuMil9Ci5sb2dve2ZvbnQtc2l6ZToxNnB4O2ZvbnQtd2VpZ2h0OjYwMDtjb2xvcjojZmZmfQoubG9nby1zdWJ7Zm9udC1zaXplOjEwcHg7Y29sb3I6cmdiYSgyNTUsMjU1LDI1NSwwLjgpO21hcmdpbi10b3A6MnB4fQoudG9wYmFyLXJpZ2h0e2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7Z2FwOjEwcHh9Ci5zZWFyY2gtaWNvbi1idG57d2lkdGg6MzJweDtoZWlnaHQ6MzJweDtib3JkZXItcmFkaXVzOjUwJTtib3JkZXI6MC41cHggc29saWQgcmdiYSgyNTUsMjU1LDI1NSwwLjMpO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtjdXJzb3I6cG9pbnRlcjtiYWNrZ3JvdW5kOnJnYmEoMjU1LDI1NSwyNTUsMC4xNSl9Ci5zZWFyY2gtaWNvbi1idG4gc3Zne3dpZHRoOjE1cHg7aGVpZ2h0OjE1cHg7c3Ryb2tlOiNmZmY7ZmlsbDpub25lO3N0cm9rZS13aWR0aDoyO3N0cm9rZS1saW5lY2FwOnJvdW5kfQouZmlsdGVyYmFye3BhZGRpbmc6MTBweCAxNHB4O2JvcmRlci1ib3R0b206MC41cHggc29saWQgI2YwZjBmMDtkaXNwbGF5OmZsZXg7ZmxleC1kaXJlY3Rpb246Y29sdW1uO2dhcDo4cHh9Ci5maWx0ZXItbGFiZWx7Zm9udC1zaXplOjlweDtmb250LXdlaWdodDo3MDA7Y29sb3I6I2JiYjtsZXR0ZXItc3BhY2luZzowLjA4ZW07dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlO21hcmdpbi1ib3R0b206M3B4fQouY2hpcC1yb3d7ZGlzcGxheTpmbGV4O2dhcDo1cHg7b3ZlcmZsb3cteDphdXRvO3Njcm9sbGJhci13aWR0aDpub25lO2FsaWduLWl0ZW1zOmNlbnRlcn0KLmNoaXAtcm93Ojotd2Via2l0LXNjcm9sbGJhcntkaXNwbGF5Om5vbmV9Ci5jYXQtd3JhcHtkaXNwbGF5OmZsZXg7ZmxleC13cmFwOm5vd3JhcDtnYXA6NXB4O2FsaWduLWl0ZW1zOmNlbnRlcjtvdmVyZmxvdy14OmF1dG87c2Nyb2xsYmFyLXdpZHRoOm5vbmV9Ci5jYXQtd3JhcDo6LXdlYmtpdC1zY3JvbGxiYXJ7ZGlzcGxheTpub25lfQouc3EtY2hpcHtmbGV4LXNocmluazowO3BhZGRpbmc6NHB4IDlweDtib3JkZXItcmFkaXVzOjVweDtmb250LXNpemU6MTBweDtmb250LXdlaWdodDo2MDA7Y3Vyc29yOnBvaW50ZXI7Ym9yZGVyOjEuNXB4IHNvbGlkICNlMGUwZTA7YmFja2dyb3VuZDojZmZmO2NvbG9yOiM1NTU7d2hpdGUtc3BhY2U6bm93cmFwO3RyYW5zaXRpb246LjEycztsaW5lLWhlaWdodDoxLjQ7dXNlci1zZWxlY3Q6bm9uZX0KLnNxLWNoaXA6aG92ZXJ7Ym9yZGVyLWNvbG9yOiNhYWF9Ci5zcS1jaGlwLm9ue2JhY2tncm91bmQ6IzFBNUQxQTtjb2xvcjojZmZmO2JvcmRlci1jb2xvcjojMUE1RDFBfQouY2MtdmlzYS5vbntiYWNrZ3JvdW5kOiMxYTFmNzE7Ym9yZGVyLWNvbG9yOiMxYTFmNzF9Ci5jYy1tYXN0ZXIub257YmFja2dyb3VuZDojZWIwMDFiO2JvcmRlci1jb2xvcjojZWIwMDFifQouY2MtamNiLm9ue2JhY2tncm91bmQ6IzAwN2I0MDtib3JkZXItY29sb3I6IzAwN2I0MH0KLmNjLWFtZXgub257YmFja2dyb3VuZDojMDA3YmMxO2JvcmRlci1jb2xvcjojMDA3YmMxfQouY2MtdGxvZy5vbntiYWNrZ3JvdW5kOiNGRjZCMDA7Ym9yZGVyLWNvbG9yOiNGRjZCMDB9Ci5jYy10d2FsbGV0Lm9ue2JhY2tncm91bmQ6I0ZGRDYwMDtib3JkZXItY29sb3I6I0ZGRDYwMDtjb2xvcjojMzMzfQouc3EtY2hpcC1hbGwub257YmFja2dyb3VuZDojMUE1RDFBO2NvbG9yOiNmZmY7Ym9yZGVyLWNvbG9yOiMxQTVEMUF9Ci5zcS1jaGlwLWFsbHtmbGV4LXNocmluazowO3BhZGRpbmc6NHB4IDlweDtib3JkZXItcmFkaXVzOjVweDtmb250LXNpemU6MTBweDtmb250LXdlaWdodDo3MDA7Y3Vyc29yOnBvaW50ZXI7Ym9yZGVyOjEuNXB4IHNvbGlkICMxQTVEMUE7YmFja2dyb3VuZDojZmZmO2NvbG9yOiMxQTVEMUE7d2hpdGUtc3BhY2U6bm93cmFwO3RyYW5zaXRpb246LjEycztsaW5lLWhlaWdodDoxLjQ7dXNlci1zZWxlY3Q6bm9uZX0KLnNxLWNoaXAtYWxsLm9wZW57YmFja2dyb3VuZDojMUE1RDFBO2NvbG9yOiNmZmZ9Ci8qIOuwlO2FgOyLnO2KuCAqLwouc2hlZXQtb3ZlcmxheXtwb3NpdGlvbjphYnNvbHV0ZTtpbnNldDowO2JhY2tncm91bmQ6cmdiYSgwLDAsMCwwLjQpO3otaW5kZXg6MjA7ZGlzcGxheTpub25lO2JvcmRlci1yYWRpdXM6MjZweH0KLnNoZWV0LW92ZXJsYXkub3BlbntkaXNwbGF5OmJsb2NrfQouYm90dG9tLXNoZWV0e3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTowO2xlZnQ6MDtyaWdodDowO2JhY2tncm91bmQ6I2ZmZjtib3JkZXItcmFkaXVzOjE2cHggMTZweCAwIDA7ei1pbmRleDoyMTt0cmFuc2Zvcm06dHJhbnNsYXRlWSgxMDAlKTt0cmFuc2l0aW9uOnRyYW5zZm9ybSAuMjhzIGN1YmljLWJlemllciguNCwwLC4yLDEpO2Rpc3BsYXk6ZmxleDtmbGV4LWRpcmVjdGlvbjpjb2x1bW47bWF4LWhlaWdodDo2MCV9Ci5ib3R0b20tc2hlZXQub3Blbnt0cmFuc2Zvcm06dHJhbnNsYXRlWSgwKX0KLnNoZWV0LWhhbmRsZXt3aWR0aDozNHB4O2hlaWdodDo0cHg7Ym9yZGVyLXJhZGl1czoycHg7YmFja2dyb3VuZDojZTBlMGUwO21hcmdpbjoxMHB4IGF1dG8gMH0KLnNoZWV0LWhlYWR7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjtwYWRkaW5nOjEwcHggMTRweCA4cHg7Ym9yZGVyLWJvdHRvbTowLjVweCBzb2xpZCAjZjBmMGYwfQouc2hlZXQtdGl0bGV7Zm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMxMTF9Ci5zaGVldC1yZXNldHtmb250LXNpemU6MTFweDtjb2xvcjojOTk5O2N1cnNvcjpwb2ludGVyO3BhZGRpbmc6MnB4IDZweDtib3JkZXI6MC41cHggc29saWQgI2RkZDtib3JkZXItcmFkaXVzOjRweH0KLnNoZWV0LXdyYXB7ZGlzcGxheTpmbGV4O2ZsZXgtd3JhcDp3cmFwO2dhcDo2cHg7cGFkZGluZzoxMnB4IDE0cHggMThweDtvdmVyZmxvdy15OmF1dG99Ci5zaGVldC1jaGlwe3BhZGRpbmc6NXB4IDExcHg7Ym9yZGVyLXJhZGl1czo1cHg7Zm9udC1zaXplOjExcHg7Zm9udC13ZWlnaHQ6NjAwO2N1cnNvcjpwb2ludGVyO2JvcmRlcjoxLjVweCBzb2xpZCAjZTBlMGUwO2JhY2tncm91bmQ6I2ZmZjtjb2xvcjojNTU1O3doaXRlLXNwYWNlOm5vd3JhcDt0cmFuc2l0aW9uOi4xMnM7dXNlci1zZWxlY3Q6bm9uZX0KLnNoZWV0LWNoaXAub257YmFja2dyb3VuZDojMUE1RDFBO2NvbG9yOiNmZmY7Ym9yZGVyLWNvbG9yOiMxQTVEMUF9Ci5zaGVldC1kb25le21hcmdpbjowIDE0cHggMTRweDtwYWRkaW5nOjEwcHg7Ym9yZGVyLXJhZGl1czo4cHg7YmFja2dyb3VuZDojMUE1RDFBO2NvbG9yOiNmZmY7Zm9udC1zaXplOjEzcHg7Zm9udC13ZWlnaHQ6NzAwO2JvcmRlcjpub25lO2N1cnNvcjpwb2ludGVyO3dpZHRoOmNhbGMoMTAwJSAtIDI4cHgpfQovKiDtlavtlIwgKi8KLmhvdHBsLXNlY3Rpb257bWFyZ2luOjExcHggMTRweCAwfQouaG90cGwtaGVhZGVyLXJvd3tkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpzcGFjZS1iZXR3ZWVuO21hcmdpbi1ib3R0b206N3B4fQouaG90cGwtc2VjdGlvbi10aXRsZXtmb250LXNpemU6MTNweDtmb250LXdlaWdodDo1MDA7Y29sb3I6IzExMX0KLmhvdHBsLW1vcmV7Zm9udC1zaXplOjExcHg7Y29sb3I6Izk5OTtjdXJzb3I6cG9pbnRlcn0KLmhvdHBse2JvcmRlci1yYWRpdXM6MTJweDtvdmVyZmxvdzpoaWRkZW47Ym9yZGVyOjAuNXB4IHNvbGlkICNlOGU4ZTg7Y3Vyc29yOnBvaW50ZXJ9Ci5ob3RwbC1pbWd7d2lkdGg6MTAwJTtoZWlnaHQ6MTIwcHg7cG9zaXRpb246cmVsYXRpdmU7b3ZlcmZsb3c6aGlkZGVufQoucmFtZW4tc2NlbmV7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTtiYWNrZ3JvdW5kOiMxYTBlMDA7cG9zaXRpb246cmVsYXRpdmV9Ci5ib3dse3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTotOHB4O2xlZnQ6NTAlO3RyYW5zZm9ybTp0cmFuc2xhdGVYKC01MCUpO3dpZHRoOjE2MHB4O2hlaWdodDo5MHB4fQouYm93bC1ib2R5e3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTowO2xlZnQ6MDt3aWR0aDoxNjBweDtoZWlnaHQ6NzBweDtiYWNrZ3JvdW5kOiNjODQxMGE7Ym9yZGVyLXJhZGl1czowIDAgODBweCA4MHB4O292ZXJmbG93OmhpZGRlbn0KLnNvdXB7cG9zaXRpb246YWJzb2x1dGU7dG9wOjhweDtsZWZ0OjhweDtyaWdodDo4cHg7Ym90dG9tOjA7YmFja2dyb3VuZDojOGIyNTAwO2JvcmRlci1yYWRpdXM6MCAwIDcycHggNzJweH0KLm5vb2RsZXtwb3NpdGlvbjphYnNvbHV0ZTt0b3A6MTRweDtsZWZ0OjE4cHg7cmlnaHQ6MThweDtoZWlnaHQ6MjBweDtvdmVyZmxvdzpoaWRkZW59Ci5ubGluZXtoZWlnaHQ6Mi41cHg7YmFja2dyb3VuZDojZjBkMDkwO2JvcmRlci1yYWRpdXM6MnB4O21hcmdpbi1ib3R0b206M3B4O29wYWNpdHk6Ljl9Ci5ubGluZTpudGgtY2hpbGQoMil7bWFyZ2luLWxlZnQ6OHB4fS5ubGluZTpudGgtY2hpbGQoMyl7bWFyZ2luLWxlZnQ6LTRweH0KLmVnZ3twb3NpdGlvbjphYnNvbHV0ZTt0b3A6MTBweDtyaWdodDoyMnB4O3dpZHRoOjI2cHg7aGVpZ2h0OjI2cHg7Ym9yZGVyLXJhZGl1czo1MCU7YmFja2dyb3VuZDojZjVlNmEwO2JvcmRlcjoycHggc29saWQgI2U4Yzg0MH0KLmNoYXNodXtwb3NpdGlvbjphYnNvbHV0ZTt0b3A6MTJweDtsZWZ0OjIycHg7d2lkdGg6MzBweDtoZWlnaHQ6MThweDtib3JkZXItcmFkaXVzOjRweDtiYWNrZ3JvdW5kOiM4YjNhMWF9Ci5ib3dsLXJpbXtwb3NpdGlvbjphYnNvbHV0ZTtib3R0b206NjZweDtsZWZ0OjA7d2lkdGg6MTYwcHg7aGVpZ2h0OjE0cHg7YmFja2dyb3VuZDojZDQ0ZjEyO2JvcmRlci1yYWRpdXM6OHB4IDhweCAwIDB9Ci5zdGx7cG9zaXRpb246YWJzb2x1dGU7Ym90dG9tOjgwcHg7d2lkdGg6MnB4O2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwuMTUpO2JvcmRlci1yYWRpdXM6MnB4O2FuaW1hdGlvbjpyaXNlIDJzIGVhc2UtaW4tb3V0IGluZmluaXRlfQouc3RsOm50aC1jaGlsZCgxKXtsZWZ0OjgwcHg7aGVpZ2h0OjM1cHh9LnN0bDpudGgtY2hpbGQoMil7bGVmdDoxMDBweDtoZWlnaHQ6NDVweDthbmltYXRpb24tZGVsYXk6LjRzfS5zdGw6bnRoLWNoaWxkKDMpe2xlZnQ6MTIwcHg7aGVpZ2h0OjMwcHg7YW5pbWF0aW9uLWRlbGF5Oi44c30KQGtleWZyYW1lcyByaXNlezAlLDEwMCV7b3BhY2l0eTouMX01MCV7b3BhY2l0eTouM319Ci5zaG9wLW5hbWV7cG9zaXRpb246YWJzb2x1dGU7dG9wOjEwcHg7bGVmdDoxMnB4O2ZvbnQtc2l6ZToxMXB4O2NvbG9yOnJnYmEoMjU1LDI1NSwyNTUsLjcpO2ZvbnQtd2VpZ2h0OjUwMH0KLnNob3Atc3RhcnN7cG9zaXRpb246YWJzb2x1dGU7dG9wOjI2cHg7bGVmdDoxMnB4O2ZvbnQtc2l6ZToxMHB4O2NvbG9yOiNmNWM4MDB9Ci5ob3RwbC1vdmVybGF5e3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTowO2xlZnQ6MDtyaWdodDowO2JhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KHRyYW5zcGFyZW50LHJnYmEoMCwwLDAsLjc1KSk7cGFkZGluZzo4cHggMTJweCAxMHB4fQoubGl2ZS1iYWRnZXtkaXNwbGF5OmlubGluZS1mbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6NHB4O2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwuMTgpO2JvcmRlci1yYWRpdXM6MjBweDtwYWRkaW5nOjJweCA4cHg7bWFyZ2luLWJvdHRvbTo0cHh9Ci5sZHt3aWR0aDo1cHg7aGVpZ2h0OjVweDtib3JkZXItcmFkaXVzOjUwJTtiYWNrZ3JvdW5kOiM0YWRlODB9Ci5saXZlLXR4dHtmb250LXNpemU6OXB4O2NvbG9yOiNmZmY7Zm9udC13ZWlnaHQ6NTAwfQouaG90cGwtdGl0bGV7Zm9udC1zaXplOjEycHg7Zm9udC13ZWlnaHQ6NTAwO2NvbG9yOiNmZmY7bGluZS1oZWlnaHQ6MS40O21hcmdpbi1ib3R0b206NHB4fQouaG90cGwtcmVwb3J0ZXJ7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6NHB4fQoucmVwLWF2e3dpZHRoOjE1cHg7aGVpZ2h0OjE1cHg7Ym9yZGVyLXJhZGl1czo1MCU7YmFja2dyb3VuZDojNTU1O2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LXNpemU6NnB4O2NvbG9yOiNjY2N9Ci5yZXAtdHh0e2ZvbnQtc2l6ZTo5cHg7Y29sb3I6cmdiYSgyNTUsMjU1LDI1NSwuNTUpfQoucmVwLW5hbWV7Y29sb3I6cmdiYSgyNTUsMjU1LDI1NSwuOSk7Zm9udC13ZWlnaHQ6NTAwfQouaG90cGwtZG90c3tkaXNwbGF5OmZsZXg7Z2FwOjRweDttYXJnaW4tdG9wOjRweH0KLmRvdC1pe3dpZHRoOjVweDtoZWlnaHQ6NXB4O2JvcmRlci1yYWRpdXM6NTAlO2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwuMyl9Ci5kb3QtaS5vbntiYWNrZ3JvdW5kOiNmZmY7d2lkdGg6MTRweDtib3JkZXItcmFkaXVzOjNweH0KLyog7YC17Lm065OcICovCi5xZ3JpZHtkaXNwbGF5OmdyaWQ7Z3JpZC10ZW1wbGF0ZS1jb2x1bW5zOjFmciAxZnI7Z2FwOjdweDttYXJnaW46MTBweCAxNHB4fQoucWNhcmR7YmFja2dyb3VuZDojZjVmNWY1O2JvcmRlci1yYWRpdXM6MTBweDtwYWRkaW5nOjEwcHggMTJweDtjdXJzb3I6cG9pbnRlcjt0cmFuc2l0aW9uOi4xNXM7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2Vlbn0KLnFjYXJkOmhvdmVye2JhY2tncm91bmQ6I2U4ZjVlOH0KLnF0e2ZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjUwMDtjb2xvcjojMTExO21hcmdpbi1ib3R0b206MXB4fQoucXN7Zm9udC1zaXplOjEwcHg7Y29sb3I6Izk5OX0KLyog64K0IOyjvOuzgCDrp6TsnqUgKi8KLnNlYy1oZWFke2Rpc3BsYXk6ZmxleDtqdXN0aWZ5LWNvbnRlbnQ6c3BhY2UtYmV0d2VlbjthbGlnbi1pdGVtczpjZW50ZXI7cGFkZGluZzowIDE0cHg7bWFyZ2luLWJvdHRvbTo3cHh9Ci5zZWMtdHtmb250LXNpemU6MTNweDtmb250LXdlaWdodDo1MDA7Y29sb3I6IzExMX0KLnNlYy1tb3Jle2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiM5OTk7Y3Vyc29yOnBvaW50ZXJ9Ci5ucm93e2Rpc3BsYXk6ZmxleDtnYXA6NnB4O292ZXJmbG93LXg6YXV0bztwYWRkaW5nOjAgMTRweDtzY3JvbGxiYXItd2lkdGg6bm9uZTttYXJnaW4tYm90dG9tOjEwcHh9Ci5ucm93Ojotd2Via2l0LXNjcm9sbGJhcntkaXNwbGF5Om5vbmV9Ci5uY2FyZHtwb3NpdGlvbjpyZWxhdGl2ZTtmbGV4OjAgMCAxMDZweDtib3JkZXItcmFkaXVzOjEwcHg7b3ZlcmZsb3c6aGlkZGVuO2JvcmRlcjowLjVweCBzb2xpZCAjZWVlO2JhY2tncm91bmQ6I2ZmZjtjdXJzb3I6cG9pbnRlcjt0cmFuc2l0aW9uOmJveC1zaGFkb3cgLjJzLHRyYW5zZm9ybSAuMnMsb3BhY2l0eSAuMnN9Ci5uY2FyZDpob3Zlcntib3gtc2hhZG93OjAgNHB4IDEycHggcmdiYSgwLDAsMCwuMSk7dHJhbnNmb3JtOnRyYW5zbGF0ZVkoLTFweCl9Ci5uaW1ne3dpZHRoOjEwMCU7aGVpZ2h0OjU2cHg7YmFja2dyb3VuZDojZjBmMGYwO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LXNpemU6MjBweH0KLm5ib2R5e3BhZGRpbmc6NXB4IDdweCA3cHh9Ci5ubntmb250LXNpemU6MTFweDtmb250LXdlaWdodDo1MDA7Y29sb3I6IzExMTttYXJnaW4tYm90dG9tOjNweH0KLm5te2ZvbnQtc2l6ZToxMHB4O2NvbG9yOiM5OTk7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6M3B4O2ZsZXgtd3JhcDpub3dyYXA7b3ZlcmZsb3c6aGlkZGVufQouY3BpbGx7Zm9udC1zaXplOjdweDtwYWRkaW5nOjFweCA0cHg7Ym9yZGVyLXJhZGl1czozcHg7Zm9udC13ZWlnaHQ6NjAwO2NvbG9yOiNmZmY7d2hpdGUtc3BhY2U6bm93cmFwO2ZsZXgtc2hyaW5rOjB9Ci5jcC12aXNhe2JhY2tncm91bmQ6IzFhMWY3MX0uY3AtbWFzdGVye2JhY2tncm91bmQ6I2ViMDAxYn0uY3AtamNie2JhY2tncm91bmQ6IzAwN2I0MH0uY3AtYW1leHtiYWNrZ3JvdW5kOiMwMDdiYzF9Ci8qIOywnCDrsoTtirwgKi8KLnp6aW17cG9zaXRpb246YWJzb2x1dGU7dG9wOjVweDtyaWdodDo1cHg7d2lkdGg6MjJweDtoZWlnaHQ6MjJweDtib3JkZXItcmFkaXVzOjUwJTtiYWNrZ3JvdW5kOnJnYmEoMjU1LDI1NSwyNTUsMC45Mik7Ym9yZGVyOm5vbmU7Y3Vyc29yOnBvaW50ZXI7ei1pbmRleDoyO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtwYWRkaW5nOjA7dHJhbnNpdGlvbjouMTVzO2JveC1zaGFkb3c6MCAxcHggM3B4IHJnYmEoMCwwLDAsLjEyKX0KLnp6aW06aG92ZXJ7dHJhbnNmb3JtOnNjYWxlKDEuMTUpfQouenppbSBzdmd7d2lkdGg6MTFweDtoZWlnaHQ6MTFweDtmaWxsOm5vbmU7c3Ryb2tlOiNhYWE7c3Ryb2tlLXdpZHRoOjI7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3RyYW5zaXRpb246LjE1c30KLnp6aW0ub24gc3Zne2ZpbGw6I2U1MzkzNTtzdHJva2U6I2U1MzkzNX0KLyog6rWs67aE7ISgICovCi5kaXZsaW5le2hlaWdodDo1cHg7YmFja2dyb3VuZDojZjVmNWY1O21hcmdpbjowIDAgMTBweH0KLyog7Jes7ZaJ7YahICovCi55dG9rLXdyYXB7cGFkZGluZzowIDE0cHggMTJweH0KLnl0b2staGVhZHtkaXNwbGF5OmZsZXg7anVzdGlmeS1jb250ZW50OnNwYWNlLWJldHdlZW47YWxpZ24taXRlbXM6Y2VudGVyO21hcmdpbi1ib3R0b206OHB4fQoueXRvay10e2ZvbnQtc2l6ZToxM3B4O2ZvbnQtd2VpZ2h0OjUwMDtjb2xvcjojMTExfQoueXRvay1tb3Jle2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiM5OTk7Y3Vyc29yOnBvaW50ZXI7cGFkZGluZzozcHggOHB4O2JvcmRlcjowLjVweCBzb2xpZCAjZGRkO2JvcmRlci1yYWRpdXM6NXB4fQoueWNhcmR7ZGlzcGxheTpmbGV4O2dhcDo5cHg7bWFyZ2luLWJvdHRvbTo4cHg7Y3Vyc29yOnBvaW50ZXJ9Ci55Y2FyZDpsYXN0LWNoaWxke21hcmdpbi1ib3R0b206MH0KLnl0aHVtYnt3aWR0aDo0OHB4O2hlaWdodDo0OHB4O2JvcmRlci1yYWRpdXM6OHB4O2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LXNpemU6MTdweDtmbGV4LXNocmluazowfQoueWNvbnRlbnR7ZmxleDoxO21pbi13aWR0aDowfQoueXRvcHtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDo0cHg7bWFyZ2luLWJvdHRvbToycHh9Ci55YmFkZ2V7Zm9udC1zaXplOjlweDtwYWRkaW5nOjJweCA2cHg7Ym9yZGVyLXJhZGl1czo0cHg7Zm9udC13ZWlnaHQ6NjAwfQoueWItbWF0ZXtiYWNrZ3JvdW5kOiMxQTVEMUE7Y29sb3I6I2ZmZn0KLnliLWZvb2R7YmFja2dyb3VuZDojZjVjODAwO2NvbG9yOiMxMTF9Ci55Y2l0eXtmb250LXNpemU6MTBweDtjb2xvcjojOTk5fQoueXRpdGxle2ZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjYwMDtjb2xvcjojMTExO2xpbmUtaGVpZ2h0OjEuNDttYXJnaW4tYm90dG9tOjFweDt3aGl0ZS1zcGFjZTpub3dyYXA7b3ZlcmZsb3c6aGlkZGVuO3RleHQtb3ZlcmZsb3c6ZWxsaXBzaXN9Ci55Ym9keXtmb250LXNpemU6MTBweDtjb2xvcjojNzc3O2xpbmUtaGVpZ2h0OjEuNDtkaXNwbGF5Oi13ZWJraXQtYm94Oy13ZWJraXQtbGluZS1jbGFtcDoyOy13ZWJraXQtYm94LW9yaWVudDp2ZXJ0aWNhbDtvdmVyZmxvdzpoaWRkZW59Ci55Zm9vdHtkaXNwbGF5OmZsZXg7Z2FwOjdweDttYXJnaW4tdG9wOjNweDtmb250LXNpemU6MTBweDtjb2xvcjojYmJifQoueXRodW1iLXJ7d2lkdGg6NjBweDtoZWlnaHQ6NjBweDtib3JkZXItcmFkaXVzOjhweDtmbGV4LXNocmluazowO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtmb250LXNpemU6MjJweDthbGlnbi1zZWxmOmNlbnRlcn0KLyog64Sk67mEICovCi5ibmF2e2Rpc3BsYXk6ZmxleDtib3JkZXItdG9wOjAuNXB4IHNvbGlkICNlZWU7YmFja2dyb3VuZDojZmZmO3BhZGRpbmc6OHB4IDAgMTBweH0KLm5pe2ZsZXg6MTt0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6OXB4O2NvbG9yOiM5OTk7Y3Vyc29yOnBvaW50ZXI7cGFkZGluZzozcHggMDtkaXNwbGF5OmZsZXg7ZmxleC1kaXJlY3Rpb246Y29sdW1uO2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6MnB4fQoubmkub257Y29sb3I6IzFBNUQxQTtmb250LXdlaWdodDo1MDB9Ci5uaSBzdmd7d2lkdGg6MTdweDtoZWlnaHQ6MTdweH0KLm5wbHVze2ZsZXg6MTtkaXNwbGF5OmZsZXg7ZmxleC1kaXJlY3Rpb246Y29sdW1uO2FsaWduLWl0ZW1zOmNlbnRlcjtjdXJzb3I6cG9pbnRlcn0KLm5wYnRue3dpZHRoOjM2cHg7aGVpZ2h0OjM2cHg7Ym9yZGVyLXJhZGl1czo1MCU7YmFja2dyb3VuZDojMUE1RDFBO2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtjb2xvcjojZmZmO2ZvbnQtc2l6ZToxOHB4O2JvcmRlcjpub25lO2N1cnNvcjpwb2ludGVyO21hcmdpbi1ib3R0b206MnB4O21hcmdpbi10b3A6LTRweH0KLm5wbGJse2ZvbnQtc2l6ZTo5cHg7Y29sb3I6IzFBNUQxQTtmb250LXdlaWdodDo2MDB9Ci8qIOunpOyepSDsg4HshLgg7Iqs65287J2065OcIO2MqOuEkCAqLwouZGV0YWlsLW92ZXJsYXl7cG9zaXRpb246YWJzb2x1dGU7aW5zZXQ6MDtiYWNrZ3JvdW5kOnJnYmEoMCwwLDAsMC40NSk7ei1pbmRleDozMDtkaXNwbGF5Om5vbmU7Ym9yZGVyLXJhZGl1czoyNnB4fQouZGV0YWlsLW92ZXJsYXkub3BlbntkaXNwbGF5OmJsb2NrfQouZGV0YWlsLXBhbmVse3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTowO2xlZnQ6MDtyaWdodDowO2JhY2tncm91bmQ6I2ZmZjtib3JkZXItcmFkaXVzOjE4cHggMThweCAwIDA7ei1pbmRleDozMTt0cmFuc2Zvcm06dHJhbnNsYXRlWSgxMDAlKTt0cmFuc2l0aW9uOnRyYW5zZm9ybSAuM3MgY3ViaWMtYmV6aWVyKC40LDAsLjIsMSk7ZGlzcGxheTpmbGV4O2ZsZXgtZGlyZWN0aW9uOmNvbHVtbjttYXgtaGVpZ2h0Ojg4JX0KLmRldGFpbC1wYW5lbC5vcGVue3RyYW5zZm9ybTp0cmFuc2xhdGVZKDApfQouZHAtaGFuZGxle3dpZHRoOjM2cHg7aGVpZ2h0OjRweDtib3JkZXItcmFkaXVzOjJweDtiYWNrZ3JvdW5kOiNlMGUwZTA7bWFyZ2luOjEwcHggYXV0byAwO2ZsZXgtc2hyaW5rOjB9Ci5kcC10b3BiYXJ7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmZsZXgtc3RhcnQ7anVzdGlmeS1jb250ZW50OnNwYWNlLWJldHdlZW47cGFkZGluZzoxMHB4IDE1cHggNHB4O2ZsZXgtc2hyaW5rOjB9Ci5kcC1uYW1le2ZvbnQtc2l6ZToxNnB4O2ZvbnQtd2VpZ2h0OjcwMDtjb2xvcjojMTExO21hcmdpbi1ib3R0b206MnB4fQouZHAtY2F0e2ZvbnQtc2l6ZToxMXB4O2NvbG9yOiM5OTl9Ci5kcC1jbG9zZXtiYWNrZ3JvdW5kOm5vbmU7Ym9yZGVyOm5vbmU7Zm9udC1zaXplOjIwcHg7Y29sb3I6I2JiYjtjdXJzb3I6cG9pbnRlcjtwYWRkaW5nOjA7bGluZS1oZWlnaHQ6MTtmbGV4LXNocmluazowfQouZHAtc2Nyb2xse292ZXJmbG93LXk6YXV0bztmbGV4OjE7cGFkZGluZzowIDE1cHggNnB4Oy13ZWJraXQtb3ZlcmZsb3ctc2Nyb2xsaW5nOnRvdWNofQouZHAtcGlsbHN7ZGlzcGxheTpmbGV4O2dhcDo1cHg7ZmxleC13cmFwOndyYXA7bWFyZ2luLWJvdHRvbToxMnB4fQouZHBpbGx7Zm9udC1zaXplOjEwcHg7cGFkZGluZzozcHggOXB4O2JvcmRlci1yYWRpdXM6NHB4O2ZvbnQtd2VpZ2h0OjcwMH0KLmRwLW1hcHt3aWR0aDoxMDAlO2hlaWdodDoxMDhweDtib3JkZXItcmFkaXVzOjEwcHg7YmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoMTUwZGVnLCNlOGYyZTgsI2Q0ZThkNCk7cG9zaXRpb246cmVsYXRpdmU7b3ZlcmZsb3c6aGlkZGVuO2N1cnNvcjpwb2ludGVyO21hcmdpbi1ib3R0b206MTJweDtib3JkZXI6MXB4IHNvbGlkICNjOGRjYzh9Ci5kcC1tYXA6aG92ZXIgLmRwLW1hcC1oaW50e29wYWNpdHk6MX0KLmRwLW1hcC1naHtwb3NpdGlvbjphYnNvbHV0ZTtsZWZ0OjA7cmlnaHQ6MDtoZWlnaHQ6MXB4O2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwuNSl9Ci5kcC1tYXAtZ3Z7cG9zaXRpb246YWJzb2x1dGU7dG9wOjA7Ym90dG9tOjA7d2lkdGg6MXB4O2JhY2tncm91bmQ6cmdiYSgyNTUsMjU1LDI1NSwuNSl9Ci5kcC1tYXAtcmh7cG9zaXRpb246YWJzb2x1dGU7bGVmdDowO3JpZ2h0OjA7YmFja2dyb3VuZDpyZ2JhKDI1NSwyNTUsMjU1LC43OCl9Ci5kcC1tYXAtcnZ7cG9zaXRpb246YWJzb2x1dGU7dG9wOjA7Ym90dG9tOjA7YmFja2dyb3VuZDpyZ2JhKDI1NSwyNTUsMjU1LC43OCl9Ci5kcC1tYXAtcGlue3Bvc2l0aW9uOmFic29sdXRlO2xlZnQ6NTAlO3RvcDo0NCU7dHJhbnNmb3JtOnRyYW5zbGF0ZSgtNTAlLC0xMDAlKTtkaXNwbGF5OmZsZXg7ZmxleC1kaXJlY3Rpb246Y29sdW1uO2FsaWduLWl0ZW1zOmNlbnRlcn0KLmRwLW1hcC1kb3R7d2lkdGg6MTRweDtoZWlnaHQ6MTRweDtib3JkZXItcmFkaXVzOjUwJTtiYWNrZ3JvdW5kOiMxQTVEMUE7Ym9yZGVyOjIuNXB4IHNvbGlkICNmZmY7Ym94LXNoYWRvdzowIDJweCA2cHggcmdiYSgwLDAsMCwuMjUpfQouZHAtbWFwLXRhaWx7d2lkdGg6MnB4O2hlaWdodDo1cHg7YmFja2dyb3VuZDojMUE1RDFBfQouZHAtbWFwLXNoYWRvd3twb3NpdGlvbjphYnNvbHV0ZTtsZWZ0OjUwJTt0b3A6NDQlO3RyYW5zZm9ybTp0cmFuc2xhdGUoLTUwJSwwKTt3aWR0aDoxMHB4O2hlaWdodDo0cHg7Ym9yZGVyLXJhZGl1czo1MCU7YmFja2dyb3VuZDpyZ2JhKDAsMCwwLC4xMil9Ci5kcC1tYXAtbGJse3Bvc2l0aW9uOmFic29sdXRlO2JvdHRvbTo3cHg7bGVmdDo1MCU7dHJhbnNmb3JtOnRyYW5zbGF0ZVgoLTUwJSk7Zm9udC1zaXplOjlweDtmb250LXdlaWdodDo3MDA7Y29sb3I6IzFBNUQxQTtiYWNrZ3JvdW5kOiNmZmY7cGFkZGluZzoycHggOHB4O2JvcmRlci1yYWRpdXM6MTBweDtib3gtc2hhZG93OjAgMXB4IDRweCByZ2JhKDAsMCwwLC4xMik7d2hpdGUtc3BhY2U6bm93cmFwfQouZHAtbWFwLWhpbnR7cG9zaXRpb246YWJzb2x1dGU7aW5zZXQ6MDtiYWNrZ3JvdW5kOnJnYmEoMCwwLDAsLjA0KTtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7b3BhY2l0eTowO3RyYW5zaXRpb246LjE1c30KLmRwLW1hcC1oaW50IHNwYW57Zm9udC1zaXplOjEwcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiMxQTVEMUE7YmFja2dyb3VuZDojZmZmO3BhZGRpbmc6NHB4IDEwcHg7Ym9yZGVyLXJhZGl1czoxNHB4O2JveC1zaGFkb3c6MCAycHggOHB4IHJnYmEoMCwwLDAsLjEyKX0KLmRwLXNlY3Rpb257Zm9udC1zaXplOjEwcHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiNiYmI7bGV0dGVyLXNwYWNpbmc6LjA4ZW07dGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlO21hcmdpbjoxMnB4IDAgNnB4fQouZHAtcm93e2Rpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpmbGV4LXN0YXJ0O2dhcDo4cHg7Zm9udC1zaXplOjEycHg7Y29sb3I6IzQ0NDttYXJnaW4tYm90dG9tOjZweDtsaW5lLWhlaWdodDoxLjV9Ci5kcC1pY297Zm9udC1zaXplOjEycHg7d2lkdGg6MTZweDt0ZXh0LWFsaWduOmNlbnRlcjtmbGV4LXNocmluazowO21hcmdpbi10b3A6MXB4fQouZHAtZGl2aWRlcntoZWlnaHQ6MXB4O2JhY2tncm91bmQ6I2YwZjBmMDttYXJnaW46MTBweCAwfQouZHAtcmV2e2JhY2tncm91bmQ6I2Y4ZjhmODtib3JkZXItcmFkaXVzOjlweDtwYWRkaW5nOjlweCAxMXB4O21hcmdpbi1ib3R0b206N3B4fQouZHAtcmV2LXRvcHtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2dhcDo2cHg7bWFyZ2luLWJvdHRvbTozcHh9Ci5kcC1yZXYtYXZ7d2lkdGg6MjBweDtoZWlnaHQ6MjBweDtib3JkZXItcmFkaXVzOjUwJTtiYWNrZ3JvdW5kOiNlMGUwZTA7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2ZvbnQtc2l6ZTo5cHg7Zm9udC13ZWlnaHQ6NzAwO2NvbG9yOiM2NjY7ZmxleC1zaHJpbms6MH0KLmRwLXJldi1uYW1le2ZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjYwMDtjb2xvcjojMzMzfQouZHAtcmV2LWRhdGV7Zm9udC1zaXplOjEwcHg7Y29sb3I6I2JiYjttYXJnaW4tbGVmdDphdXRvfQouZHAtcmV2LXR4dHtmb250LXNpemU6MTFweDtjb2xvcjojNTU1O2xpbmUtaGVpZ2h0OjEuNX0KLmRwLWJ0bi1yb3d7ZGlzcGxheTpmbGV4O2dhcDo4cHg7cGFkZGluZzo4cHggMTVweCAxNHB4O2ZsZXgtc2hyaW5rOjA7Ym9yZGVyLXRvcDouNXB4IHNvbGlkICNmMGYwZjB9Ci5kcC1idG4tcmVwb3J0e2ZsZXg6MTtwYWRkaW5nOjExcHg7Ym9yZGVyLXJhZGl1czoxMHB4O2JhY2tncm91bmQ6I2YwZjdmMDtjb2xvcjojMUE1RDFBO2ZvbnQtc2l6ZToxMnB4O2ZvbnQtd2VpZ2h0OjcwMDtib3JkZXI6MS41cHggc29saWQgIzFBNUQxQTtjdXJzb3I6cG9pbnRlcjtmb250LWZhbWlseTppbmhlcml0fQouZHAtYnRuLW1vcmV7ZmxleDoxO3BhZGRpbmc6MTFweDtib3JkZXItcmFkaXVzOjEwcHg7YmFja2dyb3VuZDojMUE1RDFBO2NvbG9yOiNmZmY7Zm9udC1zaXplOjEycHg7Zm9udC13ZWlnaHQ6NzAwO2JvcmRlcjpub25lO2N1cnNvcjpwb2ludGVyO2ZvbnQtZmFtaWx5OmluaGVyaXR9Cjwvc3R5bGU+CjwvaGVhZD4KPGJvZHk+CjxkaXYgY2xhc3M9InBob25lIj4KICA8ZGl2IGNsYXNzPSJzYiI+PHNwYW4+OTo0MTwvc3Bhbj48c3Bhbj7tlbTsubQ8L3NwYW4+PHNwYW4+4peP4peP4pePPC9zcGFuPjwvZGl2PgogIDxkaXYgY2xhc3M9InRvcGJhciI+CiAgICA8ZGl2PgogICAgICA8ZGl2IGNsYXNzPSJsb2dvIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjIwcHg7Zm9udC13ZWlnaHQ6ODAwIj7tlbQ8L3NwYW4+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2ZvbnQtd2VpZ2h0OjUwMDtsZXR0ZXItc3BhY2luZzotMC4ycHgiPuyZuOyXkOyEnCA8L3NwYW4+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToyMHB4O2ZvbnQtd2VpZ2h0OjgwMCI+7Lm0PC9zcGFuPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTFweDtmb250LXdlaWdodDo1MDA7bGV0dGVyLXNwYWNpbmc6LTAuMnB4O21hcmdpbi1sZWZ0OjJweCI+65Oc6rKw7KCc7ZWY7J6QITwvc3Bhbj48L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0ibG9nby1zdWIiPu2YhOyngCDsubTrk5wg6rKw7KCcIOqwgOuKpe2VnCDrp6TsnqXsnYQg7LC+7JWE67O07IS47JqUPC9kaXY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InRvcGJhci1yaWdodCI+CiAgICAgIDxkaXYgY2xhc3M9InNlYXJjaC1pY29uLWJ0biI+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjciLz48bGluZSB4MT0iMTYuNSIgeTE9IjE2LjUiIHgyPSIyMiIgeTI9IjIyIi8+PC9zdmc+PC9kaXY+CiAgICA8L2Rpdj4KICA8L2Rpdj4KCiAgPGRpdiBjbGFzcz0iZmlsdGVyYmFyIj4KICAgIDwhLS0g7Lm065Oc7IKsIC0tPgogICAgPGRpdj4KICAgICAgPGRpdiBjbGFzcz0iZmlsdGVyLWxhYmVsIj7subTrk5zsgqw8L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0iY2hpcC1yb3ciPgogICAgICAgIDxkaXYgY2xhc3M9InNxLWNoaXAtYWxsIiBpZD0iY2FyZC1hbGwtYnRuIiBvbmNsaWNrPSJ0b2dnbGVDYXJkU2hlZXQoKSI+66qo65GQ67O06riwIOKWvjwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InNxLWNoaXAgb24iIG9uY2xpY2s9InRvZ2dsZUNhcmRNYWluKHRoaXMsJ2FsbCcpIj7soITssrQ8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJzcS1jaGlwIGNjLXZpc2EiIG9uY2xpY2s9InRvZ2dsZUNhcmRNYWluKHRoaXMsJ3Zpc2EnKSI+VklTQTwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InNxLWNoaXAgY2MtbWFzdGVyIiBvbmNsaWNrPSJ0b2dnbGVDYXJkTWFpbih0aGlzLCdtYXN0ZXInKSI+TUFTVEVSPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ic3EtY2hpcCBjYy1qY2IiIG9uY2xpY2s9InRvZ2dsZUNhcmRNYWluKHRoaXMsJ2pjYicpIj5KQ0I8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJzcS1jaGlwIGNjLWFtZXgiIG9uY2xpY2s9InRvZ2dsZUNhcmRNYWluKHRoaXMsJ2FtZXgnKSI+QU1FWDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InNxLWNoaXAgY2MtdGxvZyIgb25jbGljaz0idG9nZ2xlQ2FyZE1haW4odGhpcywn7Yq4656Y67iU66Gc6re4JykiPu2KuOuemOu4lOuhnOq3uDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InNxLWNoaXAgY2MtdHdhbGxldCIgb25jbGljaz0idG9nZ2xlQ2FyZE1haW4odGhpcywn7Yq4656Y67iU7JuU66CbJykiPu2KuOuemOu4lOyblOugmzwvZGl2PgogICAgICA8L2Rpdj4KICAgIDwvZGl2PgogICAgPCEtLSDsl4XsooUgLS0+CiAgICA8ZGl2PgogICAgICA8ZGl2IGNsYXNzPSJmaWx0ZXItbGFiZWwiPuyXheyihTwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJjYXQtd3JhcCIgaWQ9ImNhdC13cmFwIj4KICAgICAgICA8ZGl2IGNsYXNzPSJzcS1jaGlwLWFsbCIgaWQ9ImNhdC1hbGwtYnRuIiBvbmNsaWNrPSJ0b2dnbGVTaGVldCgpIj7rqqjrkZDrs7TquLAg4pa+PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ic3EtY2hpcC1hbGwiIGlkPSJjYXQtYWxsLXNlbGVjdCIgb25jbGljaz0iY2F0U2VsZWN0QWxsKCkiPuyghOyytDwvZGl2PgogICAgICA8L2Rpdj4KICAgIDwvZGl2PgogIDwvZGl2PgoKICA8IS0tIOy5tOuTnOyCrCDrsJTthYDsi5ztirggLS0+CiAgPGRpdiBjbGFzcz0ic2hlZXQtb3ZlcmxheSIgaWQ9ImNhcmQtb3ZlcmxheSIgb25jbGljaz0iY2xvc2VDYXJkU2hlZXQoKSI+PC9kaXY+CiAgPGRpdiBjbGFzcz0iYm90dG9tLXNoZWV0IiBpZD0iY2FyZC1zaGVldCIgc3R5bGU9Im1heC1oZWlnaHQ6NDYlIj4KICAgIDxkaXYgY2xhc3M9InNoZWV0LWhhbmRsZSI+PC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJzaGVldC1oZWFkIj4KICAgICAgPHNwYW4gY2xhc3M9InNoZWV0LXRpdGxlIj7subTrk5zsgqwg7ISg7YOdIDxzcGFuIGlkPSJjYXJkLWNvdW50IiBzdHlsZT0iY29sb3I6IzFBNUQxQTtmb250LXNpemU6MTJweCI+PC9zcGFuPjwvc3Bhbj4KICAgICAgPHNwYW4gY2xhc3M9InNoZWV0LXJlc2V0IiBvbmNsaWNrPSJjYXJkUmVzZXQoKSI+7LSI6riw7ZmUPC9zcGFuPgogICAgPC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJzaGVldC13cmFwIiBpZD0iY2FyZC1zaGVldC13cmFwIj4KICAgICAgPGRpdiBjbGFzcz0ic2hlZXQtY2hpcCBvbiIgb25jbGljaz0idG9nZ2xlQ2FyZENoaXAodGhpcywnYWxsJykiPuyghOyytDwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJzaGVldC1jaGlwIiBvbmNsaWNrPSJ0b2dnbGVDYXJkQ2hpcCh0aGlzLCd2aXNhJykiPlZJU0E8L2Rpdj4KICAgICAgPGRpdiBjbGFzcz0ic2hlZXQtY2hpcCIgb25jbGljaz0idG9nZ2xlQ2FyZENoaXAodGhpcywnbWFzdGVyJykiPk1BU1RFUjwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJzaGVldC1jaGlwIiBvbmNsaWNrPSJ0b2dnbGVDYXJkQ2hpcCh0aGlzLCdqY2InKSI+SkNCPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9InNoZWV0LWNoaXAiIG9uY2xpY2s9InRvZ2dsZUNhcmRDaGlwKHRoaXMsJ2FtZXgnKSI+QU1FWDwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJzaGVldC1jaGlwIiBvbmNsaWNrPSJ0b2dnbGVDYXJkQ2hpcCh0aGlzLCftirjrnpjruJTroZzqt7gnKSI+7Yq4656Y67iU66Gc6re4PC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9InNoZWV0LWNoaXAiIG9uY2xpY2s9InRvZ2dsZUNhcmRDaGlwKHRoaXMsJ+2KuOuemOu4lOyblOugmycpIj7tirjrnpjruJTsm5TroJs8L2Rpdj4KICAgIDwvZGl2PgogICAgPGJ1dHRvbiBjbGFzcz0ic2hlZXQtZG9uZSIgb25jbGljaz0iY2xvc2VDYXJkU2hlZXQoKSI+7ISg7YOdIOyZhOujjDwvYnV0dG9uPgogIDwvZGl2PgoKICA8IS0tIOyXheyihSDrsJTthYDsi5ztirggLS0+CiAgPGRpdiBjbGFzcz0ic2hlZXQtb3ZlcmxheSIgaWQ9Im92ZXJsYXkiIG9uY2xpY2s9ImNsb3NlU2hlZXQoKSI+PC9kaXY+CiAgPGRpdiBjbGFzcz0iYm90dG9tLXNoZWV0IiBpZD0ic2hlZXQiPgogICAgPGRpdiBjbGFzcz0ic2hlZXQtaGFuZGxlIj48L2Rpdj4KICAgIDxkaXYgY2xhc3M9InNoZWV0LWhlYWQiPgogICAgICA8c3BhbiBjbGFzcz0ic2hlZXQtdGl0bGUiPuyXheyihSDshKDtg50gPHNwYW4gaWQ9ImNhdC1jb3VudCIgc3R5bGU9ImNvbG9yOiMxQTVEMUE7Zm9udC1zaXplOjEycHgiPjwvc3Bhbj48L3NwYW4+CiAgICAgIDxzcGFuIGNsYXNzPSJzaGVldC1yZXNldCIgb25jbGljaz0icmVzZXRDYXRzKCkiPuy0iOq4sO2ZlDwvc3Bhbj4KICAgIDwvZGl2PgogICAgPGRpdiBjbGFzcz0ic2hlZXQtd3JhcCIgaWQ9InNoZWV0LXdyYXAiPjwvZGl2PgogICAgPGJ1dHRvbiBjbGFzcz0ic2hlZXQtZG9uZSIgb25jbGljaz0iY2xvc2VTaGVldCgpIj7shKDtg50g7JmE66OMPC9idXR0b24+CiAgPC9kaXY+CgogIDwhLS0g64K0IOyjvOuzgCDsubTrk5wg6rKw7KCcIOunpOyepSAtLT4KICA8ZGl2IGNsYXNzPSJzZWMtaGVhZCIgc3R5bGU9Im1hcmdpbi10b3A6MTJweCI+CiAgICA8c3BhbiBjbGFzcz0ic2VjLXQiPuuCtCDso7zrs4Ag7Lm065OcIOqysOygnCDrp6TsnqU8L3NwYW4+CiAgICA8c3BhbiBjbGFzcz0ic2VjLW1vcmUiPuuNlOuztOq4sDwvc3Bhbj4KICA8L2Rpdj4KICA8ZGl2IGNsYXNzPSJucm93Ij4KICAgIDxkaXYgY2xhc3M9Im5jYXJkIiBpZD0iY2FyZC1pY2hpcmFuIiBvbmNsaWNrPSJvcGVuRGV0YWlsKCdpY2hpcmFuJykiPgogICAgICA8ZGl2IGNsYXNzPSJuaW1nIj7wn42cPC9kaXY+CiAgICAgIDxidXR0b24gY2xhc3M9Inp6aW0iIG9uY2xpY2s9InRvZ2dsZVp6aW0oZXZlbnQsdGhpcykiIHRpdGxlPSLssJztlZjquLAiPjxzdmcgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjAuODQgNC42MWE1LjUgNS41IDAgMDAtNy43OCAwTDEyIDUuNjdsLTEuMDYtMS4wNmE1LjUgNS41IDAgMDAtNy43OCA3Ljc4bDEuMDYgMS4wNkwxMiAyMS4yM2w3Ljc4LTcuNzggMS4wNi0xLjA2YTUuNSA1LjUgMCAwMDAtNy43OHoiLz48L3N2Zz48L2J1dHRvbj4KICAgICAgPGRpdiBjbGFzcz0ibmJvZHkiPjxkaXYgY2xhc3M9Im5uIj7snbTsuZjrnoAg652866mYPC9kaXY+PGRpdiBjbGFzcz0ibm0iPuKYhSA0LjggPHNwYW4gY2xhc3M9ImNwaWxsIGNwLXZpc2EiPlZJU0E8L3NwYW4+PC9kaXY+PC9kaXY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9Im5jYXJkIiBpZD0iY2FyZC1kb25raSIgb25jbGljaz0ib3BlbkRldGFpbCgnZG9ua2knKSI+CiAgICAgIDxkaXYgY2xhc3M9Im5pbWciPvCfm5I8L2Rpdj4KICAgICAgPGJ1dHRvbiBjbGFzcz0ienppbSIgb25jbGljaz0idG9nZ2xlWnppbShldmVudCx0aGlzKSIgdGl0bGU9IuywnO2VmOq4sCI+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGQ9Ik0yMC44NCA0LjYxYTUuNSA1LjUgMCAwMC03Ljc4IDBMMTIgNS42N2wtMS4wNi0xLjA2YTUuNSA1LjUgMCAwMC03Ljc4IDcuNzhsMS4wNiAxLjA2TDEyIDIxLjIzbDcuNzgtNy43OCAxLjA2LTEuMDZhNS41IDUuNSAwIDAwMC03Ljc4eiIvPjwvc3ZnPjwvYnV0dG9uPgogICAgICA8ZGl2IGNsYXNzPSJuYm9keSI+PGRpdiBjbGFzcz0ibm4iPuuPiO2CpO2YuO2FjDwvZGl2PjxkaXYgY2xhc3M9Im5tIj7imIUgNC4zIDxzcGFuIGNsYXNzPSJjcGlsbCBjcC1tYXN0ZXIiPk1BU1RFUjwvc3Bhbj48c3BhbiBjbGFzcz0iY3BpbGwgY3AtamNiIj5KQ0I8L3NwYW4+PC9kaXY+PC9kaXY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9Im5jYXJkIiBpZD0iY2FyZC1zYnV4IiBvbmNsaWNrPSJvcGVuRGV0YWlsKCdzYnV4JykiPgogICAgICA8ZGl2IGNsYXNzPSJuaW1nIj7imJU8L2Rpdj4KICAgICAgPGJ1dHRvbiBjbGFzcz0ienppbSIgb25jbGljaz0idG9nZ2xlWnppbShldmVudCx0aGlzKSIgdGl0bGU9IuywnO2VmOq4sCI+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiPjxwYXRoIGQ9Ik0yMC44NCA0LjYxYTUuNSA1LjUgMCAwMC03Ljc4IDBMMTIgNS42N2wtMS4wNi0xLjA2YTUuNSA1LjUgMCAwMC03Ljc4IDcuNzhsMS4wNiAxLjA2TDEyIDIxLjIzbDcuNzgtNy43OCAxLjA2LTEuMDZhNS41IDUuNSAwIDAwMC03Ljc4eiIvPjwvc3ZnPjwvYnV0dG9uPgogICAgICA8ZGl2IGNsYXNzPSJuYm9keSI+PGRpdiBjbGFzcz0ibm4iPuyKpO2DgOuyheyKpCDquLTsnpA8L2Rpdj48ZGl2IGNsYXNzPSJubSI+4piFIDQuMSA8c3BhbiBjbGFzcz0iY3BpbGwgY3AtYW1leCI+QU1FWDwvc3Bhbj48L2Rpdj48L2Rpdj4KICAgIDwvZGl2PgogIDwvZGl2PgoKICA8IS0tIOyngOuPhC/rj4Tsi5wg7YC17Lm065OcIC0tPgogIDxkaXYgY2xhc3M9InFncmlkIj4KICAgIDxkaXYgY2xhc3M9InFjYXJkIj4KICAgICAgPGRpdj48ZGl2IGNsYXNzPSJxdCI+7KeA64+E66GcIOywvuq4sDwvZGl2PjxkaXYgY2xhc3M9InFzIj7rgrQg7KO867OAIOqysOygnCDrp6TsnqU8L2Rpdj48L2Rpdj4KICAgICAgPHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUE1RDFBIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHlsZT0ib3BhY2l0eTouNjtmbGV4LXNocmluazowIj48cGF0aCBkPSJNMTIgMkM4LjEzIDIgNSA1LjEzIDUgOWMwIDUuMjUgNyAxMyA3IDEzczctNy43NSA3LTEzYzAtMy44Ny0zLjEzLTctNy03eiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iOSIgcj0iMi41IiBmaWxsPSIjMUE1RDFBIiBzdHJva2U9Im5vbmUiLz48L3N2Zz4KICAgIDwvZGl2PgogICAgPGRpdiBjbGFzcz0icWNhcmQiPgogICAgICA8ZGl2PjxkaXYgY2xhc3M9InF0Ij7rj4Tsi5zrs4TroZwg7LC+6riwPC9kaXY+PGRpdiBjbGFzcz0icXMiPuyghOyEuOqzhCDrj4Tsi5zrs4TroZw8L2Rpdj48L2Rpdj4KICAgICAgPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUE1RDFBIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHlsZT0ib3BhY2l0eTouNjtmbGV4LXNocmluazowIj48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI3Ii8+PGxpbmUgeDE9IjE2LjUiIHkxPSIxNi41IiB4Mj0iMjIiIHkyPSIyMiIvPjwvc3ZnPgogICAgPC9kaXY+CiAgPC9kaXY+CgogIDwhLS0g7Iuk7Iuc6rCEIO2Vq+2UjCAtLT4KICA8ZGl2IGNsYXNzPSJob3RwbC1zZWN0aW9uIj4KICAgIDxkaXYgY2xhc3M9ImhvdHBsLWhlYWRlci1yb3ciPgogICAgICA8c3BhbiBjbGFzcz0iaG90cGwtc2VjdGlvbi10aXRsZSI+7KeA6riIIOyXrOq4sCEg7Iuk7Iuc6rCEIOqysOygnCDtlavtlIw8L3NwYW4+CiAgICAgIDxzcGFuIGNsYXNzPSJob3RwbC1tb3JlIj7soITssrTrs7TquLA8L3NwYW4+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9ImhvdHBsIj4KICAgICAgPGRpdiBjbGFzcz0iaG90cGwtaW1nIj4KICAgICAgICA8ZGl2IGNsYXNzPSJyYW1lbi1zY2VuZSI+CiAgICAgICAgICA8ZGl2IGNsYXNzPSJzdGwiPjwvZGl2PjxkaXYgY2xhc3M9InN0bCI+PC9kaXY+PGRpdiBjbGFzcz0ic3RsIj48L2Rpdj4KICAgICAgICAgIDxkaXYgY2xhc3M9ImJvd2wiPjxkaXYgY2xhc3M9ImJvd2wtcmltIj48L2Rpdj48ZGl2IGNsYXNzPSJib3dsLWJvZHkiPjxkaXYgY2xhc3M9InNvdXAiPjxkaXYgY2xhc3M9Im5vb2RsZSI+PGRpdiBjbGFzcz0ibmxpbmUiPjwvZGl2PjxkaXYgY2xhc3M9Im5saW5lIj48L2Rpdj48ZGl2IGNsYXNzPSJubGluZSI+PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz0iZWdnIj48L2Rpdj48ZGl2IGNsYXNzPSJjaGFzaHUiPjwvZGl2PjwvZGl2PjwvZGl2PjwvZGl2PgogICAgICAgICAgPHNwYW4gY2xhc3M9InNob3AtbmFtZSI+SUNISVJBTiDCtyDkuIDomK08L3NwYW4+PHNwYW4gY2xhc3M9InNob3Atc3RhcnMiPuKYheKYheKYheKYheKYhTwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJob3RwbC1vdmVybGF5Ij4KICAgICAgICAgIDxkaXYgY2xhc3M9ImxpdmUtYmFkZ2UiPjxkaXYgY2xhc3M9ImxkIj48L2Rpdj48c3BhbiBjbGFzcz0ibGl2ZS10eHQiPkxJVkU8L3NwYW4+PC9kaXY+CiAgICAgICAgICA8ZGl2IGNsYXNzPSJob3RwbC10aXRsZSI+IuuPhOy/hCDsnbTsuZjrnoAg652866mYLDxicj4xMOu2hCDsoIQg67mE7J6Q7Lm065OcIOqysOygnCDsmYTro4whIjwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0iaG90cGwtcmVwb3J0ZXIiPjxkaXYgY2xhc3M9InJlcC1hdiI+7JesPC9kaXY+PHNwYW4gY2xhc3M9InJlcC10eHQiPuygnOuztOyekCA8c3BhbiBjbGFzcz0icmVwLW5hbWUiPuyXrO2WieufrF/rr7zsp4A8L3NwYW4+64uYPC9zcGFuPjwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0iaG90cGwtZG90cyI+PGRpdiBjbGFzcz0iZG90LWkgb24iPjwvZGl2PjxkaXYgY2xhc3M9ImRvdC1pIj48L2Rpdj48ZGl2IGNsYXNzPSJkb3QtaSI+PC9kaXY+PC9kaXY+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgogICAgPC9kaXY+CiAgPC9kaXY+CgogIDxkaXYgY2xhc3M9ImRpdmxpbmUiIHN0eWxlPSJtYXJnaW4tdG9wOjEycHgiPjwvZGl2PgoKICA8IS0tIOyXrO2Wie2GoSAtLT4KICA8ZGl2IGNsYXNzPSJ5dG9rLXdyYXAiPgogICAgPGRpdiBjbGFzcz0ieXRvay1oZWFkIj48c3BhbiBjbGFzcz0ieXRvay10Ij7sl6ztlonthqEg7Iuk7Iuc6rCEPC9zcGFuPjxzcGFuIGNsYXNzPSJ5dG9rLW1vcmUiPuyghOyytOuztOq4sCDihpI8L3NwYW4+PC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJ5Y2FyZCI+CiAgICAgIDxkaXYgY2xhc3M9Inl0aHVtYiIgc3R5bGU9ImJhY2tncm91bmQ6I2VlZjBmOCI+8J+OkjwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJ5Y29udGVudCI+CiAgICAgICAgPGRpdiBjbGFzcz0ieXRvcCI+PHNwYW4gY2xhc3M9InliYWRnZSB5Yi1tYXRlIj7rj5ntlok8L3NwYW4+PHNwYW4gY2xhc3M9InljaXR5Ij7rj4Tsv4QgwrcgPHNwYW4gc3R5bGU9ImNvbG9yOiM0QURFODAiPuKXjzwvc3Bhbj4gNDHrqoU8L3NwYW4+PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ieXRpdGxlIj4z7JuUIDI3LTI47J28IOuPhOy/hCDrj5ntlokg6rWs7ZW07JqUPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ieWJvZHkiPjIw64yAIOykkeuwmCDsl6zsnpDqs6Ag7ISc66GcIOyCrOynhOuPhCDssI3slrTso7zqs6Ag6rCZ7J20IOunm+ynkeqwgOyalCE8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJ5Zm9vdCI+PHNwYW4+8J+SrCA2PC9zcGFuPjxzcGFuPuKdpCAxMTwvc3Bhbj48c3Bhbj4x7Iuc6rCEIOyghDwvc3Bhbj48L2Rpdj4KICAgICAgPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9Inl0aHVtYi1yIiBzdHlsZT0iYmFja2dyb3VuZDojZGRlMmYwIj7wn46SPC9kaXY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InljYXJkIj4KICAgICAgPGRpdiBjbGFzcz0ieXRodW1iIiBzdHlsZT0iYmFja2dyb3VuZDojZjVmMGU4Ij7wn6WQPC9kaXY+CiAgICAgIDxkaXYgY2xhc3M9Inljb250ZW50Ij4KICAgICAgICA8ZGl2IGNsYXNzPSJ5dG9wIj48c3BhbiBjbGFzcz0ieWJhZGdlIHliLWZvb2QiPuunm+ynkTwvc3Bhbj48c3BhbiBjbGFzcz0ieWNpdHkiPu2MjOumrCDCtyA8c3BhbiBzdHlsZT0iY29sb3I6IzRBREU4MCI+4pePPC9zcGFuPiAyM+uqhTwvc3Bhbj48L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJ5dGl0bGUiPuyXkO2OoO2DkSDqt7zsspgg7KeE7KecIOunm+yeiOuKlCDtgazroIjtjpghPC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0ieWJvZHkiPuqzqOuqqSDslYjsl5Ag7Iio7Ja07J6I64qUIOynkeyduOuNsCDspITrj4Qg7JeG6rOgIOqwgOqyqeuPhCDssKntlbTsmpQ8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJ5Zm9vdCI+PHNwYW4+8J+SrCAxNDwvc3Bhbj48c3Bhbj7inaQgMzI8L3NwYW4+PHNwYW4+MuyLnOqwhCDsoIQ8L3NwYW4+PC9kaXY+CiAgICAgIDwvZGl2PgogICAgICA8ZGl2IGNsYXNzPSJ5dGh1bWItciIgc3R5bGU9ImJhY2tncm91bmQ6I2VkZThlMCI+8J+lkDwvZGl2PgogICAgPC9kaXY+CiAgPC9kaXY+CgogIDwhLS0g7ZWY64uoIOuEpOu5hCAtLT4KICA8ZGl2IGNsYXNzPSJibmF2Ij4KICAgIDxkaXYgY2xhc3M9Im5pIG9uIj48c3ZnIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMUE1RDFBIj48cGF0aCBkPSJNMyA5LjVMMTIgM2w5IDYuNVYyMGExIDEgMCAwMS0xIDFIMTR2LTZoLTR2Nkg0YTEgMSAwIDAxLTEtMVY5LjV6IiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+7ZmIPC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJuaSI+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzk5OSI+PHBhdGggZD0iTTIxIDE1YTIgMiAwIDAxLTIgMkg3bC00IDRWNWEyIDIgMCAwMTItMmgxNGEyIDIgMCAwMTIgMnoiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz7sl6ztlonthqE8L2Rpdj4KICAgIDxkaXYgY2xhc3M9Im5wbHVzIj48YnV0dG9uIGNsYXNzPSJucGJ0biI+KzwvYnV0dG9uPjxzcGFuIGNsYXNzPSJucGxibCI+65Ox66GdPC9zcGFuPjwvZGl2PgogICAgPGRpdiBjbGFzcz0ibmkiPjxzdmcgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjciIHN0cm9rZS13aWR0aD0iMS42Ii8+PGxpbmUgeDE9IjE2LjUiIHkxPSIxNi41IiB4Mj0iMjIiIHkyPSIyMiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPuqygOyDiTwvZGl2PgogICAgPGRpdiBjbGFzcz0ibmkiPjxzdmcgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5OTkiPjxwYXRoIGQ9Ik0yMCAyMXYtMmE0IDQgMCAwMC00LTRIOGE0IDQgMCAwMC00IDR2MiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNyIgcj0iNCIgc3Ryb2tlLXdpZHRoPSIxLjYiLz48L3N2Zz7rp4jsnbTtjpjsnbTsp4A8L2Rpdj4KICA8L2Rpdj4KCiAgPCEtLSDrp6TsnqUg7IOB7IS4IOyKrOudvOydtOuTnCDtjKjrhJAgLS0+CiAgPGRpdiBjbGFzcz0iZGV0YWlsLW92ZXJsYXkiIGlkPSJkZXRhaWwtb3ZlcmxheSIgb25jbGljaz0iY2xvc2VEZXRhaWwoKSI+PC9kaXY+CiAgPGRpdiBjbGFzcz0iZGV0YWlsLXBhbmVsIiBpZD0iZGV0YWlsLXBhbmVsIj4KICAgIDxkaXYgY2xhc3M9ImRwLWhhbmRsZSI+PC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJkcC10b3BiYXIiPgogICAgICA8ZGl2PjxkaXYgY2xhc3M9ImRwLW5hbWUiIGlkPSJkcC1uYW1lIj48L2Rpdj48ZGl2IGNsYXNzPSJkcC1jYXQiIGlkPSJkcC1jYXQiPjwvZGl2PjwvZGl2PgogICAgICA8YnV0dG9uIGNsYXNzPSJkcC1jbG9zZSIgb25jbGljaz0iY2xvc2VEZXRhaWwoKSI+4pyVPC9idXR0b24+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9ImRwLXNjcm9sbCIgaWQ9ImRwLXNjcm9sbCI+PC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJkcC1idG4tcm93Ij4KICAgICAgPGJ1dHRvbiBjbGFzcz0iZHAtYnRuLXJlcG9ydCI+4pyN77iPIOqysOygnCDsoJzrs7TtlZjquLA8L2J1dHRvbj4KICAgICAgPGJ1dHRvbiBjbGFzcz0iZHAtYnRuLW1vcmUiPuunpOyepSDsg4HshLjrs7TquLAg4oaSPC9idXR0b24+CiAgICA8L2Rpdj4KICA8L2Rpdj4KCjwvZGl2Pgo8c2NyaXB0PgovKiDilIDilIAg7Lm065Oc7IKsIOKUgOKUgCAqLwp2YXIgY2FyZFNlbGVjdGVkID0gbmV3IFNldChbJ2FsbCddKTsKdmFyIGNhcmREYXRhID0ge2ljaGlyYW46Wyd2aXNhJ10sIGRvbmtpOlsnbWFzdGVyJywnamNiJ10sIHNidXg6WydhbWV4J119OwoKZnVuY3Rpb24gYXBwbHlDYXJkRmlsdGVyKCl7CiAgWydpY2hpcmFuJywnZG9ua2knLCdzYnV4J10uZm9yRWFjaChmdW5jdGlvbihpZCl7CiAgICB2YXIgbmMgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2FyZC0nK2lkKTsgaWYoIW5jKSByZXR1cm47CiAgICB2YXIgc2hvdyA9IGNhcmRTZWxlY3RlZC5oYXMoJ2FsbCcpIHx8IGNhcmREYXRhW2lkXS5zb21lKGZ1bmN0aW9uKGMpeyByZXR1cm4gY2FyZFNlbGVjdGVkLmhhcyhjKTsgfSk7CiAgICBuYy5zdHlsZS5vcGFjaXR5ID0gc2hvdyA/ICcxJyA6ICcwLjIyJzsKICAgIG5jLnN0eWxlLnRyYW5zZm9ybSA9IHNob3cgPyAnc2NhbGUoMSknIDogJ3NjYWxlKDAuOTcpJzsKICB9KTsKfQoKZnVuY3Rpb24gc3luY0NhcmRDaGlwcygpewogIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJy5jaGlwLXJvdyAuc3EtY2hpcCcpLmZvckVhY2goZnVuY3Rpb24oYyl7CiAgICB2YXIgZm4gPSBjLmdldEF0dHJpYnV0ZSgnb25jbGljaycpIHx8ICcnOwogICAgdmFyIG0gPSBmbi5tYXRjaCgvdG9nZ2xlQ2FyZE1haW5cKHRoaXMsJyhbXiddKyknXCkvKTsKICAgIGlmKG0pIGMuY2xhc3NMaXN0LnRvZ2dsZSgnb24nLCBjYXJkU2VsZWN0ZWQuaGFzKG1bMV0pIHx8IChjYXJkU2VsZWN0ZWQuaGFzKCdhbGwnKSAmJiBtWzFdPT09J2FsbCcpKTsKICB9KTsKfQoKZnVuY3Rpb24gc3luY0NhcmRTaGVldCgpewogIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJyNjYXJkLXNoZWV0LXdyYXAgLnNoZWV0LWNoaXAnKS5mb3JFYWNoKGZ1bmN0aW9uKGMpewogICAgdmFyIGZuID0gYy5nZXRBdHRyaWJ1dGUoJ29uY2xpY2snKSB8fCAnJzsKICAgIHZhciBtID0gZm4ubWF0Y2goL3RvZ2dsZUNhcmRDaGlwXCh0aGlzLCcoW14nXSspJ1wpLyk7CiAgICBpZihtKSBjLmNsYXNzTGlzdC50b2dnbGUoJ29uJywgY2FyZFNlbGVjdGVkLmhhcyhtWzFdKSk7CiAgfSk7Cn0KCmZ1bmN0aW9uIHRvZ2dsZUNhcmRNYWluKGVsLCBjYXJkKXsKICBpZihjYXJkPT09J2FsbCcpeyBjYXJkU2VsZWN0ZWQuY2xlYXIoKTsgY2FyZFNlbGVjdGVkLmFkZCgnYWxsJyk7IH0KICBlbHNlIHsgY2FyZFNlbGVjdGVkLmRlbGV0ZSgnYWxsJyk7IGlmKGNhcmRTZWxlY3RlZC5oYXMoY2FyZCkpIGNhcmRTZWxlY3RlZC5kZWxldGUoY2FyZCk7IGVsc2UgY2FyZFNlbGVjdGVkLmFkZChjYXJkKTsgaWYoY2FyZFNlbGVjdGVkLnNpemU9PT0wKSBjYXJkU2VsZWN0ZWQuYWRkKCdhbGwnKTsgfQogIHN5bmNDYXJkQ2hpcHMoKTsgc3luY0NhcmRTaGVldCgpOyBhcHBseUNhcmRGaWx0ZXIoKTsgdXBkYXRlQ2FyZENvdW50KCk7Cn0KCmZ1bmN0aW9uIHRvZ2dsZUNhcmRDaGlwKGVsLCBjYXJkKXsKICBpZihjYXJkPT09J2FsbCcpeyBjYXJkU2VsZWN0ZWQuY2xlYXIoKTsgY2FyZFNlbGVjdGVkLmFkZCgnYWxsJyk7IH0KICBlbHNlIHsgY2FyZFNlbGVjdGVkLmRlbGV0ZSgnYWxsJyk7IGlmKGNhcmRTZWxlY3RlZC5oYXMoY2FyZCkpIGNhcmRTZWxlY3RlZC5kZWxldGUoY2FyZCk7IGVsc2UgY2FyZFNlbGVjdGVkLmFkZChjYXJkKTsgaWYoY2FyZFNlbGVjdGVkLnNpemU9PT0wKSBjYXJkU2VsZWN0ZWQuYWRkKCdhbGwnKTsgfQogIHN5bmNDYXJkU2hlZXQoKTsgc3luY0NhcmRDaGlwcygpOyBhcHBseUNhcmRGaWx0ZXIoKTsgdXBkYXRlQ2FyZENvdW50KCk7Cn0KCmZ1bmN0aW9uIHVwZGF0ZUNhcmRDb3VudCgpewogIHZhciBjbnQgPSBjYXJkU2VsZWN0ZWQuaGFzKCdhbGwnKSA/IDAgOiBjYXJkU2VsZWN0ZWQuc2l6ZTsKICB2YXIgZWwgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2FyZC1jb3VudCcpOwogIGlmKGVsKSBlbC50ZXh0Q29udGVudCA9IGNudD4wID8gJygnK2NudCsn6rCcIOyEoO2DnSknIDogJyc7Cn0KCmZ1bmN0aW9uIGNhcmRSZXNldCgpeyBjYXJkU2VsZWN0ZWQuY2xlYXIoKTsgY2FyZFNlbGVjdGVkLmFkZCgnYWxsJyk7IHN5bmNDYXJkU2hlZXQoKTsgc3luY0NhcmRDaGlwcygpOyBhcHBseUNhcmRGaWx0ZXIoKTsgdXBkYXRlQ2FyZENvdW50KCk7IH0KCnZhciBjYXJkU08gPSBmYWxzZTsKZnVuY3Rpb24gdG9nZ2xlQ2FyZFNoZWV0KCl7IGNhcmRTTyA/IGNsb3NlQ2FyZFNoZWV0KCkgOiBvcGVuQ2FyZFNoZWV0KCk7IH0KZnVuY3Rpb24gb3BlbkNhcmRTaGVldCgpewogIGNhcmRTTz10cnVlOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjYXJkLW92ZXJsYXknKS5jbGFzc0xpc3QuYWRkKCdvcGVuJyk7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NhcmQtc2hlZXQnKS5jbGFzc0xpc3QuYWRkKCdvcGVuJyk7CiAgdmFyIGI9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NhcmQtYWxsLWJ0bicpOyBiLnRleHRDb250ZW50PSfrqqjrkZDrs7TquLAg4pa0JzsgYi5jbGFzc0xpc3QuYWRkKCdvcGVuJyk7Cn0KZnVuY3Rpb24gY2xvc2VDYXJkU2hlZXQoKXsKICBjYXJkU089ZmFsc2U7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NhcmQtb3ZlcmxheScpLmNsYXNzTGlzdC5yZW1vdmUoJ29wZW4nKTsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2FyZC1zaGVldCcpLmNsYXNzTGlzdC5yZW1vdmUoJ29wZW4nKTsKICB2YXIgYj1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2FyZC1hbGwtYnRuJyk7IGIudGV4dENvbnRlbnQ9J+uqqOuRkOuztOq4sCDilr4nOyBiLmNsYXNzTGlzdC5yZW1vdmUoJ29wZW4nKTsKfQoKLyog4pSA4pSAIOyXheyihSDilIDilIAgKi8KdmFyIGNhdHMgPSBbJ+yLneuLuScsJ+y5tO2OmCcsJ+2OjScsJ+2MqOyKpO2KuO2RuOuTnCcsJ+ydtOyekOy5tOyVvCcsJ+2OuOydmOygkCcsJ+uniO2KuCcsJ+2YuO2FlCcsJ+yeheyepeq2jCcsJ+yghOyyoCDti7DsvJMnLCfrsoTsiqQnLCdBVE3quLAnLCfquLDtg4AnXTsKdmFyIHNlbGVjdGVkID0gbmV3IFNldCgpOwoKdmFyIHdyYXAgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2F0LXdyYXAnKTsKY2F0cy5mb3JFYWNoKGZ1bmN0aW9uKGxibCl7CiAgdmFyIGQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTsKICBkLmNsYXNzTmFtZSA9ICdzcS1jaGlwJzsgZC50ZXh0Q29udGVudCA9IGxibDsgZC5kYXRhc2V0LmxibCA9IGxibDsKICBkLm9uY2xpY2sgPSBmdW5jdGlvbigpeyB0b2dnbGVDYXQobGJsKTsgc3luY0FsbCgpOyB9OwogIHdyYXAuYXBwZW5kQ2hpbGQoZCk7Cn0pOwoKdmFyIHN3ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3NoZWV0LXdyYXAnKTsKY2F0cy5mb3JFYWNoKGZ1bmN0aW9uKGxibCl7CiAgdmFyIGQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTsKICBkLmNsYXNzTmFtZSA9ICdzaGVldC1jaGlwJzsgZC50ZXh0Q29udGVudCA9IGxibDsgZC5kYXRhc2V0LmxibCA9IGxibDsKICBkLm9uY2xpY2sgPSBmdW5jdGlvbigpeyB0b2dnbGVDYXQobGJsKTsgc3luY0FsbCgpOyB1cGRhdGVDYXRDb3VudCgpOyB9OwogIHN3LmFwcGVuZENoaWxkKGQpOwp9KTsKCmZ1bmN0aW9uIHRvZ2dsZUNhdChsYmwpewogIGlmKHNlbGVjdGVkLmhhcyhsYmwpKSBzZWxlY3RlZC5kZWxldGUobGJsKTsKICBlbHNlIHNlbGVjdGVkLmFkZChsYmwpOwogIC8vIOqwnOuzhCDshKDtg50g7IucIFvsoITssrRdIOuyhO2KvCBvZmYKICB2YXIgYWxsQnRuID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NhdC1hbGwtc2VsZWN0Jyk7CiAgaWYoYWxsQnRuKSBhbGxCdG4uY2xhc3NMaXN0LnJlbW92ZSgnb24nKTsKfQpmdW5jdGlvbiBzeW5jQWxsKCl7CiAgd3JhcC5xdWVyeVNlbGVjdG9yQWxsKCcuc3EtY2hpcCcpLmZvckVhY2goZnVuY3Rpb24oYyl7IGMuY2xhc3NMaXN0LnRvZ2dsZSgnb24nLCBzZWxlY3RlZC5oYXMoYy5kYXRhc2V0LmxibCkpOyB9KTsKICBzdy5xdWVyeVNlbGVjdG9yQWxsKCcuc2hlZXQtY2hpcCcpLmZvckVhY2goZnVuY3Rpb24oYyl7IGMuY2xhc3NMaXN0LnRvZ2dsZSgnb24nLCBzZWxlY3RlZC5oYXMoYy5kYXRhc2V0LmxibCkpOyB9KTsKfQpmdW5jdGlvbiBjYXRTZWxlY3RBbGwoKXsKICBzZWxlY3RlZC5jbGVhcigpOwogIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJyNjYXQtd3JhcCAuc3EtY2hpcCcpLmZvckVhY2goZnVuY3Rpb24oYyl7IGMuY2xhc3NMaXN0LnJlbW92ZSgnb24nKTsgfSk7CiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnI3NoZWV0LXdyYXAgLnNoZWV0LWNoaXAnKS5mb3JFYWNoKGZ1bmN0aW9uKGMpeyBjLmNsYXNzTGlzdC5yZW1vdmUoJ29uJyk7IH0pOwogIHZhciBhbGxCdG4gPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2F0LWFsbC1zZWxlY3QnKTsKICBpZihhbGxCdG4pIGFsbEJ0bi5jbGFzc0xpc3QuYWRkKCdvbicpOwp9CmZ1bmN0aW9uIHJlc2V0Q2F0cygpeyBzZWxlY3RlZC5jbGVhcigpOyBzeW5jQWxsKCk7IHVwZGF0ZUNhdENvdW50KCk7IH0KZnVuY3Rpb24gdXBkYXRlQ2F0Q291bnQoKXsKICB2YXIgZWwgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2F0LWNvdW50Jyk7CiAgaWYoZWwpIGVsLnRleHRDb250ZW50ID0gc2VsZWN0ZWQuc2l6ZT4wID8gJygnK3NlbGVjdGVkLnNpemUrJ+qwnCDshKDtg50pJyA6ICcnOwp9Cgp2YXIgY2F0U08gPSBmYWxzZTsKZnVuY3Rpb24gdG9nZ2xlU2hlZXQoKXsgY2F0U08gPyBjbG9zZVNoZWV0KCkgOiBvcGVuU2hlZXQoKTsgfQpmdW5jdGlvbiBvcGVuU2hlZXQoKXsKICBjYXRTTz10cnVlOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdvdmVybGF5JykuY2xhc3NMaXN0LmFkZCgnb3BlbicpOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdzaGVldCcpLmNsYXNzTGlzdC5hZGQoJ29wZW4nKTsKICB2YXIgYj1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnY2F0LWFsbC1idG4nKTsgYi50ZXh0Q29udGVudD0n66qo65GQ67O06riwIOKWtCc7IGIuY2xhc3NMaXN0LmFkZCgnb3BlbicpOwp9CmZ1bmN0aW9uIGNsb3NlU2hlZXQoKXsKICBjYXRTTz1mYWxzZTsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnb3ZlcmxheScpLmNsYXNzTGlzdC5yZW1vdmUoJ29wZW4nKTsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnc2hlZXQnKS5jbGFzc0xpc3QucmVtb3ZlKCdvcGVuJyk7CiAgdmFyIGI9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2NhdC1hbGwtYnRuJyk7IGIudGV4dENvbnRlbnQ9J+uqqOuRkOuztOq4sCDilr4nOyBiLmNsYXNzTGlzdC5yZW1vdmUoJ29wZW4nKTsKfQoKLyog4pSA4pSAIOywnCDilIDilIAgKi8KZnVuY3Rpb24gdG9nZ2xlWnppbShlLCBlbCl7CiAgZS5zdG9wUHJvcGFnYXRpb24oKTsKICBlbC5jbGFzc0xpc3QudG9nZ2xlKCdvbicpOwp9CgovKiDilIDilIAg66ek7J6lIOyDgeyEuCDilIDilIAgKi8KdmFyIHNob3BEYXRhID0gewogIGljaGlyYW46e25hbWU6J+ydtOy5mOuegCDrnbzrqZgnLGNhdDon7Iud64u5IMK3IOudvOupmCcsaWNvbjon8J+NnCcsY2FyZHM6W3tuOidWSVNBJyxiZzonIzFhMWY3MScsY2w6JyNmZmYnfV0scmF0aW5nOic0LjgnLGFkZHI6J+uPhOy/hCDsi6Dso7zsv6Dqtawg7J207LyA67aA7L+g66GcIDEtMi0zJyxob3VyczonMTE6MDAgfiAyMzowMCcsdGVsOicrODEtMy0xMjM0LTU2NzgnLGxhdDozNS43Mjk1LGxuZzoxMzkuNzEwOSxyZXZpZXdzOlt7bmFtZTon7Jes7ZaJ65+sX+uvvOyngCcsZGF0ZTonMTDrtoQg7KCEJyx0eHQ6J+u5hOyekOy5tOuTnCDqsrDsoJwg7J6YIOuQkOyWtOyalCEg7KSE7J20IOyigCDquLjsp4Drp4wg66eb7J2AIOy1nOqzoCDwn5GNJ30se25hbWU6J+uPhOy/hOuNle2bhCcsZGF0ZTonMuyLnOqwhCDsoIQnLHR4dDon7Zi87J6QIOuoueq4sCDsoovsnYAg6rWs7KGwLiBJQ+y5tOuTnOuKlCDslYjrkJjqs6Ag7Iug7Jqp7Lm065Oc66eMIOuPvOyalCd9XX0sCiAgZG9ua2k6e25hbWU6J+uPiO2CpO2YuO2FjCcsY2F0Oifrp4jtirggwrcg66m07IS47KCQJyxpY29uOifwn5uSJyxjYXJkczpbe246J01BU1RFUicsYmc6JyNlYjAwMWInLGNsOicjZmZmJ30se246J0pDQicsYmc6JyMwMDdiNDAnLGNsOicjZmZmJ31dLHJhdGluZzonNC4zJyxhZGRyOifrj4Tsv4Qg7Iuc67aA7JW86rWsIOuPhOqykOyekOy5tCAyLTI1LTgnLGhvdXJzOicyNOyLnOqwhCDsmIHsl4UnLHRlbDonKzgxLTMtNTc3OC0yODExJyxsYXQ6MzUuNjU5NSxsbmc6MTM5LjY5NzgscmV2aWV3czpbe25hbWU6J+yHvO2VkeyZlScsZGF0ZTonMzDrtoQg7KCEJyx0eHQ6J+uniOyKpO2EsOy5tOuTnMK3SkNCIOuqqOuRkCBPSy4g66m07IS4IOy5tOyatO2EsOuPhCDsubTrk5wg6rKw7KCcIOqwgOuKpSEnfSx7bmFtZTon64+E7L+E7Jes7ZaJ7J6QJyxkYXRlOicx7Iuc6rCEIOyghCcsdHh0OifsmIHsiJjspp0g6rytIOyxmeq4sOyEuOyalCEg66m07IS4IO2ZmOq4iSDrsJTroZwg7ZW07KSY7JqUJ31dfSwKICBzYnV4OntuYW1lOifsiqTtg4DrsoXsiqQg6ri07J6QJyxjYXQ6J+y5tO2OmCcsaWNvbjon4piVJyxjYXJkczpbe246J0FNRVgnLGJnOicjMDA3YmMxJyxjbDonI2ZmZid9XSxyYXRpbmc6JzQuMScsYWRkcjon64+E7L+EIOyjvOyYpOq1rCDquLTsnpAgNi0xMC0xJyxob3VyczonMDc6MDAgfiAyMzowMCcsdGVsOicrODEtMy0zNTcyLTA2MDAnLGxhdDozNS42Njk1LGxuZzoxMzkuNzY0MSxyZXZpZXdzOlt7bmFtZTon7Lm07Y6Y7ZmA66atJyxkYXRlOicx7Iuc6rCEIOyghCcsdHh0OifslYTrqZXsiqQg7YSw7LmY6rKw7KCcIOqwgOuKpSEg6ri07J6QIO2VnOuzte2MkOydtOudvCDrtoTsnITquLAg7LWc6rOgJ30se25hbWU6J+y7pO2UvOufrOuyhCcsZGF0ZTonM+yLnOqwhCDsoIQnLHR4dDonQU1FWOunjCDrkJjqs6Ag64uk66W4IOy5tOuTnOuKlCDslYjrkKnri4jri6QuIOywuOqzoO2VmOyEuOyalCd9XX0KfTsKCmZ1bmN0aW9uIG9wZW5EZXRhaWwoaWQpewogIHZhciBzID0gc2hvcERhdGFbaWRdOyBpZighcykgcmV0dXJuOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdkcC1uYW1lJykudGV4dENvbnRlbnQgPSBzLm5hbWU7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RwLWNhdCcpLnRleHRDb250ZW50ID0gcy5jYXQ7CiAgdmFyIHBpbGxzID0gcy5jYXJkcy5tYXAoZnVuY3Rpb24oYyl7IHJldHVybiAnPHNwYW4gY2xhc3M9ImRwaWxsIiBzdHlsZT0iYmFja2dyb3VuZDonK2MuYmcrJztjb2xvcjonK2MuY2wrJyI+JytjLm4rJzwvc3Bhbj4nOyB9KS5qb2luKCcnKTsKICB2YXIgbWFwVXJsID0gJ2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20vbWFwcy9zZWFyY2gvP2FwaT0xJnF1ZXJ5PScrcy5sYXQrJywnK3MubG5nOwogIHZhciByZXZzID0gcy5yZXZpZXdzLm1hcChmdW5jdGlvbihyKXsKICAgIHJldHVybiAnPGRpdiBjbGFzcz0iZHAtcmV2Ij48ZGl2IGNsYXNzPSJkcC1yZXYtdG9wIj48ZGl2IGNsYXNzPSJkcC1yZXYtYXYiPicrci5uYW1lWzBdKyc8L2Rpdj48c3BhbiBjbGFzcz0iZHAtcmV2LW5hbWUiPicrci5uYW1lKyc8L3NwYW4+PHNwYW4gY2xhc3M9ImRwLXJldi1kYXRlIj4nK3IuZGF0ZSsnPC9zcGFuPjwvZGl2PjxkaXYgY2xhc3M9ImRwLXJldi10eHQiPicrci50eHQrJzwvZGl2PjwvZGl2Pic7CiAgfSkuam9pbignJyk7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RwLXNjcm9sbCcpLmlubmVySFRNTCA9CiAgICAnPGRpdiBjbGFzcz0iZHAtcGlsbHMiPicrcGlsbHMrJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtbWFwIiBvbmNsaWNrPSJ3aW5kb3cub3BlbihcJycrbWFwVXJsKydcJyxcJ19ibGFua1wnKSI+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1tYXAtZ2giIHN0eWxlPSJ0b3A6MjUlIj48L2Rpdj4nCiAgICArJzxkaXYgY2xhc3M9ImRwLW1hcC1naCIgc3R5bGU9InRvcDo1MCUiPjwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtbWFwLWdoIiBzdHlsZT0idG9wOjc1JSI+PC9kaXY+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1tYXAtZ3YiIHN0eWxlPSJsZWZ0OjI1JSI+PC9kaXY+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1tYXAtZ3YiIHN0eWxlPSJsZWZ0OjUwJSI+PC9kaXY+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1tYXAtZ3YiIHN0eWxlPSJsZWZ0Ojc1JSI+PC9kaXY+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1tYXAtcmgiIHN0eWxlPSJ0b3A6NDclO2hlaWdodDo3cHgiPjwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtbWFwLXJ2IiBzdHlsZT0ibGVmdDo0NyU7d2lkdGg6N3B4Ij48L2Rpdj4nCiAgICArJzxkaXYgY2xhc3M9ImRwLW1hcC1waW4iPjxkaXYgY2xhc3M9ImRwLW1hcC1kb3QiPjwvZGl2PjxkaXYgY2xhc3M9ImRwLW1hcC10YWlsIj48L2Rpdj48L2Rpdj4nCiAgICArJzxkaXYgY2xhc3M9ImRwLW1hcC1zaGFkb3ciPjwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtbWFwLWxibCI+JytzLm5hbWUrJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtbWFwLWhpbnQiPjxzcGFuPkdvb2dsZSDsp4Drj4Tsl5DshJwg7Je06riwIOKGkjwvc3Bhbj48L2Rpdj4nCiAgICArJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtc2VjdGlvbiI+66ek7J6lIOygleuztDwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtcm93Ij48c3BhbiBjbGFzcz0iZHAtaWNvIj7wn5ONPC9zcGFuPicrcy5hZGRyKyc8L2Rpdj4nCiAgICArJzxkaXYgY2xhc3M9ImRwLXJvdyI+PHNwYW4gY2xhc3M9ImRwLWljbyI+8J+VkDwvc3Bhbj4nK3MuaG91cnMrJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtcm93Ij48c3BhbiBjbGFzcz0iZHAtaWNvIj7wn5OePC9zcGFuPicrcy50ZWwrJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtcm93Ij48c3BhbiBjbGFzcz0iZHAtaWNvIj7irZA8L3NwYW4+7Y+J7KCQICcrcy5yYXRpbmcrJzwvZGl2PicKICAgICsnPGRpdiBjbGFzcz0iZHAtZGl2aWRlciI+PC9kaXY+JwogICAgKyc8ZGl2IGNsYXNzPSJkcC1zZWN0aW9uIj7qsrDsoJwg7ZuE6riwPC9kaXY+JwogICAgK3JldnM7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RldGFpbC1vdmVybGF5JykuY2xhc3NMaXN0LmFkZCgnb3BlbicpOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdkZXRhaWwtcGFuZWwnKS5jbGFzc0xpc3QuYWRkKCdvcGVuJyk7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RwLXNjcm9sbCcpLnNjcm9sbFRvcCA9IDA7Cn0KCmZ1bmN0aW9uIGNsb3NlRGV0YWlsKCl7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2RldGFpbC1vdmVybGF5JykuY2xhc3NMaXN0LnJlbW92ZSgnb3BlbicpOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdkZXRhaWwtcGFuZWwnKS5jbGFzc0xpc3QucmVtb3ZlKCdvcGVuJyk7Cn0KPC9zY3JpcHQ+CjwvYm9keT4KPC9odG1sPgo=";
 
+var findIdTimer = null;
+var findIdTimerSec = 180;
+var findIdConfirmResult = null;
+
+function sendFindIdCode() {
+  var phone = document.getElementById('findid-phone').value.trim().replace(/-/g,'');
+  if (!phone) { alert('휴대폰 번호를 입력해주세요'); return; }
+  var e164 = phone.startsWith('0') ? '+82' + phone.slice(1) : (phone.startsWith('+') ? phone : '+82' + phone);
+  if (!window._doSendSMS) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('findid-send-btn');
+  btn.disabled = true; btn.textContent = '발송 중...';
+  // recaptcha를 findid-send-btn에 붙이기
+  if (window._recaptchaVerifier) { try { window._recaptchaVerifier.clear(); } catch(e) {} window._recaptchaVerifier = null; }
+  window._doSendSMS(e164).then(function(res) {
+    btn.disabled = false;
+    if (res.ok) {
+      findIdConfirmResult = window._confirmationResult;
+      document.getElementById('findid-code-group').style.display = 'block';
+      document.getElementById('findid-verify-btn').style.display = 'block';
+      btn.textContent = '재발송';
+      if (findIdTimer) clearInterval(findIdTimer);
+      findIdTimerSec = 180;
+      var upd = function(){ var m=Math.floor(findIdTimerSec/60),s=findIdTimerSec%60; document.getElementById('findid-timer').textContent=m+':'+(s<10?'0':'')+s; };
+      upd();
+      findIdTimer = setInterval(function(){ findIdTimerSec--; upd(); if(findIdTimerSec<=0){clearInterval(findIdTimer);document.getElementById('findid-timer').textContent='만료';} },1000);
+    } else {
+      btn.textContent = '인증번호 받기';
+      alert('오류: ' + (res.code || '다시 시도해주세요'));
+    }
+  });
+}
+
+function verifyFindIdCode() {
+  var code = document.getElementById('findid-code').value.trim();
+  if (!code) { alert('인증번호를 입력해주세요'); return; }
+  if (!window._confirmationResult) { alert('인증번호를 먼저 받아주세요'); return; }
+  var btn = document.getElementById('findid-verify-btn');
+  btn.disabled = true; btn.textContent = '확인 중...';
+  window._doVerifySMS(code).then(function(res) {
+    btn.disabled = false; btn.textContent = '확인';
+    if (res.ok) {
+      clearInterval(findIdTimer);
+      var phone = document.getElementById('findid-phone').value.trim().replace(/-/g,'');
+      window._doFindEmail(phone).then(function(r) {
+        if (r.ok) {
+          document.getElementById('findid-form').style.display = 'none';
+          document.getElementById('findid-result').style.display = 'block';
+          document.getElementById('findid-masked').textContent = r.masked;
+        } else {
+          alert('가입된 계정을 찾을 수 없어요');
+        }
+      });
+    } else {
+      if (res.code === 'auth/invalid-verification-code') alert('인증번호가 올바르지 않아요');
+      else if (res.code === 'auth/code-expired') alert('인증번호가 만료됐어요. 재발송해주세요');
+      else alert('오류: ' + res.code);
+    }
+  });
+}
+
+function doSendResetEmail() {
+  var email = document.getElementById('findpw-email').value.trim();
+  if (!email) { alert('이메일을 입력해주세요'); return; }
+  if (!window._doSendResetEmail) { alert('잠시 후 다시 시도해주세요'); return; }
+  window._doSendResetEmail(email).then(function(res) {
+    if (res.ok) {
+      document.getElementById('findpw-done').style.display = 'block';
+      document.getElementById('findpw-form').style.display = 'none';
+      document.getElementById('findpw-done-email').textContent = email + ' 으로\n비밀번호 재설정 링크를 보냈어요.\n메일함을 확인해 주세요.';
+    } else {
+      if (res.code === 'auth/user-not-found') alert('가입되지 않은 이메일이에요');
+      else if (res.code === 'auth/invalid-email') alert('이메일 형식이 올바르지 않아요');
+      else alert('오류가 발생했어요. 다시 시도해주세요');
+    }
+  });
+}
 function goScreen(id){document.querySelectorAll('#login-phone .screen').forEach(function(s){s.classList.remove('active');});var t=document.getElementById(id);if(t)t.classList.add('active');}
-function doHekaLogin(){var e=document.getElementById('heka-email').value.trim();var p=document.getElementById('heka-pw').value.trim();if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}showToastAndGoHome('✅ 로그인 되었습니다!');}
+async function doMainLogin() {
+  var e = document.getElementById('main-email').value.trim();
+  var p = document.getElementById('main-pw').value;
+  if(!e||!p){ alert('이메일과 비밀번호를 입력해주세요'); return; }
+  document.getElementById('heka-email').value = e;
+  document.getElementById('heka-pw').value = p;
+  doHekaLogin();
+}
+
+async function doHekaLogin(){
+  var e=document.getElementById('heka-email').value.trim();
+  var p=document.getElementById('heka-pw').value.trim();
+  if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}
+  if(!window._doFirebaseLogin){alert('잠시 후 다시 시도해주세요');return;}
+  var ok = await window._doFirebaseLogin(e, p);
+  if(ok){ showToastAndGoHome(); }
+  else { alert('이메일 또는 비밀번호가 틀렸어요'); }
+}
 var currentSocial='';
-var socialCfg={kakao:{logo:'💬',title:'카카오 로그인',sub:'카카오계정으로 계속하기',btnTxt:'카카오로 계속하기',btnBg:'#FEE500',btnClr:'#3C1E1E',notice:'카카오 계정으로 해카에 가입하거나 로그인합니다'},google:{logo:'🌐',title:'Google 로그인',sub:'Google 계정으로 계속하기',btnTxt:'Google로 계속하기',btnBg:'#4285F4',btnClr:'#fff',notice:'Google 계정으로 해카에 가입하거나 로그인합니다'},naver:{logo:'📗',title:'네이버 로그인',sub:'네이버 계정으로 계속하기',btnTxt:'네이버로 계속하기',btnBg:'#03C75A',btnClr:'#fff',notice:'네이버 계정으로 해카에 가입하거나 로그인합니다'}};
+var socialCfg={kakao:{logo:'💬',title:'카카오 로그인',sub:'카카오계정으로 계속하기',btnTxt:'카카오로 계속하기',btnBg:'#FEE500',btnClr:'#3C1E1E',notice:'카카오 계정으로 해카에 가입하거나 로그인합니다'},google:{logo:'🌐',title:'Google 로그인',sub:'Google 계정으로 계속하기',btnTxt:'Google로 계속하기',btnBg:'#4285F4',btnClr:'#fff',notice:'Google 계정으로 해카에 가입하거나 로그인합니다'}};
 function openSocial(type){currentSocial=type;var c=socialCfg[type];document.getElementById('sp-logo').textContent=c.logo;document.getElementById('sp-title').textContent=c.title;document.getElementById('sp-sub').textContent=c.sub;document.getElementById('sp-notice').textContent=c.notice;document.getElementById('sp-btn').textContent=c.btnTxt;document.getElementById('sp-btn').style.background=c.btnBg;document.getElementById('sp-btn').style.color=c.btnClr;document.getElementById('sp-email').value='';document.getElementById('sp-pw').value='';document.getElementById('sp-overlay').classList.add('open');}
 function closeSocial(){document.getElementById('sp-overlay').classList.remove('open');currentSocial='';}
-function doSocialLogin(){var e=document.getElementById('sp-email').value.trim();var p=document.getElementById('sp-pw').value.trim();if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}closeSocial();showToastAndGoHome('🎉 가입이 완료되었습니다!');}
-var legalContent={privacy:{title:'개인정보처리방침',body:'<b>해카 개인정보처리방침</b><br><br>해카는 이용자의 개인정보를 중요하게 생각하며 관련 법령을 준수합니다.<br><br><b>1. 수집하는 개인정보</b><br>이메일, 닉네임, 휴대폰 번호<br><br><b>2. 수집 목적</b><br>회원 가입 및 관리, 서비스 제공<br><br><b>3. 보유 기간</b><br>회원 탈퇴 시까지<br><br>문의: privacy@heka.app'},terms:{title:'이용약관',body:'<b>해카 서비스 이용약관</b><br><br><b>제1조 목적</b><br>이 약관은 해카가 제공하는 해외 카드결제 매장 정보 서비스의 이용에 관한 사항을 규정합니다.<br><br><b>제2조 서비스 내용</b><br>매장 정보 제공, 여행톡 커뮤니티, 결제 제보<br><br><b>제3조 회원 의무</b><br>허위 정보 제보 금지, 관련 법령 준수<br><br>문의: support@heka.app'}};
-function openLegal(type){var c=legalContent[type];document.getElementById('legal-title').textContent=c.title;document.getElementById('legal-body').innerHTML=c.body;document.getElementById('legal-overlay').classList.add('open');}
+async function doSocialLogin(){
+  var e=document.getElementById('sp-email').value.trim();
+  var p=document.getElementById('sp-pw').value.trim();
+  if(!e||!p){alert('이메일과 비밀번호를 입력해주세요');return;}
+  if(!window._doFirebaseLogin){alert('잠시 후 다시 시도해주세요');return;}
+  var ok = await window._doFirebaseLogin(e,p);
+  if(ok){ closeSocial(); showToastAndGoHome(); }
+}
+var legalContent={
+  privacy:{
+    title:'개인정보처리방침',
+    body:`<b style="font-size:14px">HAEKA 개인정보처리방침</b><br>
+<span style="color:#888;font-size:11px">시행일: 2026년 5월 1일</span><br><br>
+
+HAEKA(이하 "서비스")는 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다.<br><br>
+
+<b>제1조 수집하는 개인정보 항목</b><br>
+• 필수: 이메일 주소, 비밀번호, 닉네임, 휴대폰 번호<br>
+• 선택: 이름, 생년월일, 프로필 사진<br>
+• 자동 수집: 접속 IP, 기기 정보, 서비스 이용 기록<br><br>
+
+<b>제2조 개인정보 수집 및 이용 목적</b><br>
+• 회원 가입 및 본인 확인<br>
+• 서비스 제공 및 운영<br>
+• 공지사항 및 고객 문의 응대<br>
+• 부정 이용 방지 및 서비스 개선<br><br>
+
+<b>제3조 개인정보 보유 및 이용 기간</b><br>
+• 원칙: 회원 탈퇴 시 즉시 삭제<br>
+• 예외: 관련 법령에 따라 일정 기간 보관<br>
+　- 소비자 불만 또는 분쟁 처리: 3년<br>
+　- 서비스 이용 기록: 3개월<br><br>
+
+<b>제4조 개인정보의 제3자 제공</b><br>
+서비스는 이용자의 동의 없이 개인정보를 외부에 제공하지 않습니다. 단, 법령에 의한 경우는 예외로 합니다.<br><br>
+
+<b>제5조 개인정보 처리 위탁</b><br>
+• Firebase(Google LLC): 데이터 저장 및 인증<br>
+• Google Maps Platform: 위치 정보 서비스<br><br>
+
+<b>제6조 이용자의 권리</b><br>
+이용자는 언제든지 자신의 개인정보를 조회, 수정, 삭제할 수 있으며 처리 정지를 요청할 수 있습니다.<br><br>
+
+<b>제7조 개인정보 보호책임자</b><br>
+개인정보 관련 문의사항은 아래로 연락 주세요.<br>
+• 이메일: privacy@haeka.app<br><br>
+
+<span style="color:#aaa;font-size:11px">본 방침은 사전 공지 후 변경될 수 있습니다.</span>`
+  },
+  terms:{
+    title:'서비스 이용약관',
+    body:`<b style="font-size:14px">HAEKA 서비스 이용약관</b><br>
+<span style="color:#888;font-size:11px">시행일: 2026년 5월 1일</span><br><br>
+
+<b>제1조 목적</b><br>
+본 약관은 HAEKA(이하 "서비스")가 제공하는 해외 카드결제 매장 정보 서비스의 이용에 관한 권리·의무 및 절차를 규정함을 목적으로 합니다.<br><br>
+
+<b>제2조 용어 정의</b><br>
+• "서비스": HAEKA가 제공하는 해외 카드결제 매장 정보 검색 및 커뮤니티 서비스<br>
+• "회원": 서비스에 가입하여 이용하는 자<br>
+• "제보": 회원이 등록하는 매장 카드결제 정보<br><br>
+
+<b>제3조 서비스 내용</b><br>
+• 해외 카드결제 가능 매장 정보 제공<br>
+• 매장 등록 및 수정 제보<br>
+• 여행톡 커뮤니티<br>
+• 찜 목록 및 주변 매장 검색<br><br>
+
+<b>제4조 회원 가입</b><br>
+① 이용자는 서비스가 정한 가입 양식에 따라 정보를 기입하고 약관에 동의함으로써 가입을 신청합니다.<br>
+② 허위 정보 기입 시 서비스 이용이 제한될 수 있습니다.<br><br>
+
+<b>제5조 회원의 의무</b><br>
+• 타인의 정보 도용 금지<br>
+• 허위 매장 정보 제보 금지<br>
+• 서비스 운영 방해 행위 금지<br>
+• 관련 법령 및 본 약관 준수<br><br>
+
+<b>제6조 서비스 이용 제한</b><br>
+다음 각 호에 해당하는 경우 서비스 이용을 제한할 수 있습니다.<br>
+① 허위 정보 반복 제보<br>
+② 타인을 비방하는 게시물 작성<br>
+③ 서비스 운영을 방해하는 행위<br><br>
+
+<b>제7조 서비스 정보의 정확성</b><br>
+서비스에 등록된 매장 정보는 이용자 제보 기반으로, 실제와 다를 수 있습니다. 서비스는 정보의 정확성을 보증하지 않으며 이로 인한 손해에 책임지지 않습니다.<br><br>
+
+<b>제8조 면책 조항</b><br>
+서비스는 천재지변, 시스템 장애 등 불가항력으로 인한 서비스 중단에 대해 책임지지 않습니다.<br><br>
+
+<b>제9조 약관의 변경</b><br>
+약관 변경 시 최소 7일 전 공지합니다. 변경 후 계속 이용 시 동의한 것으로 간주합니다.<br><br>
+
+<b>제10조 분쟁 해결</b><br>
+서비스 이용 관련 분쟁은 대한민국 법령에 따르며, 관할 법원은 서울중앙지방법원으로 합니다.<br><br>
+
+<span style="color:#aaa;font-size:11px">문의: support@haeka.app</span>`
+  }
+};
+function openLegal(type){
+  var map={
+    'privacy':'heka_terms_privacy.html',
+    'terms':'heka_terms_service.html',
+    'location':'heka_terms_location.html'
+  };
+  if(map[type]) location.href=map[type];
+}
 function closeLegal(){document.getElementById('legal-overlay').classList.remove('open');}
-function showToastAndGoHome(msg){var t=document.getElementById('login-toast');t.textContent=msg||'🎉 가입이 완료되었습니다!';t.classList.add('show');setTimeout(function(){t.classList.remove('show');setTimeout(goHome,400);},1800);}
+var _loginBusy = false;
+function doGoogleLogin() {
+  if (_loginBusy) return;
+  if (!window._doGoogleLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  _loginBusy = true;
+  window._doGoogleLogin().then(function(res) {
+    _loginBusy = false;
+    if (res.blocked) { alert(res.msg); return; }
+    if (res.ok) showToastAndGoHome();
+  }).catch(function(){ _loginBusy = false; });
+}
+function doKakaoLogin() {
+  if (_loginBusy) return;
+  if (!window._doKakaoLogin) { alert('잠시 후 다시 시도해주세요'); return; }
+  _loginBusy = true;
+  window._doKakaoLogin().then(function(res) {
+    _loginBusy = false;
+    if (res.blocked) { alert(res.msg); return; }
+    if (res.ok) showToastAndGoHome();
+  }).catch(function(){ _loginBusy = false; });
+}
+
+function showToastAndGoHome(msg){goHome();}
 function goHome(){
-  var bytes = Uint8Array.from(atob(homeB64), function(c){ return c.charCodeAt(0); });
-  var html  = new TextDecoder('utf-8').decode(bytes);
-  var doc   = document.open('text/html','replace');
-  doc.write(html);
-  doc.close();
+  var redirect = new URLSearchParams(location.search).get('redirect');
+  if (redirect) {
+    // Open redirect 방지: heka_*.html 상대경로 or 동일 origin URL만 허용
+    var safe = false;
+    try {
+      if (/^heka_[a-z0-9_]+\.html(\?[^#]*)?(#.*)?$/i.test(redirect)) {
+        safe = true;
+      } else {
+        var u = new URL(redirect, location.origin);
+        if (u.origin === location.origin && /^\/heka_[a-z0-9_]+\.html/i.test(u.pathname)) safe = true;
+      }
+    } catch(e) { safe = false; }
+    if (safe) { location.replace(redirect); return; }
+  }
+  location.href = 'heka_home_v5.html';
 }
 /* 회원가입 JS */
 
@@ -445,11 +1172,10 @@ var currentStep = 1;
 var timerInterval = null;
 var timerSec = 180;
 var codeVerified = false;
-var CODE_MOCK = '123456'; // 테스트용 인증번호
 
 // 중복 DB (데모)
 var usedNicks = ['여행왕', '도쿄마스터', 'heka'];
-var usedEmails = ['test@test.com', 'admin@heka.com'];
+var usedEmails = [];
 
 /* ── 프로그레스 업데이트 ── */
 function updateProgress(step) {
@@ -521,28 +1247,38 @@ function step1Next() {
 }
 
 /* ══ STEP 2 ══ */
-function selectCarrier(el) {
-  el.closest('.carrier-row').querySelectorAll('.carrier-chip').forEach(function(b){ b.classList.remove('on'); });
-  el.classList.add('on');
-}
-
 function sendCode() {
-  var phone = document.getElementById('inp-phone').value.trim();
+  var phone = document.getElementById('inp-phone').value.trim().replace(/-/g, '');
   if (!phone) { showPopup('📱', '휴대폰 번호를 입력해주세요', '번호를 먼저 입력해주세요.', '확인'); return; }
-  document.getElementById('code-group').style.display = 'block';
-  document.getElementById('verify-btn').disabled = false;
-  document.getElementById('verify-btn').className = 'btn-primary';
-  document.getElementById('send-btn').textContent = '재발송';
-  // 타이머 시작
-  if (timerInterval) clearInterval(timerInterval);
-  timerSec = 180;
-  updateTimer();
-  timerInterval = setInterval(function() {
-    timerSec--;
-    updateTimer();
-    if (timerSec <= 0) { clearInterval(timerInterval); document.getElementById('timer-txt').textContent = '만료'; }
-  }, 1000);
-  showPopup('📨', '인증번호를 발송했어요', '테스트 코드: ' + CODE_MOCK + '\n(실제 서비스에서는 SMS로 전송)', '확인');
+  // 한국 번호 포맷 (+82)
+  var e164 = phone.startsWith('0') ? '+82' + phone.slice(1) : (phone.startsWith('+') ? phone : '+82' + phone);
+  if (!window._doSendSMS) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.textContent = '발송 중...';
+  window._doSendSMS(e164).then(function(res) {
+    btn.disabled = false;
+    if (res.ok) {
+      document.getElementById('code-group').style.display = 'block';
+      document.getElementById('verify-btn').disabled = false;
+      document.getElementById('verify-btn').className = 'btn-primary';
+      btn.textContent = '재발송';
+      if (timerInterval) clearInterval(timerInterval);
+      timerSec = 180;
+      updateTimer();
+      timerInterval = setInterval(function() {
+        timerSec--;
+        updateTimer();
+        if (timerSec <= 0) { clearInterval(timerInterval); document.getElementById('timer-txt').textContent = '만료'; }
+      }, 1000);
+      showPopup('📨', '인증번호를 발송했어요', 'SMS로 6자리 인증번호를 보냈어요.', '확인');
+    } else {
+      btn.textContent = '인증번호 받기';
+      if (res.code === 'auth/invalid-phone-number') alert('올바른 휴대폰 번호를 입력해주세요');
+      else if (res.code === 'auth/too-many-requests') alert('잠시 후 다시 시도해주세요');
+      else alert('오류: ' + (res.code || res.message));
+    }
+  });
 }
 
 function updateTimer() {
@@ -554,18 +1290,38 @@ function updateTimer() {
 function verifyCode() {
   var code = document.getElementById('inp-code').value.trim();
   var errEl = document.getElementById('code-error');
-  if (code === CODE_MOCK) {
-    clearInterval(timerInterval);
-    errEl.classList.remove('show');
-    codeVerified = true;
-    showPopup('✅', '인증 완료!', '본인 인증이 완료되었어요.', '다음으로', function(){ goStep(3); });
-  } else {
-    errEl.classList.add('show');
-    document.getElementById('inp-code').classList.add('error');
-  }
+  if (!code) { errEl.classList.add('show'); return; }
+  if (!window._doVerifySMS) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('verify-btn');
+  btn.disabled = true;
+  btn.textContent = '확인 중...';
+  window._doVerifySMS(code).then(function(res) {
+    btn.disabled = false;
+    btn.textContent = '확인';
+    if (res.ok) {
+      clearInterval(timerInterval);
+      errEl.classList.remove('show');
+      codeVerified = true;
+      // 인증된 전화번호 저장
+      try { localStorage.setItem('haeka_phone', document.getElementById('inp-phone').value.trim()); } catch(e) {}
+      showPopup('✅', '인증 완료!', '본인 인증이 완료되었어요.', '다음으로', function(){ goStep(3); });
+    } else {
+      btn.textContent = '확인';
+      if (res.code === 'auth/invalid-verification-code') {
+        errEl.textContent = '인증번호가 올바르지 않아요';
+        errEl.classList.add('show');
+        document.getElementById('inp-code').classList.add('error');
+      } else if (res.code === 'auth/code-expired') {
+        alert('인증번호가 만료됐어요. 재발송해주세요');
+      } else {
+        alert('오류: ' + res.code);
+      }
+    }
+  });
 }
 
 /* ══ STEP 3 ══ */
+var _nickCheckTimer = null;
 function checkNick() {
   var val = document.getElementById('inp-nick').value;
   document.getElementById('nick-count').textContent = val.length + '/20';
@@ -573,14 +1329,29 @@ function checkNick() {
   var okEl = document.getElementById('nick-ok');
   var inp = document.getElementById('inp-nick');
   if (!val) { errEl.classList.remove('show'); okEl.classList.remove('show'); inp.classList.remove('error'); return; }
+  // 하드코딩 중복 체크
   if (usedNicks.indexOf(val) > -1) {
     errEl.textContent = '이미 사용 중인 닉네임이에요'; errEl.classList.add('show');
-    okEl.classList.remove('show'); inp.classList.add('error');
-  } else {
-    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+    okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // Firestore 실시간 중복 체크 (디바운스 500ms)
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  if (_nickCheckTimer) clearTimeout(_nickCheckTimer);
+  _nickCheckTimer = setTimeout(function() {
+    if (!window._fbFns || !window._db) { okEl.classList.add('show'); inp.classList.remove('error'); return; }
+    var f = window._fbFns;
+    f.getDocs(f.query(f.collection(window._db, 'users'), f.where('nick', '==', val))).then(function(snap) {
+      if (!snap.empty) {
+        errEl.textContent = '이미 사용 중인 닉네임이에요'; errEl.classList.add('show');
+        okEl.classList.remove('show'); inp.classList.add('error');
+      } else {
+        errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+      }
+    }).catch(function(){ okEl.classList.add('show'); inp.classList.remove('error'); });
+  }, 500);
 }
 
+var _emailCheckTimer = null;
 function checkEmail() {
   var val = document.getElementById('inp-email').value.trim();
   var errEl = document.getElementById('email-error');
@@ -592,12 +1363,25 @@ function checkEmail() {
     errEl.textContent = '올바른 이메일 형식을 입력해주세요'; errEl.classList.add('show');
     okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // 하드코딩 중복 체크
   if (usedEmails.indexOf(val) > -1) {
     errEl.textContent = '이미 사용 중인 이메일이에요'; errEl.classList.add('show');
-    okEl.classList.remove('show'); inp.classList.add('error');
-  } else {
-    errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+    okEl.classList.remove('show'); inp.classList.add('error'); return;
   }
+  // Firebase 실시간 중복 체크 (디바운스 500ms)
+  okEl.classList.remove('show'); errEl.classList.remove('show');
+  if (_emailCheckTimer) clearTimeout(_emailCheckTimer);
+  _emailCheckTimer = setTimeout(function() {
+    if (!window._checkEmailExists) { okEl.classList.add('show'); inp.classList.remove('error'); return; }
+    window._checkEmailExists(val).then(function(res) {
+      if (res.exists) {
+        errEl.textContent = '이미 사용 중인 이메일이에요'; errEl.classList.add('show');
+        okEl.classList.remove('show'); inp.classList.add('error');
+      } else {
+        errEl.classList.remove('show'); okEl.classList.add('show'); inp.classList.remove('error');
+      }
+    });
+  }, 500);
 }
 
 function checkPw() {
@@ -641,6 +1425,8 @@ function doJoin() {
   if (usedEmails.indexOf(email) > -1) { showPopup('⚠️','이메일 중복','이미 사용 중인 이메일이에요.','확인'); return; }
   var emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailReg.test(email)) { showPopup('⚠️','이메일 형식 오류','올바른 이메일을 입력해주세요.','확인'); return; }
+  var reservedDomains = /@(kakao|google|apple|naver|facebook)\.haeka\.local$/i;
+  if (reservedDomains.test(email)) { showPopup('','사용할 수 없는 이메일','해당 이메일은 사용할 수 없어요. 다른 이메일을 입력해주세요.','확인'); return; }
   var pwReg = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
   if (!pwReg.test(pw)) { showPopup('⚠️','비밀번호 형식 오류','8자 이상, 영문+숫자 조합으로 입력해주세요.','확인'); return; }
   if (pw !== pw2) { showPopup('⚠️','비밀번호 불일치','비밀번호가 일치하지 않아요.','확인'); return; }
@@ -648,7 +1434,26 @@ function doJoin() {
     showPopup('⚠️','입력 정보를 확인해주세요','오류 항목을 수정해주세요.','확인'); return;
   }
 
-  showToastAndGoHome();
+  if (!window._doSignup) { alert('잠시 후 다시 시도해주세요'); return; }
+  var btn = document.getElementById('join-btn');
+  btn.disabled = true; btn.textContent = '처리 중...';
+  var phone = '';
+  var name = '';
+  var birth = '';
+  try { phone = document.getElementById('inp-phone').value.trim(); } catch(e) {}
+  try { name = document.getElementById('inp-name').value.trim(); } catch(e) {}
+  try { birth = document.getElementById('inp-birth').value.trim(); } catch(e) {}
+  window._doSignup(email, pw, nick, phone, name, birth).then(function(res) {
+    btn.disabled = false; btn.textContent = '가입 완료';
+    if (res.ok) {
+      try { localStorage.setItem('haeka_uid', res.uid); localStorage.setItem('haeka_nick', nick); } catch(e) {}
+      showToastAndGoHome();
+    } else {
+      if (res.code === 'auth/email-already-in-use') alert('이미 사용 중인 이메일이에요');
+      else if (res.code === 'auth/weak-password') alert('비밀번호가 너무 짧아요');
+      else alert('오류: ' + res.code);
+    }
+  });
 }
 
 /* ── 카드사 ── */

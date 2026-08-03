@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="HAEKA"/>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HAEKA</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+@import url('haeka_rebuild_common.css');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#fff;overflow:hidden}
+
+.splash{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:22px;
+  font-family:'Gowun Dodum','Pretendard',-apple-system,sans-serif;
+}
+
+/* 비행기 */
+.plane{
+  opacity:0;
+  transform:translateY(20px) scale(0.85);
+  animation:planeIn .6s cubic-bezier(0.34,1.56,0.64,1) .15s forwards;
+}
+@keyframes planeIn{
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* 텍스트 */
+.txt{
+  text-align:center;
+  line-height:1.2;
+  letter-spacing:-1.2px;
+  opacity:0;
+  transform:translateY(10px);
+  animation:txtIn .5s ease .55s forwards;
+}
+@keyframes txtIn{
+  to{opacity:1;transform:translateY(0)}
+}
+.txt .line{margin-top:4px}
+.green{font-size:32px;font-weight:700;color:#FF3900}
+.black{font-size:31px;font-weight:700;color:#222}
+
+.splash.out{animation:splashOut .35s ease forwards}
+@keyframes splashOut{to{opacity:0}}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF3900;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb,.topbar{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+
+/* HAEKA C-lite Card Signal Splash */
+html,body{background:var(--hk-bg)!important}
+.splash{background:var(--hk-bg)!important;gap:20px!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+.plane{width:156px;height:112px;position:relative;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px) scale(.96);animation:splashMarkIn .55s cubic-bezier(.22,1,.36,1) .08s forwards}
+.signal-word{position:relative;z-index:3;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,sans-serif;font-size:25px;font-weight:800;letter-spacing:-.06em;color:#1A1A1A}
+.signal-card{position:absolute;display:block;width:42px;height:27px;border-radius:8px;background:#FF3900;box-shadow:0 10px 24px rgba(255,57,0,.18);opacity:0}
+.signal-card::after{content:'';position:absolute;left:8px;right:8px;top:9px;height:2px;border-radius:2px;background:#FFF1F2;opacity:.72}
+.signal-card.c1{left:10px;top:28px;transform:rotate(-14deg);animation:cardFloat1 .72s ease-out .12s forwards}
+.signal-card.c2{right:8px;top:22px;width:36px;height:23px;transform:rotate(12deg);animation:cardFloat2 .76s ease-out .18s forwards}
+.signal-card.c3{left:38px;bottom:12px;width:31px;height:20px;border-radius:7px;transform:rotate(10deg);animation:cardFloat3 .7s ease-out .24s forwards}
+.signal-card.c4{right:34px;bottom:14px;width:30px;height:19px;border-radius:7px;background:#FFF1F2;border:2px solid #FF3900;transform:rotate(-9deg);animation:cardFloat4 .7s ease-out .28s forwards}
+.signal-core{position:absolute;z-index:2;width:96px;height:54px;border-radius:18px;background:#FFF1F2;opacity:.95}
+@keyframes splashMarkIn{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes cardFloat1{0%{opacity:0;transform:translateY(16px) rotate(-14deg)}100%{opacity:1;transform:translateY(0) rotate(-14deg)}}
+@keyframes cardFloat2{0%{opacity:0;transform:translateY(18px) rotate(12deg)}100%{opacity:1;transform:translateY(0) rotate(12deg)}}
+@keyframes cardFloat3{0%{opacity:0;transform:translateY(14px) rotate(10deg)}100%{opacity:1;transform:translateY(0) rotate(10deg)}}
+@keyframes cardFloat4{0%{opacity:0;transform:translateY(14px) rotate(-9deg)}100%{opacity:1;transform:translateY(0) rotate(-9deg)}}
+.txt{font-family:'Gowun Dodum',Pretendard,-apple-system,sans-serif!important;letter-spacing:-1.3px!important;animation:txtIn .45s ease .42s forwards!important}
+.green{color:var(--hk-accent)!important;font-size:32px!important;font-weight:700!important}
+.black{color:var(--hk-text)!important;font-size:31px!important;font-weight:700!important}
+</style>
+<script src="security.js"></script>
+</head>
+<body>
+<div class="splash" id="splash">
+
+  <!-- 해카 C-lite 카드 시그널 -->
+  <div class="plane">
+    <span class="signal-core"></span>
+    <span class="signal-card c1"></span>
+    <span class="signal-card c2"></span>
+    <span class="signal-card c3"></span>
+    <span class="signal-card c4"></span>
+    <span class="signal-word">HAEKA</span>
+  </div>
+
+  <!-- 텍스트 -->
+  <div class="txt">
+    <div><span class="green">해</span><span class="black">외에서</span></div>
+    <div class="line"><span class="green">카</span><span class="black">드결제하자</span></div>
+  </div>
+
+</div>
+
+<script>
+setTimeout(function() {
+  var splash = document.getElementById('splash');
+  splash.classList.add('out');
+  setTimeout(function() {
+    window.location.href = 'heka_home_v5.html';
+  }, 350);
+}, 1500);
+</script>
+</body>
+</html>

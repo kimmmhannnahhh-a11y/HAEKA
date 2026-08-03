@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://haeka.vercel.app/heka_home_v5.html</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_city.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_map.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_nearby_all.html</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_hotpl_all.html</loc><priority>0.9</priority><changefreq>hourly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_yeohaengtok_v2.html</loc><priority>0.8</priority><changefreq>hourly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_cards.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_signup.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_login_v5.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_terms_privacy.html</loc><priority>0.4</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_terms_service.html</loc><priority>0.4</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_terms_marketing.html</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://haeka.vercel.app/heka_terms_location.html</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+</urlset>
