@@ -1,0 +1,28 @@
+diff --git a/node_modules/capacitor-kakao-login-plugin/android/src/main/java/com/nerdfrenz/kakao/KakaoLoginPlugin.kt b/node_modules/capacitor-kakao-login-plugin/android/src/main/java/com/nerdfrenz/kakao/KakaoLoginPlugin.kt
+index 1111111..2222222 100644
+--- a/node_modules/capacitor-kakao-login-plugin/android/src/main/java/com/nerdfrenz/kakao/KakaoLoginPlugin.kt
++++ b/node_modules/capacitor-kakao-login-plugin/android/src/main/java/com/nerdfrenz/kakao/KakaoLoginPlugin.kt
+@@ -58,11 +58,18 @@ class KakaoLoginPlugin : Plugin() {
+             }
+         }
+
+-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+-            UserApiClient.instance.loginWithKakaoTalk(context, callback = callback)
+-        } else {
+-            UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+-        }
++        if (UserApiClient.instance.isKakaoTalkLoginAvailable(activity)) {
++            UserApiClient.instance.loginWithKakaoTalk(activity, callback = { token, error ->
++                // 카톡앱 핸드오프 실패(사용자가 카톡서 취소/미로그인 등) → 카카오계정 웹 로그인으로 폴백
++                if (error != null && error !is ClientError) {
++                    UserApiClient.instance.loginWithKakaoAccount(activity, callback = callback)
++                } else {
++                    callback(token, error)
++                }
++            })
++        } else {
++            UserApiClient.instance.loginWithKakaoAccount(activity, callback = callback)
++        }
+     }
+
+     @PluginMethod

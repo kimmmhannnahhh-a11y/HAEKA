@@ -1,0 +1,1106 @@
+<!-- version: 2026.05.30.1500 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="HAEKA"/>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/><!-- v2.1 -->
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+@import url('haeka_rebuild_common.css');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px;display:flex;flex-direction:column}
+.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #e0e0e0;background:#fff;flex-shrink:0}
+.back-btn{font-size:20px;color:#111;cursor:pointer;background:none;border:none;padding:0;line-height:1;flex-shrink:0}
+.topbar-title{font-size:13px;font-weight:600;color:#111}
+.scroll-wrap{overflow-y:auto;flex:1;padding-bottom:80px}
+.scroll-wrap::-webkit-scrollbar{display:none}
+.section{padding:12px 16px 0}
+.row-label{display:flex;align-items:center;gap:10px}
+.sec-label{font-size:10px;font-weight:700;color:#FF3900;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+.block-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.label-blue{color:#2563eb}
+.label-red{color:#dc2626}
+.req-star{color:#ff3b30;font-weight:800;margin-left:1px}
+.map-box{width:100%;height:130px;border-radius:10px;overflow:hidden;border:1.5px solid #c8dcc8;margin-bottom:6px;margin-top:6px;position:relative}
+.map-box-placeholder{position:absolute;inset:0;background:linear-gradient(150deg,#e8f2e8,#d4e8d4);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer}
+.map-placeholder-txt{font-size:11px;color:#888;font-weight:500}
+#real-map{width:100%;height:100%;display:none}
+.selected-addr{font-size:10px;color:#FF3900;font-weight:600;margin-top:4px;padding:7px 10px;background:#FFF1F2;border-radius:8px;display:none}
+.selected-addr.show{display:block}
+.inline-input{flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:10px;background:#f0f0f0;color:#aaa;font-family:inherit;outline:none;cursor:default}
+.cat-dropdown{flex:1;padding:7px 10px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:10px;background:#f8f8f8;color:#aaa;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:.15s}
+.cat-dropdown:hover{border-color:#FF3900}
+.cat-dropdown.selected{border-color:#FF3900;background:#FFF1F2;color:#FF3900;font-weight:600}
+.cat-arrow{font-size:10px;color:#aaa;flex-shrink:0;transition:.2s}
+.cat-dropdown.open .cat-arrow{transform:rotate(180deg)}
+.cat-menu{background:#fff;border-radius:10px;border:1.5px solid #e0e0e0;box-shadow:0 4px 14px rgba(0,0,0,.1);z-index:40;overflow:hidden;display:none;margin-top:4px;max-height:200px;overflow-y:auto}
+.cat-menu.open{display:block}
+.cat-opt{padding:9px 14px;font-size:12px;color:#333;cursor:pointer;transition:.1s;border-bottom:.5px solid #f5f5f5}
+.cat-opt:last-child{border-bottom:none}
+.cat-opt:hover{background:#FFF1F2;color:#FF3900}
+.cat-opt.on{background:#FFF1F2;color:#FF3900;font-weight:600}
+.cat-opt.on::after{content:"✓";float:right}
+.cat-etc-inp{width:100%;margin-top:6px;padding:8px 10px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:11px;background:#f8f8f8;font-family:inherit;outline:none;display:none}
+.cat-etc-inp.show{display:block}
+.cat-etc-inp:focus{border-color:#FF3900;background:#fff}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.chk-item{display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:8px;border:1.5px solid #e0e0e0;background:#f8f8f8;cursor:pointer;transition:.15s;user-select:none}
+.chk-item:hover{border-color:#bbb}
+.chk-item.on{border-color:#FF3900;background:#FFF1F2}
+.chk-box{width:15px;height:15px;border-radius:3px;border:1.5px solid #d0d0d0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;transition:.15s}
+.chk-item.on .chk-box{background:#FF3900;border-color:#FF3900}
+.chk-item.on .chk-box::after{content:"✓";color:#fff;font-size:9px;font-weight:800}
+.chk-txt{font-size:11px;font-weight:600;color:#333}
+.chk-item.on .chk-txt{color:#111}
+.img-area{display:flex;gap:7px;flex-wrap:wrap}
+.img-add-btn{width:60px;height:60px;border-radius:8px;border:1.5px dashed #d0d0d0;background:#f8f8f8;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0}
+.img-add-btn:hover{border-color:#FF3900;background:#FFF1F2}
+.img-add-btn svg{width:18px;height:18px;stroke:#bbb;fill:none;stroke-width:1.8;stroke-linecap:round}
+.img-add-btn span{font-size:9px;color:#bbb;margin-top:2px;font-weight:600}
+.img-preview-wrap{position:relative;display:inline-flex}
+.img-preview{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1.5px solid #e0e0e0}
+.img-del{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#ff3b30;color:#fff;font-size:9px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+.review-inp{width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:11px;background:#f8f8f8;color:#111;font-family:inherit;outline:none;resize:none;min-height:64px;transition:.15s}
+.review-inp:focus{border-color:#FF3900;background:#fff}
+.review-count{font-size:10px;color:#bbb;text-align:right;margin-top:3px}
+.divider{height:5px;background:#f5f5f5;margin:12px 0 0}
+.err-txt{font-size:10px;color:#ff3b30;font-weight:500;margin-top:4px;display:none}
+.err-txt.show{display:block}
+.reg-btn-wrap{position:relative;padding:10px 16px 14px;background:#fff;border-top:.5px solid #f0f0f0}
+.reg-btn{width:100%;padding:13px;border-radius:14px;background:#FF3900;color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.reg-btn:hover{background:#FF3900}
+.prog-overlay{position:absolute;inset:0;background:rgba(255,255,255,.95);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:26px}
+.prog-overlay.show{display:flex}
+.prog-spinner{width:38px;height:38px;border:3px solid #e0e0e0;border-top-color:#FF3900;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prog-txt{font-size:12px;font-weight:700;color:#FF3900}
+.prog-bar-wrap{width:160px;height:5px;background:#e0e0e0;border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;background:#FF3900;border-radius:3px;width:0;transition:width .3s}
+.toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:rgba(26,26,26,.88);color:#fff;font-size:12px;font-weight:700;padding:10px 18px;border-radius:22px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+
+.map-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:60;display:none;align-items:flex-end;border-radius:26px}
+.map-overlay.open{display:flex}
+.map-box-popup{background:#fff;border-radius:18px 18px 0 0;width:100%;max-height:85%;display:flex;flex-direction:column}
+.map-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.map-popup-head{padding:10px 16px 8px;border-bottom:.5px solid #f0f0f0;flex-shrink:0;position:relative}
+.map-popup-title{font-size:13px;font-weight:700;color:#111;margin-bottom:8px}
+.map-inp-row{display:flex;gap:7px}
+.map-inp{flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid #e0e0e0;font-size:12px;background:#f8f8f8;font-family:inherit;outline:none}
+.map-inp:focus{border-color:#FF3900;background:#fff}
+.map-search-btn{padding:0 13px;border-radius:8px;background:#FF3900;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.google-btn{width:100%;margin-top:7px;padding:8px;border-radius:8px;background:#fff;border:1.5px solid #e0e0e0;font-size:10px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s}
+.google-btn:hover{border-color:#FF3900;color:#FF3900}
+.map-close{position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;color:#bbb;cursor:pointer}
+.map-results{overflow-y:auto;flex:1;padding:6px 0}
+.map-result{padding:10px 16px;cursor:pointer;transition:.1s;border-bottom:.5px solid #f5f5f5}
+.map-result:hover{background:#FFF1F2}
+.map-result:last-child{border-bottom:none}
+.map-result-source{font-size:9px;color:#aaa;font-weight:500;margin-bottom:1px}
+.map-result-cat{font-size:10px;color:#FF3900;font-weight:600;margin-bottom:1px}
+.map-result-name{font-size:12px;font-weight:600;color:#111;margin-bottom:1px}
+.map-result-addr{font-size:10px;color:#999}
+.map-empty{padding:20px 16px;text-align:center;color:#bbb;font-size:11px}
+.source-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;margin-bottom:2px}
+.source-google{background:#e8f0fe;color:#1a73e8}
+.source-haeka{background:#FFF1F2;color:#FF3900}
+
+.media-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:60;display:none;align-items:flex-end;border-radius:26px}
+.media-overlay.open{display:flex}
+.media-box{background:#fff;border-radius:18px 18px 0 0;width:100%;max-height:75%;display:flex;flex-direction:column}
+.media-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;flex-shrink:0}
+.media-handle{width:34px;height:4px;background:#e0e0e0;border-radius:2px;margin:0 auto 0;position:absolute;top:8px;left:50%;transform:translateX(-50%)}
+.media-tabs{display:flex;gap:8px;flex-shrink:0}
+.media-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;background:#f0f0f0;color:#888}
+.media-tab.on{background:#FF3900;color:#fff}
+.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;overflow-y:auto;flex:1;padding:2px}
+.media-grid-item{aspect-ratio:1;background:#f0f0f0;cursor:pointer;position:relative;overflow:hidden}
+.media-grid-item img,.media-grid-item video{width:100%;height:100%;object-fit:cover;display:block}
+.media-grid-item.selected::after{content:'✓';position:absolute;top:4px;right:4px;width:18px;height:18px;background:#FF3900;border-radius:50%;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center}
+.media-grid-add{aspect-ratio:1;background:#f8f8f8;border:2px dashed #ddd;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:4px}
+.media-confirm{margin:8px 14px 14px;padding:11px;background:#FF3900;color:#fff;border:none;border-radius:12px;width:calc(100% - 28px);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+.media-cancel-btn{background:none;border:none;font-size:22px;color:#bbb;cursor:pointer;padding:0;line-height:1}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-hover:#E31C5F;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:var(--hk-surface)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item{background:var(--hk-surface)!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"],[style*="background: #FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+
+/* HAEKA Guided Report Form */
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}
+.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}
+.sb{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}
+.topbar{background:var(--hk-surface)!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}
+.back-btn{color:var(--hk-text)!important}
+.topbar-title{font-size:15px!important;font-weight:800!important;color:var(--hk-text)!important}
+.scroll-wrap{background:var(--hk-bg)!important;overflow-y:auto!important;flex:1!important;padding:14px 14px 18px!important}
+.reg-hero{margin:0 0 12px;padding:18px 16px;border-radius:22px;background:#fff;box-shadow:var(--hk-card-shadow)}
+.reg-kicker{font-size:11px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em}
+.reg-hero h1{font-size:21px;line-height:1.22;font-weight:900;letter-spacing:-.06em;color:var(--hk-text);margin-top:6px}
+.reg-hero p{font-size:12px;line-height:1.55;color:var(--hk-sub);margin-top:8px}
+.reg-stepper{display:flex;gap:6px;margin:0 0 12px}
+.reg-stepper span{flex:1;text-align:center;border-radius:999px;padding:7px 4px;background:#F3F4F6;color:#9CA3AF;font-size:10px;font-weight:800}
+.reg-stepper span.on{background:#111;color:#fff}
+.reg-step-head{margin:16px 2px 8px;display:flex;flex-direction:column;gap:2px}
+.reg-step-head span{font-size:10px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em}
+.reg-step-head strong{font-size:17px;font-weight:900;color:var(--hk-text);letter-spacing:-.04em}
+.reg-step-head em{font-style:normal;font-size:11px;font-weight:600;color:var(--hk-sub)}
+.section{margin:0 0 10px!important;padding:16px!important;border-radius:16px!important;background:#fff!important;box-shadow:var(--hk-card-shadow)!important}
+.divider{display:none!important}
+.sec-label,.block-label{font-size:11px!important;font-weight:900!important;letter-spacing:.04em!important;color:var(--hk-sub)!important;margin-bottom:8px!important}
+.row-label{gap:8px!important;align-items:center!important}
+.inline-input,.cat-dropdown,.cat-etc-inp,.review-inp,.map-inp{border-radius:12px!important;border:1.5px solid #E5E7EB!important;background:#fff!important;color:var(--hk-text)!important;font-size:12px!important}
+.inline-input:focus,.cat-etc-inp:focus,.review-inp:focus,.map-inp:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,57,0,.10)!important}
+.map-box{height:154px!important;border:1.5px solid #E5E7EB!important;border-radius:16px!important;background:#F3F4F6!important;overflow:hidden!important}
+.map-box-placeholder{background:linear-gradient(135deg,#fff,#FAFAF8)!important}
+.map-placeholder-txt{font-size:12px!important;font-weight:700!important;color:var(--hk-sub)!important}
+.selected-addr{background:var(--hk-accent-bg)!important;color:var(--hk-accent)!important;border-radius:12px!important}
+.card-grid{gap:8px!important}
+.chk-item{border:0!important;border-radius:999px!important;background:#F3F4F6!important;color:var(--hk-sub)!important;padding:9px 12px!important;gap:6px!important}
+.chk-box{display:none!important}
+.chk-txt{font-size:12px!important;font-weight:800!important;color:#6B7280!important}
+.chk-item.on{background:var(--hk-accent)!important;color:#fff!important;box-shadow:0 8px 18px rgba(255,57,0,.20)!important}
+.chk-item.on .chk-txt{color:#fff!important}
+.pay-ok-section{padding:18px 16px 20px!important;border:1.5px solid rgba(255,57,0,.14)!important;box-shadow:0 10px 28px rgba(255,57,0,.10)!important}
+.pay-accepted-kicker{font-size:12px;font-weight:900;color:var(--hk-accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.pay-accepted-title{font-size:18px;font-weight:900;color:var(--hk-text);letter-spacing:-.05em;margin-bottom:12px}
+.pay-ok-section .card-grid{gap:9px!important}
+.pay-ok-section .chk-item{padding:12px 18px!important;border-radius:999px!important}
+.pay-ok-section .chk-txt{font-size:13px!important;font-weight:900!important}
+.pay-no-section{background:#FAFAF8!important;box-shadow:none!important;border:1px solid #F3F4F6!important}
+.pay-no-label{font-size:11px!important;color:#9CA3AF!important}
+.pay-no-section .chk-item:not(.on){background:#fff!important;border:1px solid #E5E7EB!important;padding:8px 10px!important}
+.pay-no-section .chk-txt{font-size:11px!important;font-weight:800!important}
+.img-add-btn{width:72px!important;height:72px!important;border-radius:14px!important;background:#fff!important;border:1.5px dashed #D1D5DB!important}
+.review-inp{min-height:84px!important}
+.err-txt{color:#DC2626!important;font-size:11px!important;font-weight:700!important}
+.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important}
+.map-search-btn,.media-confirm,.send-btn,.popup-btn{background:var(--hk-accent)!important;border-radius:12px!important}
+.map-section-label{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--hk-muted);letter-spacing:.06em;padding:12px 16px 6px}
+.map-empty-soft{background:#FAFAF8;color:var(--hk-sub);line-height:1.45}
+.map-result{margin:0 10px 8px;padding:12px 14px!important;border:0!important;border-radius:14px;background:#fff;box-shadow:var(--hk-card-shadow)}
+.map-result:hover{background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.map-result-haeka{position:relative;background:#F9FAFB!important;opacity:.72;padding:10px 12px!important;box-shadow:none!important;border:1px solid #F3F4F6!important}
+.map-result-haeka:hover{background:#F3F4F6!important;opacity:.9}
+.map-result-haeka .map-result-name{font-size:11px;font-weight:800;color:var(--hk-text);padding-right:70px}
+.map-result-haeka .map-result-addr{font-size:9px;color:var(--hk-muted)}
+.registered-badge{position:absolute;top:10px;right:12px;font-size:10px;font-weight:800;color:var(--hk-accent)}
+.map-result-guide{font-size:10px;font-weight:700;color:var(--hk-muted);margin-top:4px}
+.reg-btn-wrap{position:relative!important;padding:20px 16px 24px!important;background:transparent!important;border-top:0!important;z-index:auto!important}
+.reg-btn{width:100%!important;border-radius:12px!important;background:#FF3900!important;font-size:15px!important;font-weight:800!important;box-shadow:0 10px 24px rgba(255,57,0,.24)!important}
+.reg-btn:hover{background:#FF3900!important}
+
+/* 모바일 풀폭 */
+@media (max-width:480px){
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
+  .media-overlay,.map-overlay,.prog-overlay{border-radius:0!important}
+}
+</style>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta&loading=async"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b",
+  measurementId: "G-DWD05Y75EQ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 업종 Firestore에서 동적 로드
+async function loadCategoryOptions() {
+  try {
+    var snap = await getDocs(collection(db, 'categories'));
+    var list = [];
+    snap.forEach(function(d){ list.push(d.data()); });
+    list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+    var menu = document.getElementById('cat-menu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    list.forEach(function(cat) {
+      var isEtc = cat.name === '기타';
+      var div = document.createElement('div');
+      div.className = 'cat-opt';
+      div.textContent = cat.name;
+      div.onclick = isEtc ? function(){ selectCat('기타', true); } : (function(n){ return function(){ selectCat(n); }; })(cat.name);
+      menu.appendChild(div);
+    });
+  } catch(e) {
+    console.error('category load:', e);
+  }
+}
+loadCategoryOptions();
+const storage = getStorage(app);
+window._db = db;
+window._storage = storage;
+window._collection = collection;
+window._getDocs = getDocs;
+window._onSnapshot = onSnapshot;
+window._addDoc = addDoc;
+window._serverTimestamp = serverTimestamp;
+
+// 사진 업로드 함수
+window.uploadImages = async function(images) {
+  if (!images || !images.length) return [];
+  var urls = [];
+  for (var i = 0; i < images.length; i++) {
+    try {
+      var imgRef = ref(storage, 'stores/' + Date.now() + '_' + i + '.jpg');
+      await uploadString(imgRef, images[i], 'data_url');
+      var url = await getDownloadURL(imgRef);
+      urls.push(url);
+    } catch(e) { console.error('사진 업로드 오류:', e); }
+  }
+  return urls;
+};
+
+// 동영상 업로드 함수
+window.uploadVideo = async function(file) {
+  if (!file) return null;
+  try {
+    var ext = file.name.split('.').pop() || 'mp4';
+    var vidRef = ref(storage, 'stores/videos/' + Date.now() + '.' + ext);
+    await uploadBytes(vidRef, file);
+    var url = await getDownloadURL(vidRef);
+    return url;
+  } catch(e) { console.error('동영상 업로드 오류:', e); return null; }
+};
+window._storageReady = true;
+
+// Firebase 검색
+window.searchFirestore = async function(keyword) {
+  try {
+    const results = [];
+    const snapshot = await getDocs(collection(db, 'stores'));
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      const name = (d.name || '').toLowerCase();
+      const addr = (d.address || '').toLowerCase();
+      const kw = keyword.toLowerCase();
+      if (name.includes(kw) || addr.includes(kw)) {
+        results.push({ id: doc.id, ...d, _source: 'haeka' });
+      }
+    });
+    return results;
+  } catch(e) {
+    console.error('Firebase 검색 오류:', e);
+    return [];
+  }
+};
+
+// Firebase 저장
+window.saveToFirestore = async function(data) {
+  try {
+    // 중복 체크
+    const snapshot = await getDocs(collection(db, 'stores'));
+    let duplicate = false;
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      if (d.name === data.name && d.address === data.address) duplicate = true;
+    });
+    if (duplicate) {
+      showToast('이미 등록된 매장이에요!');
+      return null;
+    }
+    const docRef = await addDoc(collection(db, 'stores'), {
+      ...data,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  } catch(e) {
+    console.error('저장 오류:', e);
+    return null;
+  }
+};
+</script>
+<script src="security.js"></script>
+</head>
+<body>
+<div class="phone" id="reg-phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span>●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="topbar-title">카드 매장 제보</span>
+  </div>
+  <div class="scroll-wrap" id="scroll-wrap">
+
+    <section class="reg-hero" aria-label="매장 제보 안내">
+      <div class="reg-kicker">LIVE SIGNAL</div>
+      <h1>당신의 0.1초 제보가<br>누군가의 여행을 구합니다</h1>
+      <p>방금 카드 결제 성공하셨나요? 따끈따끈한 경험을 공유하고 실패 없는 여행 지도를 함께 그려주세요.</p>
+    </section>
+
+    <div class="reg-stepper" aria-hidden="true">
+      <span class="on">01 WHERE</span>
+      <span class="on">02 PAYMENT</span>
+      <span>03 VIBE</span>
+    </div>
+
+    <div class="reg-step-head">
+      <span>STEP 1</span>
+      <strong>01. WHERE</strong>
+      <em>지금 어디에 계신가요?</em>
+    </div>
+
+    <!-- 장소 검색 -->
+    <div class="section">
+      <div class="sec-label" style="margin-bottom:0">장소 검색<span class="req-star">*</span></div>
+      <div class="map-box" id="map-box">
+        <div class="map-box-placeholder" id="map-placeholder" onclick="openMapSearch()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.6" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#ddd" stroke="none"/></svg>
+          <div class="map-placeholder-txt">지도를 눌러 검색해주세요</div>
+        </div>
+        <div id="real-map"></div>
+      </div>
+      <div class="selected-addr" id="selected-addr"></div>
+      <div class="err-txt" id="err-location">위치를 검색해서 선택해주세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 장소 이름 -->
+    <div class="section" style="padding-top:12px">
+      <div class="row-label">
+        <div class="sec-label">장소<span class="req-star">*</span></div>
+        <input class="inline-input" id="inp-name" placeholder="위치 검색 시 자동으로 입력됩니다" type="text" readonly/>
+      </div>
+      <div class="err-txt" id="err-name">위치를 먼저 검색해주세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 업종 -->
+    <div class="section" style="padding-top:12px">
+      <div class="row-label">
+        <div class="sec-label">업종<span class="req-star">*</span></div>
+        <div class="cat-dropdown" id="cat-dropdown" onclick="toggleCatMenu()">
+          <span id="cat-dropdown-txt">업종을 선택해주세요</span>
+          <span class="cat-arrow">▽</span>
+        </div>
+      </div>
+      <div class="cat-menu" id="cat-menu">
+        <div style="color:#bbb;font-size:12px;padding:8px;text-align:center">불러오는 중...</div>
+      </div>
+      <div id="etc-wrap" style="display:none">
+        <input class="cat-etc-inp show" id="etc-input" placeholder="업종을 직접 입력해주세요" type="text" style="margin-top:0"/>
+        <button onclick="confirmEtc()" style="width:100%;margin-top:5px;padding:9px;border-radius:8px;background:#FF3900;color:#fff;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit">확인</button>
+      </div>
+      <div class="err-txt" id="err-cat">업종을 선택해주세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="reg-step-head reg-pay-head">
+      <span>STEP 2</span>
+      <strong>02. PAYMENT</strong>
+      <em>방금 카드 결제 성공했나요?</em>
+    </div>
+
+    <!-- 결제 가능 수단 -->
+    <div class="section pay-ok-section" style="padding-top:12px">
+      <div class="pay-accepted-kicker">LIVE SIGNAL</div>
+      <div class="pay-accepted-title">안심하고 긁었어요<span class="req-star">*</span></div>
+      <div class="card-grid" id="reg-grid-ok"></div>
+      <div class="err-txt" id="err-pay-ok">결제 가능 수단을 선택해주세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 결제 불가 수단 -->
+    <div class="section pay-no-section" style="padding-top:12px">
+      <div class="block-label label-red pay-no-label">아쉽게 거절됐어요<span class="req-star">*</span></div>
+      <div class="card-grid" id="reg-grid-no"></div>
+      <div class="err-txt" id="err-pay-no">결제 불가 수단을 선택해주세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="reg-step-head">
+      <span>STEP 3</span>
+      <strong>03. VIBE</strong>
+      <em>생생한 꿀팁을 들려주세요</em>
+    </div>
+
+    <!-- 사진/동영상 업로드 -->
+    <div class="section" style="padding-top:12px">
+      <div class="sec-label" style="margin-bottom:8px">사진/동영상</div>
+      <div class="img-area" id="img-area">
+        <div class="img-add-btn" onclick="openMedia()">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#bbb" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>사진 추가</span>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#bbb;margin-top:5px">사진/동영상을 자유롭게 추가해보세요</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 리뷰 -->
+    <div class="section" style="padding-top:12px;padding-bottom:12px">
+      <div class="sec-label" style="margin-bottom:8px">리뷰</div>
+      <textarea class="review-inp" id="review-inp" maxlength="300" placeholder="결제할 때 특이사항이 있었나요? 다른 여행자에게 큰 도움이 됩니다!" oninput="countReview()"></textarea>
+      <div class="review-count" id="review-count">0 / 300</div>
+    </div>
+
+  </div>
+
+  <div class="reg-btn-wrap">
+    <button class="reg-btn" onclick="submitReg()">제보 완료하기</button>
+  </div>
+
+  <div class="prog-overlay" id="prog-overlay">
+    <div class="prog-spinner"></div>
+    <div class="prog-txt" id="prog-txt">매장 정보 확인 중...</div>
+    <div class="prog-bar-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+  </div>
+
+  <div class="toast" id="reg-toast"></div>
+
+  <!-- 하단 네비 (홈과 동일) -->
+  <div class="bnav">
+    <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+
+  <!-- 지도 검색 팝업 -->
+  <div class="map-overlay" id="map-overlay">
+    <div class="map-box-popup">
+      <div class="map-handle"></div>
+      <div class="map-popup-head">
+        <div class="map-popup-title">장소 검색</div>
+        <div class="map-inp-row">
+          <input class="map-inp" id="map-search-inp" placeholder="가게 이름, 주소로 검색" type="text" onkeydown="if(event.key==='Enter')searchPlace()" oninput="liveSearch(this.value)"/>
+          <button class="map-search-btn" onclick="searchPlace()">검색</button>
+        </div>
+
+        <button class="map-close" onclick="closeMapSearch()">✕</button>
+      </div>
+      <div class="map-results" id="map-results">
+        <div class="map-empty">가게 이름이나 주소를 검색해주세요</div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="gallery-input" accept="image/*,video/*" multiple style="display:none" onchange="handleMediaFile(this)"/>
+  <input type="file" id="camera-input" accept="image/*,video/*" capture="environment" style="display:none" onchange="handleMediaFile(this)"/>
+
+  <!-- 갤러리 바텀시트 -->
+  <div class="media-overlay" id="media-overlay" onclick="closeMedia()">
+    <div class="media-box" onclick="event.stopPropagation()" style="position:relative;padding-top:20px">
+      <div class="media-handle"></div>
+      <div class="media-topbar">
+        <div class="media-tabs">
+          <button class="media-tab on" id="tab-photo" onclick="switchTab('photo',this)">사진</button>
+          <button class="media-tab" id="tab-video" onclick="switchTab('video',this)">동영상</button>
+        </div>
+        <button class="media-cancel-btn" onclick="closeMedia()">✕</button>
+      </div>
+      <div class="media-grid" id="media-grid"></div>
+      <button class="media-confirm" onclick="closeMedia()">완료</button>
+    </div>
+  </div>
+</div>
+
+<script>
+try{localStorage.removeItem('haeka_draft');}catch(e){}
+var locationSelected=false, selectedCat=null, payOkList=[], payNoList=[], uploadedImgs=[];
+var uploadedVideos=[]; // {dataUrl, file} 형태
+var currentTab='all';
+var selectedLat=null, selectedLng=null;
+
+// ── 실시간 검색 (디바운스) ──
+var liveSearchTimer = null;
+function liveSearch(val) {
+  clearTimeout(liveSearchTimer);
+  if (val.trim().length < 1) {
+    document.getElementById('map-results').innerHTML = '<div class="map-empty">가게 이름이나 주소를 검색해주세요</div>';
+    return;
+  }
+  liveSearchTimer = setTimeout(function() {
+    searchPlace();
+  }, 400);
+}
+
+function goBack(){if(window.history.length>1)window.history.back();else window.location.href='heka_home_v5.html';}
+function openGoogleMap(){window.open('https://maps.google.com','_blank');}
+function openMapSearch(){
+  document.getElementById('map-overlay').classList.add('open');
+  setTimeout(function(){document.getElementById('map-search-inp').focus();},300);
+}
+function closeMapSearch(){document.getElementById('map-overlay').classList.remove('open');}
+
+// ── Google Places 텍스트 검색 (New API) ──
+async function searchGooglePlaces(keyword) {
+  try {
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) return [];
+    const { Place } = await google.maps.importLibrary('places');
+    const request = {
+      textQuery: keyword,
+      fields: ['displayName', 'formattedAddress', 'location', 'primaryType', 'types'],
+      language: 'ko',
+      maxResultCount: 8,
+    };
+    const { places } = await Place.searchByText(request);
+    return places
+      .filter(function(r){
+        var a = (r.formattedAddress || '');
+        return !(/대한민국|한국|Korea|South Korea|Republic of Korea/i.test(a));
+      })
+      .map(function(r) {
+        // primaryType이 매핑에 없을 수 있으므로 types 배열까지 훑고, 그래도 없으면 키워드로 추정
+        var translatedCat = pickCategory(r.primaryType, r.types);
+        return {
+          name: r.displayName || '',
+          addr: r.formattedAddress || '',
+          cat: translatedCat,
+          lat: r.location ? r.location.lat() : null,
+          lng: r.location ? r.location.lng() : null,
+          _source: 'google'
+        };
+      });
+  } catch(e) {
+    console.error('Places 검색 오류:', e);
+    return [];
+  }
+}
+
+// Google 카테고리 → 한글 변환
+function translateType(type) {
+  var map = {
+    // 식당
+    'restaurant':'식당','food':'식당','meal_takeaway':'식당','meal_delivery':'식당',
+    'japanese_restaurant':'식당','korean_restaurant':'식당','chinese_restaurant':'식당',
+    'italian_restaurant':'식당','french_restaurant':'식당','thai_restaurant':'식당',
+    'hamburger_restaurant':'패스트푸드','ramen_restaurant':'식당',
+    'tonkatsu_restaurant':'식당','sushi_restaurant':'식당','seafood_restaurant':'식당',
+    'steak_house':'식당','pizza_restaurant':'식당','sandwich_shop':'패스트푸드',
+    // 카페
+    'cafe':'카페','coffee_shop':'카페','bakery':'카페','dessert_shop':'카페',
+    'tea_house':'카페','juice_bar':'카페',
+    // 펍/바
+    'bar':'펍','pub':'펍','night_club':'펍','liquor_store':'펍',
+    'izakaya_restaurant':'이자카야',
+    // 패스트푸드
+    'fast_food_restaurant':'패스트푸드','food_court':'패스트푸드',
+    // 편의점
+    'convenience_store':'편의점','drugstore':'편의점','pharmacy':'편의점',
+    // 마트
+    'supermarket':'마트','grocery_store':'마트','department_store':'마트',
+    'shopping_mall':'마트','wholesaler':'마트',
+    // 쇼핑
+    'store':'쇼핑','clothing_store':'쇼핑','shoe_store':'쇼핑',
+    'electronics_store':'쇼핑','book_store':'쇼핑','gift_shop':'쇼핑',
+    'jewelry_store':'쇼핑','toy_store':'쇼핑','sporting_goods_store':'쇼핑',
+    // 호텔
+    'lodging':'호텔','hotel':'호텔','motel':'호텔','hostel':'호텔',
+    'resort_hotel':'호텔','guest_house':'호텔',
+    // 입장권
+    'tourist_attraction':'입장권','amusement_park':'입장권','museum':'입장권',
+    'zoo':'입장권','aquarium':'입장권','theme_park':'입장권',
+    // 전철/버스
+    'subway_station':'전철 티켓','train_station':'전철 티켓','transit_station':'전철 티켓',
+    'bus_station':'버스','bus_stop':'버스',
+    // ATM
+    'atm':'ATM기','bank':'ATM기',
+  };
+  return map[type] || null;
+}
+
+// 구글 타입명이 매핑 표에 없을 때 쓰는 키워드 추정.
+// 예: 'vegan_restaurant' → 식당, 'book_store' → 쇼핑
+function guessTypeByKeyword(type) {
+  var t = String(type || '').toLowerCase();
+  if (!t) return null;
+  if (t.indexOf('fast_food') >= 0) return '패스트푸드';
+  if (t.indexOf('izakaya') >= 0) return '이자카야';
+  if (t.indexOf('cafe') >= 0 || t.indexOf('coffee') >= 0 || t.indexOf('bakery') >= 0 || t.indexOf('dessert') >= 0) return '카페';
+  if (t.indexOf('bar') >= 0 || t.indexOf('pub') >= 0 || t.indexOf('brewery') >= 0) return '펍';
+  if (t.indexOf('restaurant') >= 0 || t.indexOf('food') >= 0 || t.indexOf('dining') >= 0) return '식당';
+  if (t.indexOf('convenience') >= 0) return '편의점';
+  if (t.indexOf('supermarket') >= 0 || t.indexOf('grocery') >= 0 || t.indexOf('market') >= 0) return '마트';
+  if (t.indexOf('hotel') >= 0 || t.indexOf('lodging') >= 0 || t.indexOf('hostel') >= 0 || t.indexOf('inn') >= 0) return '호텔';
+  if (t.indexOf('museum') >= 0 || t.indexOf('attraction') >= 0 || t.indexOf('park') >= 0 || t.indexOf('gallery') >= 0) return '입장권';
+  if (t.indexOf('subway') >= 0 || t.indexOf('train') >= 0 || t.indexOf('rail') >= 0) return '전철 티켓';
+  if (t.indexOf('bus') >= 0) return '버스';
+  if (t.indexOf('atm') >= 0 || t.indexOf('bank') >= 0) return 'ATM기';
+  if (t.indexOf('store') >= 0 || t.indexOf('shop') >= 0 || t.indexOf('mall') >= 0) return '쇼핑';
+  return null;
+}
+
+// primaryType → types 배열 → 키워드 추정 순으로 업종을 고른다.
+function pickCategory(primaryType, types) {
+  var cat = primaryType ? translateType(primaryType) : null;
+  if (cat) return cat;
+  var list = Array.isArray(types) ? types : [];
+  for (var i = 0; i < list.length; i++) {
+    cat = translateType(list[i]);
+    if (cat) return cat;
+  }
+  cat = guessTypeByKeyword(primaryType);
+  if (cat) return cat;
+  for (var j = 0; j < list.length; j++) {
+    cat = guessTypeByKeyword(list[j]);
+    if (cat) return cat;
+  }
+  return null;
+}
+
+// 인기 해외 도시 사전 (자동 미리보기용)
+var KNOWN_CITIES = ['도쿄','오사카','교토','후쿠오카','삿포로','나고야','히로시마','고베','오키나와','가나자와','센다이','벳푸','유후인','상하이','베이징','청두','광저우','선전','항저우','시안','쿤밍','구이린','샤먼','칭다오','다롄','뉴욕','로스앤젤레스','라스베가스','샌프란시스코','시카고','시애틀','마이애미','하와이','보스턴','워싱턴','올랜도','포틀랜드','샌디에이고','파리','니스','리옹','마르세유','보르도','스트라스부르','런던','맨체스터','에든버러','버밍엄','리버풀','옥스퍼드','케임브리지','로마','밀라노','피렌체','베네치아','나폴리','볼로냐','바르셀로나','마드리드','세비야','발렌시아','베를린','뮌헨','함부르크','쾰른','프랑크푸르트','방콕','치앙마이','파타야','푸켓','코사무이','호치민','하노이','다낭','호이안','나트랑','싱가포르','시드니','멜버른','브리즈번','퍼스','애들레이드','골드코스트','토론토','밴쿠버','몬트리올','캘거리','퀘벡','리스본','포르투','암스테르담','로테르담','헤이그','위트레흐트','빈','잘츠부르크','프라하','두브로브니크','자그레브','스플리트','아테네','산토리니','미코노스','크레타','이스탄불','카파도키아','안탈리아','두바이','아부다비','홍콩','마카오','타이페이','타이중','가오슝','쿠알라룸푸르','페낭','코타키나발루','말라카','마닐라','세부','보라카이','팔라완','발리','자카르타','족자카르타','롬복','멕시코시티','칸쿤','과달라하라','리우데자네이루','상파울루','리마','쿠스코','마라케시','페스','카사블랑카','케이프타운','요하네스버그'];
+
+// ── 통합 검색 ──
+async function searchPlace() {
+  var kwRaw = document.getElementById('map-search-inp').value.trim();
+  var el = document.getElementById('map-results');
+  if (!kwRaw) { el.innerHTML='<div class="map-empty">검색어를 입력해주세요</div>'; return; }
+  el.innerHTML = '<div class="map-empty">검색 중...</div>';
+
+  // 도시명만 단독 입력이면 자동으로 '맛집' 추가하여 음식점 미리보기 검색
+  var isCityOnly = KNOWN_CITIES.indexOf(kwRaw) > -1;
+  var kw = isCityOnly ? (kwRaw + ' 맛집') : kwRaw;
+  window._isCitySearch = isCityOnly;
+  window._citySearchName = isCityOnly ? kwRaw : '';
+
+  var googleResults = [];
+  var haekaResults = [];
+
+  // 탭에 따라 검색 범위 결정
+  if (currentTab === 'all' || currentTab === 'google') {
+    googleResults = await searchGooglePlaces(kw);
+  }
+  if (currentTab === 'all' || currentTab === 'haeka') {
+    if (window.searchFirestore) {
+      var raw = await window.searchFirestore(kw);
+      haekaResults = raw.map(function(r) {
+        return { id: r.id||'', name: r.name||'', addr: r.address||'', cat: r.category||r.cat||'', lat: r.lat||null, lng: r.lng||null, _source:'haeka' };
+      });
+    }
+  }
+
+  var combined = googleResults.concat(haekaResults);
+  window._r = combined;
+
+  if (!combined.length) {
+    el.innerHTML = '<div class="map-empty">검색 결과가 없어요<br><span style="font-size:10px">다른 검색어를 시도해보세요</span></div>';
+    return;
+  }
+
+  var html = '';
+
+  if (googleResults.length) {
+    var sectionTitle = window._isCitySearch
+      ? (window._citySearchName + ' 인기 음식점 미리보기')
+      : '새로 등록 가능한 장소';
+    html += '<div class="map-section-label">' + sectionTitle + '</div>';
+    html += googleResults.map(function(p, i) {
+      return '<div class="map-result" onclick="selectPlace('+i+')">'
+        + '<span class="source-badge source-google">구글</span>'
+        + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
+        + '<div class="map-result-name">'+p.name+'</div>'
+        + '<div class="map-result-addr">'+p.addr+'</div>'
+        + '</div>';
+    }).join('');
+  } else if (haekaResults.length) {
+    html += '<div class="map-empty map-empty-soft">새로 등록 가능한 장소가 없어요<br><span style="font-size:10px">다른 검색어를 시도하거나, 아래 등록된 매장을 확인해보세요</span></div>';
+  }
+
+  if (haekaResults.length) {
+    html += '<div class="map-section-label">이미 등록된 매장</div>';
+    html += haekaResults.map(function(p, i) {
+      var idx = googleResults.length + i;
+      return '<div class="map-result map-result-haeka" onclick="openRegisteredPlace('+idx+')">'
+        + '<span class="registered-badge">이미 제보됨</span>'
+        + '<span class="source-badge source-haeka">헤카 DB</span>'
+        + '<div class="map-result-cat">'+(p.cat||'')+'</div>'
+        + '<div class="map-result-name">'+p.name+'</div>'
+        + '<div class="map-result-addr">'+p.addr+'</div>'
+        + '<div class="map-result-guide">등록된 매장 정보 보기</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
+}
+
+function openRegisteredPlace(i) {
+  var p = window._r[i];
+  if (p && p.id) {
+    location.href = 'heka_store_detail.html?id=' + encodeURIComponent(p.id);
+    return;
+  }
+  showToast('이미 등록된 매장이에요.');
+}
+
+var googleMap = null;
+var googleMarker = null;
+
+function showRealMap(lat, lng, name) {
+  var mapEl = document.getElementById('real-map');
+  var placeholder = document.getElementById('map-placeholder');
+  mapEl.style.display = 'block';
+  placeholder.style.display = 'none';
+
+  if (!googleMap) {
+    googleMap = new google.maps.Map(mapEl, {
+      center: { lat: lat, lng: lng },
+      zoom: 16,
+      disableDefaultUI: true,
+      gestureHandling: 'none',
+      zoomControl: false,
+    });
+  } else {
+    googleMap.setCenter({ lat: lat, lng: lng });
+    googleMap.setZoom(16);
+  }
+
+  if (googleMarker) googleMarker.setMap(null);
+  googleMarker = new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: googleMap,
+    title: name,
+  });
+
+  // 지도 클릭하면 검색 팝업 다시 열기
+  mapEl.onclick = function() { openMapSearch(); };
+}
+
+// 주소에서 도시명 추출
+function extractCity(addr) {
+  if(!addr) return '';
+  // formattedAddress 예: "2-chōme Hakata, Fukuoka, 812-0011 일본"
+  // 쉼표로 분리해서 우편번호/국가 제외한 도시 부분 추출
+  var parts = addr.split(',').map(function(s){ return s.trim(); });
+  // 뒤에서부터: 국가, 우편번호+국가, 도시 순서
+  // 숫자로 시작하거나 '일본','중국' 등 국가명 제외
+  var countryKw = ['일본','한국','중국','미국','프랑스','영국','독일','이탈리아','스페인','태국','베트남','싱가포르','호주','캐나다','인도네시아','말레이시아','필리핀','인도','포르투갈','네덜란드','벨기에','스위스','오스트리아','체코','폴란드','헝가리','그리스','터키','멕시코','브라질','아르헨티나','페루','콜롬비아'];
+  for(var i=parts.length-1; i>=0; i--){
+    var p=parts[i];
+    if(/^\d/.test(p)) continue; // 우편번호
+    if(countryKw.some(function(k){return p.indexOf(k)>-1;})) continue; // 국가
+    if(p.length > 1) return p;
+  }
+  return parts[0]||'';
+}
+
+var selectedCity = '';
+
+async function selectPlace(i) {
+  var p = window._r[i];
+
+  var a = document.getElementById('selected-addr');
+  a.textContent = p.name+' · '+p.addr;
+  a.classList.add('show');
+  document.getElementById('inp-name').value = p.name;
+  selectedCity = extractCity(p.addr);
+  if (p.cat) selectCat(p.cat);
+  selectedLat = p.lat;
+  selectedLng = p.lng;
+  locationSelected = true;
+  document.getElementById('err-location').classList.remove('show');
+  document.getElementById('err-name').classList.remove('show');
+  closeMapSearch();
+
+  // 실제 지도 표시
+  if (p.lat && p.lng) {
+    showRealMap(p.lat, p.lng, p.name);
+  }
+
+  showToast('위치가 설정되었어요');
+}
+
+function toggleCatMenu(){document.getElementById('cat-menu').classList.toggle('open');document.getElementById('cat-dropdown').classList.toggle('open');}
+function selectCat(val,isEtc){
+  selectedCat=val;
+  document.getElementById('cat-dropdown-txt').textContent=val;
+  document.querySelectorAll('.cat-opt').forEach(function(o){o.classList.toggle('on',o.textContent.replace('✓','').trim()===val);});
+  document.getElementById('cat-dropdown').classList.add('selected');
+  document.getElementById('err-cat').classList.remove('show');
+  if(isEtc){document.getElementById('etc-wrap').style.display='block';document.getElementById('etc-input').focus();}
+  else{document.getElementById('etc-wrap').style.display='none';document.getElementById('etc-input').value='';document.getElementById('cat-menu').classList.remove('open');document.getElementById('cat-dropdown').classList.remove('open');}
+}
+function confirmEtc(){
+  var val=document.getElementById('etc-input').value.trim();
+  if(val){selectedCat=val;document.getElementById('cat-dropdown-txt').textContent=val;document.getElementById('cat-dropdown').classList.add('selected');document.getElementById('err-cat').classList.remove('show');}
+  document.getElementById('etc-wrap').style.display='none';
+  document.getElementById('cat-menu').classList.remove('open');
+  document.getElementById('cat-dropdown').classList.remove('open');
+}
+// cardOptions에서 동적 로드 (Firestore 단일 소스)
+var _regBaseOk = [];
+var _regBaseNo = [];
+
+function renderRegPayGrid(type) {
+  var cards = type === 'ok' ? _regBaseOk : _regBaseNo;
+  var el = document.getElementById(type === 'ok' ? 'reg-grid-ok' : 'reg-grid-no');
+  if (!el) return;
+  if (!cards.length) {
+    el.innerHTML = '<div style="color:#bbb;font-size:12px;padding:12px;text-align:center;grid-column:1/-1">불러오는 중...</div>';
+    return;
+  }
+  el.innerHTML = cards.map(function(card) {
+    return '<div class="chk-item" onclick="togglePay(this,\''+type+'\',\''+card+'\')">'
+      + '<div class="chk-box"></div><span class="chk-txt">'+card+'</span></div>';
+  }).join('');
+}
+
+renderRegPayGrid('ok');
+renderRegPayGrid('no');
+
+function loadCardOptions() {
+  if (!window._onSnapshot || !window._db || !window._collection) {
+    setTimeout(loadCardOptions, 150);
+    return;
+  }
+  // onSnapshot으로 실시간 연동 - 관리자에서 추가/삭제 즉시 반영
+  window._onSnapshot(window._collection(window._db, 'cardOptions'), function(snap) {
+    var okArr = [], noArr = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      if (data.type === 'ok') okArr.push({name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
+      if (data.type === 'no') noArr.push({name: data.name, sortOrder: data.sortOrder != null ? data.sortOrder : 9999});
+    });
+    okArr.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+    noArr.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+    _regBaseOk = okArr.map(function(x){ return x.name; });
+    _regBaseNo = noArr.map(function(x){ return x.name; });
+    if (!_regBaseOk.length) _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
+    if (!_regBaseNo.length) _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
+    renderRegPayGrid('ok');
+    renderRegPayGrid('no');
+  }, function(e) {
+    console.error('cardOptions listen:', e);
+    _regBaseOk = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금가능','카드가능','모르겠어요'];
+    _regBaseNo = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','현금불가','카드불가','모르겠어요'];
+    renderRegPayGrid('ok');
+    renderRegPayGrid('no');
+  });
+}
+loadCardOptions();
+
+function togglePay(el,type,val){
+  el.classList.toggle('on');
+  var list=type==='ok'?payOkList:payNoList;
+  var idx=list.indexOf(val);
+  if(idx>-1)list.splice(idx,1);else list.push(val);
+  document.getElementById('err-pay-'+type).classList.remove('show');
+}
+function openMedia(){ document.getElementById('gallery-input').click(); }
+function openCamera(){ document.getElementById('camera-input').click(); }
+function closeMedia(){document.getElementById('media-overlay').classList.remove('open');}
+function openGallery(){ document.getElementById('gallery-input').click(); }
+function openVideo(){ document.getElementById('gallery-input').click(); }
+
+var _currentTab='photo';
+function switchTab(tab, el){
+  _currentTab=tab;
+  document.querySelectorAll('.media-tab').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  buildMediaGrid();
+}
+
+function buildMediaGrid(){
+  var grid=document.getElementById('media-grid');
+  grid.innerHTML='';
+  // 카메라 버튼
+  var camBtn=document.createElement('div');
+  camBtn.className='media-grid-add';
+  camBtn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg><span style="font-size:9px;color:#aaa;font-weight:600">카메라</span>';
+  camBtn.onclick=function(){openCamera();};
+  grid.appendChild(camBtn);
+  // 갤러리 선택 버튼
+  var galBtn=document.createElement('div');
+  galBtn.className='media-grid-add';
+  galBtn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span style="font-size:9px;color:#aaa;font-weight:600">사진 선택</span>';
+  galBtn.onclick=function(){openGallery();};
+  grid.appendChild(galBtn);
+  // 이미 선택된 사진 미리보기
+  uploadedImgs.forEach(function(src,i){
+    var item=document.createElement('div');
+    item.className='media-grid-item selected';
+    item.innerHTML='<img src="'+src+'"/>';
+    item.onclick=function(){delImg(i);buildMediaGrid();};
+    grid.appendChild(item);
+  });
+  uploadedVideos.forEach(function(v,i){
+    var item=document.createElement('div');
+    item.className='media-grid-item selected';
+    item.innerHTML='<video src="'+v.objUrl+'" muted></video><div style="position:absolute;bottom:3px;left:3px;background:rgba(0,0,0,.5);color:#fff;font-size:8px;padding:1px 4px;border-radius:3px">▶</div>';
+    item.onclick=function(){delVideo(i);buildMediaGrid();};
+    grid.appendChild(item);
+  });
+}
+
+function handleGallerySelect(input){
+  Array.from(input.files).forEach(function(f){
+    var r=new FileReader();r.onload=function(e){uploadedImgs.push(e.target.result);buildMediaGrid();renderImgs();};r.readAsDataURL(f);
+  });input.value='';
+}
+function handleVideoFile(input){
+  var f=input.files[0]; if(!f) return;
+  uploadedVideos.push({objUrl:URL.createObjectURL(f),file:f});
+  renderImgs(); input.value='';
+}
+function handleMediaFile(input){
+  var MAX_VIDEO=50*1024*1024; // 50MB
+  var MAX_IMG=10*1024*1024;   // 10MB
+  Array.from(input.files).forEach(function(f){
+    if(f.type.indexOf('video')===0){
+      if(f.size>MAX_VIDEO){ alert('동영상은 50MB 이하만 올릴 수 있어요 (현재: '+Math.round(f.size/1024/1024)+'MB)'); return; }
+      uploadedVideos.push({objUrl:URL.createObjectURL(f),file:f});
+      renderImgs();
+    } else {
+      if(f.size>MAX_IMG){ alert('사진은 10MB 이하만 올릴 수 있어요'); return; }
+      var r=new FileReader();r.onload=function(e){uploadedImgs.push(e.target.result);renderImgs();};r.readAsDataURL(f);
+    }
+  });input.value='';
+}
+function renderImgs(){
+  var a=document.getElementById('img-area');
+  if(!a) return;
+  a.innerHTML='';
+  uploadedVideos.forEach(function(v,i){
+    var wrap=document.createElement('div');
+    wrap.className='img-preview-wrap';
+    wrap.style.position='relative';
+    var vid=document.createElement('video');
+    vid.className='img-preview';
+    vid.src=v.objUrl;
+    vid.muted=true;
+    vid.loop=true;
+    vid.setAttribute('playsinline','');
+    vid.setAttribute('preload','auto');
+    vid.style.cssText='display:block';
+    vid.addEventListener('loadeddata',function(){
+      vid.play();
+    });
+    var badge=document.createElement('div');
+    badge.style.cssText='position:absolute;top:2px;left:4px;background:rgba(0,0,0,.55);color:#fff;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700';
+    badge.textContent='▶';
+    var del=document.createElement('button');
+    del.className='img-del';
+    del.textContent='✕';
+    del.onclick=(function(idx){return function(){delVideo(idx);};})(i);
+    wrap.appendChild(vid); wrap.appendChild(badge); wrap.appendChild(del);
+    a.appendChild(wrap);
+  });
+  uploadedImgs.forEach(function(src,i){
+    a.innerHTML+='<div class="img-preview-wrap"><img class="img-preview" src="'+src+'"/><button class="img-del" onclick="delImg('+i+')">✕</button></div>';
+  });
+  a.innerHTML+='<div class="img-add-btn" onclick="openMedia()">'
+    +'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#bbb" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+    +'<span style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600">사진 추가</span></div>';
+}
+function delImg(i){uploadedImgs.splice(i,1);renderImgs();}
+function delVideo(i){URL.revokeObjectURL(uploadedVideos[i].objUrl);uploadedVideos.splice(i,1);renderImgs();}
+function countReview(){document.getElementById('review-count').textContent=document.getElementById('review-inp').value.length+' / 300';}
+
+function submitReg(){
+  // 한국 주소 등록 차단 (해카는 해외 결제 매장 전용)
+  var _addrCheck = (document.getElementById('selected-addr')||{}).textContent || '';
+  if (/대한민국|한국|Korea|South Korea|Republic of Korea/i.test(_addrCheck)) {
+    showToast('해카는 해외 매장만 등록할 수 있어요');
+    return;
+  }
+  var ok=true;
+  if(!locationSelected){document.getElementById('err-location').classList.add('show');document.getElementById('map-box').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
+  if(!document.getElementById('inp-name').value.trim()){document.getElementById('err-name').classList.add('show');if(ok)document.getElementById('inp-name').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
+  if(!selectedCat){document.getElementById('err-cat').classList.add('show');if(ok)document.getElementById('cat-dropdown').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
+  if(!payOkList.length){document.getElementById('err-pay-ok').classList.add('show');if(ok)document.getElementById('err-pay-ok').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
+  if(!payNoList.length){document.getElementById('err-pay-no').classList.add('show');if(ok)document.getElementById('err-pay-no').scrollIntoView({behavior:'smooth',block:'center'});ok=false;}
+  if(!ok)return;
+  startProgress();
+}
+
+async function saveStore(){
+  var addrEl = document.getElementById('selected-addr').textContent.trim();
+  var parts = addrEl.split(' · ');
+
+  // 사진 먼저 업로드
+  var imageUrls = [];
+  if (uploadedImgs.length > 0) {
+    document.getElementById('prog-txt').textContent = '사진 업로드 중...';
+    var waited = 0;
+    while (!window._storageReady && waited < 50) {
+      await new Promise(function(r){ setTimeout(r, 100); });
+      waited++;
+    }
+    if (window.uploadImages) {
+      imageUrls = await window.uploadImages(uploadedImgs);
+    }
+  }
+
+  // 동영상 업로드
+  var videoUrl = null;
+  if (uploadedVideos.length > 0 && window.uploadVideo) {
+    document.getElementById('prog-txt').textContent = '동영상 업로드 중...';
+    videoUrl = await window.uploadVideo(uploadedVideos[0].file);
+  }
+
+  var data = {
+    name: document.getElementById('inp-name').value,
+    category: selectedCat,
+    city: selectedCity || '',
+    payOk: payOkList,
+    payNo: payNoList,
+    review: document.getElementById('review-inp').value,
+    address: parts[1] || '',
+    lat: selectedLat,
+    lng: selectedLng,
+    images: imageUrls,
+    videoUrl: videoUrl || null,
+    uid: localStorage.getItem('haeka_uid') || '',
+  };
+  if(window.saveToFirestore) await window.saveToFirestore(data);
+}
+
+function startProgress(){
+  var ov=document.getElementById('prog-overlay'),bar=document.getElementById('prog-bar'),txt=document.getElementById('prog-txt');
+  ov.classList.add('show');
+  var steps=[{p:20,m:'위치 정보 확인 중...'},{p:45,m:'중복 매장 체크 중...'},{p:70,m:'사진 업로드 중...'},{p:90,m:'매장 정보 저장 중...'},{p:100,m:'등록 완료!'}];
+  var i=0;
+  function next(){if(i>=steps.length){finish();return;}var s=steps[i++];bar.style.width=s.p+'%';txt.textContent=s.m;setTimeout(next,600);}
+  setTimeout(next,200);
+}
+function finish(){
+  saveStore().then(function(){
+    setTimeout(function(){
+      document.getElementById('prog-overlay').classList.remove('show');
+      showToast('등록이 완료되었습니다!');
+      setTimeout(function(){ location.href='heka_home_v5.html'; }, 1200);
+    },400);
+  });
+}
+function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
+
+
+
+</script>
+</body>
+</html>

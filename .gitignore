@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+functions/node_modules/
+
+# Native projects (may contain signing keys / keystore paths / secrets)
+android/
+ios/
+
+# Signing keys / keystores
+*.jks
+*.keystore
+keystore.properties
+secrets.properties
+*.pfx
+*.p12
+
+# Firebase / Google service accounts
+google-services.json
+GoogleService-Info.plist
+service-account*.json
+*-firebase-adminsdk-*.json
+.firebaserc
+.firebase/
+
+# Environment files
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+www/
+www2/
+
+# Backup / temp
+*.bak
+*~
+
+# Sensitive local docs (bot tokens etc.)
+봇_토큰_정의.txt

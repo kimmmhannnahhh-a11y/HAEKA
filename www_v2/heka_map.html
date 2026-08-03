@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="HAEKA"/>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+@import url('haeka_rebuild_common.css');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.phone{width:300px;background:#fff;border-radius:26px;border:1px solid #e0e0e0;overflow:hidden;color:#111;position:relative;height:620px;display:flex;flex-direction:column}
+.sb{background:#FF3900;color:#fff;font-size:10px;padding:10px 16px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid #f0f0f0;background:#fff;flex-shrink:0;z-index:10}
+.back-btn{width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#111}
+.map-wrap{flex:1;position:relative;overflow:hidden}
+#gmap{width:100%;height:100%}
+
+/* 검색창 */
+.search-bar{position:absolute;top:10px;left:10px;right:10px;z-index:5;display:flex;gap:6px;align-items:center}
+.search-bar input{flex:1;height:36px;padding:0 14px;border-radius:20px;border:none;font-size:12px;font-family:inherit;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.25);background:#fff;color:#111}
+.search-bar button{width:36px;height:36px;border-radius:50%;background:#FF3900;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);flex-shrink:0}
+.search-bar button svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round}
+
+/* 내 위치 버튼 */
+.loc-btn{position:absolute;bottom:96px;right:10px;width:36px;height:36px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center}
+.loc-btn svg{width:18px;height:18px;fill:none;stroke:#FF3900;stroke-width:2;stroke-linecap:round}
+
+/* 하단 카드 */
+.store-card{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -3px 16px rgba(0,0,0,.12);z-index:5;transform:translateY(110%);transition:transform .28s ease;overflow:hidden}
+.sc-slide-wrap{width:100%;height:160px;position:relative;overflow:hidden;background:#f0f0f0;display:none}
+.sc-slide-wrap.show{display:block}
+.sc-slide-inner{display:flex;height:100%;transition:transform .3s ease}
+.sc-slide-img{flex:0 0 100%;height:100%;object-fit:cover;display:block}
+.sc-slide-dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.sc-slide-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5)}
+.sc-slide-dot.on{background:#fff;width:12px;border-radius:3px}
+.sc-body{padding:12px 16px 18px}
+.store-card.open{transform:translateY(0)}
+.drag-bar{width:36px;height:4px;border-radius:2px;background:#e0e0e0;margin:0 auto 10px}
+.sc-name{font-size:14px;font-weight:700;color:#111;margin-bottom:2px}
+.sc-sub{font-size:11px;color:#999;margin-bottom:8px}
+.sc-cards{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.sc-card{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;color:#fff}
+.c-visa{background:#1a1f71}.c-master{background:#eb001b}.c-jcb{background:#007b40}
+.c-amex{background:#007bc1}.c-tlog{background:#FF6B00}.c-twallet{background:#FFD600;color:#333}.c-union{background:#e21836}
+.sc-btns{display:flex;gap:8px}
+.sc-detail{flex:1;padding:10px;border-radius:10px;background:#FF3900;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.sc-zzim{width:40px;height:40px;border-radius:10px;background:#f5f5f5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sc-zzim svg{width:16px;height:16px;fill:none;stroke:#bbb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:.15s}
+.sc-zzim.on svg{fill:#e53935;stroke:#e53935}
+
+/* 카테고리 필터 */
+.cat-bar{position:absolute;top:56px;left:0;right:0;z-index:5;display:flex;gap:6px;padding:0 10px;overflow-x:auto;scrollbar-width:none}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-chip{flex-shrink:0;height:30px;padding:0 12px;border-radius:15px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:#333;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:.15s;display:flex;align-items:center;gap:4px}
+.cat-chip.on{background:#FF3900;color:#fff}
+/* 로딩 */
+.loading-cover{position:absolute;inset:0;background:#f5f5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10}
+.spinner{width:24px;height:24px;border:3px solid #e0e0e0;border-top-color:#FF3900;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:12px;color:#888}
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-muted:#9CA3AF;--hk-accent:#FF3900;--hk-accent-bg:#FFF1F2;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone{background:var(--hk-bg)!important;border:0!important;box-shadow:0 24px 70px rgba(17,24,39,.14)!important}.sb{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar{background:#fff!important;border-bottom:1px solid var(--hk-border)!important;box-shadow:0 1px 10px rgba(0,0,0,.035)!important}.topbar-title,.logo{color:var(--hk-text)!important;font-weight:800!important}.btn-green,.btn-primary,.primary,.popup-btn,.send-btn{background:var(--hk-accent)!important;color:#fff!important;border-color:var(--hk-accent)!important;border-radius:12px!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.btn-outline,.btn-secondary{background:transparent!important;color:var(--hk-text)!important;border:1.5px solid #E5E7EB!important;border-radius:12px!important}input:focus,textarea:focus,select:focus{border-color:var(--hk-accent)!important;box-shadow:0 0 0 3px rgba(255,56,92,.10)!important}.card,.item,.list-item,.post-card,.store-card,.notice-item,.review-card{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.bnav{background:rgba(255,255,255,.94)!important;border-top:1px solid var(--hk-border)!important}.ni.on,.nplbl{color:var(--hk-accent)!important}.npbtn{background:var(--hk-accent)!important;box-shadow:0 8px 20px rgba(255,56,92,.25)!important}.toast{background:rgba(26,26,26,.88)!important;backdrop-filter:blur(10px)!important;border-radius:999px!important}button[style*="#FF3900"],[style*="background:#FF3900"]{background:var(--hk-accent)!important;color:#fff!important}[style*="color:#FF3900"],[style*="border-color:#FF3900"]{color:var(--hk-accent)!important;border-color:var(--hk-accent)!important}
+
+/* cat-chip 강화 (이모지 제거 후 가독성) */
+.cat-chip{height:34px!important;padding:0 14px!important;border-radius:999px!important;font-size:12.5px!important;font-weight:800!important;background:#fff!important;color:var(--hk-text)!important;box-shadow:0 4px 12px rgba(0,0,0,.10)!important;letter-spacing:-.01em!important}
+.cat-chip.on{background:var(--hk-accent)!important;color:#fff!important;box-shadow:0 6px 16px rgba(255,57,0,.28)!important}
+
+/* 모바일 풀폭 */
+@media (max-width:480px){
+  body{padding:0!important;background:var(--hk-bg)!important}
+  .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
+  .store-card{border-radius:18px 18px 0 0!important}
+}
+</style>
+<script src="security.js"></script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <span style="font-size:13px;font-weight:700">지도로 찾기</span>
+    <div style="width:30px"></div>
+  </div>
+
+  <div class="map-wrap">
+    <div class="loading-cover" id="loading-cover">
+      <div class="spinner"></div>
+      <div class="loading-txt">위치 불러오는 중...</div>
+    </div>
+    <div id="gmap"></div>
+
+    <!-- 검색창 -->
+    <div class="search-bar">
+      <input id="search-inp" placeholder="장소, 주소 검색" type="text"
+        onkeydown="if(event.key==='Enter')doSearch()"/>
+      <button onclick="doSearch()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      </button>
+    </div>
+
+    <!-- 카테고리 필터 -->
+    <div class="cat-bar" id="cat-bar">
+      <button class="cat-chip" onclick="searchCat(this,'restaurant','음식점')">음식점</button>
+      <button class="cat-chip" onclick="searchCat(this,'cafe','카페')">카페</button>
+      <button class="cat-chip" onclick="searchCat(this,'bar','바/펍')">바/펍</button>
+      <button class="cat-chip" onclick="searchCat(this,'convenience_store','편의점')">편의점</button>
+      <button class="cat-chip" onclick="searchCat(this,'shopping_mall','쇼핑')">쇼핑</button>
+      <button class="cat-chip" onclick="searchCat(this,'tourist_attraction','관광')">관광</button>
+      <button class="cat-chip" onclick="clearCat(this)">초기화</button>
+    </div>
+    <!-- 내 위치 -->
+    <button class="loc-btn" onclick="goMyLoc()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+    </button>
+
+    <!-- 매장 카드 -->
+    <div class="store-card" id="store-card">
+      <!-- 사진 슬라이드 -->
+      <div class="sc-slide-wrap" id="sc-slide-wrap">
+        <div class="sc-slide-inner" id="sc-slide-inner"></div>
+        <div class="sc-slide-dots" id="sc-slide-dots"></div>
+      </div>
+      <div class="sc-body">
+        <div class="drag-bar"></div>
+        <div class="sc-name" id="sc-name"></div>
+        <div class="sc-sub" id="sc-sub"></div>
+        <div class="sc-cards" id="sc-cards"></div>
+        <div class="sc-btns">
+          <button class="sc-detail" onclick="goDetail()">상세보기</button>
+          <button class="sc-zzim" id="sc-zzim" onclick="toggleZzim()">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+const app = initializeApp({
+  apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain:"card-store-finder.firebaseapp.com",
+  projectId:"card-store-finder",
+  storageBucket:"card-store-finder.firebasestorage.app",
+  messagingSenderId:"340038449458",
+  appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
+});
+const db = getFirestore(app);
+window._fetchStores = async function(){
+  var snap = await getDocs(collection(db,'stores'));
+  var arr = [];
+  snap.forEach(function(d){ arr.push({id:d.id,...d.data()}); });
+  return arr;
+};
+</script>
+
+<!-- Google Maps -->
+<script>
+var _map, _myLat, _myLng, _stores=[], _markers=[], _selStore=null;
+var _cardMap={'VISA':'c-visa','MASTER':'c-master','JCB':'c-jcb','AMEX':'c-amex','트래블로그':'c-tlog','트래블월렛':'c-twallet','UnionPay':'c-union'};
+
+function getZzim(){ try{return new Set(JSON.parse(localStorage.getItem('haeka_zzim')||'[]'));}catch(e){return new Set();} }
+function saveZzim(s){ localStorage.setItem('haeka_zzim',JSON.stringify([...s])); }
+
+function initMap(lat,lng){
+  document.getElementById('loading-cover').style.display='none';
+  _myLat=lat; _myLng=lng;
+
+  _map = new google.maps.Map(document.getElementById('gmap'),{
+    center:{lat:lat,lng:lng},
+    zoom:15,
+    mapTypeControl:false,
+    streetViewControl:false,
+    fullscreenControl:false,
+    zoomControl:true,
+    zoomControlOptions:{position:google.maps.ControlPosition.RIGHT_CENTER}
+  });
+
+  // 내 위치 파란 점
+  new google.maps.Marker({
+    position:{lat:lat,lng:lng},
+    map:_map,
+    icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:'#4285F4',fillOpacity:1,strokeColor:'#fff',strokeWeight:2.5},
+    zIndex:1000,
+    title:'내 위치'
+  });
+
+  // 지도 클릭 시 카드 닫기
+  _map.addListener('click',closeCard);
+
+  // 자동완성 초기화
+  initAutocomplete();
+
+  // 매장 마커 추가
+  loadAndMark();
+}
+
+function loadAndMark(){
+  if(!window._fetchStores){ setTimeout(loadAndMark,300); return; }
+  window._fetchStores().then(function(stores){
+    _stores=stores;
+    drawMarkers();
+  }).catch(function(e){ console.error(e); });
+}
+
+function drawMarkers(){
+  // 기존 마커 제거
+  _markers.forEach(function(m){ m.setMap(null); });
+  _markers=[];
+  var zzim=getZzim();
+  _stores.forEach(function(s){
+    if(!s.lat||!s.lng) return;
+    var isZzim=zzim.has(s.id);
+    var label=s.name.length>6?s.name.slice(0,6)+'..':s.name;
+    var marker=new google.maps.Marker({
+      position:{lat:Number(s.lat),lng:Number(s.lng)},
+      map:_map,
+      title:s.name,
+      icon:{
+        path:google.maps.SymbolPath.CIRCLE,
+        scale:0 // 투명 - 라벨만 보이게
+      },
+      label:{
+        text: (isZzim?'♥ ':'')+label,
+        color:'#fff',
+        fontSize:'10px',
+        fontWeight:'700',
+        className:'haeka-label'
+      },
+      zIndex:isZzim?100:50
+    });
+
+    // 배경색 있는 마커를 위해 실제로는 커스텀 오버레이 사용
+    marker.setMap(null); // 위 방법 대신 아래 방법 사용
+
+    // SVG 아이콘으로 배경 있는 핀 만들기
+    var bg = isZzim ? '%23e53935' : '%23FF3900';
+    var txt = encodeURIComponent((isZzim?'♥ ':'')+label);
+    var w = label.length*7 + (isZzim?22:10);
+    var svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+      +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="'+bg+'"/>'
+      +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="'+bg+'"/>'
+      +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'
+      +(isZzim?'♥ ':'')+label+'</text>'
+      +'</svg>';
+
+    var realMarker = new google.maps.Marker({
+      position:{lat:Number(s.lat),lng:Number(s.lng)},
+      map:_map,
+      title:s.name,
+      icon:{
+        url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),
+        anchor:new google.maps.Point(w/2,26)
+      },
+      zIndex:isZzim?100:50
+    });
+    realMarker.addListener('click',function(e){
+      e.stop && e.stop();
+      showCard(s);
+    });
+    _markers.push(realMarker);
+  });
+}
+
+var _slideIdx=0, _slideImgs=[];
+function showCard(s){
+  _selStore=s;
+  document.getElementById('sc-name').textContent=s.name;
+  document.getElementById('sc-sub').textContent=[s.category,s.city,s.address?s.address.split(',')[0]:''].filter(Boolean).join(' · ');
+  var cards=(s.payOk||s.cards||[]);
+  document.getElementById('sc-cards').innerHTML=cards.map(function(c){
+    var cl=_cardMap[c]||'';
+    return cl?'<span class="sc-card '+cl+'">'+c+'</span>':'';
+  }).join('');
+  var zzim=getZzim();
+  document.getElementById('sc-zzim').classList.toggle('on',zzim.has(s.id));
+  // 사진 슬라이드
+  _slideImgs=s.images||[];
+  _slideIdx=0;
+  var slideWrap=document.getElementById('sc-slide-wrap');
+  var slideInner=document.getElementById('sc-slide-inner');
+  var slideDots=document.getElementById('sc-slide-dots');
+  if(_slideImgs.length){
+    slideWrap.classList.add('show');
+    slideInner.innerHTML=_slideImgs.map(function(src){
+      return '<img class="sc-slide-img" src="'+window._safeImg(src)+'" loading="eager"/>';
+    }).join('');
+    slideDots.innerHTML=_slideImgs.length>1?_slideImgs.map(function(_,i){
+      return '<div class="sc-slide-dot'+(i===0?' on':'')+'" onclick="slideTo('+i+')"></div>';
+    }).join(''):'';
+    initSlideSwipe();
+  } else {
+    slideWrap.classList.remove('show');
+    slideInner.innerHTML='';
+    slideDots.innerHTML='';
+  }
+  document.getElementById('store-card').classList.add('open');
+}
+
+function slideTo(idx){
+  _slideIdx=idx;
+  var inner=document.getElementById('sc-slide-inner');
+  if(inner) inner.style.transform='translateX(-'+(idx*100)+'%)';
+  document.querySelectorAll('.sc-slide-dot').forEach(function(d,i){d.classList.toggle('on',i===idx);});
+}
+
+function initSlideSwipe(){
+  var wrap=document.getElementById('sc-slide-wrap');
+  if(!wrap) return;
+  var sx=0;
+  wrap.ontouchstart=function(e){sx=e.touches[0].clientX;};
+  wrap.ontouchend=function(e){
+    var diff=e.changedTouches[0].clientX-sx;
+    if(Math.abs(diff)<30) return;
+    if(diff<0&&_slideIdx<_slideImgs.length-1) slideTo(_slideIdx+1);
+    else if(diff>0&&_slideIdx>0) slideTo(_slideIdx-1);
+  };
+}
+
+function closeCard(){
+  document.getElementById('store-card').classList.remove('open');
+  _selStore=null;
+}
+
+function goDetail(){
+  if(_selStore) location.href='heka_store_detail.html?id='+_selStore.id;
+}
+
+function toggleZzim(){
+  if(!_selStore) return;
+  var zzim=getZzim();
+  var btn=document.getElementById('sc-zzim');
+  if(zzim.has(_selStore.id)){ zzim.delete(_selStore.id); btn.classList.remove('on'); }
+  else { zzim.add(_selStore.id); btn.classList.add('on'); }
+  saveZzim(zzim);
+  drawMarkers(); // 마커 색상 업데이트
+}
+
+function goMyLoc(){
+  if(!_map) return;
+  if(_myLat&&_myLng){ _map.panTo({lat:_myLat,lng:_myLng}); _map.setZoom(15); return; }
+  navigator.geolocation.getCurrentPosition(function(p){
+    _myLat=p.coords.latitude; _myLng=p.coords.longitude;
+    _map.panTo({lat:_myLat,lng:_myLng}); _map.setZoom(15);
+  });
+}
+
+var _catMarkers=[], _activeCat=null;
+
+function searchCat(btn, type, label){
+  if(_activeCat===type){ clearCat(btn); return; }
+  _activeCat=type;
+  // 버튼 상태
+  document.querySelectorAll('.cat-chip').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  // 기존 카테고리 마커 제거
+  clearCatMarkers();
+  if(!_map) return;
+  var svc=new google.maps.places.PlacesService(_map);
+  svc.nearbySearch({
+    location:_map.getCenter(),
+    radius:1000,
+    type:type
+  }, function(results, status){
+    if(status!==google.maps.places.PlacesServiceStatus.OK||!results) return;
+    results.forEach(function(place){
+      if(!place.geometry||!place.geometry.location) return;
+      var w=place.name.length>8?66:place.name.length*7+16;
+      var label=place.name.length>8?place.name.slice(0,8)+'..':place.name;
+      var svgStr='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+        +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="%234285F4"/>'
+        +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="%234285F4"/>'
+        +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'+label+'</text>'
+        +'</svg>';
+      var m=new google.maps.Marker({
+        position:place.geometry.location,
+        map:_map,
+        title:place.name,
+        icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),anchor:new google.maps.Point(w/2,26)},
+        zIndex:80
+      });
+      m.addListener('click', function(){
+        // Google Places 장소 카드 표시
+        _selStore=null;
+        document.getElementById('sc-name').textContent=place.name;
+        document.getElementById('sc-sub').textContent=(place.vicinity||'');
+        document.getElementById('sc-cards').innerHTML='<span style="font-size:10px;color:#bbb">HAEKA 미등록 매장</span>';
+        document.getElementById('sc-zzim').style.display='none';
+        document.getElementById('store-card').classList.add('open');
+        // 상세보기 버튼 - Google Maps로 연결
+        document.querySelector('.sc-detail').onclick=function(){
+          window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place.name)+'&query_place_id='+place.place_id,'_blank');
+        };
+      });
+      _catMarkers.push(m);
+    });
+  });
+}
+
+function clearCatMarkers(){
+  _catMarkers.forEach(function(m){ m.setMap(null); });
+  _catMarkers=[];
+}
+
+function clearCat(btn){
+  _activeCat=null;
+  document.querySelectorAll('.cat-chip').forEach(function(b){ b.classList.remove('on'); });
+  clearCatMarkers();
+  // 상세버튼 원상복구
+  document.querySelector('.sc-detail').onclick=goDetail;
+  document.getElementById('sc-zzim').style.display='';
+}
+
+var _searchMarkers=[], _autocomplete=null;
+
+function initAutocomplete(){
+  var inp=document.getElementById('search-inp');
+  _autocomplete=new google.maps.places.Autocomplete(inp,{fields:['geometry','name','place_id','formatted_address','types']});
+  _autocomplete.addListener('place_changed',function(){
+    var place=_autocomplete.getPlace();
+    if(!place.geometry) return;
+    _map.panTo(place.geometry.location);
+    _map.setZoom(16);
+    clearSearchMarkers();
+    // 선택한 장소 핀 표시
+    addSearchPin(place.geometry.location, place.name, place.place_id, place.formatted_address||'');
+  });
+}
+
+function addSearchPin(loc, name, placeId, addr){
+  var label=name.length>8?name.slice(0,8)+'..':name;
+  var w=Math.max(60, label.length*7+16);
+  var svgStr='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="26">'
+    +'<rect x="0" y="0" width="'+w+'" height="20" rx="4" fill="%234285F4"/>'
+    +'<polygon points="'+(w/2-5)+',20 '+(w/2+5)+',20 '+(w/2)+',26" fill="%234285F4"/>'
+    +'<text x="'+(w/2)+'" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">'+label+'</text>'
+    +'</svg>';
+  var m=new google.maps.Marker({
+    position:loc,
+    map:_map,
+    title:name,
+    icon:{url:'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svgStr),anchor:new google.maps.Point(w/2,26)},
+    zIndex:200,
+    animation:google.maps.Animation.DROP
+  });
+  m.addListener('click',function(){
+    _selStore=null;
+    document.getElementById('sc-name').textContent=name;
+    document.getElementById('sc-sub').textContent=addr;
+    document.getElementById('sc-cards').innerHTML='<span style="font-size:10px;color:#bbb">HAEKA 미등록 매장</span>';
+    document.getElementById('sc-zzim').style.display='none';
+    document.getElementById('store-card').classList.add('open');
+    document.querySelector('.sc-detail').onclick=function(){
+      window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name)+(placeId?'&query_place_id='+placeId:''),'_blank');
+    };
+  });
+  _searchMarkers.push(m);
+}
+
+function clearSearchMarkers(){
+  _searchMarkers.forEach(function(m){ m.setMap(null); });
+  _searchMarkers=[];
+  document.getElementById('sc-zzim').style.display='';
+  document.querySelector('.sc-detail').onclick=goDetail;
+}
+
+function doSearch(){
+  var kw=document.getElementById('search-inp').value.trim();
+  if(!kw||!_map) return;
+  clearSearchMarkers();
+  var svc=new google.maps.places.PlacesService(_map);
+  svc.textSearch({query:kw},function(res,st){
+    if(st!==google.maps.places.PlacesServiceStatus.OK||!res||!res.length) return;
+    // 첫번째 결과로 이동
+    _map.panTo(res[0].geometry.location);
+    _map.setZoom(15);
+    // 모든 결과 핀으로 표시
+    res.forEach(function(place){
+      if(!place.geometry||!place.geometry.location) return;
+      addSearchPin(place.geometry.location, place.name, place.place_id, place.vicinity||'');
+    });
+  });
+}
+
+// GPS → 지도 초기화
+function start(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      function(p){ initMap(p.coords.latitude,p.coords.longitude); },
+      function(){ initMap(35.6762,139.6503); }, // 실패시 도쿄
+      {timeout:8000,enableHighAccuracy:true}
+    );
+  } else { initMap(35.6762,139.6503); }
+}
+</script>
+
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&callback=start">
+</script>
+</body>
+</html>
