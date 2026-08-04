@@ -467,6 +467,10 @@ function init(){
   );
 }
 window.addEventListener('DOMContentLoaded', function(){
+  // 로그인 게이트 (페이지 진입) — 미로그인 시 로그인 유도
+  if (window._requireLogin && !window._requireLogin('찜한 매장은 로그인 후 볼 수 있어요')) {
+    return;
+  }
   // Firebase 로드 대기 (최대 1.5초) 후 init
   var waited = 0;
   var checkFb = setInterval(function(){

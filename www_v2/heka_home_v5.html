@@ -1389,6 +1389,7 @@ function _syncAllZzimUI(storeId, isOn){
 
 async function toggleZzim(e, el, store){
   e.stopPropagation();
+  if (window._requireLogin && !window._requireLogin('찜하기는 로그인 후 이용할 수 있어요')) return;
   // 로그인 사용자인데 _zzimStores 아직 로딩 안 됐으면 Firestore에서 먼저 불러옴
   // (그렇지 않으면 빈 배열에 toggle → 기존 찜이 다 날아가거나 race로 덮어쓰기됨)
   if (window._currentUser && !window._zzimStores && window._getDoc && window._doc && window._db) {
@@ -1419,6 +1420,7 @@ function showToast(msg){
 async function toggleDpZzim(){
   var store = window._currentDpStore;
   if(!store) return;
+  if (window._requireLogin && !window._requireLogin('찜하기는 로그인 후 이용할 수 있어요')) return;
   if (window._currentUser && !window._zzimStores && window._getDoc && window._doc && window._db) {
     try {
       var snap = await window._getDoc(window._doc(window._db, 'zzim', window._currentUser.uid));

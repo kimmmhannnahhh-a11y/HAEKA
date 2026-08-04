@@ -1228,6 +1228,11 @@ function doKakaoLogin() {
 function showToastAndGoHome(msg){goHome();}
 function goHome(){
   var redirect = new URLSearchParams(location.search).get('redirect');
+  // sessionStorage에 저장된 requireLogin 복귀 URL도 확인
+  if (!redirect && window._consumeReturnUrl) {
+    var stored = window._consumeReturnUrl();
+    if (stored) redirect = stored;
+  }
   if (redirect) {
     // Open redirect 방지: heka_*.html 상대경로 or 동일 origin URL만 허용
     var safe = false;

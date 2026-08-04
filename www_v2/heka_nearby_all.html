@@ -836,7 +836,8 @@ function closeSortSheet(){document.getElementById('sort-overlay').classList.remo
 function selectSort(order,label){sortOrder=order;document.getElementById('sort-btn').textContent=label+' ▾';document.querySelectorAll('.sort-item').forEach(function(el){el.classList.remove('on');});document.getElementById('sort-'+order).classList.add('on');closeSortSheet();doFilter();}
 
 // ── PC 드래그 ──
-function addDragScroll(el){var dn=false,sx,sl;el.addEventListener('mousedown',function(e){dn=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.cursor='grabbing';});el.addEventListener('mouseleave',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mouseup',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mousemove',function(e){if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx);});}
+// _dragBound 플래그로 재바인딩 방지 (renderList가 반복 호출되어 리스너 누적되던 이슈)
+function addDragScroll(el){if(!el||el._dragBound)return;el._dragBound=true;var dn=false,sx,sl;el.addEventListener('mousedown',function(e){dn=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.cursor='grabbing';});el.addEventListener('mouseleave',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mouseup',function(){dn=false;el.style.cursor='grab';});el.addEventListener('mousemove',function(e){if(!dn)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx);});}
 document.querySelectorAll('.chip-row,.cat-wrap').forEach(addDragScroll);
 document.querySelectorAll('.store-cards').forEach(addDragScroll);
 var _origRender=renderList;

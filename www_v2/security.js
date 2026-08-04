@@ -136,6 +136,41 @@
     });
   }
 
+  // 로그인 게이트 — 로그인 상태 확인 + 미로그인 시 로그인 페이지로 유도
+  // 우선순위: window._fbAuth.currentUser > window._currentUser > localStorage.haeka_uid
+  // returnUrl 지정 시 로그인 후 그 URL로 복귀 (sessionStorage 사용)
+  function isLoggedIn() {
+    try {
+      if (window._fbAuth && window._fbAuth.currentUser) return true;
+      if (window._currentUser) return true;
+      if (localStorage.getItem('haeka_uid')) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function requireLogin(msg, returnUrl) {
+    if (isLoggedIn()) return true;
+    var m = msg || '로그인이 필요한 기능이에요';
+    try {
+      var back = returnUrl || (location.pathname.split('/').pop() + (location.search || ''));
+      sessionStorage.setItem('haeka_return_to', back);
+    } catch (e) {}
+    var go = confirm(m + '\n\n로그인 페이지로 이동할까요?');
+    if (go) location.href = 'heka_login_v5.html';
+    return false;
+  }
+
+  function consumeReturnUrl() {
+    try {
+      var url = sessionStorage.getItem('haeka_return_to');
+      if (url) {
+        sessionStorage.removeItem('haeka_return_to');
+        return url;
+      }
+    } catch (e) {}
+    return null;
+  }
+
   window._esc = escapeHtml;
   window._safeUrl = safeUrl;
   window._safeLen = safeLen;
@@ -147,4 +182,7 @@
   window._isBlocked = isBlocked;
   window._getBlockedUsers = getBlockedUsers;
   window._syncBlockedUsers = syncBlockedUsers;
+  window._isLoggedIn = isLoggedIn;
+  window._requireLogin = requireLogin;
+  window._consumeReturnUrl = consumeReturnUrl;
 })();

@@ -568,6 +568,7 @@ async function submitReply(cmtId){
 }
 
 function toggleLike(){
+  if (window._requireLogin && !window._requireLogin('좋아요는 로그인 후 이용할 수 있어요')) return;
   _liked=!_liked;
   var btn=document.getElementById('like-btn');
   var cnt=document.getElementById('like-count');
@@ -593,6 +594,7 @@ function toggleLike(){
 }
 
 function toggleSave(){
+  if (window._requireLogin && !window._requireLogin('저장은 로그인 후 이용할 수 있어요')) return;
   _saved=!_saved;
   var btn=document.getElementById('save-btn');
   try{

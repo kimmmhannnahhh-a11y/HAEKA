@@ -63,6 +63,11 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </div>
 
 <script>
+// 로그인 게이트 (페이지 진입) — 미로그인 시 로그인 페이지로
+if (window._requireLogin && !window._requireLogin('찜한 여행톡은 로그인 후 볼 수 있어요')) {
+  // requireLogin 내부에서 redirect 처리. 스크립트 실행 중단.
+  throw new Error('login required');
+}
 var TAG_COLOR = {'동행':'#16A34A','맛집':'#D97706','날씨':'#0369A1','정보':'#7E22CE'};
 var TAG_TEXT = {'동행':'동','맛집':'맛','날씨':'날','정보':'정'};
 var TAG_BG = {'동행':'#F0FDF4','맛집':'#FFF7E6','날씨':'#E0F2FE','정보':'#F3E8FF'};

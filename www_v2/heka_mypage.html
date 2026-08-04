@@ -214,13 +214,19 @@ onAuthStateChanged(_auth, async function(u){
       var uDoc = await getDoc(doc(_db,'users',u.uid));
       if(uDoc.exists()) {
         var uData = uDoc.data();
-        if(uData.nick) {
-          userData.nick = uData.nick;
-          var el = document.getElementById('nick-txt');
-          if(el) el.textContent = uData.nick;
-          try { var saved = JSON.parse(localStorage.getItem('haeka_user')||'{}'); saved.nick = uData.nick; localStorage.setItem('haeka_user', JSON.stringify(saved)); } catch(e){}
+        // userData는 스크립트 하단에서 var 선언 (호이스팅으로 참조 자체는 가능하나 초기화 전이면 undefined)
+        if(typeof userData !== 'undefined' && userData){
+          if(uData.nick) {
+            userData.nick = uData.nick;
+            var el = document.getElementById('nick-txt');
+            if(el) el.textContent = uData.nick;
+            try { var saved = JSON.parse(localStorage.getItem('haeka_user')||'{}'); saved.nick = uData.nick; localStorage.setItem('haeka_user', JSON.stringify(saved)); } catch(e){}
+          }
+          if(uData.phone) { userData.phone = uData.phone; }
+        } else if(uData.nick) {
+          // userData가 아직 초기화되지 않았으면 localStorage에 임시 저장 → init에서 반영
+          try { localStorage.setItem('haeka_nick', uData.nick); } catch(e){}
         }
-        if(uData.phone) { userData.phone = uData.phone; }
       }
     } catch(e){ console.log('nick load err:', e); }
   }

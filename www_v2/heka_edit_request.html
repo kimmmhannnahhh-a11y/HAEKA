@@ -214,6 +214,11 @@ window.togglePay = function(el, type, val) {
 
 window.submitRequest = async function() {
   if (submitting) return;
+  if (!currentUser) {
+    if (window._requireLogin) window._requireLogin('수정 요청은 로그인 후 보낼 수 있어요');
+    else { showToast('로그인이 필요해요'); setTimeout(function(){ location.href='heka_login_v5.html'; }, 1200); }
+    return;
+  }
   if (!isClosed && !payOkList.length && !payNoList.length) {
     showToast('결제 가능/불가 수단을 선택하거나 폐업 여부를 선택해주세요');
     return;
@@ -230,8 +235,8 @@ window.submitRequest = async function() {
       isClosed: isClosed,
       payOk: payOkList,
       payNo: payNoList,
-      uid: currentUser ? currentUser.uid : 'anonymous',
-      nickname: currentUser ? (currentUser.displayName || currentUser.email?.split('@')[0] || '익명') : '익명',
+      uid: currentUser.uid,
+      nickname: currentUser.displayName || currentUser.email?.split('@')[0] || '익명',
       createdAt: serverTimestamp()
     });
     showToast('수정 요청이 전송됐어요!');
