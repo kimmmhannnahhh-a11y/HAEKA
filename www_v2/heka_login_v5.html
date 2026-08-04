@@ -370,19 +370,50 @@ window._doFirebaseLogin = async function(email, pw) {
 var _socialLoginReady = false;
 async function _ensureSocialLogin(plugin) {
   if (_socialLoginReady) return;
-  await plugin.initialize({ google: { webClientId: GOOGLE_WEB_CLIENT_ID } });
-  _socialLoginReady = true;
+  try {
+    await plugin.initialize({
+      google: {
+        webClientId: GOOGLE_WEB_CLIENT_ID,
+        mode: 'online'
+      }
+    });
+    _socialLoginReady = true;
+    console.log('[GoogleLogin] SocialLogin.initialize OK. webClientId=', GOOGLE_WEB_CLIENT_ID);
+  } catch(initErr) {
+    console.error('[GoogleLogin] initialize 실패:', initErr);
+    throw initErr;
+  }
 }
 
 window._doGoogleLogin = async function() {
   var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
   var isNative = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+  var platform = (window.Capacitor && typeof window.Capacitor.getPlatform === 'function') ? window.Capacitor.getPlatform() : 'web';
+  // 네이티브에서 프록시가 없으면 명시적 등록 시도
+  if (!SocialLogin && isNative && window.Capacitor && typeof window.Capacitor.registerPlugin === 'function') {
+    try {
+      SocialLogin = window.Capacitor.registerPlugin('SocialLogin');
+      console.warn('[GoogleLogin] Plugins.SocialLogin 프록시 없음 → registerPlugin 재시도:', !!SocialLogin);
+    } catch(regErr) {
+      console.error('[GoogleLogin] registerPlugin 실패:', regErr);
+    }
+  }
+  console.log('[GoogleLogin] diag', {
+    isNative: isNative,
+    platform: platform,
+    hasSocialLogin: !!SocialLogin,
+    pluginKeys: (window.Capacitor && window.Capacitor.Plugins) ? Object.keys(window.Capacitor.Plugins) : [],
+    webClientId: GOOGLE_WEB_CLIENT_ID
+  });
   try {
     var user;
     if (isNative) {
       if (!SocialLogin) {
-        alert('구글 로그인 모듈을 불러오지 못했어요. 앱을 다시 실행해주세요.');
-        return { ok: false };
+        var d = 'SocialLogin 프록시 없음. platform=' + platform
+          + ', Capacitor.Plugins 키=' + (((window.Capacitor && window.Capacitor.Plugins) ? Object.keys(window.Capacitor.Plugins).join(',') : '(none)'));
+        console.error('[GoogleLogin] NATIVE_PLUGIN_MISSING:', d);
+        alert('구글 로그인 실패: 네이티브 플러그인 로드 실패\n\n(진단) ' + d);
+        return { ok: false, code: 'NATIVE_PLUGIN_MISSING' };
       }
       if (!GOOGLE_WEB_CLIENT_ID || GOOGLE_WEB_CLIENT_ID.indexOf('REPLACE_ME') >= 0) {
         alert('구글 로그인이 아직 설정되지 않았어요.');
@@ -392,8 +423,9 @@ window._doGoogleLogin = async function() {
       // scopes를 넘기면 플러그인이 MainActivity 인터페이스 구현을 요구하며 reject한다.
       // email/profile/openid는 기본으로 포함되므로 idToken만 쓰는 우리는 scopes를 비운다.
       var res = await SocialLogin.login({ provider: 'google', options: {} });
+      console.log('[GoogleLogin] login result:', res);
       var idToken = res && res.result && res.result.idToken;
-      if (!idToken) throw new Error('idToken 없음');
+      if (!idToken) throw new Error('idToken 없음 (result=' + JSON.stringify(res) + ')');
       var credential = GoogleAuthProvider.credential(idToken);
       var signed = await signInWithCredential(auth, credential);
       user = signed.user;
@@ -464,7 +496,11 @@ window._doGoogleLogin = async function() {
       alert('이미 다른 방법으로 가입된 이메일이에요. 기존 방법으로 로그인해주세요.');
       return { ok: false };
     }
-    alert('구글 로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+    // 다음 호출 시 initialize 재시도 허용
+    _socialLoginReady = false;
+    var gDiag = [code, msg].filter(function(x){ return !!x; }).join(' | ');
+    alert('구글 로그인에 실패했어요.\n\n(진단) ' + (gDiag || '알 수 없는 오류')
+      + '\n\n대부분 원인: (1) Firebase/Google 콘솔에 이 앱의 SHA-1 지문 미등록 (2) 기기에 Google 계정 미등록.\nchrome://inspect 콘솔에서 [GoogleLogin] 로그 확인.');
     return { ok: false };
   }
 };
