@@ -160,6 +160,15 @@ function cashOnlyPill(s) {
   return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
 }
 </script>
+<script>
+// 한글로 바꾼 가게는 현지 간판 이름도 작게 같이 보여준다
+function localName(s) {
+  var v = s && s.nameLocal;
+  if (!v) return "";
+  var e = window._esc || function(x){ return x==null?"":String(x); };
+  return '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-left:5px">' + e(v) + '</span>';
+}
+</script>
 </head>
 <body>
 <div class="phone">
@@ -508,7 +517,7 @@ function renderStores(stores, el, city){
     return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
-      +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
+      +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
       +'<div class="store-sub">'+(s.category||'')+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
       +'<div class="store-cards-row">'+cards+'</div>'
       +'</div></div>';
@@ -562,7 +571,7 @@ function doSearch(val){
       return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
         +'<div class="store-thumb">'+thumb+'</div>'
         +'<div class="store-info">'
-        +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
+        +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
         +'<div class="store-sub">'+(s.category||'')+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
         +'</div></div>';
     }).join('');
