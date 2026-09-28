@@ -208,6 +208,15 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
   .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
   .media-overlay,.map-overlay,.prog-overlay{border-radius:0!important}
 }
+.bnav{display:flex;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:60;border-top:1px solid #F3F4F6;background:#fff;padding:8px 0 10px}
+.bnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#999;gap:3px;font-weight:600}
+.bnav .ni svg{width:22px;height:22px}
+.bnav .ni.on{color:#FF3900}
+.bnav .ni.on svg{stroke:#FF3900}
+.bnav .nplus{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.bnav .npbtn{width:36px;height:36px;border-radius:50%;background:#FF3900;display:flex;align-items:center;justify-content:center;color:#fff;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px;box-shadow:0 8px 16px rgba(255,57,0,.25)}
+.bnav .nplbl{font-size:10px;color:#FF3900;font-weight:700}
+body{padding-bottom:78px}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta"></script>
@@ -1053,5 +1062,12 @@ function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;
 
 
 </script>
+  <div class="bnav">
+    <div class="ni" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni on"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus" onclick="window.location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni" onclick="window.location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni" onclick="window.location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
 </body>
 </html>
