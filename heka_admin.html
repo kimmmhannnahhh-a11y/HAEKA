@@ -1419,7 +1419,7 @@ async function runBulk() {
   if (!confirm(rows.length + "곳을 등록할까요?")) return;
 
   btn.disabled = true;
-  var done = 0, fail = 0;
+  var done = 0, fail = 0, firstErr = "";
   // 20건씩 나눠 보낸다 (한꺼번에 던지면 실패율이 올라감)
   for (var i = 0; i < rows.length; i += 20) {
     var chunk = rows.slice(i, i + 20);
@@ -1438,11 +1438,19 @@ async function runBulk() {
         registeredBy: "admin"
       });
     }));
-    results.forEach(function(x){ if (x.status === "fulfilled") done++; else fail++; });
+    results.forEach(function(x){
+      if (x.status === "fulfilled") { done++; }
+      else {
+        fail++;
+        if (!firstErr) firstErr = (x.reason && (x.reason.code || x.reason.message)) || String(x.reason);
+        console.error("[일괄등록 실패]", x.reason);
+      }
+    });
     stat.textContent = done + " / " + rows.length + " 등록됨" + (fail ? " (실패 " + fail + ")" : "");
   }
   btn.disabled = false;
-  alert("등록 완료 — 성공 " + done + "곳" + (fail ? ", 실패 " + fail + "곳" : ""));
+  alert("등록 완료 — 성공 " + done + "곳" + (fail ? ", 실패 " + fail + "곳
+사유: " + firstErr : ""));
   if (typeof loadStores === "function") loadStores();
 }
 
