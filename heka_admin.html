@@ -1621,11 +1621,15 @@ async function overpassQuery(q, onTry) {
   var lastErr = null;
   for (var i = 0; i < OVERPASS_SERVERS.length; i++) {
     if (onTry) onTry(i + 1, OVERPASS_SERVERS.length);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 25000);  // 25초 안에 답 없으면 다음 서버로
     try {
-      var res = await fetch(OVERPASS_SERVERS[i] + '?data=' + encodeURIComponent(q));
+      var res = await fetch(OVERPASS_SERVERS[i] + '?data=' + encodeURIComponent(q), { signal: ctrl.signal });
+      clearTimeout(timer);
       if (!res.ok) { lastErr = new Error('서버 응답 ' + res.status); continue; }
       return await res.json();
     } catch (e) {
+      clearTimeout(timer);
       lastErr = e;
     }
   }
