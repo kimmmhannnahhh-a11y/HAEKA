@@ -48,7 +48,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .nick-edit-btn svg{width:13px;height:13px;stroke:#aaa;fill:none;stroke-width:2;stroke-linecap:round}
 .badge-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
 .badge-txt{font-size:11px;color:#888;font-weight:500}
-.bio-txt{font-size:11px;color:#bbb;cursor:pointer}
+
 .stats-row{display:flex;gap:6px}
 .stat-box{flex:1;background:#f8f8f8;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:.15s}
 .stat-box:hover{background:#f0f0f0}
@@ -186,7 +186,7 @@ body,.phone,.scroll-wrap{background:#fff!important}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -196,7 +196,7 @@ const _app = initializeApp({
 });
 const _db = getFirestore(_app);
 const _auth = getAuth(_app);
-window._db = _db; window._doc = doc; window._getDoc = getDoc;
+window._db = _db; window._doc = doc; window._getDoc = getDoc; window._setDoc = setDoc;
 onAuthStateChanged(_auth, async function(u){
   window._currentUser = u||null;
   if(u) {
@@ -220,6 +220,12 @@ onAuthStateChanged(_auth, async function(u){
           try { var saved = JSON.parse(localStorage.getItem('haeka_user')||'{}'); saved.nick = uData.nick; localStorage.setItem('haeka_user', JSON.stringify(saved)); } catch(e){}
         }
         if(uData.phone) { userData.phone = uData.phone; }
+        // 다른 기기에서 올린 프로필 사진 복원
+        if(uData.avatar) {
+          var avEl = document.getElementById("avatar");
+          if(avEl) avEl.innerHTML = '<img src="'+uData.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+          if(typeof saveAvatar === "function") saveAvatar(uData.avatar);
+        }
       }
     } catch(e){ console.log('nick load err:', e); }
   }
@@ -346,7 +352,6 @@ window._loadNotices = async function() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </button>
           </div>
-          <div class="bio-txt" id="bio-txt" onclick="openBioEdit()">한줄소개</div>
         </div>
       </div>
       <div class="stats-row">
@@ -411,16 +416,6 @@ window._loadNotices = async function() {
     </div>
   </div>
 
-  <!-- 한줄소개 수정 시트 -->
-  <div class="overlay" id="bio-overlay">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-title">한줄 소개</div>
-      <input class="sheet-inp" id="bio-inp" placeholder="나를 한 줄로 소개해보세요 (선택)" maxlength="30"/>
-      <button class="sheet-btn" onclick="saveBio()">저장하기</button>
-      <button class="sheet-cancel" onclick="closeBioEdit()">취소</button>
-    </div>
-  </div>
 
   <!-- 언어/통화 시트 -->
   <!-- 설정 패널 (톱니바퀴) -->
@@ -649,7 +644,6 @@ function getBadge(count) {
 // ── 상태 ──
 var userData = {
   nick: localStorage.getItem('haeka_nick') || '닉네임',
-  bio: '',
   reportCount: 0,
   placeCount: 0,
   lang: '한국어',
@@ -671,7 +665,6 @@ function init() {
     document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
   });
   document.getElementById('nick-txt').textContent = userData.nick;
-  document.getElementById('bio-txt').textContent = userData.bio || '아직 소개글이 없어요';
   document.getElementById('stat-report').textContent = userData.reportCount;
   document.getElementById('stat-place').textContent = userData.placeCount;
   document.getElementById('badge-txt').textContent = getBadge(userData.reportCount);
@@ -845,11 +838,33 @@ function changeAvatar(input) {
   if (!input.files[0]) return;
   var r = new FileReader();
   r.onload = function(e) {
-    var src = e.target.result;
-    document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
-    saveAvatar(src);
+    resizeAvatar(e.target.result, function(src) {
+      document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      saveAvatar(src);
+      saveAvatarCloud(src);
+    });
   };
   r.readAsDataURL(input.files[0]);
+}
+// 256px 정사각 JPEG으로 줄인다 (Firestore 문서 1MB 한도 대비)
+function resizeAvatar(src, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var S = 256, c = document.createElement('canvas');
+    c.width = S; c.height = S;
+    var side = Math.min(img.width, img.height);
+    c.getContext('2d').drawImage(img, (img.width-side)/2, (img.height-side)/2, side, side, 0, 0, S, S);
+    try { cb(c.toDataURL('image/jpeg', 0.75)); } catch(e) { cb(src); }
+  };
+  img.onerror = function() { cb(src); };
+  img.src = src;
+}
+// 기기가 바뀌어도 남도록 Firestore에 함께 저장
+function saveAvatarCloud(src) {
+  var u = window._currentUser;
+  if (!u || !u.uid || !window._setDoc) return;
+  window._setDoc(window._doc(window._db, 'users', u.uid), { avatar: src }, { merge: true })
+    .catch(function() { showToast('프로필 사진 저장에 실패했어요'); });
 }
 
 // ── 닉네임 ──
@@ -872,21 +887,6 @@ function saveNick() {
   document.getElementById('nick-txt').textContent = val;
   saveData();
   closeNickEdit();
-}
-
-// ── 한줄소개 ──
-function openBioEdit() {
-  document.getElementById('bio-inp').value = userData.bio === '아직 소개글이 없어요' ? '' : userData.bio;
-  document.getElementById('bio-overlay').classList.add('open');
-}
-function closeBioEdit() { document.getElementById('bio-overlay').classList.remove('open'); }
-function saveBio() {
-  var val = document.getElementById('bio-inp').value.trim();
-  userData.bio = val || '';
-  document.getElementById('bio-txt').textContent = val || '아직 소개글이 없어요';
-  saveData();
-  closeBioEdit();
-  showToast('소개글이 저장됐어요');
 }
 
 // ── 설정 패널 ──
