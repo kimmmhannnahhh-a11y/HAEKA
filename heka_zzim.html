@@ -430,7 +430,7 @@ function renderList(list){
   }
   var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
   el.innerHTML=list.map(function(s){
-    var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+    var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요'&&c!=='현금만'&&c!=='카드불가';});
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
     var _t=storeThumb(s); var thumb=_t

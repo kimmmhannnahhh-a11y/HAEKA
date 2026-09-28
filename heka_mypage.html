@@ -699,7 +699,7 @@ function renderRecent() {
     var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
     var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     recent.forEach(function(store) {
-      var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
+      var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요'&&c!=='현금만'&&c!=='카드불가';});
       cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
       var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
       var _ci = catImage(store.category);

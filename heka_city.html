@@ -502,7 +502,7 @@ function renderStores(stores, el, city){
   }
   el.innerHTML=stores.map(function(s){
     var _t=storeThumb(s); var thumb=_t?'<img src="'+_t+'" loading="eager"/>':'';
-    var cards=payStatePill(s).replace(/cpill/,"sc")+(s.payOk||s.cards||[]).map(function(c){
+    var cards=payStatePill(s).replace(/cpill/,"sc")+(s.payOk||s.cards||[]).filter(function(c){ return c!=='현금만' && c!=='카드불가'; }).map(function(c){
       var cl=CARD_MAP[c]||''; return cl?'<span class="sc '+cl+'">'+c+'</span>':'';
     }).join('');
     return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'

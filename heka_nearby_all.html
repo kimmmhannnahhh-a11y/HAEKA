@@ -562,7 +562,7 @@ window.openFirebaseDetail = async function(store) {
     if(isZzimed) dpZzim.classList.add('on'); else dpZzim.classList.remove('on');
   }
 
-  var cards = (store.payOk || []);
+  var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가'; });
   var pills = payStatePill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
 
   var placesInfo = { hours: null, phone: null, isOpen: null };
