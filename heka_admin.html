@@ -236,22 +236,32 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
         <div class="card-head"><span class="card-title">체인점 일괄 등록</span><button class="btn-sm" onclick="closeBulk()">닫기</button></div>
 
         <div style="font-size:12px;color:#666;line-height:1.7;padding:0 0 14px">
-          도시와 체인을 고르면 그 도시의 지점을 모두 찾아서 한 번에 등록합니다. 지점 위치는 OpenStreetMap에서 가져옵니다.
+          나라와 도시를 고르고 매장명을 적으면 그 도시의 지점을 모두 찾아서 한 번에 등록합니다. 지점 위치는 OpenStreetMap에서 가져옵니다.
         </div>
 
-        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">1. 도시</div>
-        <div id="bulk-cities" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">1. 나라</div>
+        <div id="bulk-countries" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
 
-        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">2. 체인</div>
-        <div id="bulk-chains" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+        <div id="bulk-city-wrap" style="display:none">
+          <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">2. 도시</div>
+          <div id="bulk-cities" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+        </div>
 
-        <div style="font-size:11px;font-weight:800;color:#16a34a;padding:0 0 6px">3. 결제 가능한 카드</div>
+        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">3. 매장명</div>
+        <input type="text" id="bulk-name" oninput="resetBulkResult()" style="width:100%;max-width:340px;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:13px;font-family:inherit;outline:none"/>
+        <div style="font-size:11px;color:#aaa;padding:6px 0 8px">한글·영어·현지어 아무거나 됩니다. 예: 세븐일레븐 · Starbucks · ローソン</div>
+        <div id="bulk-quick" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">4. 카테고리</div>
+        <div id="bulk-cats" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="font-size:11px;font-weight:800;color:#16a34a;padding:0 0 6px">5. 결제 가능한 카드</div>
         <div id="bulk-ok" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
 
-        <div style="font-size:11px;font-weight:800;color:#dc2626;padding:0 0 6px">4. 결제 안 되는 카드 (없으면 비워두세요)</div>
+        <div style="font-size:11px;font-weight:800;color:#dc2626;padding:0 0 6px">6. 결제 안 되는 카드 (없으면 비워두세요)</div>
         <div id="bulk-no" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
 
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:4px;border-top:1px solid #f0f0f0;margin-top:4px;padding-top:14px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid #f0f0f0;margin-top:4px;padding-top:14px">
           <button class="btn-sm" id="bulk-find" onclick="findBranches()" style="padding:10px 18px;font-size:13px">지점 찾기</button>
           <button class="btn-primary" id="bulk-run" onclick="runBulk()" style="padding:10px 20px;font-size:13px;display:none">등록하기</button>
           <span id="bulk-status" style="font-size:12px;color:#666;font-weight:600"></span>
@@ -1404,35 +1414,165 @@ function toggleCard(el) { el.classList.toggle('on'); }
 function closeStoreModal() { document.getElementById('store-modal').classList.remove('on'); }
 
 // ── 체인점 일괄 등록 ──
-var BULK_CITIES = [
-  { name: '오사카',   bbox: '34.55,135.40,34.78,135.62' },
-  { name: '도쿄',     bbox: '35.60,139.60,35.80,139.85' },
-  { name: '교토',     bbox: '34.95,135.70,35.07,135.82' },
-  { name: '후쿠오카', bbox: '33.52,130.33,33.63,130.46' },
-  { name: '다낭',     bbox: '16.02,108.15,16.12,108.27' },
-  { name: '방콕',     bbox: '13.68,100.45,13.82,100.62' }
+var BULK_COUNTRIES = [
+  { name: '일본', cities: [
+    { name: '도쿄',       bbox: '35.60,139.60,35.80,139.85' },
+    { name: '오사카',     bbox: '34.55,135.40,34.78,135.62' },
+    { name: '교토',       bbox: '34.95,135.70,35.07,135.82' },
+    { name: '후쿠오카',   bbox: '33.52,130.33,33.63,130.46' },
+    { name: '삿포로',     bbox: '43.00,141.28,43.10,141.42' },
+    { name: '나고야',     bbox: '35.10,136.85,35.22,136.95' },
+    { name: '오키나와',   bbox: '26.18,127.63,26.28,127.75' }
+  ]},
+  { name: '대만', cities: [
+    { name: '타이베이',   bbox: '25.00,121.48,25.12,121.60' },
+    { name: '가오슝',     bbox: '22.58,120.25,22.68,120.35' }
+  ]},
+  { name: '홍콩·마카오', cities: [
+    { name: '홍콩',       bbox: '22.25,114.12,22.36,114.25' },
+    { name: '마카오',     bbox: '22.10,113.52,22.22,113.60' }
+  ]},
+  { name: '싱가포르', cities: [
+    { name: '싱가포르',   bbox: '1.24,103.78,1.42,103.92' }
+  ]},
+  { name: '베트남', cities: [
+    { name: '다낭',       bbox: '16.02,108.15,16.12,108.27' },
+    { name: '하노이',     bbox: '20.98,105.78,21.06,105.88' },
+    { name: '호치민',     bbox: '10.74,106.66,10.82,106.73' },
+    { name: '나트랑',     bbox: '12.22,109.16,12.30,109.23' },
+    { name: '푸꾸옥',     bbox: '10.18,103.93,10.30,104.05' }
+  ]},
+  { name: '태국', cities: [
+    { name: '방콕',       bbox: '13.68,100.45,13.82,100.62' },
+    { name: '치앙마이',   bbox: '18.76,98.95,18.83,99.02' },
+    { name: '푸켓',       bbox: '7.85,98.28,7.95,98.42' }
+  ]},
+  { name: '필리핀', cities: [
+    { name: '세부',       bbox: '10.28,123.86,10.36,123.94' },
+    { name: '마닐라',     bbox: '14.53,120.96,14.63,121.05' },
+    { name: '보라카이',   bbox: '11.94,121.90,11.99,121.95' }
+  ]},
+  { name: '인도네시아', cities: [
+    { name: '발리',       bbox: '-8.80,115.14,-8.62,115.28' },
+    { name: '자카르타',   bbox: '-6.25,106.76,-6.14,106.87' }
+  ]},
+  { name: '말레이시아', cities: [
+    { name: '쿠알라룸푸르', bbox: '3.10,101.66,3.18,101.74' }
+  ]},
+  { name: '중국', cities: [
+    { name: '상하이',     bbox: '31.18,121.40,31.28,121.53' },
+    { name: '베이징',     bbox: '39.88,116.33,39.96,116.46' }
+  ]},
+  { name: '미국', cities: [
+    { name: '뉴욕',       bbox: '40.70,-74.02,40.80,-73.93' },
+    { name: '로스앤젤레스', bbox: '34.00,-118.30,34.12,-118.20' },
+    { name: '라스베이거스', bbox: '36.08,-115.19,36.18,-115.12' },
+    { name: '샌프란시스코', bbox: '37.75,-122.45,37.81,-122.39' },
+    { name: '워싱턴DC',   bbox: '38.87,-77.05,38.93,-76.98' },
+    { name: '시애틀',     bbox: '47.58,-122.36,47.66,-122.30' },
+    { name: '호놀룰루',   bbox: '21.26,-157.86,21.32,-157.80' }
+  ]},
+  { name: '캐나다', cities: [
+    { name: '밴쿠버',     bbox: '49.26,-123.16,49.31,-123.09' },
+    { name: '토론토',     bbox: '43.63,-79.42,43.69,-79.35' }
+  ]},
+  { name: '괌·사이판', cities: [
+    { name: '괌',         bbox: '13.45,144.73,13.53,144.81' },
+    { name: '사이판',     bbox: '15.16,145.70,15.24,145.78' }
+  ]},
+  { name: '프랑스', cities: [
+    { name: '파리',       bbox: '48.83,2.27,48.90,2.41' },
+    { name: '니스',       bbox: '43.68,7.24,43.72,7.30' }
+  ]},
+  { name: '영국', cities: [
+    { name: '런던',       bbox: '51.48,-0.16,51.54,-0.07' }
+  ]},
+  { name: '이탈리아', cities: [
+    { name: '로마',       bbox: '41.87,12.44,41.92,12.52' },
+    { name: '밀라노',     bbox: '45.44,9.16,45.49,9.22' },
+    { name: '베네치아',   bbox: '45.42,12.31,45.45,12.36' },
+    { name: '피렌체',     bbox: '43.75,11.23,43.79,11.28' }
+  ]},
+  { name: '스페인', cities: [
+    { name: '바르셀로나', bbox: '41.37,2.14,41.42,2.20' },
+    { name: '마드리드',   bbox: '40.40,-3.72,40.44,-3.67' }
+  ]},
+  { name: '독일', cities: [
+    { name: '베를린',     bbox: '52.49,13.36,52.54,13.45' },
+    { name: '뮌헨',       bbox: '48.12,11.54,48.16,11.60' },
+    { name: '프랑크푸르트', bbox: '50.10,8.64,50.13,8.70' }
+  ]},
+  { name: '체코', cities: [
+    { name: '프라하',     bbox: '50.07,14.40,50.10,14.45' }
+  ]},
+  { name: '오스트리아', cities: [
+    { name: '빈',         bbox: '48.19,16.35,48.23,16.40' }
+  ]},
+  { name: '스위스', cities: [
+    { name: '취리히',     bbox: '47.36,8.52,47.39,8.56' },
+    { name: '인터라켄',   bbox: '46.67,7.84,46.70,7.88' }
+  ]},
+  { name: '네덜란드', cities: [
+    { name: '암스테르담', bbox: '52.35,4.86,52.39,4.92' }
+  ]},
+  { name: '튀르키예', cities: [
+    { name: '이스탄불',   bbox: '41.00,28.93,41.05,29.02' }
+  ]},
+  { name: 'UAE', cities: [
+    { name: '두바이',     bbox: '25.17,55.24,25.29,55.33' }
+  ]},
+  { name: '호주', cities: [
+    { name: '시드니',     bbox: '-33.89,151.19,-33.85,151.23' },
+    { name: '멜버른',     bbox: '-37.83,144.94,-37.79,144.99' }
+  ]},
+  { name: '뉴질랜드', cities: [
+    { name: '오클랜드',   bbox: '-36.87,174.74,-36.83,174.79' }
+  ]}
 ];
-var BULK_CHAINS = [
-  { name: '세븐일레븐', pat: 'セブン-?イレブン|7-?Eleven',  cat: '편의점' },
-  { name: '패밀리마트', pat: 'ファミリーマート|FamilyMart', cat: '편의점' },
-  { name: '로손',       pat: 'ローソン|Lawson',             cat: '편의점' },
-  { name: '스타벅스',   pat: 'スターバックス|Starbucks',    cat: '카페' },
-  { name: '맥도날드',   pat: 'マクドナルド|McDonald',       cat: '식당' }
-];
+var BULK_QUICK = ["세븐일레븐", "패밀리마트", "로손", "스타벅스", "맥도날드", "서브웨이", "버거킹", "KFC", "돈키호테", "유니클로", "이온몰", "CVS", "Walgreens", "Carrefour", "Lidl", "Aldi"];
+var BULK_CATS = ["식당", "카페", "편의점", "마트", "숙박", "쇼핑", "관광", "교통", "기타"];
+// 한글로 적어도 찾아지도록, 자주 쓰는 곳은 현지 표기를 같이 건다
+var BULK_ALIAS = {
+  "세븐일레븐": "セブン-?イレブン|7-?Eleven|7-?11",
+  "패밀리마트": "ファミリーマート|FamilyMart|全家",
+  "로손": "ローソン|Lawson",
+  "스타벅스": "スターバックス|Starbucks|星巴克",
+  "맥도날드": "マクドナルド|McDonald|麥當勞",
+  "서브웨이": "サブウェイ|Subway",
+  "버거킹": "バーガーキング|Burger King",
+  "KFC": "KFC|ケンタッキー",
+  "이온몰": "イオン|AEON",
+  "돈키호테": "ドン・?キホーテ|Don Quijote|MEGAドンキ",
+  "유니클로": "ユニクロ|Uniqlo",
+  "로손스토어100": "ローソンストア100"
+};
 var BULK_CARDS = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '현금가능'];
 
-var _bulkCity = null, _bulkChain = null, _bulkOk = [], _bulkNo = [], _bulkRows = [];
+var _bulkCountry = null, _bulkCity = null, _bulkCat = "편의점", _bulkOk = [], _bulkNo = [], _bulkRows = [];
 
 function bulkChipStyle(on, color) {
   return 'padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid ' +
     (on ? color : '#e0e0e0') + ';background:' + (on ? color : '#fff') + ';color:' + (on ? '#fff' : '#555');
 }
 function renderBulkChips() {
-  document.getElementById('bulk-cities').innerHTML = BULK_CITIES.map(function (x, i) {
-    return '<button onclick="pickCity(' + i + ')" style="' + bulkChipStyle(_bulkCity === i, '#FF3900') + '">' + x.name + '</button>';
+  document.getElementById('bulk-countries').innerHTML = BULK_COUNTRIES.map(function (x, i) {
+    return '<button onclick="pickCountry(' + i + ')" style="' + bulkChipStyle(_bulkCountry === i, '#FF3900') + '">' + x.name + '</button>';
   }).join('');
-  document.getElementById('bulk-chains').innerHTML = BULK_CHAINS.map(function (x, i) {
-    return '<button onclick="pickChain(' + i + ')" style="' + bulkChipStyle(_bulkChain === i, '#FF3900') + '">' + x.name + '</button>';
+
+  var cityWrap = document.getElementById('bulk-city-wrap');
+  if (_bulkCountry === null) {
+    cityWrap.style.display = 'none';
+  } else {
+    cityWrap.style.display = 'block';
+    document.getElementById('bulk-cities').innerHTML = BULK_COUNTRIES[_bulkCountry].cities.map(function (x, i) {
+      return '<button onclick="pickCity(' + i + ')" style="' + bulkChipStyle(_bulkCity === i, '#FF3900') + '">' + x.name + '</button>';
+    }).join('');
+  }
+  document.getElementById('bulk-quick').innerHTML = BULK_QUICK.map(function (x) {
+    return '<button onclick="useQuick(&quot;'+x+'&quot;)" style="padding:5px 11px;border-radius:14px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid #e0e0e0;background:#fafafa;color:#666">'+x+'</button>';
+  }).join('');
+  document.getElementById('bulk-cats').innerHTML = BULK_CATS.map(function (x) {
+    return '<button onclick="pickCat(&quot;'+x+'&quot;)" style="'+bulkChipStyle(_bulkCat===x,'#FF3900')+'">'+x+'</button>';
   }).join('');
   document.getElementById('bulk-ok').innerHTML = BULK_CARDS.map(function (x) {
     return '<button onclick="toggleBulkCard(&quot;ok&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkOk.indexOf(x) > -1, '#16a34a') + '">' + x + '</button>';
@@ -1441,8 +1581,10 @@ function renderBulkChips() {
     return '<button onclick="toggleBulkCard(&quot;no&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkNo.indexOf(x) > -1, '#dc2626') + '">' + x + '</button>';
   }).join('');
 }
+function pickCountry(i) { _bulkCountry = i; _bulkCity = null; resetBulkResult(); renderBulkChips(); }
 function pickCity(i) { _bulkCity = i; resetBulkResult(); renderBulkChips(); }
-function pickChain(i) { _bulkChain = i; resetBulkResult(); renderBulkChips(); }
+function useQuick(name) { document.getElementById('bulk-name').value = name; resetBulkResult(); }
+function pickCat(c) { _bulkCat = c; renderBulkChips(); }
 function toggleBulkCard(kind, name) {
   var arr = (kind === 'ok') ? _bulkOk : _bulkNo;
   var i = arr.indexOf(name);
@@ -1468,32 +1610,66 @@ function closeBulk() {
 }
 
 // OpenStreetMap에서 그 도시의 지점 목록을 가져온다
+// 서버 한 곳이 막히거나 바쁠 때가 잦아서 여러 곳을 차례로 시도한다
+var OVERPASS_SERVERS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+];
+async function overpassQuery(q, onTry) {
+  var lastErr = null;
+  for (var i = 0; i < OVERPASS_SERVERS.length; i++) {
+    if (onTry) onTry(i + 1, OVERPASS_SERVERS.length);
+    try {
+      var res = await fetch(OVERPASS_SERVERS[i] + '?data=' + encodeURIComponent(q));
+      if (!res.ok) { lastErr = new Error('서버 응답 ' + res.status); continue; }
+      return await res.json();
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('모든 서버 실패');
+}
+
 async function findBranches() {
+  if (_bulkCountry === null) { alert('나라를 골라주세요'); return; }
   if (_bulkCity === null) { alert('도시를 골라주세요'); return; }
-  if (_bulkChain === null) { alert('체인을 골라주세요'); return; }
-  var city = BULK_CITIES[_bulkCity], chain = BULK_CHAINS[_bulkChain];
+  var keyword = (document.getElementById('bulk-name').value || '').trim();
+  if (!keyword) { alert('매장명을 적어주세요'); return; }
+
+  var country = BULK_COUNTRIES[_bulkCountry];
+  var city = country.cities[_bulkCity];
   var btn = document.getElementById('bulk-find');
   var stat = document.getElementById('bulk-status');
   resetBulkResult();
   btn.disabled = true;
-  stat.textContent = '지점을 찾는 중…';
+
+  // 한글로 적어도 현지 표기로 찾아지도록 별칭을 붙인다
+  var pat = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var alias = BULK_ALIAS[keyword];
+  if (alias) pat = alias;
 
   var q = '[out:json][timeout:60];(' +
-    'nwr["brand"~"' + chain.pat + '",i](' + city.bbox + ');' +
-    'nwr["name"~"' + chain.pat + '",i](' + city.bbox + ');' +
+    'nwr["brand"~"' + pat + '",i](' + city.bbox + ');' +
+    'nwr["name"~"' + pat + '",i](' + city.bbox + ');' +
+    'nwr["operator"~"' + pat + '",i](' + city.bbox + ');' +
     ');out center tags;';
+
   try {
-    var res = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q) });
-    var data = await res.json();
+    var data = await overpassQuery(q, function (n, total) {
+      stat.textContent = '지점을 찾는 중… (' + n + '/' + total + ')';
+    });
     var seen = {};
     _bulkRows = (data.elements || []).map(function (e) {
       var t = e.tags || {};
       var lat = e.lat || (e.center && e.center.lat) || null;
       var lng = e.lon || (e.center && e.center.lon) || null;
       return {
-        name: t['name:ko'] || t.name || chain.name,
-        category: chain.cat,
+        name: t['name:ko'] || t.name || keyword,
+        category: _bulkCat,
         city: city.name,
+        country: country.name,
         address: t['addr:full'] || [t['addr:city'], t['addr:street'], t['addr:housenumber']].filter(Boolean).join(' '),
         lat: lat, lng: lng
       };
@@ -1505,18 +1681,22 @@ async function findBranches() {
     });
     if (!_bulkRows.length) {
       stat.textContent = '지점을 못 찾았어요';
-      document.getElementById('bulk-preview').innerHTML = '<span style="color:#dc2626">이 도시에는 등록된 지점 정보가 없습니다. 다른 체인이나 도시를 골라보세요.</span>';
+      document.getElementById('bulk-preview').innerHTML =
+        '<span style="color:#dc2626">' + city.name + '에서 &quot;' + keyword + '&quot; 를 못 찾았습니다.</span><br>' +
+        '현지 표기로 적으면 더 잘 찾습니다. 예: 세븐일레븐 → セブンイレブン, 스타벅스 → Starbucks';
     } else {
       stat.textContent = _bulkRows.length + '곳 찾음';
       document.getElementById('bulk-run').style.display = 'inline-block';
       var sample = _bulkRows.slice(0, 5).map(function (r) { return '· ' + r.name; }).join('<br>');
       document.getElementById('bulk-preview').innerHTML =
-        '<b>' + city.name + ' ' + chain.name + ' ' + _bulkRows.length + '곳</b><br>' + sample +
+        '<b>' + country.name + ' ' + city.name + ' · ' + keyword + ' ' + _bulkRows.length + '곳</b><br>' + sample +
         (_bulkRows.length > 5 ? '<br>… 외 ' + (_bulkRows.length - 5) + '곳' : '');
     }
   } catch (e) {
     stat.textContent = '';
-    alert('지점을 가져오지 못했어요: ' + e.message);
+    document.getElementById('bulk-preview').innerHTML =
+      '<span style="color:#dc2626">지점을 가져오지 못했습니다. 지도 서버가 바쁘면 이런 일이 생깁니다. 잠시 뒤 다시 눌러주세요.</span>';
+    console.error('[지점찾기 실패]', e);
   }
   btn.disabled = false;
 }
@@ -1540,9 +1720,10 @@ async function runBulk() {
     var chunk = _bulkRows.slice(i, i + 20);
     var results = await Promise.allSettled(chunk.map(function (r) {
       return f.addDoc(f.collection(db, 'stores'), {
-        name: r.name, category: r.category, address: r.address, city: r.city,
+        name: r.name, category: r.category, address: r.address,
+        city: r.city, country: r.country,
         lat: r.lat, lng: r.lng, payOk: ok, payNo: no, images: [],
-        createdAt: f.serverTimestamp(), registeredBy: 'admin'
+        createdAt: f.serverTimestamp(), registeredBy: 'admin', source: 'osm'
       });
     }));
     results.forEach(function (x) {
