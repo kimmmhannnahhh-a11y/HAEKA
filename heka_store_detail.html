@@ -516,7 +516,8 @@ async function renderStore(store) {
     if(!images.length){
       var ci = catImage(store.category);
       if (ci) {
-        heroEl.innerHTML = '<img src="'+ci+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"/>';
+        heroEl.style.background = "#FDFBF6";
+        heroEl.innerHTML = '<img src="'+ci+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;padding:10px 0"/>';
         return;
       }
       var catText = {'식당':'식','카페':'카','펍':'펍','패스트푸드':'패','이자카야':'이','편의점':'편','마트':'마','호텔':'호'};
