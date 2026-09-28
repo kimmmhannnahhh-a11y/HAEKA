@@ -614,6 +614,9 @@ function selectCityDirect(countryName, city){
 function showView(id){
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
+  // 도시 사진 그리드는 .view 바깥에 있어서 따로 숨겨야 한다
+  var grid = document.getElementById('city-img-grid');
+  if (grid) grid.style.display = (id === 'view-country' && !(document.getElementById('search-inp')||{}).value) ? 'grid' : 'none';
 }
 
 function showCountryView(){
