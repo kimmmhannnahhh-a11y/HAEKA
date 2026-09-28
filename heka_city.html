@@ -152,6 +152,14 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
 <script src="store-cache.js"></script>
+<script>
+// 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
+function cashOnlyPill(s) {
+  var no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") < 0) return "";
+  return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+}
+</script>
 </head>
 <body>
 <div class="phone">
@@ -494,7 +502,7 @@ function renderStores(stores, el, city){
   }
   el.innerHTML=stores.map(function(s){
     var _t=storeThumb(s); var thumb=_t?'<img src="'+_t+'" loading="eager"/>':'';
-    var cards=(s.payOk||s.cards||[]).map(function(c){
+    var cards=cashOnlyPill(s).replace(/cpill/,"sc")+(s.payOk||s.cards||[]).map(function(c){
       var cl=CARD_MAP[c]||''; return cl?'<span class="sc '+cl+'">'+c+'</span>':'';
     }).join('');
     return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'

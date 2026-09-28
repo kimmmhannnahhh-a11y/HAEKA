@@ -107,6 +107,14 @@ var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "�
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
+<script>
+// 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
+function cashOnlyPill(s) {
+  var no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") < 0) return "";
+  return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+}
+</script>
 </head>
 <body>
 <div class="phone">
@@ -437,7 +445,7 @@ function openDetail(idx){
   var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
   var cards=(store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
   cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
-  var pills=cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
+  var pills=cashOnlyPill(store).replace(/cpill/g,'dpill')+cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
   var distHtml='';
   if(userLat&&userLng&&store.lat&&store.lng){var dm=calcDist(userLat,userLng,store.lat,store.lng);distHtml='<div style="font-size:11px;color:#FF3900;font-weight:600;margin-bottom:6px">📍 '+distLbl(dm)+' 거리</div>';}
   var mapHtml='';

@@ -897,7 +897,7 @@ function renderNearby(stores) {
     var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
     var cards = (store.payOk || []);
     cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
-    var pillsHtml = cards.map(function(c){
+    var pillsHtml = cashOnlyPill(store) + cards.map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
     }).join('');
     var distText = '';
@@ -1109,6 +1109,14 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "버스": "img/cat-bus.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "이자카야": "img/cat-izakaya.jpg", "입장권": "img/cat-ticket.jpg", "전철 티켓": "img/cat-metro.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "펍": "img/cat-pub.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
+</script>
+<script>
+// 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
+function cashOnlyPill(s) {
+  var no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") < 0) return "";
+  return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+}
 </script>
 </head>
 <body>

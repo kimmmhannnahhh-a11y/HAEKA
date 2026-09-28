@@ -216,6 +216,14 @@ var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "�
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
+<script>
+// 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
+function cashOnlyPill(s) {
+  var no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") < 0) return "";
+  return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+}
+</script>
 </head>
 <body>
 <div class="phone">
@@ -534,7 +542,7 @@ window.openFirebaseDetail = async function(store) {
   }
 
   var cards = (store.payOk || []);
-  var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
+  var pills = cashOnlyPill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
 
   var placesInfo = { hours: null, phone: null, isOpen: null };
   try {
