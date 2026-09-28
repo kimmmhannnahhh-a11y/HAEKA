@@ -880,13 +880,21 @@ function checkNick() {
   document.getElementById('nick-err').classList.toggle('show', isDup);
 }
 function saveNick() {
-  var val = document.getElementById('nick-inp').value.trim();
-  if (!val) { showToast('닉네임을 입력해주세요'); return; }
+  var val = document.getElementById("nick-inp").value.trim();
+  if (!val) { showToast("닉네임을 입력해주세요"); return; }
   if (usedNicks.indexOf(val) > -1 && val !== userData.nick) { return; }
   userData.nick = val;
-  document.getElementById('nick-txt').textContent = val;
+  document.getElementById("nick-txt").textContent = val;
   saveData();
+  saveNickCloud(val);
   closeNickEdit();
+}
+// 기기가 바뀌어도 남도록, 남에게도 이 이름으로 보이도록 Firestore에 저장한다
+function saveNickCloud(val) {
+  var u = window._currentUser;
+  if (!u || !u.uid || !window._setDoc) return;
+  window._setDoc(window._doc(window._db, "users", u.uid), { nick: val }, { merge: true })
+    .catch(function() { showToast("닉네임 저장에 실패했어요"); });
 }
 
 // ── 설정 패널 ──

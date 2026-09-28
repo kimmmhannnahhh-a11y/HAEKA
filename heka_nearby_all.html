@@ -210,6 +210,12 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 }
 </style>
 <script src="security.js"></script>
+<script>
+// 사진이 없는 매장은 카테고리 그림으로 대신한다
+var CAT_IMAGES = { "편의점": "img/cat-convenience.png" };
+function catImage(cat) { return CAT_IMAGES[cat] || ""; }
+function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
+</script>
 </head>
 <body>
 <div class="phone">
@@ -667,7 +673,7 @@ function renderList(stores){
     var status='';
     var storeHours=s.businessHours||s.hours||s.openingHours;
     if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
-    var imgSrc=(s.images&&s.images[0])?_u(s.images[0]):'';
+    var _t=storeThumb(s); var imgSrc=_t?_u(_t):'';
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');

@@ -909,8 +909,8 @@ function renderNearby(stores) {
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
       ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
-      : store.images && store.images[0]
-      ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
+      : storeThumb(store)
+      ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+storeThumb(store)+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
       : store.videoUrl
       ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
       : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
@@ -1104,6 +1104,12 @@ window._arrayUnion = arrayUnion;
 window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, where, arrayUnion };
 </script>
 <script src="security.js"></script>
+<script>
+// 사진이 없는 매장은 카테고리 그림으로 대신한다
+var CAT_IMAGES = { "편의점": "img/cat-convenience.png" };
+function catImage(cat) { return CAT_IMAGES[cat] || ""; }
+function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
+</script>
 </head>
 <body>
 <div class="phone">

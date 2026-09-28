@@ -101,6 +101,12 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script src="security.js"></script>
+<script>
+// 사진이 없는 매장은 카테고리 그림으로 대신한다
+var CAT_IMAGES = { "편의점": "img/cat-convenience.png" };
+function catImage(cat) { return CAT_IMAGES[cat] || ""; }
+function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
+</script>
 </head>
 <body>
 <div class="phone">
@@ -398,8 +404,8 @@ function renderList(list){
     var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';}).join('');
-    var thumb=s.images&&s.images[0]
-      ?'<div class="store-thumb"><img src="'+s.images[0]+'" loading="eager" alt=""/></div>'
+    var _t=storeThumb(s); var thumb=_t
+      ?'<div class="store-thumb"><img src="'+_t+'" loading="eager" alt=""/></div>'
       :'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var dm=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist"> · '+distLbl(dm)+'</span>';}
