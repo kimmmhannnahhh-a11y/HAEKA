@@ -232,8 +232,21 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     <div class="page" id="page-stores">
       <div class="page-title">매장 관리</div>
       <div class="page-sub">등록된 전체 매장 목록</div>
+      <div class="card" id="bulk-card" style="display:none">
+        <div class="card-head"><span class="card-title">매장 일괄 등록</span><button class="btn-sm" onclick="closeBulk()">닫기</button></div>
+        <div style="font-size:12px;color:#666;line-height:1.7;padding:0 0 10px">
+          매장 목록을 JSON 배열로 붙여넣고 등록을 누르세요. 한 번에 수백 건까지 들어갑니다.<br>
+          쓸 수 있는 항목: <b>name</b>(필수) · category · address · city · lat · lng · payOk · payNo
+        </div>
+        <textarea id="bulk-input" style="width:100%;height:220px;border:1.5px solid #e0e0e0;border-radius:10px;padding:12px;font-family:Consolas,monospace;font-size:12px;line-height:1.6;outline:none;resize:vertical"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;padding-top:10px">
+          <button class="btn-primary" id="bulk-run" onclick="runBulk()" style="padding:10px 20px;font-size:13px">등록하기</button>
+          <button class="btn-sm" onclick="fillBulkSample()">예시 넣기</button>
+          <span id="bulk-status" style="font-size:12px;color:#666;font-weight:600"></span>
+        </div>
+      </div>
       <div class="card">
-        <div class="card-head"><span class="card-title">전체 매장</span><div style="display:flex;gap:6px"><button class="btn-primary" onclick="goPage('add-store',document.getElementById('nav-add-store'))" style="font-size:12px;padding:5px 12px">+ 매장 등록</button><button class="btn-sm" onclick="loadStores()">새로고침</button></div></div>
+        <div class="card-head"><span class="card-title">전체 매장</span><div style="display:flex;gap:6px"><button class="btn-primary" onclick="goPage('add-store',document.getElementById('nav-add-store'))" style="font-size:12px;padding:5px 12px">+ 매장 등록</button><button class="btn-sm" onclick="openBulk()" style="font-size:12px;padding:5px 12px">일괄 등록</button><button class="btn-sm" onclick="loadStores()">새로고침</button></div></div>
         <div class="search-bar"><input type="text" id="stores-search" placeholder="매장명 / 도시 검색..." oninput="filterStores(this.value)"/></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 14px">
           <button id="stores-cat-전체" onclick="setStoresCat('전체')" style="padding:5px 14px;border-radius:20px;border:1.5px solid #FF3900;background:#FF3900;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">전체</button>
@@ -1376,6 +1389,62 @@ function openStoreModal(id) {
 function toggleCard(el) { el.classList.toggle('on'); }
 
 function closeStoreModal() { document.getElementById('store-modal').classList.remove('on'); }
+
+// ── 매장 일괄 등록 ──
+function openBulk() {
+  var c = document.getElementById("bulk-card");
+  if (c) { c.style.display = "block"; c.scrollIntoView({behavior:"smooth"}); }
+}
+function closeBulk() {
+  var c = document.getElementById("bulk-card");
+  if (c) c.style.display = "none";
+}
+function fillBulkSample() {
+  document.getElementById("bulk-input").value = JSON.stringify([
+    { name: "세븐일레븐 난바점", category: "편의점", city: "오사카", address: "大阪市中央区難波1-1", lat: 34.6656, lng: 135.5013, payOk: ["VISA","MASTER","JCB","AMEX"], payNo: [] },
+    { name: "이치란 도톤보리점", category: "식당", city: "오사카", address: "大阪市中央区宗右衛門町7-18", lat: 34.6687, lng: 135.5013, payOk: ["VISA","MASTER"], payNo: ["트래블월렛"] }
+  ], null, 2);
+}
+async function runBulk() {
+  var f = window._fbFns, db = window._db;
+  var btn = document.getElementById("bulk-run");
+  var stat = document.getElementById("bulk-status");
+  var raw = document.getElementById("bulk-input").value.trim();
+  if (!raw) { alert("붙여넣은 내용이 없어요"); return; }
+  var rows;
+  try { rows = JSON.parse(raw); } catch(e) { alert("JSON 형식이 잘못됐어요: " + e.message); return; }
+  if (!Array.isArray(rows)) { alert("[ ] 로 감싼 배열이어야 해요"); return; }
+  var bad = rows.filter(function(r){ return !r || !r.name; }).length;
+  if (bad) { alert("매장명(name)이 없는 항목이 " + bad + "건 있어요"); return; }
+  if (!confirm(rows.length + "곳을 등록할까요?")) return;
+
+  btn.disabled = true;
+  var done = 0, fail = 0;
+  // 20건씩 나눠 보낸다 (한꺼번에 던지면 실패율이 올라감)
+  for (var i = 0; i < rows.length; i += 20) {
+    var chunk = rows.slice(i, i + 20);
+    var results = await Promise.allSettled(chunk.map(function(r) {
+      return f.addDoc(f.collection(db, "stores"), {
+        name: String(r.name),
+        category: r.category || "",
+        address: r.address || "",
+        city: r.city || "",
+        lat: (typeof r.lat === "number") ? r.lat : null,
+        lng: (typeof r.lng === "number") ? r.lng : null,
+        payOk: Array.isArray(r.payOk) ? r.payOk : [],
+        payNo: Array.isArray(r.payNo) ? r.payNo : [],
+        images: [],
+        createdAt: f.serverTimestamp(),
+        registeredBy: "admin"
+      });
+    }));
+    results.forEach(function(x){ if (x.status === "fulfilled") done++; else fail++; });
+    stat.textContent = done + " / " + rows.length + " 등록됨" + (fail ? " (실패 " + fail + ")" : "");
+  }
+  btn.disabled = false;
+  alert("등록 완료 — 성공 " + done + "곳" + (fail ? ", 실패 " + fail + "곳" : ""));
+  if (typeof loadStores === "function") loadStores();
+}
 
 async function saveStore() {
   if (!window._db) return;
