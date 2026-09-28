@@ -673,7 +673,7 @@ function renderList(stores){
     var status='';
     var storeHours=s.businessHours||s.hours||s.openingHours;
     if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
-    var _t=storeThumb(s); var imgSrc=_t?_u(_t):'';
+    var _ci=catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');
