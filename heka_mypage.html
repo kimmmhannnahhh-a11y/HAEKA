@@ -313,6 +313,11 @@ window._loadNotices = async function() {
 </script>
 
 <script src="security.js"></script>
+<script>
+// 사진이 없는 매장은 카테고리 그림으로 대신한다
+var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "버스": "img/cat-bus.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "이자카야": "img/cat-izakaya.jpg", "입장권": "img/cat-ticket.jpg", "전철 티켓": "img/cat-metro.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "펍": "img/cat-pub.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
+function catImage(cat) { return CAT_IMAGES[cat] || ""; }
+</script>
 </head>
 <body>
 <div class="phone" id="phone">
@@ -697,7 +702,8 @@ function renderRecent() {
       var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
       cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
       var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
-      var imgSrc = (store.images&&store.images[0])?_u(store.images[0]):'';
+      var _ci = catImage(store.category);
+      var imgSrc = (store.images&&store.images[0]) ? _u(store.images[0]) : _ci;
       var imgHtml = imgSrc
         ?'<div class="nimg" style="background-image:url(\''+imgSrc.replace(/'/g,'%27')+'\');background-position:center;background-size:cover;background-repeat:no-repeat"></div>'
         :'<div class="nimg" style="background:'+catBg(store.category)+'">'+_e(catEmoji(store.category))+'</div>';
