@@ -1106,7 +1106,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 <script src="security.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
-var CAT_IMAGES = { "편의점": "img/cat-convenience.jpg", "식당": "img/cat-restaurant.jpg" };
+var CAT_IMAGES = { "식당": "img/cat-restaurant.jpg", "카페": "img/cat-cafe.jpg", "편의점": "img/cat-convenience.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
