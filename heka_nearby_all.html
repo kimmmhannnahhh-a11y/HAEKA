@@ -218,7 +218,7 @@ function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && 
 </script>
 <script>
 // 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
-function cashOnlyPill(s) {
+function payStatePill(s) {
   var no = (s && s.payNo) || [];
   if (no.indexOf("카드불가") < 0) return "";
   return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
@@ -231,6 +231,18 @@ function localName(s) {
   if (!v) return "";
   var e = window._esc || function(x){ return x==null?"":String(x); };
   return '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-left:5px">' + e(v) + '</span>';
+}
+</script>
+<script>
+// 카드가 되는지 안 되는지에 따라 목록에 표시를 붙인다
+//   현금만       : 카드가 안 된다고 확인된 곳
+//   카드 정보 없음 : 아직 아무도 확인하지 않은 곳 (현금만과 헷갈리면 안 된다)
+function payStatePill(s) {
+  var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블/.test(c); });
+  if (hasCard) return "";
+  return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
 </script>
 </head>
@@ -551,7 +563,7 @@ window.openFirebaseDetail = async function(store) {
   }
 
   var cards = (store.payOk || []);
-  var pills = cashOnlyPill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
+  var pills = payStatePill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
 
   var placesInfo = { hours: null, phone: null, isOpen: null };
   try {
