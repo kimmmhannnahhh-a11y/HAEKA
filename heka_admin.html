@@ -233,17 +233,30 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
       <div class="page-title">매장 관리</div>
       <div class="page-sub">등록된 전체 매장 목록</div>
       <div class="card" id="bulk-card" style="display:none">
-        <div class="card-head"><span class="card-title">매장 일괄 등록</span><button class="btn-sm" onclick="closeBulk()">닫기</button></div>
-        <div style="font-size:12px;color:#666;line-height:1.7;padding:0 0 10px">
-          매장 목록을 JSON 배열로 붙여넣고 등록을 누르세요. 한 번에 수백 건까지 들어갑니다.<br>
-          쓸 수 있는 항목: <b>name</b>(필수) · category · address · city · lat · lng · payOk · payNo
+        <div class="card-head"><span class="card-title">체인점 일괄 등록</span><button class="btn-sm" onclick="closeBulk()">닫기</button></div>
+
+        <div style="font-size:12px;color:#666;line-height:1.7;padding:0 0 14px">
+          도시와 체인을 고르면 그 도시의 지점을 모두 찾아서 한 번에 등록합니다. 지점 위치는 OpenStreetMap에서 가져옵니다.
         </div>
-        <textarea id="bulk-input" style="width:100%;height:220px;border:1.5px solid #e0e0e0;border-radius:10px;padding:12px;font-family:Consolas,monospace;font-size:12px;line-height:1.6;outline:none;resize:vertical"></textarea>
-        <div style="display:flex;gap:8px;align-items:center;padding-top:10px">
-          <button class="btn-primary" id="bulk-run" onclick="runBulk()" style="padding:10px 20px;font-size:13px">등록하기</button>
-          <button class="btn-sm" onclick="fillBulkSample()">예시 넣기</button>
+
+        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">1. 도시</div>
+        <div id="bulk-cities" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="font-size:11px;font-weight:800;color:#888;padding:0 0 6px">2. 체인</div>
+        <div id="bulk-chains" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="font-size:11px;font-weight:800;color:#16a34a;padding:0 0 6px">3. 결제 가능한 카드</div>
+        <div id="bulk-ok" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="font-size:11px;font-weight:800;color:#dc2626;padding:0 0 6px">4. 결제 안 되는 카드 (없으면 비워두세요)</div>
+        <div id="bulk-no" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 0 16px"></div>
+
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:4px;border-top:1px solid #f0f0f0;margin-top:4px;padding-top:14px">
+          <button class="btn-sm" id="bulk-find" onclick="findBranches()" style="padding:10px 18px;font-size:13px">지점 찾기</button>
+          <button class="btn-primary" id="bulk-run" onclick="runBulk()" style="padding:10px 20px;font-size:13px;display:none">등록하기</button>
           <span id="bulk-status" style="font-size:12px;color:#666;font-weight:600"></span>
         </div>
+        <div id="bulk-preview" style="font-size:12px;color:#555;line-height:1.7;padding-top:12px"></div>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">전체 매장</span><div style="display:flex;gap:6px"><button class="btn-primary" onclick="goPage('add-store',document.getElementById('nav-add-store'))" style="font-size:12px;padding:5px 12px">+ 매장 등록</button><button class="btn-sm" onclick="openBulk()" style="font-size:12px;padding:5px 12px">일괄 등록</button><button class="btn-sm" onclick="loadStores()">새로고침</button></div></div>
@@ -1390,67 +1403,161 @@ function toggleCard(el) { el.classList.toggle('on'); }
 
 function closeStoreModal() { document.getElementById('store-modal').classList.remove('on'); }
 
-// ── 매장 일괄 등록 ──
+// ── 체인점 일괄 등록 ──
+var BULK_CITIES = [
+  { name: '오사카',   bbox: '34.55,135.40,34.78,135.62' },
+  { name: '도쿄',     bbox: '35.60,139.60,35.80,139.85' },
+  { name: '교토',     bbox: '34.95,135.70,35.07,135.82' },
+  { name: '후쿠오카', bbox: '33.52,130.33,33.63,130.46' },
+  { name: '다낭',     bbox: '16.02,108.15,16.12,108.27' },
+  { name: '방콕',     bbox: '13.68,100.45,13.82,100.62' }
+];
+var BULK_CHAINS = [
+  { name: '세븐일레븐', pat: 'セブン-?イレブン|7-?Eleven',  cat: '편의점' },
+  { name: '패밀리마트', pat: 'ファミリーマート|FamilyMart', cat: '편의점' },
+  { name: '로손',       pat: 'ローソン|Lawson',             cat: '편의점' },
+  { name: '스타벅스',   pat: 'スターバックス|Starbucks',    cat: '카페' },
+  { name: '맥도날드',   pat: 'マクドナルド|McDonald',       cat: '식당' }
+];
+var BULK_CARDS = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '현금가능'];
+
+var _bulkCity = null, _bulkChain = null, _bulkOk = [], _bulkNo = [], _bulkRows = [];
+
+function bulkChipStyle(on, color) {
+  return 'padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid ' +
+    (on ? color : '#e0e0e0') + ';background:' + (on ? color : '#fff') + ';color:' + (on ? '#fff' : '#555');
+}
+function renderBulkChips() {
+  document.getElementById('bulk-cities').innerHTML = BULK_CITIES.map(function (x, i) {
+    return '<button onclick="pickCity(' + i + ')" style="' + bulkChipStyle(_bulkCity === i, '#FF3900') + '">' + x.name + '</button>';
+  }).join('');
+  document.getElementById('bulk-chains').innerHTML = BULK_CHAINS.map(function (x, i) {
+    return '<button onclick="pickChain(' + i + ')" style="' + bulkChipStyle(_bulkChain === i, '#FF3900') + '">' + x.name + '</button>';
+  }).join('');
+  document.getElementById('bulk-ok').innerHTML = BULK_CARDS.map(function (x) {
+    return '<button onclick="toggleBulkCard(&quot;ok&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkOk.indexOf(x) > -1, '#16a34a') + '">' + x + '</button>';
+  }).join('');
+  document.getElementById('bulk-no').innerHTML = BULK_CARDS.map(function (x) {
+    return '<button onclick="toggleBulkCard(&quot;no&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkNo.indexOf(x) > -1, '#dc2626') + '">' + x + '</button>';
+  }).join('');
+}
+function pickCity(i) { _bulkCity = i; resetBulkResult(); renderBulkChips(); }
+function pickChain(i) { _bulkChain = i; resetBulkResult(); renderBulkChips(); }
+function toggleBulkCard(kind, name) {
+  var arr = (kind === 'ok') ? _bulkOk : _bulkNo;
+  var i = arr.indexOf(name);
+  if (i > -1) arr.splice(i, 1); else arr.push(name);
+  renderBulkChips();
+}
+function resetBulkResult() {
+  _bulkRows = [];
+  document.getElementById('bulk-run').style.display = 'none';
+  document.getElementById('bulk-preview').innerHTML = '';
+  document.getElementById('bulk-status').textContent = '';
+}
 function openBulk() {
-  var c = document.getElementById("bulk-card");
-  if (c) { c.style.display = "block"; c.scrollIntoView({behavior:"smooth"}); }
+  var c = document.getElementById('bulk-card');
+  if (!c) return;
+  c.style.display = 'block';
+  renderBulkChips();
+  c.scrollIntoView({ behavior: 'smooth' });
 }
 function closeBulk() {
-  var c = document.getElementById("bulk-card");
-  if (c) c.style.display = "none";
+  var c = document.getElementById('bulk-card');
+  if (c) c.style.display = 'none';
 }
-function fillBulkSample() {
-  document.getElementById("bulk-input").value = JSON.stringify([
-    { name: "세븐일레븐 난바점", category: "편의점", city: "오사카", address: "大阪市中央区難波1-1", lat: 34.6656, lng: 135.5013, payOk: ["VISA","MASTER","JCB","AMEX"], payNo: [] },
-    { name: "이치란 도톤보리점", category: "식당", city: "오사카", address: "大阪市中央区宗右衛門町7-18", lat: 34.6687, lng: 135.5013, payOk: ["VISA","MASTER"], payNo: ["트래블월렛"] }
-  ], null, 2);
-}
-async function runBulk() {
-  var f = window._fbFns, db = window._db;
-  var btn = document.getElementById("bulk-run");
-  var stat = document.getElementById("bulk-status");
-  var raw = document.getElementById("bulk-input").value.trim();
-  if (!raw) { alert("붙여넣은 내용이 없어요"); return; }
-  var rows;
-  try { rows = JSON.parse(raw); } catch(e) { alert("JSON 형식이 잘못됐어요: " + e.message); return; }
-  if (!Array.isArray(rows)) { alert("[ ] 로 감싼 배열이어야 해요"); return; }
-  var bad = rows.filter(function(r){ return !r || !r.name; }).length;
-  if (bad) { alert("매장명(name)이 없는 항목이 " + bad + "건 있어요"); return; }
-  if (!confirm(rows.length + "곳을 등록할까요?")) return;
 
+// OpenStreetMap에서 그 도시의 지점 목록을 가져온다
+async function findBranches() {
+  if (_bulkCity === null) { alert('도시를 골라주세요'); return; }
+  if (_bulkChain === null) { alert('체인을 골라주세요'); return; }
+  var city = BULK_CITIES[_bulkCity], chain = BULK_CHAINS[_bulkChain];
+  var btn = document.getElementById('bulk-find');
+  var stat = document.getElementById('bulk-status');
+  resetBulkResult();
   btn.disabled = true;
-  var done = 0, fail = 0, firstErr = "";
-  // 20건씩 나눠 보낸다 (한꺼번에 던지면 실패율이 올라감)
-  for (var i = 0; i < rows.length; i += 20) {
-    var chunk = rows.slice(i, i + 20);
-    var results = await Promise.allSettled(chunk.map(function(r) {
-      return f.addDoc(f.collection(db, "stores"), {
-        name: String(r.name),
-        category: r.category || "",
-        address: r.address || "",
-        city: r.city || "",
-        lat: (typeof r.lat === "number") ? r.lat : null,
-        lng: (typeof r.lng === "number") ? r.lng : null,
-        payOk: Array.isArray(r.payOk) ? r.payOk : [],
-        payNo: Array.isArray(r.payNo) ? r.payNo : [],
-        images: [],
-        createdAt: f.serverTimestamp(),
-        registeredBy: "admin"
+  stat.textContent = '지점을 찾는 중…';
+
+  var q = '[out:json][timeout:60];(' +
+    'nwr["brand"~"' + chain.pat + '",i](' + city.bbox + ');' +
+    'nwr["name"~"' + chain.pat + '",i](' + city.bbox + ');' +
+    ');out center tags;';
+  try {
+    var res = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: 'data=' + encodeURIComponent(q) });
+    var data = await res.json();
+    var seen = {};
+    _bulkRows = (data.elements || []).map(function (e) {
+      var t = e.tags || {};
+      var lat = e.lat || (e.center && e.center.lat) || null;
+      var lng = e.lon || (e.center && e.center.lon) || null;
+      return {
+        name: t['name:ko'] || t.name || chain.name,
+        category: chain.cat,
+        city: city.name,
+        address: t['addr:full'] || [t['addr:city'], t['addr:street'], t['addr:housenumber']].filter(Boolean).join(' '),
+        lat: lat, lng: lng
+      };
+    }).filter(function (r) {
+      if (r.lat === null || r.lng === null) return false;
+      var k = r.lat.toFixed(5) + ',' + r.lng.toFixed(5);
+      if (seen[k]) return false;
+      seen[k] = 1; return true;
+    });
+    if (!_bulkRows.length) {
+      stat.textContent = '지점을 못 찾았어요';
+      document.getElementById('bulk-preview').innerHTML = '<span style="color:#dc2626">이 도시에는 등록된 지점 정보가 없습니다. 다른 체인이나 도시를 골라보세요.</span>';
+    } else {
+      stat.textContent = _bulkRows.length + '곳 찾음';
+      document.getElementById('bulk-run').style.display = 'inline-block';
+      var sample = _bulkRows.slice(0, 5).map(function (r) { return '· ' + r.name; }).join('<br>');
+      document.getElementById('bulk-preview').innerHTML =
+        '<b>' + city.name + ' ' + chain.name + ' ' + _bulkRows.length + '곳</b><br>' + sample +
+        (_bulkRows.length > 5 ? '<br>… 외 ' + (_bulkRows.length - 5) + '곳' : '');
+    }
+  } catch (e) {
+    stat.textContent = '';
+    alert('지점을 가져오지 못했어요: ' + e.message);
+  }
+  btn.disabled = false;
+}
+
+// 찾은 지점을 한 번에 등록한다
+async function runBulk() {
+  if (!_bulkRows.length) { alert('먼저 지점을 찾아주세요'); return; }
+  if (!_bulkOk.length && !_bulkNo.length) {
+    if (!confirm('카드를 하나도 안 고르셨어요. 그냥 등록할까요?')) return;
+  }
+  if (!confirm(_bulkRows.length + '곳을 등록할까요?')) return;
+
+  var f = window._fbFns, db = window._db;
+  var btn = document.getElementById('bulk-run');
+  var stat = document.getElementById('bulk-status');
+  var ok = _bulkOk.slice(), no = _bulkNo.slice();
+  btn.disabled = true;
+  var done = 0, fail = 0, firstErr = '';
+
+  for (var i = 0; i < _bulkRows.length; i += 20) {
+    var chunk = _bulkRows.slice(i, i + 20);
+    var results = await Promise.allSettled(chunk.map(function (r) {
+      return f.addDoc(f.collection(db, 'stores'), {
+        name: r.name, category: r.category, address: r.address, city: r.city,
+        lat: r.lat, lng: r.lng, payOk: ok, payNo: no, images: [],
+        createdAt: f.serverTimestamp(), registeredBy: 'admin'
       });
     }));
-    results.forEach(function(x){
-      if (x.status === "fulfilled") { done++; }
+    results.forEach(function (x) {
+      if (x.status === 'fulfilled') { done++; }
       else {
         fail++;
         if (!firstErr) firstErr = (x.reason && (x.reason.code || x.reason.message)) || String(x.reason);
-        console.error("[일괄등록 실패]", x.reason);
+        console.error('[일괄등록 실패]', x.reason);
       }
     });
-    stat.textContent = done + " / " + rows.length + " 등록됨" + (fail ? " (실패 " + fail + ")" : "");
+    stat.textContent = done + ' / ' + _bulkRows.length + ' 등록됨' + (fail ? ' (실패 ' + fail + ')' : '');
   }
   btn.disabled = false;
-  alert("등록 완료 — 성공 " + done + "곳" + (fail ? ", 실패 " + fail + "곳 / 사유: " + firstErr : ""));
-  if (typeof loadStores === "function") loadStores();
+  alert('등록 완료 — 성공 ' + done + '곳' + (fail ? ', 실패 ' + fail + '곳 / 사유: ' + firstErr : ''));
+  if (typeof loadStores === 'function') loadStores();
 }
 
 async function saveStore() {
