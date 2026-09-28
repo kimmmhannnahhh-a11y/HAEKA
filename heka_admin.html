@@ -1318,6 +1318,7 @@ async function submitAddStore() {
       payNo: _asNoSelected.slice(),
       images: imageUrls,
       createdAt: f.serverTimestamp(),
+      uid: (window._auth.currentUser || {}).uid,
       registeredBy: 'admin'
     });
     alert('✅ 등록 완료!');
@@ -1727,6 +1728,7 @@ async function runBulk() {
         name: r.name, category: r.category, address: r.address,
         city: r.city, country: r.country,
         lat: r.lat, lng: r.lng, payOk: ok, payNo: no, images: [],
+        uid: (window._auth.currentUser || {}).uid,
         createdAt: f.serverTimestamp(), registeredBy: 'admin', source: 'osm'
       });
     }));
