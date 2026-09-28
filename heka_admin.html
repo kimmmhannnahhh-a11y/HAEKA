@@ -1547,7 +1547,9 @@ var BULK_ALIAS = {
   "유니클로": "ユニクロ|Uniqlo",
   "로손스토어100": "ローソンストア100"
 };
-var BULK_CARDS = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '현금가능'];
+// 앱의 결제 선택지와 같게 맞춘다
+var BULK_CARDS_OK = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '카드가능(브랜드모름)', '현금가능'];
+var BULK_CARDS_NO = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '카드불가', '현금불가'];
 
 var _bulkCountry = null, _bulkCity = null, _bulkCat = "편의점", _bulkOk = [], _bulkNo = [], _bulkRows = [];
 
@@ -1575,10 +1577,10 @@ function renderBulkChips() {
   document.getElementById('bulk-cats').innerHTML = BULK_CATS.map(function (x) {
     return '<button onclick="pickCat(&quot;'+x+'&quot;)" style="'+bulkChipStyle(_bulkCat===x,'#FF3900')+'">'+x+'</button>';
   }).join('');
-  document.getElementById('bulk-ok').innerHTML = BULK_CARDS.map(function (x) {
+  document.getElementById('bulk-ok').innerHTML = BULK_CARDS_OK.map(function (x) {
     return '<button onclick="toggleBulkCard(&quot;ok&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkOk.indexOf(x) > -1, '#16a34a') + '">' + x + '</button>';
   }).join('');
-  document.getElementById('bulk-no').innerHTML = BULK_CARDS.map(function (x) {
+  document.getElementById('bulk-no').innerHTML = BULK_CARDS_NO.map(function (x) {
     return '<button onclick="toggleBulkCard(&quot;no&quot;,&quot;' + x + '&quot;)" style="' + bulkChipStyle(_bulkNo.indexOf(x) > -1, '#dc2626') + '">' + x + '</button>';
   }).join('');
 }
