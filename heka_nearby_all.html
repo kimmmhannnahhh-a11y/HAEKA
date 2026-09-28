@@ -212,7 +212,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <script src="security.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
-var CAT_IMAGES = { "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "이자카야": "img/cat-izakaya.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "펍": "img/cat-pub.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
+var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "버스": "img/cat-bus.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "이자카야": "img/cat-izakaya.jpg", "입장권": "img/cat-ticket.jpg", "전철 티켓": "img/cat-metro.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "펍": "img/cat-pub.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
