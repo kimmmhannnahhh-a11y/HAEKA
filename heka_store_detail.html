@@ -575,7 +575,8 @@ async function renderStore(store) {
 
   // 상호명, 업종, 신호등
   document.getElementById('hero-name').textContent = store.name;
-  document.getElementById('hero-cat').textContent = store.category || '';
+  // 현지 간판과 대조할 수 있게 원래 이름도 같이 보여준다
+  document.getElementById('hero-cat').textContent = (store.nameLocal ? store.nameLocal + ' · ' : '') + (store.category || '');
   var sigEl = document.getElementById('signal-badge');
   sigEl.innerHTML = '<span class="signal-dot" style="background:'+signal.dotColor+'"></span>'+signal.txt;
   sigEl.className = 'signal-badge ' + signal.cls;
