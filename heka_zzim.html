@@ -103,7 +103,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <script src="security.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
-var CAT_IMAGES = { "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
+var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
@@ -185,8 +185,8 @@ var _allStores=[];
 var _selectedCountry='전체';
 
 function cardColor(c){var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
-function catEmoji(c){var m={'식당':'🍽️','카페':'☕','술집':'🍺','패스트푸드':'🍔','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌':'🏧'};return m[c]||'🏬';}
-function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA':'#FFF0FA'};return m[c]||'#F4F4F8';}
+function catEmoji(c){var m={'식당':'🍽️','카페':'☕','술집':'🍺','패스트푸드':'🍔','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM':'🏧'};return m[c]||'🏬';}
+function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function calcDist(la1,ln1,la2,ln2){var R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(ln2-ln1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
 function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
 

@@ -440,12 +440,12 @@ onAuthStateChanged(auth, async u => {
 });
 
 function catEmoji(cat) {
-  var map = {'식당':'🍽️','카페':'☕','술집':'🍺','패스트푸드':'🍔','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌':'🏧'};
+  var map = {'식당':'🍽️','카페':'☕','술집':'🍺','패스트푸드':'🍔','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM':'🏧'};
   return map[cat] || '🏬';
 }
 
 function catBg(cat) {
-  var map = {'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA':'#FFF0FA'};
+  var map = {'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};
   return map[cat] || '#F4F4F8';
 }
 
@@ -1106,7 +1106,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 <script src="security.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
-var CAT_IMAGES = { "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
+var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
@@ -1310,7 +1310,7 @@ var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
 function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='카드 ▴';b.classList.add('open');b.classList.remove('on');}
 function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='카드 ▾';b.classList.remove('open');if(cardSelected.has('all'))b.classList.add('on');else b.classList.remove('on');}
-var cats=['식당','카페','술집','패스트푸드','편의점','마트','호텔','입장권','기타'];
+var cats=['식당','카페','술집','패스트푸드','편의점','마트','호텔','쇼핑','입장권','ATM','기타'];
 var selected=new Set();
 var wrap=document.getElementById('cat-wrap');
 var sw=document.getElementById('sheet-wrap');
