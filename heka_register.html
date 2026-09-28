@@ -215,7 +215,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, getDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -315,12 +315,12 @@ window.searchFirestore = async function(keyword) {
 // Firebase 저장
 window.saveToFirestore = async function(data) {
   try {
-    // 중복 체크
-    const snapshot = await getDocs(collection(db, 'stores'));
+    // 중복 체크 — 같은 이름만 찾아본다 (전체를 읽지 않는다)
+    const snapshot = await getDocs(query(collection(db, 'stores'), where('name', '==', data.name), limit(20)));
     let duplicate = false;
     snapshot.forEach(doc => {
       const d = doc.data();
-      if (d.name === data.name && d.address === data.address) duplicate = true;
+      if (d.address === data.address) duplicate = true;
     });
     if (duplicate) {
       showToast('이미 등록된 매장이에요!');

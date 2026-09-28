@@ -151,6 +151,7 @@ var CAT_IMAGES = { "ATM기": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "�
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.category) || ""; }
 </script>
+<script src="store-cache.js"></script>
 </head>
 <body>
 <div class="phone">
@@ -262,7 +263,7 @@ function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && 
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, limit, startAfter } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -272,12 +273,26 @@ const app = initializeApp({
   appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
 });
 const db=getFirestore(app);
-window._allStores=null;
-getDocs(collection(db,'stores')).then(function(snap){
-  window._allStores=[];
-  snap.forEach(function(d){ window._allStores.push({id:d.id,...d.data()}); });
-  console.log('stores loaded:',window._allStores.length);
-});
+// 매장은 화면을 열 때 전부 받지 않는다. 고른 도시 것만, 300곳씩 나눠 받는다
+window._cityCache = {};
+window._PAGE = 300;
+// 가게명 검색 — 앞글자로 최대 20곳만 (전체를 받지 않는다)
+window._searchStores = function(term){
+  if(!term) return Promise.resolve([]);
+  return getDocs(query(collection(db,'stores'), where('name','>=',term), where('name','<=',term+''), limit(20)))
+    .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
+    .catch(function(){ return []; });
+};
+window._loadStores = function(field, value, after){
+  var conds = [collection(db,'stores'), where(field,'==',value)];
+  if (after) conds.push(startAfter(after));
+  conds.push(limit(window._PAGE));
+  return getDocs(query.apply(null, conds)).then(function(snap){
+    var arr = [];
+    snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); });
+    return { rows: arr, last: snap.docs[snap.docs.length-1] || null, done: snap.size < window._PAGE };
+  });
+};
 </script>
 
 <script>
@@ -415,16 +430,8 @@ function selectCountryAll(countryName){
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
   document.getElementById('store-back-btn').onclick=function(){ showView('view-city'); };
   showView('view-stores');
-  waitForStores(function(stores){
-    var filtered=stores.filter(function(s){
-      var addr=(s.address||s.addr||'').toLowerCase();
-      var sCity=(s.city||'').toLowerCase();
-      // 나라의 모든 도시에 매칭되는 매장
-      return country.cities.some(function(city){ return cityMatches(s, city); });
-    });
-    document.getElementById('store-count').textContent=filtered.length+'개';
-    renderStores(filtered, listEl, country.name+' 전체');
-  });
+  _pageState = { field:'country', value:country.name, rows:[], last:null, done:false, busy:false, label:country.name+' 전체' };
+  loadMoreStores(listEl, true);
 }
 
 function cityMatches(s, city){
@@ -447,17 +454,38 @@ function selectCity(city){
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
   document.getElementById('store-back-btn').onclick=showCityView;
   showView('view-stores');
-  waitForStores(function(stores){
-    var filtered=stores.filter(function(s){ return cityMatches(s, city); });
-    document.getElementById('store-count').textContent=filtered.length+'개';
-    renderStores(filtered, listEl, city);
+  _pageState = { field:'city', value:city, rows:[], last:null, done:false, busy:false, label:city };
+  loadMoreStores(listEl, true);
+}
+
+var _pageState = null;
+// 스크롤 끝에 닿으면 다음 300곳을 이어 받는다
+// 목록을 거의 끝까지 내리면 다음 장을 이어 받는다
+function _bindStoreScroll(){
+  var el=document.getElementById('store-list');
+  if(!el || el._bound) return;
+  el._bound=true;
+  el.addEventListener('scroll', function(){
+    if(el.scrollTop + el.clientHeight >= el.scrollHeight - 300) loadMoreStores(el);
+  });
+}
+function loadMoreStores(listEl, first){
+  if(!_pageState || _pageState.busy || _pageState.done) return;
+  _pageState.busy = true;
+  window._loadStores(_pageState.field, _pageState.value, _pageState.last).then(function(res){
+    _pageState.rows = _pageState.rows.concat(res.rows);
+    _pageState.last = res.last;
+    _pageState.done = res.done;
+    _pageState.busy = false;
+    document.getElementById('store-count').textContent = _pageState.rows.length + (_pageState.done ? '개' : '개+');
+    renderStores(_pageState.rows, listEl, _pageState.label);
+    _bindStoreScroll();
+  }).catch(function(){
+    _pageState.busy = false;
+    if(first) listEl.innerHTML='<div class="store-empty">불러오지 못했어요</div>';
   });
 }
 
-function waitForStores(cb){
-  if(window._allStores!==null){ cb(window._allStores); return; }
-  var t=setInterval(function(){ if(window._allStores!==null){ clearInterval(t); cb(window._allStores); } },200);
-}
 
 function renderStores(stores, el, city){
   if(!stores.length){
@@ -479,6 +507,7 @@ function renderStores(stores, el, city){
   }).join('');
 }
 
+var _searchCache={};
 // 검색
 function doSearch(val){
   val=val.trim().toLowerCase();
@@ -495,12 +524,14 @@ function doSearch(val){
     });
   });
 
-  // 3. 가게명 매칭 (Firebase 데이터에서)
-  var storeResults=[];
-  if(window._allStores){
-    storeResults=window._allStores.filter(function(s){
-      var name=(s.name||'').toLowerCase();
-      return name.indexOf(val)>-1;
+  // 3. 가게명 매칭 — 서버에서 앞글자로 찾는다
+  var raw=(document.getElementById('search-inp').value||'').trim();
+  var storeResults=_searchCache[raw]||[];
+  if(_searchCache[raw]===undefined && raw){
+    _searchCache[raw]=[];
+    window._searchStores(raw).then(function(rows){
+      _searchCache[raw]=rows;
+      if((document.getElementById('search-inp').value||'').trim()===raw) doSearch(raw);
     });
   }
 
@@ -540,15 +571,8 @@ function doSearch(val){
     renderCountries(countryMatch);
     showView('view-country');
   } else {
-    // Firebase 아직 로딩 중일 수 있음
-    if(window._allStores===null){
-      el.innerHTML='<div class="store-loading">검색 중...</div>';
-      showView('view-country');
-      waitForStores(function(){ doSearch(document.getElementById('search-inp').value); });
-    } else {
-      el.innerHTML='<div class="search-empty">검색 결과가 없어요</div>';
-      showView('view-country');
-    }
+    el.innerHTML='<div class="search-empty">검색 결과가 없어요</div>';
+    showView('view-country');
   }
 }
 
