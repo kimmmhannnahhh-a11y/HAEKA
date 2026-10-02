@@ -320,7 +320,7 @@ window._loadNotices = async function() {
 <script src="map-link.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
-var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
+var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg", "코인로커": "img/cat-locker.jpg", "코인세탁소": "img/cat-laundry.jpg", "환전소": "img/cat-exchange.jpg", "온천": "img/cat-bath.jpg", "목욕탕": "img/cat-bath.jpg", "게임센터": "img/cat-arcade.jpg", "노래방": "img/cat-karaoke.jpg", "만화카페": "img/cat-mangacafe.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 </script>
 </head>
@@ -708,7 +708,7 @@ function renderRecent() {
       var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요'&&c!=='현금만'&&c!=='카드불가';});
       cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
       var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
-      var _ci = catImage(store.category);
+      var _ci = catImage(store.cuisine) || catImage(store.category);
       var imgSrc = (store.images&&store.images[0]) ? _u(store.images[0]) : _ci;
       var imgHtml = imgSrc
         ?'<div class="nimg" style="background-image:url(\''+imgSrc.replace(/'/g,'%27')+'\');background-position:center;background-size:cover;background-repeat:no-repeat"></div>'
