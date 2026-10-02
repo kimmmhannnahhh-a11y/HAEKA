@@ -516,7 +516,13 @@ function loadMoreStores(listEl, first){
 }
 
 // ── 카드별·업종별 필터, 거리순 ──
-var FLT_CARDS=['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay'];
+var FLT_CARDS=['현금','VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay'];
+// '현금'은 현금가능·현금만(카드불가) 둘 다 잡는다. 현금불가로 확인된 곳은 뺀다
+function payMatch(s, c){
+  var ok=s.payOk||[], no=s.payNo||[];
+  if(c==='현금') return no.indexOf('현금불가')<0 && (ok.indexOf('현금가능')>-1 || ok.indexOf('현금만')>-1 || no.indexOf('현금만')>-1 || no.indexOf('카드불가')>-1);
+  return ok.indexOf(c)>-1;
+}
 var _flt = { cards:{}, cat:'', sort:'base' };
 var _me = null;          // 내 위치 {lat,lng}
 var NEAR_KM = 50;        // 이 안에 있어야 그 도시에 와 있는 걸로 본다
@@ -542,7 +548,7 @@ function distKm(a, b){
   return 2*R*Math.asin(Math.sqrt(h));
 }
 
-// 내가 그 도시 안(가장 가까운 매장이 50km 이내)에 있을 때만 거리순을 보여준다
+// 내가 그 도시 안(가장 가까운 매장이 50km 이내)에 있으면 처음부터 거리순으로 보여준다
 function _isNear(){
   if(!_me || !_pageState) return false;
   return _pageState.rows.some(function(s){ return s.lat && s.lng && distKm(_me, s) <= NEAR_KM; });
@@ -552,7 +558,7 @@ function buildFilters(){
   if(!_pageState) return;
   var rows=_pageState.rows;
   var cardHtml='<button class="flt-chip'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">카드 전체</button>'
-    + FLT_CARDS.filter(function(c){ return rows.some(function(s){ return (s.payOk||[]).indexOf(c)>-1; }); })
+    + FLT_CARDS.filter(function(c){ return rows.some(function(s){ return payMatch(s, c); }); })
       .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" onclick="pickCard(\''+c+'\')">'+c+'</button>'; }).join('');
   var cats=[];
   rows.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
@@ -560,7 +566,7 @@ function buildFilters(){
     + cats.map(function(c){ return '<button class="flt-chip'+(_flt.cat===c?' on':'')+'" onclick="pickCat(\''+c+'\')">'+c+'</button>'; }).join('');
   document.getElementById('flt-cards').innerHTML=rows.length?cardHtml:'';
   document.getElementById('flt-cats').innerHTML=rows.length?catHtml:'';
-  document.getElementById('flt-sort').innerHTML=(rows.length && _isNear())
+  document.getElementById('flt-sort').innerHTML=(rows.length && _me)
     ? '<button class="flt-chip sort'+(_flt.sort==='base'?' on':'')+'" onclick="pickSort(\'base\')">기본순</button>'
       +'<button class="flt-chip sort'+(_flt.sort==='dist'?' on':'')+'" onclick="pickSort(\'dist\')">거리순</button>'
     : '';
@@ -581,16 +587,16 @@ function applyFilters(){
   if(!_pageState) return;
   var sel=Object.keys(_flt.cards);
   var list=_pageState.rows.filter(function(s){
-    var cOk=!sel.length || (s.payOk||[]).some(function(c){ return _flt.cards[c]; });
+    var cOk=!sel.length || Object.keys(_flt.cards).some(function(c){ return payMatch(s, c); });
     var tOk=!_flt.cat || s.category===_flt.cat;
     return cOk && tOk;
   });
-  var useDist=_flt.sort==='dist' && _isNear();
+  var useDist=_flt.sort==='dist' && !!_me;
   list.forEach(function(s){ s._km = (_me && s.lat && s.lng) ? distKm(_me, s) : null; });
   if(useDist) list.sort(function(a,b){ return (a._km==null?1e9:a._km)-(b._km==null?1e9:b._km); });
   var total=_pageState.rows.length, filtered=sel.length||_flt.cat;
   document.getElementById('store-count').textContent = (filtered ? list.length+' / ' : '') + total + (_pageState.done ? '개' : '개+');
-  renderStores(list, document.getElementById('store-list'), _pageState.label, useDist, !!filtered);
+  renderStores(list, document.getElementById('store-list'), _pageState.label, !!_me, !!filtered);
 }
 
 function renderStores(stores, el, city, showDist, filtered){
@@ -704,9 +710,10 @@ function showCountryView(){
   showView('view-country');
 }
 
+// 나라별 도시 고르는 화면은 지금 디자인에서 숨겨져 있다(#view-city display:none)
+// 거기로 가면 빈 화면만 뜨니, 처음 도시 목록으로 바로 돌아간다
 function showCityView(){
-  if(_currentCountry) selectCountry(_currentCountry.name);
-  else showView('view-country');
+  showCountryView();
 }
 
 function handleBack(){
