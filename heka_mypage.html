@@ -785,7 +785,7 @@ function shareInvite() {
 function openRecentDetail(store) {
   window._currentStoreId = store.id || null;
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');

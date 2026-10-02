@@ -254,7 +254,7 @@ async function loadCategoryOptions() {
       var isEtc = cat.name === '기타';
       var div = document.createElement('div');
       div.className = 'cat-opt';
-      div.textContent = (cat.emoji ? cat.emoji + ' ' : '') + cat.name;
+      div.textContent = (cat.emoji ? cat.emoji + ' ' : '') + (cat.name==='호텔'?'숙소':cat.name);
       div.onclick = isEtc ? function(){ selectCat('기타', true); } : (function(n){ return function(){ selectCat(n); }; })(cat.name);
       menu.appendChild(div);
     });
@@ -798,7 +798,7 @@ async function selectPlace(i) {
 function toggleCatMenu(){document.getElementById('cat-menu').classList.toggle('open');document.getElementById('cat-dropdown').classList.toggle('open');}
 function selectCat(val,isEtc){
   selectedCat=val;
-  document.getElementById('cat-dropdown-txt').textContent=val;
+  document.getElementById('cat-dropdown-txt').textContent=(val==='호텔'?'숙소':val);
   document.querySelectorAll('.cat-opt').forEach(function(o){o.classList.toggle('on',o.textContent.replace('✓','').trim()===val);});
   document.getElementById('cat-dropdown').classList.add('selected');
   document.getElementById('err-cat').classList.remove('show');
@@ -807,7 +807,7 @@ function selectCat(val,isEtc){
 }
 function confirmEtc(){
   var val=document.getElementById('etc-input').value.trim();
-  if(val){selectedCat=val;document.getElementById('cat-dropdown-txt').textContent=val;document.getElementById('cat-dropdown').classList.add('selected');document.getElementById('err-cat').classList.remove('show');}
+  if(val){selectedCat=val;document.getElementById('cat-dropdown-txt').textContent=(val==='호텔'?'숙소':val);document.getElementById('cat-dropdown').classList.add('selected');document.getElementById('err-cat').classList.remove('show');}
   document.getElementById('etc-wrap').style.display='none';
   document.getElementById('cat-menu').classList.remove('open');
   document.getElementById('cat-dropdown').classList.remove('open');

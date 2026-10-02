@@ -576,7 +576,7 @@ async function renderStore(store) {
   // 상호명, 업종, 신호등
   document.getElementById('hero-name').textContent = store.name;
   // 현지 간판과 대조할 수 있게 원래 이름도 같이 보여준다
-  document.getElementById('hero-cat').textContent = (store.nameLocal ? store.nameLocal + ' · ' : '') + (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+  document.getElementById('hero-cat').textContent = (store.nameLocal ? store.nameLocal + ' · ' : '') + (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   var sigEl = document.getElementById('signal-badge');
   sigEl.innerHTML = '<span class="signal-dot" style="background:'+signal.dotColor+'"></span>'+signal.txt;
   sigEl.className = 'signal-badge ' + signal.cls;

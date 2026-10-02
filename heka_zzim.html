@@ -444,7 +444,7 @@ function renderList(list){
       +thumb
       +'<div class="store-info">'
       +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+'</div>'
-      +'<div class="store-meta"><span class="store-cat">'+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, s.category].filter(Boolean).join(' · '))+'</span>'
+      +'<div class="store-meta"><span class="store-cat">'+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · '))+'</span>'
       +(s.address?'<span class="store-addr"> · '+s.address+'</span>':'')
       +dist+'</div>'
       +'<div class="store-cards">'+pills+'</div>'
@@ -461,7 +461,7 @@ function openDetail(idx){
   if(!store)return;
   window._currentStoreId=store.id||null;
   document.getElementById('dp-name').textContent=store.name;
-  document.getElementById('dp-cat').textContent=(((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+  document.getElementById('dp-cat').textContent=(((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];

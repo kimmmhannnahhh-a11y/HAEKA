@@ -919,7 +919,7 @@ function renderNearby(stores) {
     else if (store.distance) distText = (typeof store.distance === 'number') ? distLbl(Math.round(store.distance)) : store.distance;
     else distText = '거리 확인중';
     var distSafe = window._esc ? window._esc(distText) : distText;
-    var catText = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+    var catText = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
     var catSafe = catText ? ' · '+(window._esc ? window._esc(catText) : catText) : '';
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
@@ -965,7 +965,7 @@ window.openFirebaseDetail = async function(store) {
   } catch(e) {}
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   // 폐업 뱃지
   var existBadge = document.getElementById('dp-closed-badge');
   if (existBadge) existBadge.remove();
@@ -1358,9 +1358,9 @@ function buildCatChips(list) {
     sw.appendChild(allChip);
   }
   list.forEach(function(lbl){
-    var d=document.createElement('div');d.className='sq-chip';d.textContent=lbl;d.dataset.lbl=lbl;
+    var d=document.createElement('div');d.className='sq-chip';d.textContent=(lbl==='호텔'?'숙소':lbl);d.dataset.lbl=lbl;
     d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);
-    var d2=document.createElement('div');d2.className='sheet-chip';d2.textContent=lbl;d2.dataset.lbl=lbl;
+    var d2=document.createElement('div');d2.className='sheet-chip';d2.textContent=(lbl==='호텔'?'숙소':lbl);d2.dataset.lbl=lbl;
     d2.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d2);
   });
   var old=wrap.querySelector('.chip-spacer');if(old)old.remove();

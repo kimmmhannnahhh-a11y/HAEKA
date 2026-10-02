@@ -115,7 +115,7 @@ async function openEditor() {
   const lbl = t => '<div style="font-size:12px;font-weight:800;color:#374151;margin:16px 0 6px">' + t + '</div>';
   const inp = 'width:100%;box-sizing:border-box;border:1px solid #D1D5DB;border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit';
   const select = (sid, list, cur) => '<select id="' + sid + '" style="' + inp + '">'
-    + list.concat(cur && list.indexOf(cur) < 0 ? [cur] : []).map(c => '<option' + (c === cur ? ' selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>';
+    + list.concat(cur && list.indexOf(cur) < 0 ? [cur] : []).map(c => '<option value="' + esc(c) + '"' + (c === cur ? ' selected' : '') + '>' + esc(c === '호텔' ? '숙소' : c) + '</option>').join('') + '</select>';
   const chip = (group, v, on) => '<label style="display:inline-flex;align-items:center;gap:4px;margin:0 6px 6px 0;padding:6px 10px;border:1px solid #D1D5DB;border-radius:999px;font-size:12px;font-weight:700"><input type="checkbox" data-g="' + group + '" value="' + esc(v) + '"' + (on ? ' checked' : '') + '>' + esc(v) + '</label>';
 
   let fields;

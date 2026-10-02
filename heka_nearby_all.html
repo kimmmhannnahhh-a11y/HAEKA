@@ -550,7 +550,7 @@ window.openFirebaseDetail = async function(store) {
   } catch(e) {}
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
+  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
@@ -707,7 +707,7 @@ function renderList(stores){
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');
-    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+sIdSafe+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+_e(s.name)+localName(s)+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+status+'<span class="store-cat">'+_e((((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, s.category].filter(Boolean).join(' · ')))+'</span><span class="store-time"> · '+_e(timeAgo(s.createdAt))+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+sIdSafe+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+sIdSafe+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+_e(s.name)+localName(s)+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+status+'<span class="store-cat">'+_e((((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · ')))+'</span><span class="store-time"> · '+_e(timeAgo(s.createdAt))+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+sIdSafe+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
@@ -854,8 +854,8 @@ var catWrap=document.getElementById('cat-wrap'), sw=document.getElementById('she
 // 시트에 전체 버튼 추가
 var allSheetChip=document.createElement('div');allSheetChip.className='sheet-chip on';allSheetChip.textContent='전체';allSheetChip.id='cat-sheet-all';allSheetChip.onclick=function(){catSelectAll();};sw.appendChild(allSheetChip);
 cats.forEach(function(l){
-  var d=document.createElement('div');d.className='sq-chip';d.textContent=l;d.dataset.l=l;d.onclick=function(){toggleCat(l);};catWrap.appendChild(d);
-  var s=document.createElement('div');s.className='sheet-chip';s.textContent=l;s.dataset.l=l;s.onclick=function(){toggleCat(l);};sw.appendChild(s);
+  var d=document.createElement('div');d.className='sq-chip';d.textContent=(l==='호텔'?'숙소':l);d.dataset.l=l;d.onclick=function(){toggleCat(l);};catWrap.appendChild(d);
+  var s=document.createElement('div');s.className='sheet-chip';s.textContent=(l==='호텔'?'숙소':l);s.dataset.l=l;s.onclick=function(){toggleCat(l);};sw.appendChild(s);
 });
 function toggleCat(l){catSel.has(l)?catSel.delete(l):catSel.add(l);if(catSel.size===0)catSelectAll();else{var catb=document.getElementById('cat-all-btn');if(catb)catb.classList.remove('on');syncCatChips();doFilter();}}
 function syncCatChips(){catWrap.querySelectorAll('.sq-chip').forEach(function(c){c.classList.toggle('on',catSel.has(c.dataset.l));});sw.querySelectorAll('.sheet-chip').forEach(function(c){if(c.id==='cat-sheet-all')return;c.classList.toggle('on',catSel.has(c.dataset.l));});var sa=document.getElementById('cat-sheet-all');if(sa)sa.classList.toggle('on',catSel.size===0);}
