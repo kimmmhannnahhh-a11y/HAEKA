@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="HAEKA"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>위치기반서비스 이용약관 - HAEKA</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+@import url('haeka_rebuild_common.css');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; font-size: 14px; }
+
+  .top-bar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 16px; height: 56px;
+    background: #fff; border-bottom: 1px solid #eee;
+  }
+  .back-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 8px; margin-left: -8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn svg { width: 22px; height: 22px; }
+  .top-bar h1 { font-size: 17px; font-weight: 600; color: #111; }
+
+  .content { padding: 24px 20px 60px; max-width: 600px; margin: 0 auto; }
+  .update-date { font-size: 12px; color: #888; margin-bottom: 24px; }
+
+  .section { margin-bottom: 28px; }
+  .section h2 {
+    font-size: 15px; font-weight: 700; color: #FF3900;
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 1px solid #e0f0e0;
+  }
+  .section p { line-height: 1.8; color: #444; margin-bottom: 8px; }
+  .section ol, .section ul { padding-left: 18px; line-height: 1.8; color: #444; }
+  .section li { margin-bottom: 4px; }
+
+  .highlight-box {
+    background: #FFF1F2; border-left: 3px solid #FF3900;
+    padding: 12px 14px; border-radius: 0 8px 8px 0;
+    margin-bottom: 10px; font-size: 13px; color: #2a2a2a; line-height: 1.7;
+  }
+/* HAEKA 2.0 common override */
+:root{--hk-bg:#FAFAF8;--hk-surface:#fff;--hk-text:#1A1A1A;--hk-sub:#6B7280;--hk-accent:#FF3900;--hk-border:#F3F4F6;--hk-card-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04)}
+body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hk-text)!important}.phone,main,.container{background:#fff!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}.sb,.topbar,header{background:#fff!important;color:var(--hk-text)!important;border-bottom:1px solid var(--hk-border)!important}.topbar-title,h1{color:var(--hk-text)!important;font-weight:800!important}a,[style*="color:#FF3900"]{color:var(--hk-accent)!important}
+
+</style>
+<script src="security.js"></script>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </button>
+  <h1>위치기반서비스 이용약관</h1>
+</div>
+
+<div class="content">
+  <p class="update-date">시행일: 2026년 5월 21일 &nbsp;|&nbsp; 최종 수정일: 2026년 5월 21일</p>
+
+  <div class="highlight-box">
+    본 약관은 「위치정보의 보호 및 이용 등에 관한 법률」에 따라 HAEKA가 제공하는 위치기반 서비스의 이용에 관한 사항을 규정합니다.
+  </div>
+
+  <div class="section">
+    <h2>제1조 (목적)</h2>
+    <p>이 약관은 HAEKA(이하 "서비스")가 제공하는 위치기반 서비스의 이용과 관련하여 서비스와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+  </div>
+
+  <div class="section">
+    <h2>제2조 (위치기반 서비스의 내용)</h2>
+    <p>서비스는 이용자의 위치 정보를 활용하여 다음의 서비스를 제공합니다.</p>
+    <ol>
+      <li>이용자 주변 카드 결제 가능 매장 탐색 및 표시</li>
+      <li>현재 위치 기반 매장 거리 정보 제공</li>
+      <li>매장 등록 시 현재 위치 자동 입력 지원</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제3조 (위치정보의 수집)</h2>
+    <ol>
+      <li>서비스는 위치기반 서비스 제공을 위해 이용자의 단말기 GPS 정보를 수집할 수 있습니다.</li>
+      <li>위치 정보 수집은 이용자가 명시적으로 동의한 경우에만 이루어집니다.</li>
+      <li>이용자는 단말기 설정에서 언제든지 위치 정보 제공을 거부할 수 있으며, 거부 시 위치기반 서비스 이용이 제한될 수 있습니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제4조 (위치정보의 이용 및 보유)</h2>
+    <ol>
+      <li>수집된 위치 정보는 위치기반 서비스 제공 목적으로만 이용됩니다.</li>
+      <li>위치 정보는 서비스 제공 즉시 파기되며, 별도로 저장·보관하지 않습니다.</li>
+      <li>위치 정보는 이용자의 동의 없이 제3자에게 제공되지 않습니다. 단, 법령에 의거하거나 수사기관의 적법한 요청이 있는 경우는 예외입니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제5조 (이용자 권리)</h2>
+    <ol>
+      <li>이용자는 개인 위치정보의 이용·제공에 대한 동의의 전부 또는 일부를 철회할 수 있습니다.</li>
+      <li>이용자는 위치정보 이용·제공의 일시적인 중지를 요구할 수 있습니다.</li>
+      <li>이용자는 위치정보 이용·제공 사실 확인 자료의 열람·고지를 요구할 수 있습니다.</li>
+      <li>위의 권리 행사는 앱 내 마이페이지 → 1:1 문의를 통해 신청할 수 있습니다.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>제6조 (위치정보 보호 책임자)</h2>
+    <p>서비스는 위치정보를 적절히 관리·보호하고 이용자의 불만을 원활히 처리하기 위해 위치정보 보호책임자를 지정합니다. 관련 문의는 앱 내 마이페이지 → 1:1 문의를 통해 접수해 주세요.</p>
+  </div>
+
+  <div class="section">
+    <h2>제7조 (손해배상)</h2>
+    <p>서비스가 위치정보의 보호 및 이용 등에 관한 법률 제15조 내지 제26조의 규정을 위반한 행위로 이용자에게 손해가 발생한 경우 이용자는 서비스에 손해배상을 청구할 수 있습니다. 이 경우 서비스는 고의 또는 과실이 없음을 입증하지 못하는 경우 책임을 면할 수 없습니다.</p>
+  </div>
+
+  <div class="section">
+    <h2>제8조 (분쟁 해결)</h2>
+    <p>위치기반 서비스와 관련한 분쟁은 대한민국 법률을 준거법으로 하며, 관할 법원은 민사소송법에 따릅니다.</p>
+  </div>
+
+</div>
+</body>
+</html>
