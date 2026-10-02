@@ -137,6 +137,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -149,8 +150,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 
 window._savePost = async function(postData, photos) {
+  // 로그인 정보 없이 저장하면 서버 규칙에 막힌다 → 로그인 확인 후 작성자 uid 를 같이 저장
+  await auth.authStateReady();
+  var user = auth.currentUser;
+  if (!user) throw new Error('로그인이 필요해요');
   // 사진 업로드
   var imageUrls = [];
   for(var i=0; i<photos.length; i++){
@@ -164,6 +170,7 @@ window._savePost = async function(postData, photos) {
   // Firestore 저장
   await addDoc(collection(db, 'posts'), {
     ...postData,
+    uid: user.uid,
     images: imageUrls,
     createdAt: serverTimestamp()
   });
@@ -447,7 +454,7 @@ async function submitPost(){
     setTimeout(function(){location.href='heka_yeohaengtok_v2.html';},1500);
   }catch(e){
     console.error(e);
-    showToast('등록에 실패했어요. 다시 시도해주세요.');
+    showToast(e && e.message === '로그인이 필요해요' ? '로그인 후 글을 쓸 수 있어요' : '등록에 실패했어요 ('+((e&&e.code)||(e&&e.message)||'')+')');
     btn.disabled=false; btn.textContent='등록';
   }
 }
