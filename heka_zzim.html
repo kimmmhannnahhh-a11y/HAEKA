@@ -132,7 +132,7 @@ function localName(s) {
 function payStatePill(s) {
   var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
   if (ok.indexOf("현금만") > -1 || no.indexOf("현금만") > -1 || no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
-  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블/.test(c); });
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이/.test(c); });
   if (hasCard) return "";
   return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
@@ -197,7 +197,7 @@ var userLat=null, userLng=null;
 var _allStores=[];
 var _selectedCountry='전체';
 
-function cardColor(c){if(c==='현금만'||c==='카드불가'||c==='현금불가')return'#DC2626';var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836'};return m[c]||'#888';}
+function cardColor(c){if(c==='현금만'||c==='카드불가'||c==='현금불가')return'#DC2626';var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#e21836','알리페이':'#1677FF','위챗페이':'#07C160'};return m[c]||'#888';}
 function catEmoji(c){var m={'식당':'🍽️','카페':'☕','술집':'🍺','패스트푸드':'🍔','편의점':'🏪','마트':'🛒','호텔':'🏨','입장권':'🎫','전철 티켓':'🚇','버스':'🚌','ATM':'🏧'};return m[c]||'🏬';}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function calcDist(la1,ln1,la2,ln2){var R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(ln2-ln1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
@@ -429,7 +429,7 @@ function renderList(list){
       +'</div>';
     return;
   }
-  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
   el.innerHTML=list.map(function(s){
     var cards=(s.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요'&&c!=='현금만'&&c!=='카드불가';});
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
@@ -464,7 +464,7 @@ function openDetail(idx){
   document.getElementById('dp-cat').textContent=(((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
-  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+  var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
   var cards=(store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요';});
   cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
   var pills=payStatePill(store).replace(/cpill/g,'dpill')+cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');

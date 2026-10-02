@@ -77,7 +77,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .store-cards-row{display:flex;gap:3px;flex-wrap:wrap}
 .sc{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;color:#fff}
 .sc-visa{background:#1a1f71}.sc-master{background:#eb001b}.sc-jcb{background:#007b40}
-.sc-amex{background:#007bc1}.sc-tlog{background:#FF6B00}.sc-twallet{background:#FFD600;color:#333}.sc-union{background:#e21836}
+.sc-amex{background:#007bc1}.sc-tlog{background:#FF6B00}.sc-twallet{background:#FFD600;color:#333}.sc-union{background:#e21836}.sc-alipay{background:#1677FF}.sc-wechat{background:#07C160}
 .store-empty{padding:40px 16px;text-align:center;font-size:13px;color:#bbb;line-height:1.8}
 .store-loading{padding:40px 16px;text-align:center;font-size:12px;color:#bbb}
 
@@ -191,7 +191,7 @@ function localName(s) {
 function payStatePill(s) {
   var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
   if (ok.indexOf("현금만") > -1 || no.indexOf("현금만") > -1 || no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
-  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블/.test(c); });
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이/.test(c); });
   if (hasCard) return "";
   return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
@@ -358,7 +358,7 @@ var COUNTRIES=[
 ];
 
 var _currentCountry=null, _currentCity=null;
-var CARD_MAP={'VISA':'sc-visa','MASTER':'sc-master','JCB':'sc-jcb','AMEX':'sc-amex','트래블로그':'sc-tlog','트래블월렛':'sc-twallet','UnionPay':'sc-union'};
+var CARD_MAP={'VISA':'sc-visa','MASTER':'sc-master','JCB':'sc-jcb','AMEX':'sc-amex','트래블로그':'sc-tlog','트래블월렛':'sc-twallet','UnionPay':'sc-union','알리페이':'sc-alipay','위챗페이':'sc-wechat'};
 
 // 인기순 나라 순서
 var POPULAR_ORDER=['일본','태국','베트남','싱가포르','홍콩','대만','마카오','중국','미국','프랑스','이탈리아','스페인','영국','독일','포르투갈','오스트리아','체코','그리스','튀르키예','크로아티아','호주','뉴질랜드','말레이시아','인도네시아','필리핀','인도','아랍에미리트','캐나다','멕시코','페루','브라질','모로코','남아프리카공화국','네덜란드'];
@@ -517,7 +517,7 @@ function loadMoreStores(listEl, first){
 }
 
 // ── 카드별·업종별 필터, 위치를 알면 늘 거리순 ──
-var FLT_CARDS=['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금'];
+var FLT_CARDS=['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','알리페이','위챗페이','현금'];
 // '현금'은 현금가능·현금만(카드불가) 둘 다 잡는다. 현금불가로 확인된 곳은 뺀다
 function payMatch(s, c){
   var ok=s.payOk||[], no=s.payNo||[];

@@ -78,6 +78,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-tlog.on{background:#FF6B00;border-color:#FF6B00}
 .cc-twallet.on{background:#FFD600;border-color:#FFD600;color:#333}
 .cc-union.on{background:#e21836;border-color:#e21836}
+.cc-alipay.on{background:#1677FF;border-color:#1677FF}
+.cc-wechat.on{background:#07C160;border-color:#07C160}
 .sq-chip-all{flex-shrink:0;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #FF3900;background:#fff;color:#FF3900;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
 .sq-chip-all.on{background:#FF3900;color:#fff}
 .sq-chip-all.open{background:#FF3900;color:#fff}
@@ -452,7 +454,7 @@ function catBg(cat) {
 
 function cardColor(card) {
   if(card==='현금만'||card==='카드불가'||card==='현금불가') return '#DC2626';
-  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','알리페이':'#1677FF','위챗페이':'#07C160','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};
   return map[card] || '#888';
 }
 
@@ -909,7 +911,7 @@ function renderNearby(stores) {
     return;
   }
   stores.slice(0, 6).forEach(function(store) {
-    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
     var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가'; });
     cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
     var pillsHtml = payStatePill(store) + cards.map(function(c){
@@ -1152,7 +1154,7 @@ function localName(s) {
 function payStatePill(s) {
   var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
   if (ok.indexOf("현금만") > -1 || no.indexOf("현금만") > -1 || no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
-  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블/.test(c); });
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이/.test(c); });
   if (hasCard) return "";
   return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
@@ -1182,6 +1184,8 @@ function payStatePill(s) {
         <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
         <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
+        <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')">알리페이</div>
+        <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')">위챗페이</div>
         <span class="chip-spacer" aria-hidden="true"></span>
       </div>
     </div>
@@ -1210,6 +1214,8 @@ function payStatePill(s) {
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블로그')">트래블로그</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블월렛')">트래블월렛</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'UnionPay')">UnionPay</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'알리페이')">알리페이</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'위챗페이')">위챗페이</div>
     </div>
     <button class="sheet-done" onclick="closeCardSheet()">적용하기</button>
   </div>

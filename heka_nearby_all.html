@@ -42,6 +42,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-tlog.on{background:#FF6B00;border-color:#FF6B00}
 .cc-twallet.on{background:#FFD600;border-color:#FFD600;color:#333}
 .cc-union.on{background:#e21836;border-color:#e21836}
+.cc-alipay.on{background:#1677FF;border-color:#1677FF}
+.cc-wechat.on{background:#07C160;border-color:#07C160}
 
 /* 검색 + 정렬 바 */
 .search-sort-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
@@ -241,7 +243,7 @@ function localName(s) {
 function payStatePill(s) {
   var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
   if (ok.indexOf("현금만") > -1 || no.indexOf("현금만") > -1 || no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
-  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블/.test(c); });
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이/.test(c); });
   if (hasCard) return "";
   return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
@@ -268,6 +270,8 @@ function payStatePill(s) {
         <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
         <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
+        <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')">알리페이</div>
+        <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')">위챗페이</div>
       </div>
     </div>
     <div>
@@ -308,6 +312,8 @@ function payStatePill(s) {
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블로그')">트래블로그</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'트래블월렛')">트래블월렛</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'UnionPay')">UnionPay</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'알리페이')">알리페이</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'위챗페이')">위챗페이</div>
     </div>
     <button class="sheet-done" onclick="closeCardSheet()">선택 완료</button>
   </div>
@@ -630,7 +636,7 @@ window.openFirebaseDetail = async function(store) {
 </script>
 <script>
 // ── 헬퍼 ──
-function cardColor(c){if(c==='현금만'||c==='카드불가'||c==='현금불가')return'#DC2626';var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
+function cardColor(c){if(c==='현금만'||c==='카드불가'||c==='현금불가')return'#DC2626';var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','알리페이':'#1677FF','위챗페이':'#07C160','카드가능':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
 function catEmoji(c){return (c||'매장').slice(0,1);}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:ts),d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
@@ -694,7 +700,7 @@ function renderList(stores){
   var _e = window._esc || function(x){return x==null?'':String(x);};
   var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   el.innerHTML=stores.map(function(s,idx){
-    var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+    var cardOrder=['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
     var cards=(s.payOk||[]);
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);ai=ai<0?99:ai;bi=bi<0?99:bi;return ai-bi;});
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
