@@ -220,7 +220,7 @@ window.renderHotpl = function(stores){
   var _e = window._esc || function(x){return x==null?'':String(x);};
   var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   el.innerHTML = stores.map(function(s){
-    var nick = s.nickname||s.nick||'해카마왕';
+    var nick = s.nickname||s.nick||'여행자';
     var letter = nick.charAt(0);
     var ago = timeAgo(s.createdAt);
     var catTxt = s.category||'기타';

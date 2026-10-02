@@ -135,7 +135,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
@@ -157,6 +157,10 @@ window._savePost = async function(postData, photos) {
   await auth.authStateReady();
   var user = auth.currentUser;
   if (!user) throw new Error('로그인이 필요해요');
+  // 작성자 이름은 회원 정보(users/{uid}.nick)에서 — 예전엔 '해카마왕'으로 고정돼 있었다
+  var nick = '';
+  try { var us = await getDoc(doc(db, 'users', user.uid)); nick = (us.exists() && us.data().nick) || ''; } catch(e) {}
+  postData.nickname = nick || user.displayName || '여행자';
   // 사진 업로드
   var imageUrls = [];
   for(var i=0; i<photos.length; i++){
@@ -447,7 +451,6 @@ async function submitPost(){
         category: _selectedCat,
         title: title,
         body: body,
-        nickname: '해카마왕',
       }, _photos);
     }
     showToast('등록됐어요!');

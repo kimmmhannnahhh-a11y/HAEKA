@@ -210,15 +210,29 @@ function listenComments(){
   });
 }
 
+// 작성자 이름은 회원 정보(users/{uid}.nick)에서, 내 것인지는 uid 로 판단한다
+// (예전엔 모두 '해카마왕'으로 저장하고 닉네임으로 내 것인지 판단해서 남의 댓글도 지울 수 있었다)
+var _myNick = null;
+async function myAuthor(){
+  await _auth.authStateReady();
+  var u = _auth.currentUser;
+  if(!u) throw new Error('로그인이 필요해요');
+  if(_myNick === null){
+    try{ var us = await getDoc(doc(db,'users',u.uid)); _myNick = (us.exists() && us.data().nick) || ''; }catch(e){ _myNick = ''; }
+  }
+  return { uid: u.uid, nickname: _myNick || u.displayName || '여행자' };
+}
+
 window._addComment = async function(text, parentId){
+  var who = await myAuthor();
   if(parentId){
     await addDoc(collection(db,'posts',postId,'comments',parentId,'replies'),{
-      text:text, nickname:'해카마왕', createdAt:new Date()
+      text:text, nickname:who.nickname, uid:who.uid, createdAt:new Date()
     });
     try{ await updateDoc(doc(db,'posts',postId),{commentCount:increment(1)}); }catch(e){}
   } else {
     await addDoc(collection(db,'posts',postId,'comments'),{
-      text:text, nickname:'해카마왕', createdAt:new Date()
+      text:text, nickname:who.nickname, uid:who.uid, createdAt:new Date()
     });
     try{ await updateDoc(doc(db,'posts',postId),{commentCount:increment(1)}); }catch(e){}
   }
@@ -255,8 +269,13 @@ window._deleteReply = async function(cmtId, replyId){
   }catch(e){}
 };
 
-loadPost();
-listenComments();
+// 내 글·댓글 표시가 맞으려면 로그인 확인이 끝난 뒤에 그린다
+window._myUid = null;
+_auth.authStateReady().then(function(){
+  window._myUid = (_auth.currentUser && _auth.currentUser.uid) || null;
+  loadPost();
+  listenComments();
+});
 </script>
 
 <script>
@@ -366,7 +385,7 @@ window.renderPost=function(p){
   // 본인 글이면 topbar에 X 삭제 버튼
   var delWrap = document.getElementById('post-del-btn');
   if(delWrap){
-    if(p.nickname==='해카마왕'){
+    if(window._myUid && p.uid===window._myUid){
       delWrap.innerHTML='<button onclick="deletePost()" style="background:none;border:none;font-size:11px;font-weight:600;color:#bbb;cursor:pointer;font-family:inherit;padding:4px">삭제</button>';
     } else {
       delWrap.innerHTML='<div style="width:30px"></div>';
@@ -399,7 +418,7 @@ window.renderComments=function(cmts){
   var _e = window._esc || function(x){ return x; };
   el.innerHTML=cmts.map(function(c){
     var letter=(c.nickname||'여').charAt(0);
-    var isMyComment=(c.nickname==='해카마왕');
+    var isMyComment=!!(window._myUid && c.uid===window._myUid);
     var safeText = _e(c.text||'').replace(/\n/g,'<br>');
     return '<div id="cmt-wrap-'+_e(c.id)+'">'
       +'<div class="cmt-item">'
@@ -445,7 +464,7 @@ function renderReplies(cmtId, replies){
   var _e = window._esc || function(x){ return x; };
   el.innerHTML=replies.map(function(r){
     var letter=(r.nickname||'여').charAt(0);
-    var isMyReply=(r.nickname==='해카마왕');
+    var isMyReply=!!(window._myUid && r.uid===window._myUid);
     var safeText = _e(r.text||'').replace(/\n/g,'<br>');
     return '<div class="reply-item">'
       +'<div class="reply-av">'+_e(letter)+'</div>'
@@ -521,7 +540,7 @@ async function submitReply(cmtId){
   try{
     if(window._addComment) await window._addComment(text, cmtId);
     closeReplyInput(cmtId);
-  }catch(e){ showToast('답글 등록에 실패했어요'); if(btn) btn.disabled=false; }
+  }catch(e){ showToast(e && e.message==='로그인이 필요해요' ? '로그인 후 답글을 쓸 수 있어요' : '답글 등록에 실패했어요'); if(btn) btn.disabled=false; }
 }
 
 function toggleLike(){
@@ -594,7 +613,7 @@ async function submitComment(){
   try{
     if(window._addComment) await window._addComment(text, null);
     input.value=''; syncSubmitBtn();
-  }catch(e){ showToast('댓글 등록에 실패했어요'); btn.disabled=false; }
+  }catch(e){ showToast(e && e.message==='로그인이 필요해요' ? '로그인 후 댓글을 쓸 수 있어요' : '댓글 등록에 실패했어요'); btn.disabled=false; }
 }
 
 function syncSubmitBtn(){
