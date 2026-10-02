@@ -187,7 +187,7 @@ body,.phone,.scroll-wrap{background:#fff!important}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -196,6 +196,8 @@ const _app = initializeApp({
 });
 const _db = getFirestore(_app);
 const _auth = getAuth(_app);
+// 로그아웃은 실제 계정 연결(Firebase)도 끊어야 한다 — 저장된 표시만 지우면 계속 로그인 상태로 남는다
+window._fbSignOut = function(){ return signOut(_auth); };
 window._db = _db; window._doc = doc; window._getDoc = getDoc; window._setDoc = setDoc;
 onAuthStateChanged(_auth, async function(u){
   window._currentUser = u||null;
@@ -1039,7 +1041,8 @@ function confirmWithdraw() {
   });
 }
 function logout() {
-  showPopup('', '로그아웃', '로그아웃 하시겠습니까?', '로그아웃', function(){
+  showPopup('', '로그아웃', '로그아웃 하시겠습니까?', '로그아웃', async function(){
+    try{ if(window._fbSignOut) await window._fbSignOut(); }catch(e){}
     try{ 
       localStorage.removeItem('haeka_uid');
       localStorage.removeItem('haeka_email');
