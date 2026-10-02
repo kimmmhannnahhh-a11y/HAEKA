@@ -22,7 +22,7 @@ const id = new URLSearchParams(location.search).get('id');
 const IS_POST = /heka_post_detail/.test(location.pathname);
 const COL = IS_POST ? 'posts' : 'stores';
 
-const STORE_CATS = ['식당', '카페', '술집', '패스트푸드', '편의점', '마트', '호텔', '쇼핑', '입장권', 'ATM', '기타'];
+const STORE_CATS = ['식당', '카페', '술집', '패스트푸드', '편의점', '쇼핑', '마트', '입장권', '호텔', 'ATM', '기타'];
 const POST_CATS = ['동행', '맛집', '날씨', '정보'];
 const OK = ['VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '카드가능', '현금가능'];
 const NO = ['카드불가', 'VISA', 'MASTER', 'JCB', 'AMEX', 'UnionPay', '트래블로그', '트래블월렛', '현금불가'];

@@ -246,7 +246,7 @@ async function loadCategoryOptions() {
     var snap = await getDocs(collection(db, 'categories'));
     var list = [];
     snap.forEach(function(d){ list.push(d.data()); });
-    list.sort(function(a,b){ return (a.sortOrder||999)-(b.sortOrder||999); });
+    list.sort(function(a,b){ return (a.sortOrder==null?999:a.sortOrder)-(b.sortOrder==null?999:b.sortOrder); });
     var menu = document.getElementById('cat-menu');
     if (!menu) return;
     menu.innerHTML = '';

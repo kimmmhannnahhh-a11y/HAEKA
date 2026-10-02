@@ -1339,7 +1339,7 @@ var cardSO=false;
 function toggleCardSheet(){cardSO?closeCardSheet():openCardSheet();}
 function openCardSheet(){cardSO=true;document.getElementById('card-overlay').classList.add('open');document.getElementById('card-sheet').classList.add('open');var b=document.getElementById('card-all-btn');b.textContent='카드 ▴';b.classList.add('open');b.classList.remove('on');}
 function closeCardSheet(){cardSO=false;document.getElementById('card-overlay').classList.remove('open');document.getElementById('card-sheet').classList.remove('open');var b=document.getElementById('card-all-btn');b.textContent='카드 ▾';b.classList.remove('open');if(cardSelected.has('all'))b.classList.add('on');else b.classList.remove('on');}
-var cats=['식당','카페','술집','패스트푸드','편의점','마트','호텔','쇼핑','입장권','ATM','기타'];
+var cats=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
 var selected=new Set();
 var wrap=document.getElementById('cat-wrap');
 var sw=document.getElementById('sheet-wrap');
