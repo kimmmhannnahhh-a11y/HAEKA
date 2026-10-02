@@ -917,7 +917,8 @@ function renderNearby(stores) {
     else if (store.distance) distText = (typeof store.distance === 'number') ? distLbl(Math.round(store.distance)) : store.distance;
     else distText = '거리 확인중';
     var distSafe = window._esc ? window._esc(distText) : distText;
-    var catSafe = store.category ? ' · '+(window._esc ? window._esc(store.category) : store.category) : '';
+    var catText = [store.cuisine, store.category].filter(Boolean).join(' · ');
+    var catSafe = catText ? ' · '+(window._esc ? window._esc(catText) : catText) : '';
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
       ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
