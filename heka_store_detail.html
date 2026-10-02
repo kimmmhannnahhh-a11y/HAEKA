@@ -654,6 +654,24 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
 }).join('');
   }
 
+  // 결제 정보 출처
+  //   official : 시설 공식 홈페이지에서 확인 (sourceUrl, checkedAt '2026-10')
+  //   osm      : 오픈스트리트맵 이용자가 올린 정보
+  var srcEl = document.getElementById('pay-source');
+  if (srcEl && (store.source === 'official' || store.source === 'osm')) {
+    var e = window._esc || function(x){ return x==null?'':String(x); };
+    var html;
+    if (store.source === 'official') {
+      var when = /^\d{4}-\d{2}/.test(store.checkedAt || '') ? store.checkedAt.slice(0,4)+'년 '+(+store.checkedAt.slice(5,7))+'월 ' : '';
+      html = 'ⓘ 공식 홈페이지 기준이에요' + (when ? ' ('+when+'확인)' : '') + '. 현장 사정에 따라 다를 수 있어요.';
+      if (/^https?:\/\//.test(store.sourceUrl || '')) html += ' <a href="'+e(store.sourceUrl)+'" target="_blank" rel="noopener" style="color:#2563EB;text-decoration:underline">출처 보기</a>';
+    } else {
+      html = 'ⓘ 오픈스트리트맵 이용자가 올린 정보라 실제와 다를 수 있어요.';
+    }
+    srcEl.innerHTML = html;
+    srcEl.style.display = 'block';
+  }
+
   // 결제 후기 + 해카 평점
   document.getElementById('review-section').style.display = 'block';
   var haekaRating = store.rating || null;
@@ -926,6 +944,9 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
       <div class="sec-title-red">결제 불가</div>
       <div class="card-grid" id="cards-no"><span style="font-size:11px;color:#bbb">없음</span></div>
     </div>
+
+    <!-- 결제 정보 출처 — 관리자가 넣은 데이터는 실제와 다를 수 있다고 알린다 -->
+    <div class="section" id="pay-source" style="display:none;font-size:11px;line-height:1.5;color:#6B7280"></div>
 
     <!-- 결제 후기 -->
     <div class="section" id="review-section" style="display:none">
