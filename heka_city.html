@@ -552,6 +552,9 @@ function buildFilters(){
       .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" onclick="pickCard(\''+c+'\')">'+c+'</button>'; }).join('');
   var cats=[];
   rows.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
+  // 홈·더보기와 같은 순서로 (목록에 없는 업종은 맨 뒤)
+  var CAT_ORDER=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
+  cats.sort(function(a,b){ var x=CAT_ORDER.indexOf(a), y=CAT_ORDER.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
   var catHtml='<button class="flt-chip'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">업종 전체</button>'
     + cats.map(function(c){ return '<button class="flt-chip'+(_flt.cat===c?' on':'')+'" onclick="pickCat(\''+c+'\')">'+(c==='호텔'?'숙소':c)+'</button>'; }).join('');
   document.getElementById('flt-cards').innerHTML=rows.length?cardHtml:'';
