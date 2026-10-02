@@ -219,8 +219,12 @@ function payStatePill(s) {
     <div class='city-row' onclick="selectCityDirect('일본','도쿄')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>도쿄</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('일본','오사카')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>오사카</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('일본','후쿠오카')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>후쿠오카</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('일본','교토')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>교토</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('일본','오키나와')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>오키나와</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
+    <div class='city-row' onclick="selectCityDirect('중국','상하이')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>상하이</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
+    <div class='city-row' onclick="selectCityDirect('중국','베이징')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>베이징</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
+    <div class='city-row' onclick="selectCityDirect('중국','톈진')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>톈진</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
+    <div class='city-row' onclick="selectCityDirect('중국','옌타이')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>옌타이</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
+    <div class='city-row' onclick="selectCityDirect('중국','하얼빈')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>하얼빈</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('대만','타이베이')"><img class='city-flag' src='img/flags/tw.png' alt='' loading='lazy'/><span class='city-row-name'>타이베이</span><span class='city-row-country'>대만</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('홍콩','홍콩')"><img class='city-flag' src='img/flags/hk.png' alt='' loading='lazy'/><span class='city-row-name'>홍콩</span><span class='city-row-country'>홍콩</span><span class='city-row-arr'>›</span></div>
     <div class='city-row' onclick="selectCityDirect('싱가포르','싱가포르')"><img class='city-flag' src='img/flags/sg.png' alt='' loading='lazy'/><span class='city-row-name'>싱가포르</span><span class='city-row-country'>싱가포르</span><span class='city-row-arr'>›</span></div>
@@ -319,7 +323,7 @@ window._searchStores = function(term){
 <script>
 var COUNTRIES=[
   {flag:'🇯🇵', name:'일본', cities:['도쿄','오사카','교토','후쿠오카','삿포로','나고야','히로시마','나라','고베','오키나와','가나자와','센다이','니가타','마쓰야마','다카마쓰','하카타','벳푸','유후인','아사히카와','쿠시로']},
-  {flag:'🇨🇳', name:'중국', cities:['상하이','베이징','청두','광저우','충칭','선전','항저우','시안','우한','난징','쿤밍','구이린','하얼빈','샤먼','칭다오','다롄','쑤저우','장자제','리장','황산']},
+  {flag:'🇨🇳', name:'중국', cities:['상하이','베이징','톈진','옌타이','청두','광저우','충칭','선전','항저우','시안','우한','난징','쿤밍','구이린','하얼빈','샤먼','칭다오','다롄','쑤저우','장자제','리장','황산']},
   {flag:'🇺🇸', name:'미국', cities:['뉴욕','로스앤젤레스','라스베가스','샌프란시스코','시카고','시애틀','마이애미','하와이','보스턴','워싱턴DC','올랜도','뉴올리언스','포틀랜드','샌디에이고','덴버','나파밸리','앵커리지','피닉스','애틀랜타','내슈빌']},
   {flag:'🇫🇷', name:'프랑스', cities:['파리','니스','리옹','마르세유','보르도','스트라스부르','릴','낭트','몽펠리에','렌','그르노블','투르','아비뇽','칸','모나코','앙티브','엑상프로방스','루아르','뮐루즈','콜마르']},
   {flag:'🇬🇧', name:'영국', cities:['런던','맨체스터','에든버러','버밍엄','리버풀','글래스고','브리스톨','리즈','옥스퍼드','케임브리지','바스','요크','코벤트리','노팅엄','셰필드','카디프','벨파스트','뉴캐슬','레스터','사우샘프턴']},
@@ -412,7 +416,7 @@ var CITY_EN_MAP={
   '도쿄':'Tokyo','오사카':'Osaka','교토':'Kyoto','후쿠오카':'Fukuoka','삿포로':'Sapporo',
   '나고야':'Nagoya','히로시마':'Hiroshima','나라':'Nara','고베':'Kobe','오키나와':'Okinawa',
   '가나자와':'Kanazawa','센다이':'Sendai','하카타':'Hakata','벳푸':'Beppu','유후인':'Yufuin',
-  '상하이':'Shanghai','베이징':'Beijing','청두':'Chengdu','광저우':'Guangzhou','충칭':'Chongqing',
+  '상하이':'Shanghai','베이징':'Beijing','톈진':'Tianjin','옌타이':'Yantai','청두':'Chengdu','광저우':'Guangzhou','충칭':'Chongqing',
   '선전':'Shenzhen','항저우':'Hangzhou','시안':'Xian','우한':'Wuhan','난징':'Nanjing',
   '쿤밍':'Kunming','구이린':'Guilin','하얼빈':'Harbin','샤먼':'Xiamen','칭다오':'Qingdao',
   '뉴욕':'New York','로스앤젤레스':'Los Angeles','라스베가스':'Las Vegas','샌프란시스코':'San Francisco',
