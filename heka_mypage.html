@@ -198,6 +198,8 @@ const _db = getFirestore(_app);
 const _auth = getAuth(_app);
 // 로그아웃은 실제 계정 연결(Firebase)도 끊어야 한다 — 저장된 표시만 지우면 계속 로그인 상태로 남는다
 window._fbSignOut = function(){ return signOut(_auth); };
+// 로그인 확인이 끝난 뒤의 계정 (확인 전이면 기다린다)
+window._fbUserReady = function(){ return _auth.authStateReady().then(function(){ return _auth.currentUser; }); };
 window._db = _db; window._doc = doc; window._getDoc = getDoc; window._setDoc = setDoc;
 onAuthStateChanged(_auth, async function(u){
   window._currentUser = u||null;
@@ -870,11 +872,14 @@ function resizeAvatar(src, cb) {
   img.src = src;
 }
 // 기기가 바뀌어도 남도록 Firestore에 함께 저장
+// 화면을 열자마자 바꾸면 로그인 확인 전이라 그냥 건너뛰었다 → 확인이 끝날 때까지 기다린다
 function saveAvatarCloud(src) {
-  var u = window._currentUser;
-  if (!u || !u.uid || !window._setDoc) return;
-  window._setDoc(window._doc(window._db, 'users', u.uid), { avatar: src }, { merge: true })
-    .catch(function() { showToast('프로필 사진 저장에 실패했어요'); });
+  var ready = window._fbUserReady ? window._fbUserReady() : Promise.resolve(window._currentUser);
+  ready.then(function(u) {
+    if (!u || !u.uid || !window._setDoc) { showToast('로그인 상태가 아니라 프로필 사진을 저장하지 못했어요'); return; }
+    return window._setDoc(window._doc(window._db, 'users', u.uid), { avatar: src }, { merge: true })
+      .then(function() { showToast('프로필 사진을 저장했어요'); });
+  }).catch(function() { showToast('프로필 사진 저장에 실패했어요'); });
 }
 
 // ── 닉네임 ──
