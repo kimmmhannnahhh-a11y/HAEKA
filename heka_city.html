@@ -151,6 +151,14 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .city-row-name{font-size:14px;font-weight:700;color:#1A1A1A;letter-spacing:-.02em}
 .city-row-country{font-size:11px;color:#9CA3AF;font-weight:600;margin-left:auto}
 .city-row-arr{font-size:15px;color:#D1D5DB;margin-left:8px}
+.flt-wrap{background:#fff;border-bottom:1px solid var(--hk-border);padding:8px 0 4px;flex-shrink:0}
+.flt-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 14px 6px}
+.flt-row::-webkit-scrollbar{display:none}
+.flt-row:empty{display:none}
+.flt-chip{flex-shrink:0;border:0;border-radius:999px;background:#F3F4F6;color:#4B5563;padding:6px 11px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+.flt-chip.on{background:var(--hk-text,#111);color:#fff}
+.flt-chip.sort.on{background:#FF3900}
+.store-dist{color:#FF3900;font-weight:800;margin-right:4px}
 </style>
 <script src="security.js"></script>
 <script>
@@ -254,6 +262,12 @@ function payStatePill(s) {
       <button class="store-back" id="store-back-btn" onclick="showCityView()">← 도시 선택</button>
       <span class="store-city-name" id="store-city-name"></span>
       <span class="store-count" id="store-count"></span>
+    </div>
+    <!-- 카드별·업종별로 거르고, 그 도시 안에 있으면 거리순으로 본다 -->
+    <div class="flt-wrap" id="flt-wrap">
+      <div class="flt-row" id="flt-cards"></div>
+      <div class="flt-row" id="flt-cats"></div>
+      <div class="flt-row" id="flt-sort"></div>
     </div>
     <div class="store-list" id="store-list"></div>
   </div>
@@ -438,6 +452,7 @@ function selectCountryAll(countryName){
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
   document.getElementById('store-back-btn').onclick=function(){ showView('view-city'); };
   showView('view-stores');
+  resetFilters();
   _pageState = { field:'country', value:country.name, rows:[], last:null, done:false, busy:false, label:country.name+' 전체' };
   loadMoreStores(listEl, true);
 }
@@ -462,6 +477,7 @@ function selectCity(city){
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
   document.getElementById('store-back-btn').onclick=showCityView;
   showView('view-stores');
+  resetFilters();
   _pageState = { field:'city', value:city, rows:[], last:null, done:false, busy:false, label:city };
   loadMoreStores(listEl, true);
 }
@@ -477,27 +493,111 @@ function _bindStoreScroll(){
     if(el.scrollTop + el.clientHeight >= el.scrollHeight - 300) loadMoreStores(el);
   });
 }
-function loadMoreStores(listEl, first){
+// 필터·정렬이 맞으려면 그 도시 매장이 다 있어야 해서, 끝까지 이어 받는다
+function loadMoreStores(listEl, first){
   if(!_pageState || _pageState.busy || _pageState.done) return;
-  _pageState.busy = true;
-  window._loadStores(_pageState.field, _pageState.value, _pageState.last).then(function(res){
-    _pageState.rows = _pageState.rows.concat(res.rows);
-    _pageState.last = res.last;
-    _pageState.done = res.done;
-    _pageState.busy = false;
-    document.getElementById('store-count').textContent = _pageState.rows.length + (_pageState.done ? '개' : '개+');
-    renderStores(_pageState.rows, listEl, _pageState.label);
+  var st = _pageState;
+  st.busy = true;
+  window._loadStores(st.field, st.value, st.last).then(function(res){
+    if(st !== _pageState) return; // 그 사이 다른 도시로 옮겨갔다
+    st.rows = st.rows.concat(res.rows);
+    st.last = res.last;
+    st.done = res.done;
+    st.busy = false;
+    autoDist();
+    buildFilters();
+    applyFilters();
     _bindStoreScroll();
+    if(!st.done) loadMoreStores(listEl);
   }).catch(function(){
-    _pageState.busy = false;
+    st.busy = false;
     if(first) listEl.innerHTML='<div class="store-empty">불러오지 못했어요</div>';
   });
 }
 
+// ── 카드별·업종별 필터, 거리순 ──
+var FLT_CARDS=['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay'];
+var _flt = { cards:{}, cat:'', sort:'base' };
+var _me = null;          // 내 위치 {lat,lng}
+var NEAR_KM = 50;        // 이 안에 있어야 그 도시에 와 있는 걸로 본다
 
-function renderStores(stores, el, city){
+function resetFilters(){
+  _flt = { cards:{}, cat:'', sort:'base' };
+  ['flt-cards','flt-cats','flt-sort'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
+  askLocation();
+}
+
+function askLocation(){
+  if(_me || !navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(function(p){
+    _me = { lat:p.coords.latitude, lng:p.coords.longitude };
+    autoDist(); buildFilters(); applyFilters();
+  }, function(){}, { timeout:8000, maximumAge:600000 });
+}
+
+function distKm(a, b){
+  var R=6371, r=Math.PI/180;
+  var dLat=(b.lat-a.lat)*r, dLng=(b.lng-a.lng)*r;
+  var h=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+// 내가 그 도시 안(가장 가까운 매장이 50km 이내)에 있을 때만 거리순을 보여준다
+function _isNear(){
+  if(!_me || !_pageState) return false;
+  return _pageState.rows.some(function(s){ return s.lat && s.lng && distKm(_me, s) <= NEAR_KM; });
+}
+
+function buildFilters(){
+  if(!_pageState) return;
+  var rows=_pageState.rows;
+  var cardHtml='<button class="flt-chip'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">카드 전체</button>'
+    + FLT_CARDS.filter(function(c){ return rows.some(function(s){ return (s.payOk||[]).indexOf(c)>-1; }); })
+      .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" onclick="pickCard(\''+c+'\')">'+c+'</button>'; }).join('');
+  var cats=[];
+  rows.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
+  var catHtml='<button class="flt-chip'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">업종 전체</button>'
+    + cats.map(function(c){ return '<button class="flt-chip'+(_flt.cat===c?' on':'')+'" onclick="pickCat(\''+c+'\')">'+c+'</button>'; }).join('');
+  document.getElementById('flt-cards').innerHTML=rows.length?cardHtml:'';
+  document.getElementById('flt-cats').innerHTML=rows.length?catHtml:'';
+  document.getElementById('flt-sort').innerHTML=(rows.length && _isNear())
+    ? '<button class="flt-chip sort'+(_flt.sort==='base'?' on':'')+'" onclick="pickSort(\'base\')">기본순</button>'
+      +'<button class="flt-chip sort'+(_flt.sort==='dist'?' on':'')+'" onclick="pickSort(\'dist\')">거리순</button>'
+    : '';
+}
+
+function pickCard(c){
+  if(!c) _flt.cards={};
+  else if(_flt.cards[c]) delete _flt.cards[c];
+  else _flt.cards[c]=1;
+  buildFilters(); applyFilters();
+}
+function pickCat(c){ _flt.cat=c; buildFilters(); applyFilters(); }
+function pickSort(m){ _flt.sort=m; _flt.picked=true; buildFilters(); applyFilters(); }
+// 그 도시에 와 있으면 처음엔 거리순으로 보여준다 (직접 고른 뒤엔 건드리지 않는다)
+function autoDist(){ if(!_flt.picked && _isNear()) _flt.sort='dist'; }
+
+function applyFilters(){
+  if(!_pageState) return;
+  var sel=Object.keys(_flt.cards);
+  var list=_pageState.rows.filter(function(s){
+    var cOk=!sel.length || (s.payOk||[]).some(function(c){ return _flt.cards[c]; });
+    var tOk=!_flt.cat || s.category===_flt.cat;
+    return cOk && tOk;
+  });
+  var useDist=_flt.sort==='dist' && _isNear();
+  list.forEach(function(s){ s._km = (_me && s.lat && s.lng) ? distKm(_me, s) : null; });
+  if(useDist) list.sort(function(a,b){ return (a._km==null?1e9:a._km)-(b._km==null?1e9:b._km); });
+  var total=_pageState.rows.length, filtered=sel.length||_flt.cat;
+  document.getElementById('store-count').textContent = (filtered ? list.length+' / ' : '') + total + (_pageState.done ? '개' : '개+');
+  renderStores(list, document.getElementById('store-list'), _pageState.label, useDist, !!filtered);
+}
+
+function renderStores(stores, el, city, showDist, filtered){
   if(!stores.length){
-    el.innerHTML='<div class="store-empty">'+city+'에 등록된 매장이 없어요<br>첫 번째로 등록해보세요! 🗺️</div>';
+    el.innerHTML = filtered
+      ? '<div class="store-empty">조건에 맞는 매장이 없어요</div>'
+      : '<div class="store-empty">'+city+'에 등록된 매장이 없어요<br>첫 번째로 등록해보세요! 🗺️</div>';
     return;
   }
   el.innerHTML=stores.map(function(s){
@@ -509,7 +609,7 @@ function renderStores(stores, el, city){
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
       +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
-      +'<div class="store-sub">'+(s.category||'')+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+      +'<div class="store-sub">'+(showDist&&s._km!=null?'<span class="store-dist">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+(s.category||'')+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
       +'<div class="store-cards-row">'+cards+'</div>'
       +'</div></div>';
   }).join('');

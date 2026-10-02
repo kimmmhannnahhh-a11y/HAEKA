@@ -791,7 +791,7 @@ function openRecentDetail(store) {
   var pills = cards.map(function(c){return'<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>';}).join('');
   var mapHtml = '';
   if(store.lat&&store.lng){
-    var mapUrl='https://www.google.com/maps/search/?api=1&query='+store.lat+','+store.lng;
+    var mapUrl='https://www.google.com/maps/search/'+encodeURIComponent(store.nameLocal||store.name||'')+'/@'+store.lat+','+store.lng+',18z';
     mapHtml='<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="window.open(\''+mapUrl+'\',\'_blank\')"><div id="dp-gmap" style="width:100%;height:100%"></div></div>';
   }
   document.getElementById('dp-scroll').innerHTML=

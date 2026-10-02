@@ -746,6 +746,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     window._storeLat = store.lat;
     window._storeLng = store.lng;
     window._storeName = store.name;
+    window._storeNameLocal = store.nameLocal;
     window._storeAddr = store.address;
     setTimeout(function() {
       var mapEl = document.getElementById('detail-map');
@@ -1018,8 +1019,9 @@ function shareStore() {
 }
 
 function openMap() {
-  var lat = window._storeLat, lng = window._storeLng, name = window._storeName;
-  if (lat && lng) window.open('https://www.google.com/maps/search/?api=1&query='+lat+','+lng, '_blank');
+  var lat = window._storeLat, lng = window._storeLng, name = window._storeNameLocal || window._storeName;
+  // 좌표만 넘기면 구글 지도가 빈 지점을 띄운다 → 현지 이름으로 그 좌표 근처를 찾게 한다
+  if (lat && lng) window.open('https://www.google.com/maps/search/'+encodeURIComponent(name||'')+'/@'+lat+','+lng+',18z', '_blank');
   else if (window._storeAddr) window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(window._storeAddr), '_blank');
 }
 
