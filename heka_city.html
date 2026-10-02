@@ -516,7 +516,7 @@ function loadMoreStores(listEl, first){
 }
 
 // ── 카드별·업종별 필터, 거리순 ──
-var FLT_CARDS=['현금','VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay'];
+var FLT_CARDS=['VISA','MASTER','JCB','AMEX','트래블로그','트래블월렛','UnionPay','현금'];
 // '현금'은 현금가능·현금만(카드불가) 둘 다 잡는다. 현금불가로 확인된 곳은 뺀다
 function payMatch(s, c){
   var ok=s.payOk||[], no=s.payNo||[];
