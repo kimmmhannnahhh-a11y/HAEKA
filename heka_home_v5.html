@@ -963,7 +963,7 @@ window.openFirebaseDetail = async function(store) {
   } catch(e) {}
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = store.category || '';
+  document.getElementById('dp-cat').textContent = [store.cuisine, store.category].filter(Boolean).join(' · ');
   // 폐업 뱃지
   var existBadge = document.getElementById('dp-closed-badge');
   if (existBadge) existBadge.remove();
