@@ -269,6 +269,7 @@ onSnapshot(q, function(snapshot){
       id: doc.id,
       av: catEmojiMap[normCat]||'톡',
       user: d.nickname || '여행자',
+      uid: d.uid || '',
       date: d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleDateString('ko',{month:'2-digit',day:'2-digit'}).replace(/\./g,'').replace(' ','') : '',
       city: d.city || '',
       title: d.title || '',
@@ -317,7 +318,7 @@ function renderPosts(list){
     return '<div class="fpost" onclick="'+onclickFn+'">'
       + '<div class="fpleft">'
         + '<div class="fphead">'
-          + '<div class="fpav">'+p.av+'</div>'
+          + '<div class="fpav" data-uid="'+(p.uid||'')+'">'+p.av+'</div>'
           + '<span class="fpu">'+p.user+'</span>'
           + '<span class="fpd">·</span>'
           + '<span class="fpd">'+p.time+'</span>'
@@ -365,8 +366,10 @@ function applyMyAvatar(){
     var r=tx.objectStore('avatar').get('profile');
     r.onsuccess=function(e){
       var src=e.target.result;
+      // 내 사진은 내가 쓴 글에만 (예전엔 모든 글에 내 사진이 붙었다)
+      var me=''; try{ me=localStorage.getItem('haeka_uid')||''; }catch(e){}
       document.querySelectorAll('.fpav').forEach(function(el){
-        if(src) el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
+        if(src && me && el.getAttribute('data-uid')===me) el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
         else el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
       });
     };
