@@ -748,6 +748,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     window._storeName = store.name;
     window._storeNameLocal = store.nameLocal;
     window._storeAddr = store.address;
+    haekaFindPlace(store);
     setTimeout(function() {
       var mapEl = document.getElementById('detail-map');
       if (!mapEl || typeof google === 'undefined') return;
@@ -832,6 +833,7 @@ window._updateDoc = updateDoc;
 window._arrayUnion = arrayUnion;
 </script>
 <script src="security.js"></script>
+<script src="map-link.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
 var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg" };
@@ -1019,10 +1021,7 @@ function shareStore() {
 }
 
 function openMap() {
-  var lat = window._storeLat, lng = window._storeLng, name = window._storeNameLocal || window._storeName;
-  // 좌표만 넘기면 구글 지도가 빈 지점을 띄운다 → 현지 이름으로 그 좌표 근처를 찾게 한다
-  if (lat && lng) window.open('https://www.google.com/maps/search/'+encodeURIComponent(name||'')+'/@'+lat+','+lng+',18z', '_blank');
-  else if (window._storeAddr) window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(window._storeAddr), '_blank');
+  haekaOpenMap({ lat: window._storeLat, lng: window._storeLng, name: window._storeName, nameLocal: window._storeNameLocal, address: window._storeAddr });
 }
 
 function copyAddr() {
