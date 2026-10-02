@@ -332,7 +332,8 @@ function renderCountryCol(){
 function renderCityCol(){
   if(!_selectedCountry){return;}
   var col=document.getElementById('city-col');
-  col.innerHTML=_selectedCountry.cities.map(function(c){
+  // 맨 위 '나라 전체' — 특정 도시가 아닌 나라 전반 이야기용 (city 값: '중국 전체')
+  col.innerHTML='<div class="city-col-item" style="color:#FF3900;font-weight:700" onclick="selectCity(\''+_selectedCountry.name+' 전체\')">전체</div>'+_selectedCountry.cities.map(function(c){
     return '<div class="city-col-item" onclick="selectCity(\''+c+'\')">'+c+'</div>';
   }).join('');
 }

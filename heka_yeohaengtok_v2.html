@@ -463,10 +463,13 @@ function applyCityFilter(){
   if(!_selectedCity){
     filtered = base;
   } else if(_selectedCity.city){
-    filtered = base.filter(function(p){ return (p.city||'') === _selectedCity.city; });
+    // 그 도시 글 + 그 도시가 속한 나라의 '나라 전체' 글
+    var ctry = Object.keys(cities).find(function(k){ return (cities[k]||[]).some(function(c){ return c.name===_selectedCity.city; }); });
+    filtered = base.filter(function(p){ var pc=p.city||''; return pc === _selectedCity.city || (ctry && pc === ctry+' 전체'); });
   } else if(_selectedCity.cityNames){
     var set = _selectedCity.cityNames;
-    filtered = base.filter(function(p){ return set.indexOf(p.city||'') > -1; });
+    var whole = _selectedCity.country + ' 전체';
+    filtered = base.filter(function(p){ var pc=p.city||''; return set.indexOf(pc) > -1 || pc === whole; });
   } else {
     filtered = base;
   }
