@@ -611,7 +611,7 @@ window.openFirebaseDetail = async function(store) {
 
   document.getElementById('dp-scroll').innerHTML =
     '<div style="margin-bottom:8px">'
-    +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">결제 가능</div>'
+    +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">'+(store.category==='ATM'?'출금 가능':'결제 가능')+'</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
     +'</div>'
     +hoursHtml

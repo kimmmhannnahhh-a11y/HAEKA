@@ -630,6 +630,8 @@ async function renderStore(store) {
     document.getElementById('addr-section').style.display = 'block';
   }
 
+  // ATM 은 결제가 아니라 출금
+  if (store.category === 'ATM') { var _t1=document.getElementById('pay-ok-title'), _t2=document.getElementById('pay-no-title'); if(_t1) _t1.textContent='출금 가능'; if(_t2) _t2.textContent='출금 불가'; }
   // 결제 가능 카드
   var allOk = store.payOk || [];
   var okCards = allOk.filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
@@ -939,13 +941,13 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 
     <!-- 결제 가능 카드 -->
     <div class="section hk-pay-strip">
-      <div class="sec-title-blue">결제 가능</div>
+      <div class="sec-title-blue" id="pay-ok-title">결제 가능</div>
       <div class="card-grid" id="cards-ok"></div>
     </div>
 
     <!-- 결제 불가 카드 -->
     <div class="section" id="cards-no-section" style="display:none">
-      <div class="sec-title-red">결제 불가</div>
+      <div class="sec-title-red" id="pay-no-title">결제 불가</div>
       <div class="card-grid" id="cards-no"></div>
     </div>
 
