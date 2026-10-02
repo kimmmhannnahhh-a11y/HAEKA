@@ -586,7 +586,8 @@ async function renderStore(store) {
   var nickEl = document.getElementById('hero-nick');
   if (store.createdAt) {
     var d = new Date(store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt);
-    dateEl.textContent = d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+    // '최근 결제 확인' 문구는 실제 결제 확인이 아니라 등록일 기준이라 뺐다 — 동그라미만 날짜 앞에
+    dateEl.innerHTML = '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle;background:'+signal.dotColor+'"></span>' + d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
   }
   var storeNick = store.nickname || store.nick || '';
   nickEl.textContent = storeNick ? ('등록자 ' + storeNick) : '';
@@ -890,7 +891,7 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
         <div id="hero-cat" class="hero-cat"></div>
       </div>
       <div style="text-align:right;flex-shrink:0;margin-left:10px">
-        <div id="signal-badge" class="signal-badge signal-green" style="margin-bottom:3px;justify-content:flex-end"><span class="signal-dot" style="background:#16A34A"></span>최근</div>
+        <div id="signal-badge" class="signal-badge signal-green" style="display:none!important"><span class="signal-dot" style="background:#16A34A"></span>최근</div>
         <div style="font-size:9px;color:rgba(255,255,255,.8);margin-bottom:1px" id="hero-date">-</div>
         <div style="font-size:9px;color:rgba(255,255,255,.6)" id="hero-nick">등록자 -</div>
       </div>
