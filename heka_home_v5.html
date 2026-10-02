@@ -919,7 +919,7 @@ function renderNearby(stores) {
     else if (store.distance) distText = (typeof store.distance === 'number') ? distLbl(Math.round(store.distance)) : store.distance;
     else distText = '거리 확인중';
     var distSafe = window._esc ? window._esc(distText) : distText;
-    var catText = [store.cuisine, store.category].filter(Boolean).join(' · ');
+    var catText = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
     var catSafe = catText ? ' · '+(window._esc ? window._esc(catText) : catText) : '';
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
@@ -965,7 +965,7 @@ window.openFirebaseDetail = async function(store) {
   } catch(e) {}
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = [store.cuisine, store.category].filter(Boolean).join(' · ');
+  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, store.category].filter(Boolean).join(' · '));
   // 폐업 뱃지
   var existBadge = document.getElementById('dp-closed-badge');
   if (existBadge) existBadge.remove();

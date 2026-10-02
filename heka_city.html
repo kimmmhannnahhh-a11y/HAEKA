@@ -597,7 +597,7 @@ function renderStores(stores, el, city, showDist, filtered){
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
       +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
-      +'<div class="store-sub">'+(showDist&&s._km!=null?'<span class="store-dist">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+[s.cuisine, s.category].filter(Boolean).join(' · ')+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+      +'<div class="store-sub">'+(showDist&&s._km!=null?'<span class="store-dist">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, s.category].filter(Boolean).join(' · '))+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
       +'<div class="store-cards-row">'+cards+'</div>'
       +'</div></div>';
   }).join('');
@@ -651,7 +651,7 @@ function doSearch(val){
         +'<div class="store-thumb">'+thumb+'</div>'
         +'<div class="store-info">'
         +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
-        +'<div class="store-sub">'+[s.cuisine, s.category].filter(Boolean).join(' · ')+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+        +'<div class="store-sub">'+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, s.category].filter(Boolean).join(' · '))+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
         +'</div></div>';
     }).join('');
   } else if(countryMatch.length&&!cityResults.length){
