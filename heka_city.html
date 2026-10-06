@@ -636,6 +636,19 @@ function renderStores(stores, el, city, showDist, filtered){
 
 var _searchCache={};
 // 검색
+// 한국식 이름으로도 찾을 수 있게 하는 도시 별칭
+var CITY_ALIAS={
+  '상하이':['상해'],'베이징':['북경'],'톈진':['천진'],'옌타이':['연태'],'웨이하이':['위해'],'연길':['옌지','연변'],
+  '내몽골':['네이멍구','후허하오터','내몽고'],'지난':['제남'],'창춘':['장춘'],'선양':['심양'],'청두':['성도'],'광저우':['광주'],
+  '충칭':['중경'],'선전':['심천'],'항저우':['항주'],'시안':['서안'],'우한':['무한'],'난징':['남경'],'쿤밍':['곤명'],
+  '구이린':['계림'],'하얼빈':['합이빈'],'샤먼':['하문'],'칭다오':['청도'],'다롄':['대련'],'쑤저우':['소주'],
+  '장자제':['장가계'],'리장':['여강']
+};
+function _cityAlias(city,val){
+  var a=CITY_ALIAS[city]||[];
+  for(var i=0;i<a.length;i++){ if(a[i].indexOf(val)>-1) return a[i]; }
+  return '';
+}
 function doSearch(val){
   val=val.trim().toLowerCase();
   document.getElementById('city-img-grid').style.display=val?'none':'grid';document.getElementById('view-country').style.setProperty('display',val?'block':'none','important');
@@ -648,6 +661,7 @@ function doSearch(val){
   COUNTRIES.forEach(function(c){
     c.cities.forEach(function(city){
       if(city.toLowerCase().indexOf(val)>-1) cityResults.push({country:c, city:city});
+      else { var al=_cityAlias(city,val); if(al) cityResults.push({country:c, city:city, alias:al}); }
     });
   });
 
@@ -669,7 +683,7 @@ function doSearch(val){
     html+='<div style="font-size:12px;font-weight:800;color:var(--hk-muted);padding:12px 16px 4px;letter-spacing:.05em">도시</div>';
     html+=cityResults.map(function(m){
       return '<div class="country-item" onclick="selectCityDirect(\''+m.country.name+'\',\''+m.city+'\')">'
-        +'<div class="country-info"><div class="country-name">'+m.city+'</div><div class="country-cities">'+m.country.name+'</div></div>'
+        +'<div class="country-info"><div class="country-name">'+m.city+(m.alias?' ('+m.alias+')':'')+'</div><div class="country-cities">'+m.country.name+'</div></div>'
         +'<span class="country-arr">›</span></div>';
     }).join('');
   }
