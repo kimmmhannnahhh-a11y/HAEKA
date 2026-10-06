@@ -193,6 +193,12 @@ async function openEditor() {
         note: $('ae-note').value.trim(), closed: $('ae-closed').checked, images
       };
       if (!data.name) { alert('이름은 비울 수 없어요'); return; }
+      // 검색용 이름(띄어쓰기·기호·대소문자 무시)과 핫플 표시 여부를 같이 맞춘다
+      const key = v => String(v == null ? '' : v).toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
+      data.nameKey = key(data.name);
+      data.localKey = key(data.nameLocal);
+      data.hasMedia = images.length > 0 || !!s.videoUrl;
+      if (images.length > (s.images || []).length) data.mediaAt = new Date();
     }
     $('ae-save').disabled = true; $('ae-save').textContent = '저장 중…';
     try {

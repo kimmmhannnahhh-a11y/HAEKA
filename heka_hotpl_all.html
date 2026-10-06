@@ -116,7 +116,7 @@ body{background:var(--hk-bg);display:flex;justify-content:center;padding:30px;fo
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -129,10 +129,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const q = query(collection(db,'stores'), orderBy('createdAt','desc'), limit(50));
+// 사진·영상이 있는 매장만 받아 최신순으로 보여준다
+const q = query(collection(db,'stores'), where('hasMedia','==',true), limit(60));
 onSnapshot(q, function(snapshot){
   var stores = [];
   snapshot.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
+  stores.sort(function(a,b){
+    var ta=(a.mediaAt&&a.mediaAt.seconds)||(a.createdAt&&a.createdAt.seconds)||0;
+    var tb=(b.mediaAt&&b.mediaAt.seconds)||(b.createdAt&&b.createdAt.seconds)||0;
+    return tb-ta;
+  });
   document.getElementById('loading').style.display='none';
   if(window.renderHotpl) window.renderHotpl(stores);
 });

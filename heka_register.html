@@ -359,6 +359,7 @@ window.saveToFirestore = async function(data) {
       cell: (data.lat != null && data.lng != null) ? Math.floor(data.lat * 50) + '_' + Math.floor(data.lng * 50) : null,
       nameKey: _searchKey(data.name),
       localKey: _searchKey(data.nameLocal),
+      hasMedia: (Array.isArray(data.images) && data.images.length > 0) || !!data.videoUrl,
       createdAt: serverTimestamp()
     });
     return docRef.id;

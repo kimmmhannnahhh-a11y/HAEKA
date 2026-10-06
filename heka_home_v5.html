@@ -526,6 +526,20 @@ function loadNearStores() {
   }).catch(function(){ _nearKey = null; });
 }
 
+// 사진·영상이 있는 매장만 받아 최신순으로 핫플에 띄운다
+async function loadHotplStores() {
+  try {
+    const rows = _storeRows(await getDocs(query(collection(db, 'stores'), where('hasMedia', '==', true), limit(40))));
+    if (!rows.length) return;
+    rows.sort(function(a, b){
+      var ta = (a.mediaAt && a.mediaAt.seconds) || (a.createdAt && a.createdAt.seconds) || 0;
+      var tb = (b.mediaAt && b.mediaAt.seconds) || (b.createdAt && b.createdAt.seconds) || 0;
+      return tb - ta;
+    });
+    initHotpl(rows);
+  } catch(e) { console.error('핫플 로드 오류:', e); }
+}
+
 async function loadStores() {
   try {
     const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
@@ -569,6 +583,8 @@ async function loadStores() {
       });
       // 즉시 핫플 렌더링 (영상이 다 로드되기 전에 화면부터 표시)
       initHotpl(allStores);
+      // 핫플은 최근 등록순 20곳이 아니라 사진·영상이 있는 매장에서 따로 고른다
+      loadHotplStores();
       renderNearby(sortByDistance(allStores));
       // 위 20곳은 최근 등록순이라 가까운 가게가 빠진다 → 내 주변 칸만 받아 다시 그린다
       _recentStores = allStores.slice();

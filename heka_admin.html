@@ -1318,7 +1318,7 @@ async function submitAddStore() {
       nameKey: String(name == null ? '' : name).toLowerCase().replace(/[\s\p{P}\p{S}]/gu, ''), localKey: '',
       payOk: _asOkSelected.slice(),
       payNo: _asNoSelected.slice(),
-      images: imageUrls,
+      images: imageUrls, hasMedia: imageUrls.length > 0,
       createdAt: f.serverTimestamp(),
       uid: (window._auth.currentUser || {}).uid,
       registeredBy: 'admin'
