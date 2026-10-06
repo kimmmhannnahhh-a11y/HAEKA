@@ -75,5 +75,12 @@
   "file": "a-tw-tickets-2026-10.json",
   "count": 19,
   "date": "2026-10-06"
+ },
+ {
+  "id": "a-n3-tickets",
+  "title": "베트남·태국 입장권 (후에·푸꾸옥·나트랑·푸켓·파타야 등)",
+  "file": "a-n3-tickets-2026-10.json",
+  "count": 27,
+  "date": "2026-10-06"
  }
 ]
