@@ -206,7 +206,9 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 @media (max-width:480px){
   body{padding:0!important;background:var(--hk-bg)!important}
   .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
-  .media-overlay,.map-overlay,.prog-overlay{border-radius:0!important}
+  .media-overlay,.map-overlay,.prog-overlay{border-radius:0!important;position:fixed!important;z-index:200!important}
+  /* 장소 검색 창: 하단 메뉴에 가려지지 않게 화면 위로 올리고, 결과가 보이도록 충분히 크게 연다 */
+  .map-box-popup{min-height:72vh;min-height:72dvh;max-height:90vh!important;max-height:90dvh!important;padding-bottom:env(safe-area-inset-bottom)}
 }
 .bnav{display:flex;position:fixed;bottom:0;left:0;right:0;width:100%;z-index:60;border-top:1px solid #F3F4F6;background:#fff;padding:8px 0 10px}
 .bnav .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#999;gap:3px;font-weight:600}
