@@ -27,6 +27,13 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .slide-wrap{position:relative;width:100%;overflow:hidden}
 .slide-inner{display:flex;transition:transform .3s ease}
 .slide-img{flex:0 0 100%;width:100%;max-height:320px;object-fit:contain;display:block}
+/* 사진 크게 보기 */
+.photo-view{position:fixed;inset:0;background:#000;z-index:9999;display:none;align-items:center;justify-content:center}
+.photo-view.on{display:flex}
+.photo-view img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.photo-view-close{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:20px;line-height:36px;padding:0;cursor:pointer}
+.photo-view-count{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));text-align:center;color:#fff;font-size:12px;font-weight:600}
+.slide-img{cursor:pointer}
 .slide-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
 .slide-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4)}
 .slide-dot.on{background:#fff;width:14px;border-radius:3px}
@@ -156,6 +163,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
     </button>
   </div>
   <div class="toast" id="toast"></div>
+  <div class="photo-view" id="photo-view"><img id="photo-view-img" alt=""/><button class="photo-view-close" onclick="closePhoto()" aria-label="닫기">×</button><div class="photo-view-count" id="photo-view-count"></div></div>
 </div>
 
 <script type="module">
@@ -356,7 +364,7 @@ window.renderPost=function(p){
   }
   var slideHtml='';
   if(_images.length){
-    var imgs=_images.map(function(src){return '<img class="slide-img" src="'+src+'" loading="eager" decoding="async"/>';}).join('');
+    var imgs=_images.map(function(src,i){return '<img class="slide-img" src="'+src+'" loading="eager" decoding="async" onclick="openPhoto('+i+')"/>';}).join('');
     var dots=_images.length>1?'<div class="slide-dots" id="slide-dots">'+_images.map(function(_,i){
       return '<div class="slide-dot'+(i===0?' on':'')+'" onclick="slideTo('+i+')"></div>';
     }).join('')+'</div>':'';
@@ -628,6 +636,32 @@ function slideTo(idx){
   if(inner) inner.style.transform='translateX(-'+(idx*100)+'%)';
   document.querySelectorAll('.slide-dot').forEach(function(d,i){d.classList.toggle('on',i===idx);});
 }
+
+// 사진 크게 보기: 사진을 누르면 화면 가득 보여준다. 좌우로 밀면 다음·이전 사진
+var _pvIdx=0;
+function openPhoto(i){
+  if(!_images[i]) return;
+  _pvIdx=i;
+  document.getElementById('photo-view-img').src=_images[i];
+  document.getElementById('photo-view-count').textContent=_images.length>1?(i+1)+' / '+_images.length:'';
+  document.getElementById('photo-view').classList.add('on');
+}
+function closePhoto(){
+  document.getElementById('photo-view').classList.remove('on');
+  slideTo(_pvIdx);
+}
+(function(){
+  var v=document.getElementById('photo-view'), x0=0;
+  if(!v) return;
+  v.addEventListener('click',function(e){ if(e.target===v) closePhoto(); });
+  v.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
+  v.addEventListener('touchend',function(e){
+    var d=e.changedTouches[0].clientX-x0;
+    if(Math.abs(d)<40) return;
+    if(d<0&&_pvIdx<_images.length-1) openPhoto(_pvIdx+1);
+    else if(d>0&&_pvIdx>0) openPhoto(_pvIdx-1);
+  },{passive:true});
+})();
 
 function initSlideSwipe(){
   var startX=0, isDrag=false;
