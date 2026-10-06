@@ -226,6 +226,7 @@ body{padding-bottom:78px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, getDoc, limit } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -239,6 +240,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// 로그인 정보. 매장 저장은 로그인한 사람만 할 수 있다(서버 규칙: uid == 로그인한 사람)
+const auth = getAuth(app);
+const authReady = new Promise(resolve => onAuthStateChanged(auth, u => resolve(u)));
 
 // 업종 Firestore에서 동적 로드
 async function loadCategoryOptions() {
@@ -330,6 +334,12 @@ window.searchFirestore = async function(keyword) {
 // Firebase 저장
 window.saveToFirestore = async function(data) {
   try {
+    const user = auth.currentUser || await authReady;
+    if (!user) {
+      window._saveError = '로그인이 필요해요. 로그인한 뒤 다시 등록해 주세요.';
+      return null;
+    }
+    data.uid = user.uid;
     // 중복 체크 — 같은 이름만 찾아본다 (전체를 읽지 않는다)
     const snapshot = await getDocs(query(collection(db, 'stores'), where('name', '==', data.name), limit(20)));
     let duplicate = false;

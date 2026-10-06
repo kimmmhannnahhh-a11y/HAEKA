@@ -485,6 +485,9 @@ function cityMatches(s, city){
 }
 
 function selectCity(city){
+  // 검색 결과에서 골랐을 때 검색 결과가 목록 위에 남지 않게 한다
+  var _inp=document.getElementById('search-inp'); if(_inp) _inp.value='';
+  document.getElementById('view-country').style.setProperty('display','none','important');
   _currentCity=city;
   document.getElementById('store-city-name').textContent=city;
   document.getElementById('store-count').textContent='';
