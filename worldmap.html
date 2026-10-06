@@ -50,7 +50,7 @@ html,body{height:100%;margin:0;font-family:Pretendard,-apple-system,BlinkMacSyst
     <div class="panel-sum" id="sum">불러오는 중...</div>
   </div>
   <div class="list" id="list"></div>
-  <div class="hint">지도 조각을 누르면 노란색으로 칠해져요. 한 번 더 누르면 지워져요. 확대하면 조각 이름이 나와요. 칠한 내용은 이 브라우저에만 저장돼요.</div>
+  <div class="hint">해카에 매장이 등록된 지역은 자동으로 노란색이에요. 다른 조각도 누르면 노란색으로 칠해지고, 한 번 더 누르면 지워져요. 확대하면 조각 이름이 나와요. 칠한 내용은 이 브라우저에만 저장돼요.</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -103,8 +103,11 @@ function prep(geom){
   });
   return { polys:polys, area:area, best:best };
 }
-function styleOf(key){ return { color: LINE, weight: .7, fillColor: paint[key] ? YELLOW : LAND, fillOpacity: 1 }; }
+var auto = {};   // 해카에 매장이 등록된 도시가 들어 있는 조각: { 조각 키: [도시 이름] } — 자동으로 노란색
+function isOn(key){ return !!(paint[key] || auto[key]); }
+function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : LAND, fillOpacity: 1 }; }
 function clickPiece(key){
+  if(auto[key]) return;   // 해카 등록 지역은 자동으로 칠해지고 지워지지 않는다
   if(paint[key]) delete paint[key]; else paint[key] = 1;
   save('haeka_worldmap_pieces', paint);
   var p = pieces[key];
@@ -135,6 +138,7 @@ function drawPieces(topo){
     layer.on('click', function(e){ L.DomEvent.stopPropagation(e); clickPiece(key); });
     layer.addTo(map);
     piece.layers.push(layer);
+    piece.polys = (piece.polys || []).concat(q.polys);
   });
   Object.keys(pieces).forEach(function(key){
     var p = pieces[key];
@@ -167,7 +171,7 @@ function drawNations(world, extra){
 function showLabels(force){
   var z = map.getZoom(), b = map.getBounds().pad(.2);
   labels.forEach(function(l){
-    var painted = !l.nat && !!paint[l.key];
+    var painted = !l.nat && isOn(l.key);
     // 칠한 조각 이름은 조금 일찍부터 보인다
     var want = z >= (painted ? Math.min(l.z, 4.5) : l.z) && z <= (l.zMax || 99);
     if(!l.nat){
@@ -183,10 +187,20 @@ function showLabels(force){
 map.on('moveend zoomend', function(){ showLabels(); });
 
 function renderList(){
-  var keys = Object.keys(paint).filter(function(k){ return pieces[k]; });
-  document.getElementById('sum').innerHTML = '칠한 곳 <strong>'+keys.length+'</strong>곳';
-  var html = '<div class="list-h"><span>칠한 곳</span>'+(keys.length?'<button onclick="clearAll()">모두 지우기</button>':'')+'</div>';
-  if(!keys.length) html += '<div class="empty">아직 칠한 곳이 없어요</div>';
+  var keys = Object.keys(paint).filter(function(k){ return pieces[k] && !auto[k]; });
+  var akeys = Object.keys(auto).filter(function(k){ return pieces[k]; });
+  document.getElementById('sum').innerHTML = '해카 등록 지역 <strong>'+akeys.length+'</strong>곳'+(keys.length?' · 직접 칠한 곳 <strong>'+keys.length+'</strong>곳':'');
+  var html = '';
+  if(akeys.length){
+    html += '<div class="list-h"><span>해카 등록 지역</span></div>';
+    akeys.sort(function(a,b){ return (pieces[a].nat+pieces[a].name).localeCompare(pieces[b].nat+pieces[b].name,'ko'); }).forEach(function(k){
+      var p = pieces[k], cs = auto[k].filter(function(n){ return n !== p.name; });
+      html += '<div class="row" onclick="focusPiece(\''+esc(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')"><i class="sq"></i><span class="nm">'+esc(p.name)+(cs.length?' <span class="ct">('+esc(cs.join(', '))+')</span>':'')+'</span>'
+        + (p.nat !== p.name ? '<span class="ct">'+esc(p.nat)+'</span>' : '') + '</div>';
+    });
+  }
+  html += '<div class="list-h"><span>직접 칠한 곳</span>'+(keys.length?'<button onclick="clearAll()">모두 지우기</button>':'')+'</div>';
+  if(!keys.length) html += '<div class="empty">조각을 누르면 여기에 나와요</div>';
   keys.sort(function(a,b){ return (pieces[a].nat+pieces[a].name).localeCompare(pieces[b].nat+pieces[b].name,'ko'); }).forEach(function(k){
     var p = pieces[k];
     html += '<div class="row" onclick="focusPiece(\''+esc(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')"><i class="sq"></i><span class="nm">'+esc(p.name)+'</span>'
@@ -205,6 +219,46 @@ window.focusPiece = function(key){
   map.flyTo(p.center, Math.max(map.getZoom(), p.area > 10 ? 5 : p.area > 1 ? 6 : 7.5), { duration:.6 });
 };
 
+// ── 해카 등록 도시가 들어 있는 조각을 찾아 자동으로 칠한다 ──
+function inRing(x, y, ring){
+  var inside = false;
+  for(var i=0, j=ring.length-1; i<ring.length; j=i++){
+    var xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
+    if(((yi>y) !== (yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi)) inside = !inside;
+  }
+  return inside;
+}
+function pieceAt(lat, lng, name){
+  var x = lng < SHIFT_AT ? lng + 360 : lng, best = null, bd = 1e9;
+  // 도시와 이름이 같은 조각이 바로 근처에 있으면 그 조각을 쓴다(타이베이·프라하처럼 작은 조각은 옆 조각으로 잘못 잡히기 쉽다)
+  if(name){
+    var nb = null, nd = 1e9;
+    for(var k0 in pieces){
+      var p0 = pieces[k0]; if(p0.name !== name) continue;
+      p0.polys.forEach(function(poly){ poly[0].forEach(function(pt){ var d = Math.abs(pt[0]-x) + Math.abs(pt[1]-lat); if(d < nd){ nd = d; nb = k0; } }); });
+    }
+    if(nb && nd < .6) return nb;
+  }
+  for(var k in pieces){
+    var p = pieces[k];
+    for(var i=0;i<p.polys.length;i++){
+      if(inRing(x, lat, p.polys[i][0])) return k;
+      // 해안 도시는 단순화된 경계 밖에 찍힐 수 있어서, 가장 가까운 조각도 기억해 둔다
+      var r = p.polys[i][0];
+      for(var j=0;j<r.length;j+=3){ var d = Math.abs(r[j][0]-x) + Math.abs(r[j][1]-lat); if(d < bd){ bd = d; best = k; } }
+    }
+  }
+  return bd < .4 ? best : null;
+}
+function paintRegistered(list){
+  list.forEach(function(c){
+    var k = pieceAt(c.lat, c.lng, c.name); if(!k) return;
+    (auto[k] = auto[k] || []).push(c.name);
+  });
+  Object.keys(auto).forEach(function(k){ pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); }); });
+  showLabels(true); renderList();
+}
+
 renderList();
 Promise.all([
   fetch('data/world-regions.json').then(function(r){ return r.json(); }),
@@ -215,6 +269,7 @@ Promise.all([
   drawNations(r[1], r[2]);
   showLabels(true);
   renderList();
+  return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered);
 }).catch(function(e){ console.error(e); document.getElementById('sum').textContent = '지도를 불러오지 못했어요'; });
 </script>
 </body>
