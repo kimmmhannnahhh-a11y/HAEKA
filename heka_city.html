@@ -587,7 +587,8 @@ function pickCard(c){
   else _flt.cards[c]=1;
   buildFilters(); applyFilters();
 }
-function pickCat(c){ _flt.cat=c; buildFilters(); applyFilters(); }
+// 이미 고른 업종을 다시 누르면 선택이 풀린다
+function pickCat(c){ _flt.cat=(_flt.cat===c?'':c); buildFilters(); applyFilters(); }
 
 function applyFilters(){
   if(!_pageState) return;
