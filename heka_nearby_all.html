@@ -858,7 +858,7 @@ function doFilter(){
     return cOk&&tOk&&kOk;
   });
   if(sortOrder==='distance'&&userLat&&userLng) list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);});
-  else if(sortOrder==='latest') list.sort(function(a,b){return(b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0)-(a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0);});
+  else if(sortOrder==='latest'){var _ms=function(c){return !c?0:(c.toMillis?c.toMillis():(c.seconds?c.seconds*1000:(typeof c==='number'?c:0)));};list.sort(function(a,b){return _ms(b.createdAt)-_ms(a.createdAt);});}
   else if(sortOrder==='rating') list.sort(function(a,b){return(b.rating||0)-(a.rating||0);});
   renderList(list);
 }
