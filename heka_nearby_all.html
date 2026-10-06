@@ -44,6 +44,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-union.on{background:#e21836;border-color:#e21836}
 .cc-alipay.on{background:#1677FF;border-color:#1677FF}
 .cc-wechat.on{background:#07C160;border-color:#07C160}
+.cc-cash.on{background:#6B5A3C;border-color:#6B5A3C}
 
 /* 검색 + 정렬 바 */
 .search-sort-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:.5px solid #f0f0f0;flex-shrink:0}
@@ -274,6 +275,7 @@ function payStatePill(s) {
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
         <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')">알리페이</div>
         <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')">위챗페이</div>
+        <div class="sq-chip cc-cash" onclick="toggleCardMain(this,'현금')">현금</div>
       </div>
     </div>
     <div>
@@ -316,6 +318,7 @@ function payStatePill(s) {
       <div class="sheet-chip" onclick="toggleCardChip(this,'UnionPay')">UnionPay</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'알리페이')">알리페이</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'위챗페이')">위챗페이</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'현금')">현금</div>
     </div>
     <button class="sheet-done" onclick="closeCardSheet()">선택 완료</button>
   </div>
@@ -849,7 +852,7 @@ function searchMatch(name, addr, kw, nameEn){
 function doFilter(){
   var kw=(document.getElementById('search-input-el').value||'').trim().toLowerCase();
   var list=(window.allStores||[]).filter(function(s){
-    var cOk=cardSel.has('all')?true:(s.payOk||[]).some(function(c){return cardSel.has(c);});
+    var cOk=cardSel.has('all')?true:(s.payOk||[]).some(function(c){return cardSel.has(c)||(cardSel.has('현금')&&(c==='현금가능'||c==='현금만'));});
     var tOk=catSel.size===0?true:catSel.has(s.category);
     var kOk=!kw?true:searchMatch(s.name, s.address, kw, s.nameEn);
     return cOk&&tOk&&kOk;

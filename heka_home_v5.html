@@ -80,6 +80,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .cc-union.on{background:#e21836;border-color:#e21836}
 .cc-alipay.on{background:#1677FF;border-color:#1677FF}
 .cc-wechat.on{background:#07C160;border-color:#07C160}
+.cc-cash.on{background:#6B5A3C;border-color:#6B5A3C}
 .sq-chip-all{flex-shrink:0;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid #FF3900;background:#fff;color:#FF3900;white-space:nowrap;transition:.12s;line-height:1.4;user-select:none}
 .sq-chip-all.on{background:#FF3900;color:#fff}
 .sq-chip-all.open{background:#FF3900;color:#fff}
@@ -745,7 +746,7 @@ async function initGPS() {
 window.applyFilters = function() {
   var filtered = allStores.filter(function(store) {
     var cardOk = !window._cardSelected || window._cardSelected.has('all') ? true
-      : (store.payOk || []).some(function(c){ return window._cardSelected.has(c) || window._cardSelected.has(c.toLowerCase()); });
+      : (store.payOk || []).some(function(c){ return window._cardSelected.has(c) || window._cardSelected.has(c.toLowerCase()) || (window._cardSelected.has('현금') && (c === '현금가능' || c === '현금만')); });
     var catOk = !window._selected || window._selected.size === 0 ? true
       : window._selected.has(store.category);
     return cardOk && catOk;
@@ -1228,6 +1229,7 @@ function payStatePill(s) {
         <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
         <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')">알리페이</div>
         <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')">위챗페이</div>
+        <div class="sq-chip cc-cash" onclick="toggleCardMain(this,'현금')">현금</div>
         <span class="chip-spacer" aria-hidden="true"></span>
       </div>
     </div>
@@ -1258,6 +1260,7 @@ function payStatePill(s) {
       <div class="sheet-chip" onclick="toggleCardChip(this,'UnionPay')">UnionPay</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'알리페이')">알리페이</div>
       <div class="sheet-chip" onclick="toggleCardChip(this,'위챗페이')">위챗페이</div>
+      <div class="sheet-chip" onclick="toggleCardChip(this,'현금')">현금</div>
     </div>
     <button class="sheet-done" onclick="closeCardSheet()">적용하기</button>
   </div>
