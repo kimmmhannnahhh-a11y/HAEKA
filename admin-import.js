@@ -116,7 +116,9 @@
     tries++;
     var wrap = document.getElementById('admin-wrap');
     var ready = window._db && window._fbFns && window._auth && window._auth.currentUser && wrap && wrap.style.display === 'flex';
-    if (ready) { clearInterval(timer); mount(); window.haekaImportAll(false); }
+    if (ready) { clearInterval(timer); mount(); window.haekaImportAll(false);
+      // 페이지를 열어 둔 동안에도 1분마다 새 자료가 올라왔는지 보고 자동으로 등록한다
+      setInterval(function () { if (window._auth && window._auth.currentUser) window.haekaImportAll(false); }, 60000); }
     else if (tries > 600) clearInterval(timer);
   }, 500);
 })();
