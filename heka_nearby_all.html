@@ -219,7 +219,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
 var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg", "코인로커": "img/cat-locker.jpg", "코인세탁소": "img/cat-laundry.jpg", "환전소": "img/cat-exchange.jpg", "온천": "img/cat-bath.jpg", "목욕탕": "img/cat-bath.jpg", "게임센터": "img/cat-arcade.jpg", "노래방": "img/cat-karaoke.jpg", "만화카페": "img/cat-mangacafe.jpg" };
 function catImage(cat) { return CAT_IMAGES[cat] || ""; }
-function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.cuisine) || catImage(s && s.category) || ""; }
+function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.cuisine !== '기타' && s.cuisine) || catImage(s && s.category) || ""; }
 </script>
 <script>
 // 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
@@ -727,7 +727,7 @@ function renderList(stores){
     var status='';
     var storeHours=s.businessHours||s.hours||s.openingHours;
     if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
-    var _ci=catImage(s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
+    var _ci=catImage(s.cuisine !== '기타' && s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');

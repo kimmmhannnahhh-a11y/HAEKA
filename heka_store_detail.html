@@ -514,7 +514,7 @@ async function renderStore(store) {
     heroEl.style.background = '';
     dotsEl.innerHTML = '';
     if(!images.length){
-      var ci = catImage(store.cuisine) || catImage(store.category);
+      var ci = catImage(store.cuisine !== '기타' && store.cuisine) || catImage(store.category);
       if (ci) {
         heroEl.style.background = "#FDFBF6";
         heroEl.innerHTML = '<img src="'+ci+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;padding:10px 0"/>';
