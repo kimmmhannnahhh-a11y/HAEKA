@@ -82,6 +82,22 @@
     return { added: added, skipped: skipped };
   }
 
+  // 도시 from 에 들어 있는 매장 중 (lat,lng) 반경 km 안의 것을 도시 to 로 옮긴다
+  async function recity(op) {
+    var f = window._fbFns, c = f.collection(window._db, 'stores');
+    var snap = await f.getDocs(f.query(c, f.where('city', '==', op.from)));
+    var hit = [];
+    snap.forEach(function (d) {
+      var x = d.data(); if (typeof x.lat !== 'number' || typeof x.lng !== 'number') return;
+      var dx = (x.lng - op.lng) * Math.cos(op.lat * Math.PI / 180) * 111.3, dy = (x.lat - op.lat) * 111.3;
+      if (Math.sqrt(dx * dx + dy * dy) <= op.km) hit.push(d.ref);
+    });
+    for (var i = 0; i < hit.length; i += 20) {
+      await Promise.all(hit.slice(i, i + 20).map(function (ref) { return f.updateDoc(ref, { city: op.to }); }));
+    }
+    return hit.length;
+  }
+
   // force=true 면 등록 완료로 표시된 것도 다시 확인한다(중복은 생기지 않음)
   window.haekaImportAll = async function (force) {
     if (_busy) return; _busy = true;
@@ -108,6 +124,22 @@
       }
       render();
     }
+    // 추가 작업(도시 이름 옮기기 등). 목록이 없으면 그냥 넘어간다
+    try {
+      var ores = await fetch(DATA_BASE + 'ops.json?t=' + Date.now());
+      var ops = ores.ok ? await ores.json() : [];
+      d = doneMap();
+      for (var j = 0; j < ops.length; j++) {
+        var op = ops[j];
+        if (d['op:' + op.id] || op.type !== 'recity') continue;
+        log(op.title + ' 시작');
+        try {
+          var n = await recity(op);
+          markDone('op:' + op.id, n); total += n;
+          log(op.title + ' 끝 - ' + n + '곳 옮김');
+        } catch (e) { log(op.title + ' 실패: ' + ((e && e.message) || e)); }
+      }
+    } catch (e) {}
     if (total && window.clearStoreCache) { try { window.clearStoreCache(); } catch (e) {} }
     if (btn) btn.disabled = false;
     _busy = false;
