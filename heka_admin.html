@@ -1315,6 +1315,7 @@ async function submitAddStore() {
       lat: isNaN(lat) ? null : lat,
       lng: isNaN(lng) ? null : lng,
       cell: (isNaN(lat) || isNaN(lng)) ? null : Math.floor(lat * 50) + '_' + Math.floor(lng * 50),
+      nameKey: String(name == null ? '' : name).toLowerCase().replace(/[\s\p{P}\p{S}]/gu, ''), localKey: '',
       payOk: _asOkSelected.slice(),
       payNo: _asNoSelected.slice(),
       images: imageUrls,
@@ -1732,6 +1733,7 @@ async function runBulk() {
         city: r.city, country: r.country,
         lat: r.lat, lng: r.lng, payOk: ok, payNo: no, images: [],
         cell: (r.lat != null && r.lng != null) ? Math.floor(r.lat * 50) + '_' + Math.floor(r.lng * 50) : null,
+        nameKey: String(r.name == null ? '' : r.name).toLowerCase().replace(/[\s\p{P}\p{S}]/gu, ''), localKey: '',
         uid: (window._auth.currentUser || {}).uid,
         createdAt: f.serverTimestamp(), registeredBy: 'admin', source: 'osm'
       });

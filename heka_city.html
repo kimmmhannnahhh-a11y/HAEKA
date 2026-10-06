@@ -303,12 +303,22 @@ const db=getFirestore(app);
 // 매장은 화면을 열 때 전부 받지 않는다. 고른 도시 것만, 300곳씩 나눠 받는다
 window._cityCache = {};
 window._PAGE = 300;
-// 가게명 검색 — 앞글자로 최대 20곳만 (전체를 받지 않는다)
+// 가게명 검색 — 띄어쓰기·기호·대소문자를 무시하고 앞글자로 찾는다 (전체를 받지 않는다)
+// 매장마다 nameKey(한글 이름)·localKey(현지 이름) 가 저장돼 있다. 저장하는 쪽과 계산식이 같아야 한다
+window._searchKey = function(v){ return String(v==null?'':v).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,''); };
 window._searchStores = function(term){
-  if(!term) return Promise.resolve([]);
-  return getDocs(query(collection(db,'stores'), where('name','>=',term), where('name','<=',term+''), limit(20)))
-    .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
-    .catch(function(){ return []; });
+  var k = window._searchKey(term);
+  if(!k) return Promise.resolve([]);
+  var run = function(field){
+    return getDocs(query(collection(db,'stores'), where(field,'>=',k), where(field,'<=',k+''), limit(20)))
+      .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
+      .catch(function(){ return []; });
+  };
+  return Promise.all([run('nameKey'), run('localKey')]).then(function(r){
+    var seen={}, out=[];
+    r[0].concat(r[1]).forEach(function(x){ if(!seen[x.id]){ seen[x.id]=1; out.push(x); } });
+    return out;
+  });
 };
 window._loadStores = function(field, value, after){
   var conds = [collection(db,'stores'), where(field,'==',value)];
