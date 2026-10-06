@@ -211,7 +211,8 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 
 .chip-fade{position:relative}.chip-fade::after{content:'';position:absolute;right:0;top:0;bottom:0;width:16px;background:linear-gradient(to right,transparent 0%,rgba(255,255,255,0.5) 70%,var(--hk-surface,#fff) 100%);pointer-events:none;z-index:2}
 /* 칩 줄 끝 빈 칸(40vw) 때문에 마지막 칩 뒤로 너무 넘어갔다 → 마지막 칩이 오른쪽 끝에 닿으면 멈춤 */
-.chip-spacer{display:none}
+/* 줄 끝 칩이 화면 가장자리에 붙어 잘려 보이지 않게 끝에 여백을 둔다 */
+.chip-spacer{display:block;flex:0 0 22px;width:22px;height:1px}
 
 /* HAEKA 2.0 Warm Minimal UI overrides */
 body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
