@@ -525,6 +525,8 @@ function loadMoreStores(listEl, first){
     buildFilters();
     applyFilters();
     _bindStoreScroll();
+    _applyRestoreScroll();
+    if(st.done) _restoreY=null;
     if(!st.done) loadMoreStores(listEl);
   }).catch(function(){
     st.busy = false;
@@ -617,7 +619,7 @@ function renderStores(stores, el, city, showDist, filtered){
     var cards=payStatePill(s).replace(/cpill/,"sc")+(s.payOk||s.cards||[]).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((s.payNo||[]).indexOf('카드불가')>-1||(s.payOk||[]).indexOf('현금만')>-1)); }).map(function(c){
       var cl=CARD_MAP[c]||''; return cl?'<span class="sc '+cl+'">'+c+'</span>':'';
     }).join('');
-    return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
+    return '<div class="store-item" onclick="openStore(\''+s.id+'\')">'
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
       +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
@@ -671,7 +673,7 @@ function doSearch(val){
     html+='<div style="font-size:12px;font-weight:800;color:var(--hk-muted);padding:12px 16px 4px;letter-spacing:.05em">매장</div>';
     html+=storeResults.map(function(s){
       var _t=storeThumb(s); var thumb=_t?'<img src="'+_t+'" style="width:100%;height:100%;object-fit:cover"/>':'';
-      return '<div class="store-item" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
+      return '<div class="store-item" onclick="openStore(\''+s.id+'\')">'
         +'<div class="store-thumb">'+thumb+'</div>'
         +'<div class="store-info">'
         +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
@@ -727,6 +729,47 @@ function goPopularCities(){
   document.getElementById('search-inp').value='';
   showCountryView();
 }
+
+// 매장 상세로 갈 때 보던 화면(도시·필터·검색어·스크롤)을 기억해 두고, 뒤로 돌아오면 그대로 되살린다
+function _cityScrollers(){ return [document.querySelector('.phone'), document.getElementById('store-list'), document.querySelector('.view.active')].filter(Boolean); }
+function openStore(id){
+  try{
+    var ys=_cityScrollers().map(function(el){ return el.scrollTop||0; });
+    sessionStorage.setItem('haeka_city_state', JSON.stringify({
+      city:_currentCity||'', country:(_currentCountry&&_currentCountry.name)||'',
+      cat:_flt.cat||'', cards:Object.keys(_flt.cards||{}),
+      q:(document.getElementById('search-inp').value||''),
+      y:Math.max.apply(null, ys.concat([window.scrollY||0])), at:Date.now()
+    }));
+  }catch(e){}
+  location.href='heka_store_detail.html?id='+id;
+}
+var _restoreY=null;
+function _applyRestoreScroll(){
+  if(_restoreY==null) return;
+  var y=_restoreY, ok=false;
+  _cityScrollers().forEach(function(el){ if(el.scrollHeight-el.clientHeight>=y-5){ el.scrollTop=y; if(Math.abs(el.scrollTop-y)<6) ok=true; } });
+  if(!ok && document.documentElement.scrollHeight-window.innerHeight>=y-5){ window.scrollTo(0,y); ok=true; }
+  if(ok) _restoreY=null;
+}
+window.addEventListener('pageshow', function(e){ if(e.persisted){ try{ sessionStorage.removeItem('haeka_city_state'); }catch(_){} } });
+window.addEventListener('DOMContentLoaded', function(){
+  var st=null;
+  try{ st=JSON.parse(sessionStorage.getItem('haeka_city_state')||'null'); sessionStorage.removeItem('haeka_city_state'); }catch(e){}
+  if(!st || Date.now()-st.at>30*60*1000) return;
+  var nav=(performance.getEntriesByType && performance.getEntriesByType('navigation')[0])||{};
+  if(nav.type && nav.type!=='back_forward') return;   // 뒤로가기로 돌아온 때만 되살린다
+  if(st.city && st.country){
+    selectCityDirect(st.country, st.city);
+    _flt={ cards:{}, cat:st.cat||'' };
+    (st.cards||[]).forEach(function(c){ _flt.cards[c]=1; });
+    _restoreY=st.y||0;
+  } else if(st.q){
+    var inp=document.getElementById('search-inp');
+    inp.value=st.q;
+    doSearch(st.q);
+  }
+});
 
 function handleBack(){
   var active=document.querySelector('.view.active');

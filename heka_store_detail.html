@@ -1013,7 +1013,9 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 
 <script>
 function goBack() {
-  window.location.href = 'heka_home_v5.html';
+  // 들어온 화면(검색·도시 목록·주변·지도 등)으로 돌아간다. 링크로 바로 들어온 경우에만 홈으로
+  if (history.length > 1) history.back();
+  else window.location.href = 'heka_home_v5.html';
 }
 
 function toggleZzim() {
