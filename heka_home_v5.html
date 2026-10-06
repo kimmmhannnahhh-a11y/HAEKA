@@ -763,6 +763,8 @@ function renderHotpl(store) {
 function renderHotplSlide() {
   var el = document.getElementById('hotpl-dynamic');
   if (!el) return;
+  // 빈 상태를 그렸다가 나중에 매장이 생기면 원래 구조로 되돌려야 한다(안 그러면 사진이 화면 전체를 덮는다)
+  if (el._tpl === undefined) el._tpl = el.innerHTML;
 
   if(!_hotplStores.length){
     el.innerHTML = '<div style="height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:#f9f9f9;border-radius:12px">'
@@ -772,6 +774,8 @@ function renderHotplSlide() {
       +'</div>';
     return;
   }
+
+  if (!el.querySelector('.hotpl-img')) el.innerHTML = el._tpl;
 
   var store = _hotplStores[_hotplIdx];
   var nick = store.nickname || store.nick || '여행자';
