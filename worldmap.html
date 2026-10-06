@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>해카 도시 지도</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;color:#1A1A1A;background:#F7F6F3}
+#map{position:absolute;inset:0}
+.panel{position:absolute;z-index:1000;top:12px;left:12px;width:270px;max-height:calc(100% - 24px);display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(17,24,39,.16);overflow:hidden}
+.panel-head{padding:14px 16px 10px;border-bottom:1px solid #F0EFEA}
+.panel-title{font-size:15px;font-weight:800;letter-spacing:-.02em}
+.panel-title b{color:#FF3900}
+.panel-sum{margin-top:6px;font-size:12px;color:#6B7280;line-height:1.6}
+.panel-sum strong{color:#1A1A1A;font-variant-numeric:tabular-nums}
+.legend{padding:10px 16px;border-bottom:1px solid #F0EFEA;display:flex;flex-wrap:wrap;gap:6px 12px;font-size:11px;color:#4B5563}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.18);display:inline-block}
+.list{overflow-y:auto;padding:6px 8px 10px}
+.list-h{font-size:11px;font-weight:800;color:#9CA3AF;padding:10px 8px 4px;letter-spacing:.04em}
+.row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;font-size:13px;cursor:pointer}
+.row:hover{background:#F7F6F3}
+.row .nm{flex:1;font-weight:700}
+.row .ct{font-size:12px;color:#6B7280;font-variant-numeric:tabular-nums}
+.toggle{display:none;position:absolute;z-index:1001;top:12px;left:12px;border:0;background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 20px rgba(17,24,39,.16);cursor:pointer}
+.pop-name{font-size:14px;font-weight:800;margin-bottom:2px}
+.pop-sub{font-size:12px;color:#6B7280;margin-bottom:8px}
+.sw{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sw button{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);cursor:pointer;padding:0}
+.sw button.on{box-shadow:0 0 0 2px #1A1A1A}
+.sw .clr{width:auto;height:26px;border-radius:13px;padding:0 10px;font-size:11px;font-weight:700;background:#F3F4F6;color:#4B5563;box-shadow:none;border:0}
+.add-row{display:flex;gap:6px;margin-top:2px}
+.add-row input{flex:1;min-width:0;border:1.5px solid #E5E7EB;border-radius:8px;padding:7px 9px;font-size:13px}
+.add-row button,.del-btn{border:0;border-radius:8px;background:#FF3900;color:#fff;font-weight:800;font-size:12px;padding:0 12px;cursor:pointer}
+.del-btn{background:#F3F4F6;color:#DC2626;height:26px;margin-top:8px}
+.hint{font-size:11px;color:#9CA3AF;padding:8px 16px 12px;border-top:1px solid #F0EFEA;line-height:1.5}
+.leaflet-popup-content{margin:12px 14px}
+@media (max-width:640px){
+  .panel{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:46%}
+  .panel.closed{display:none}
+  .toggle{display:block;left:8px;top:8px}
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<button class="toggle" id="toggle" onclick="document.getElementById('panel').classList.toggle('closed')">목록</button>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <div class="panel-title"><b>해카</b> 도시 지도</div>
+    <div class="panel-sum" id="sum">불러오는 중...</div>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="list" id="list"></div>
+  <div class="hint">도시 점을 누르면 색을 칠할 수 있어요. 지도 빈 곳을 누르면 도시를 새로 추가할 수 있어요. 칠한 색은 이 브라우저에만 저장돼요.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// 해카에 등록된 도시는 서버에서 받아 자동으로 주황색으로 칠한다.
+// 그 밖의 색은 직접 칠하고, 이 브라우저(localStorage)에만 저장한다.
+var PROJECT = 'card-store-finder';
+var REG_COLOR = '#FF3900', NONE_COLOR = '#C7CBD1';
+var PALETTE = [
+  { c:'#2563EB', n:'파랑' }, { c:'#16A34A', n:'초록' }, { c:'#F59E0B', n:'노랑' },
+  { c:'#9333EA', n:'보라' }, { c:'#DC2626', n:'빨강' }
+];
+// 아직 등록 안 한 여행 도시 후보 (이름은 앱의 도시 이름과 같게)
+var CANDIDATES = [
+  ['교토',35.0116,135.7681],['삿포로',43.0618,141.3545],['나고야',35.1815,136.9066],
+  ['칭다오',36.0671,120.3826],['광저우',23.1291,113.2644],['선전',22.5431,114.0579],['시안',34.3416,108.9398],
+  ['가오슝',22.6273,120.3014],
+  ['하노이',21.0278,105.8342],['나트랑',12.2388,109.1967],['푸꾸옥',10.2899,103.9840],['달랏',11.9404,108.4583],
+  ['치앙마이',18.7883,98.9853],['푸켓',7.8804,98.3923],['파타야',12.9236,100.8825],
+  ['마닐라',14.5995,120.9842],['쿠알라룸푸르',3.1390,101.6869],['코타키나발루',5.9804,116.0735],
+  ['발리',-8.6705,115.2126],['자카르타',-6.2088,106.8456],
+  ['라스베가스',36.1699,-115.1398],['샌프란시스코',37.7749,-122.4194],['하와이',21.3069,-157.8583],
+  ['시카고',41.8781,-87.6298],['시애틀',47.6062,-122.3321],['괌',13.4443,144.7937],['사이판',15.1778,145.7510],
+  ['밴쿠버',49.2827,-123.1207],['토론토',43.6532,-79.3832],
+  ['마드리드',40.4168,-3.7038],['피렌체',43.7696,11.2558],['베네치아',45.4408,12.3155],['밀라노',45.4642,9.1900],
+  ['암스테르담',52.3676,4.9041],['베를린',52.5200,13.4050],['뮌헨',48.1351,11.5820],['빈',48.2082,16.3738],
+  ['부다페스트',47.4979,19.0402],['취리히',47.3769,8.5417],['인터라켄',46.6863,7.8632],
+  ['리스본',38.7223,-9.1393],['포르투',41.1579,-8.6291],['아테네',37.9838,23.7275],['이스탄불',41.0082,28.9784],
+  ['코펜하겐',55.6761,12.5683],['스톡홀름',59.3293,18.0686],['헬싱키',60.1699,24.9384],['두브로브니크',42.6507,18.0944],
+  ['멜버른',-37.8136,144.9631],['골드코스트',-28.0167,153.4000],['오클랜드',-36.8509,174.7645],
+  ['두바이',25.2048,55.2708],['몰디브',4.1755,73.5093],['칸쿤',21.1619,-86.8515]
+];
+
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function load(key, def){ try{ var v=JSON.parse(localStorage.getItem(key)||'null'); return v==null?def:v; }catch(e){ return def; } }
+function save(key, v){ try{ localStorage.setItem(key, JSON.stringify(v)); }catch(e){} }
+
+var marks  = load('haeka_worldmap_marks', {});   // { 도시이름: 색 }
+var custom = load('haeka_worldmap_custom', []);   // [ [이름, lat, lng] ]
+var cities = {};                                  // 이름 → { name, lat, lng, reg, count, custom }
+var layers = {};
+
+var map = L.map('map', { worldCopyJump:true, zoomControl:false, minZoom:2 }).setView([25, 110], 3);
+L.control.zoom({ position:'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  maxZoom: 12, subdomains: 'abcd',
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+}).addTo(map);
+
+function colorOf(c){ return marks[c.name] || (c.reg ? REG_COLOR : NONE_COLOR); }
+function radiusOf(c){ return c.reg ? Math.max(7, Math.min(16, 6 + Math.sqrt(c.count||0)/5)) : 6; }
+
+function popupHtml(c){
+  var sub = c.reg ? ('해카 등록 ' + (c.count!=null ? Number(c.count).toLocaleString()+'곳' : '')) : (c.custom ? '직접 추가한 도시' : '아직 등록 안 한 도시');
+  var cur = marks[c.name] || '';
+  var sw = PALETTE.map(function(p){
+    return '<button title="'+p.n+'" class="'+(cur===p.c?'on':'')+'" style="background:'+p.c+'" onclick="setMark(\''+esc(c.name).replace(/'/g,"\\'")+'\',\''+p.c+'\')"></button>';
+  }).join('');
+  return '<div class="pop-name">'+esc(c.name)+'</div><div class="pop-sub">'+sub+'</div>'
+    + '<div class="sw">'+sw+'<button class="clr" onclick="setMark(\''+esc(c.name).replace(/'/g,"\\'")+'\',\'\')">색 지우기</button></div>'
+    + (c.custom ? '<button class="del-btn" onclick="removeCity(\''+esc(c.name).replace(/'/g,"\\'")+'\')">이 도시 지우기</button>' : '');
+}
+
+function draw(c){
+  if(layers[c.name]) map.removeLayer(layers[c.name]);
+  var m = L.circleMarker([c.lat, c.lng], {
+    radius: radiusOf(c), color:'#fff', weight:2, fillColor: colorOf(c), fillOpacity: (c.reg||marks[c.name]) ? .95 : .75
+  }).addTo(map);
+  m.bindTooltip(c.name + (c.reg && c.count!=null ? ' · '+Number(c.count).toLocaleString()+'곳' : ''), { direction:'top', offset:[0,-6] });
+  m.bindPopup(function(){ return popupHtml(c); });
+  layers[c.name] = m;
+}
+
+function renderList(){
+  var all = Object.keys(cities).map(function(k){ return cities[k]; });
+  var reg = all.filter(function(c){ return c.reg; }).sort(function(a,b){ return (b.count||0)-(a.count||0); });
+  var marked = all.filter(function(c){ return !c.reg && marks[c.name]; });
+  var total = reg.reduce(function(s,c){ return s+(c.count||0); }, 0);
+  document.getElementById('sum').innerHTML = '등록된 도시 <strong>'+reg.length+'</strong>곳 · 매장 <strong>'+total.toLocaleString()+'</strong>곳'
+    + (marked.length ? '<br>직접 칠한 도시 <strong>'+marked.length+'</strong>곳' : '');
+  document.getElementById('legend').innerHTML =
+    '<span><i class="dot" style="background:'+REG_COLOR+'"></i>해카 등록됨</span>'
+    + '<span><i class="dot" style="background:'+NONE_COLOR+'"></i>아직 안 함</span>'
+    + PALETTE.map(function(p){ return '<span><i class="dot" style="background:'+p.c+'"></i>'+p.n+'</span>'; }).join('');
+  var row = function(c){
+    return '<div class="row" onclick="focusCity(\''+esc(c.name).replace(/'/g,"\\'")+'\')"><i class="dot" style="background:'+colorOf(c)+'"></i>'
+      + '<span class="nm">'+esc(c.name)+'</span><span class="ct">'+(c.reg && c.count!=null ? Number(c.count).toLocaleString()+'곳' : '')+'</span></div>';
+  };
+  document.getElementById('list').innerHTML =
+    '<div class="list-h">해카 등록됨</div>' + (reg.map(row).join('') || '<div class="row"><span class="ct">아직 없어요</span></div>')
+    + (marked.length ? '<div class="list-h">직접 칠한 도시</div>' + marked.map(row).join('') : '');
+}
+
+window.setMark = function(name, color){
+  if(color) marks[name] = color; else delete marks[name];
+  save('haeka_worldmap_marks', marks);
+  if(cities[name]){ draw(cities[name]); layers[name].openPopup(); }
+  renderList();
+};
+window.focusCity = function(name){
+  var c = cities[name]; if(!c) return;
+  map.flyTo([c.lat, c.lng], Math.max(map.getZoom(), 5), { duration:.6 });
+  setTimeout(function(){ if(layers[name]) layers[name].openPopup(); }, 650);
+};
+window.removeCity = function(name){
+  custom = custom.filter(function(x){ return x[0] !== name; });
+  save('haeka_worldmap_custom', custom);
+  delete marks[name]; save('haeka_worldmap_marks', marks);
+  if(layers[name]){ map.removeLayer(layers[name]); delete layers[name]; }
+  delete cities[name];
+  renderList();
+};
+window.addCity = function(lat, lng){
+  var inp = document.getElementById('new-city');
+  var name = (inp && inp.value || '').trim();
+  if(!name) return;
+  if(cities[name]){ map.closePopup(); focusCity(name); return; }
+  custom.push([name, lat, lng]); save('haeka_worldmap_custom', custom);
+  cities[name] = { name:name, lat:lat, lng:lng, custom:true };
+  map.closePopup(); draw(cities[name]); layers[name].openPopup(); renderList();
+};
+
+// 지도 빈 곳을 누르면 도시를 새로 추가할 수 있다
+map.on('click', function(e){
+  var lat = +e.latlng.lat.toFixed(4), lng = +e.latlng.lng.toFixed(4);
+  L.popup().setLatLng(e.latlng).setContent(
+    '<div class="pop-name">도시 추가</div><div class="pop-sub">이 위치에 넣을 도시 이름</div>'
+    + '<div class="add-row"><input id="new-city" type="text" maxlength="20" onkeydown="if(event.key===\'Enter\')addCity('+lat+','+lng+')"/><button onclick="addCity('+lat+','+lng+')">추가</button></div>'
+  ).openOn(map);
+  setTimeout(function(){ var i=document.getElementById('new-city'); if(i) i.focus(); }, 60);
+});
+
+function countCity(name){
+  return fetch('https://firestore.googleapis.com/v1/projects/'+PROJECT+'/databases/(default)/documents:runAggregationQuery', {
+    method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ structuredAggregationQuery:{ structuredQuery:{ from:[{ collectionId:'stores' }],
+      where:{ fieldFilter:{ field:{ fieldPath:'city' }, op:'EQUAL', value:{ stringValue:name } } } }, aggregations:[{ alias:'n', count:{} }] } })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    return Number((((d[0]||{}).result||{}).aggregateFields||{}).n.integerValue || 0);
+  }).catch(function(){ return null; });
+}
+
+CANDIDATES.concat(custom).forEach(function(x){
+  cities[x[0]] = { name:x[0], lat:x[1], lng:x[2], custom: custom.indexOf(x) > -1 };
+});
+Object.keys(cities).forEach(function(k){ draw(cities[k]); });
+renderList();
+
+fetch('data/cities.json?t=' + Date.now()).then(function(r){ return r.json(); }).then(function(list){
+  list.forEach(function(c){
+    cities[c.name] = { name:c.name, lat:c.lat, lng:c.lng, reg:true, count:null };
+    draw(cities[c.name]);
+  });
+  renderList();
+  return Promise.all(list.map(function(c){
+    return countCity(c.name).then(function(n){
+      cities[c.name].count = n;
+      // 좌표 파일에는 있지만 아직 매장을 안 넣은 도시는 등록됨으로 치지 않는다
+      if(n === 0) cities[c.name].reg = false;
+      draw(cities[c.name]);
+    });
+  }));
+}).then(renderList).catch(function(){
+  document.getElementById('sum').textContent = '등록된 도시를 불러오지 못했어요';
+});
+</script>
+</body>
+</html>
