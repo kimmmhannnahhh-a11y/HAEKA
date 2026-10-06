@@ -66,17 +66,24 @@
     pending[key] = Promise.resolve(api.cells(window.cellsAround(lat, lng))).then(function (rows) {
       rows = rows || [];
       if (rows.length >= MIN || !api.city) return rows;
+      // 가까운 도시부터 차례로 받아 MIN 곳이 찰 때까지 채운다(최대 4개 도시)
       return loadCities().then(function (cities) {
-        var c = nearestCity(lat, lng, cities);
-        if (!c) return rows;
-        return Promise.resolve(api.city(c.name)).then(function (more) {
-          var seen = {};
-          return rows.concat(more || []).filter(function (s) {
-            if (seen[s.id]) return false;
-            seen[s.id] = 1;
-            return true;
-          });
-        }).catch(function () { return rows; });
+        var order = (cities || []).slice().sort(function (a, b) {
+          var k = Math.cos(lat * Math.PI / 180);
+          var da = Math.pow(a.lat - lat, 2) + Math.pow((a.lng - lng) * k, 2);
+          var db = Math.pow(b.lat - lat, 2) + Math.pow((b.lng - lng) * k, 2);
+          return da - db;
+        }).slice(0, 4);
+        var seen = {}, acc = [];
+        rows.forEach(function (s) { if (!seen[s.id]) { seen[s.id] = 1; acc.push(s); } });
+        var step = function (i) {
+          if (i >= order.length || acc.length >= MIN) return acc;
+          return Promise.resolve(api.city(order[i].name)).then(function (more) {
+            (more || []).forEach(function (s) { if (!seen[s.id]) { seen[s.id] = 1; acc.push(s); } });
+            return step(i + 1);
+          }).catch(function () { return acc; });
+        };
+        return step(0);
       });
     }).then(function (rows) {
       write(key, rows);

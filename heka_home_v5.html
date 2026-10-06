@@ -522,7 +522,8 @@ function loadNearStores() {
   }).then(function(rows){
     if (!rows || !rows.length) return;
     var seen = {};
-    allStores = rows.concat(_recentStores).filter(function(s){ if (seen[s.id]) return false; seen[s.id] = 1; return true; });
+    // 위치를 알 때는 주변(가까운 도시) 매장만 쓴다. 최근 등록 매장은 먼 나라 것이 섞여서 넣지 않는다
+    allStores = rows.filter(function(s){ if (seen[s.id]) return false; seen[s.id] = 1; return true; });
     renderNearby(sortByDistance(allStores));
   }).catch(function(){ _nearKey = null; });
 }
