@@ -314,9 +314,13 @@ window._searchStores = function(term){
       .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
       .catch(function(){ return []; });
   };
-  return Promise.all([run('nameKey'), run('localKey')]).then(function(r){
+  // 대표메뉴(예: 라멘)로도 찾는다 — 메뉴 이름이 검색어와 같은 매장
+  var byMenu = getDocs(query(collection(db,'stores'), where('menuKeys','array-contains',k), limit(20)))
+    .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
+    .catch(function(){ return []; });
+  return Promise.all([run('nameKey'), run('localKey'), byMenu]).then(function(r){
     var seen={}, out=[];
-    r[0].concat(r[1]).forEach(function(x){ if(!seen[x.id]){ seen[x.id]=1; out.push(x); } });
+    r[0].concat(r[1], r[2]).forEach(function(x){ if(!seen[x.id]){ seen[x.id]=1; out.push(x); } });
     return out;
   });
 };

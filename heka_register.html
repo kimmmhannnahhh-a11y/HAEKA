@@ -359,6 +359,7 @@ window.saveToFirestore = async function(data) {
       cell: (data.lat != null && data.lng != null) ? Math.floor(data.lat * 50) + '_' + Math.floor(data.lng * 50) : null,
       nameKey: _searchKey(data.name),
       localKey: _searchKey(data.nameLocal),
+      menuKeys: (data.menus || []).map(_searchKey).filter(Boolean),
       hasMedia: (Array.isArray(data.images) && data.images.length > 0) || !!data.videoUrl,
       createdAt: serverTimestamp()
     });
@@ -491,6 +492,13 @@ window.saveToFirestore = async function(data) {
     </div>
 
     <div class="divider"></div>
+
+    <!-- 대표메뉴: 음식 업종일 때만 보이는 선택 입력. + 로 칸을 늘린다 -->
+    <div class="section" id="menu-section" style="display:none;padding-top:12px;padding-bottom:12px">
+      <div class="sec-label" style="margin-bottom:8px">대표메뉴 <span style="font-size:11px;font-weight:500;color:#9CA3AF">선택</span></div>
+      <div id="menu-rows"></div>
+    </div>
+    <div class="divider" id="menu-divider" style="display:none"></div>
 
     <!-- 리뷰 -->
     <div class="section" style="padding-top:12px;padding-bottom:12px">
@@ -820,8 +828,48 @@ async function selectPlace(i) {
 }
 
 function toggleCatMenu(){document.getElementById('cat-menu').classList.toggle('open');document.getElementById('cat-dropdown').classList.toggle('open');}
+// ── 대표메뉴 ──
+var MENU_CATS=['식당','카페','술집','패스트푸드'], MENU_MAX=5;
+function renderMenuRows(vals){
+  var box=document.getElementById('menu-rows'); if(!box) return;
+  if(!vals.length) vals=[''];
+  box.innerHTML='';
+  vals.forEach(function(v,i){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;gap:6px;margin-bottom:6px';
+    var inp=document.createElement('input');
+    inp.type='text'; inp.maxLength=30; inp.className='menu-inp'; inp.value=v;
+    inp.style.cssText='flex:1;min-width:0;height:40px;border:1px solid #E5E7EB;border-radius:10px;padding:0 12px;font-size:13px;font-family:inherit;background:#fff;color:#111';
+    var btn=document.createElement('button');
+    btn.type='button';
+    var last=(i===vals.length-1);
+    btn.textContent=last?'+':'−';
+    btn.style.cssText='flex:0 0 40px;height:40px;border-radius:10px;border:1px solid '+(last?'#FF3900':'#E5E7EB')+';background:'+(last?'#FF3900':'#fff')+';color:'+(last?'#fff':'#6B7280')+';font-size:20px;font-weight:700;line-height:1;cursor:pointer';
+    if(last && vals.length>=MENU_MAX) btn.style.display='none';
+    btn.onclick=function(){
+      var cur=menuValues(true);
+      if(last){ if(cur.length<MENU_MAX){ cur.push(''); renderMenuRows(cur); var ins=document.querySelectorAll('#menu-rows .menu-inp'); ins[ins.length-1].focus(); } }
+      else { cur.splice(i,1); renderMenuRows(cur); }
+    };
+    row.appendChild(inp); row.appendChild(btn); box.appendChild(row);
+  });
+}
+// keepEmpty=true 면 빈 칸도 그대로(칸 다시 그릴 때), 아니면 적힌 것만
+function menuValues(keepEmpty){
+  var out=[];
+  document.querySelectorAll('#menu-rows .menu-inp').forEach(function(el){ var v=el.value.trim(); if(v||keepEmpty) out.push(keepEmpty?el.value:v); });
+  return out;
+}
+function syncMenuSection(){
+  var show=MENU_CATS.indexOf(selectedCat)>-1;
+  var sec=document.getElementById('menu-section'), dv=document.getElementById('menu-divider');
+  if(sec) sec.style.display=show?'block':'none';
+  if(dv) dv.style.display=show?'block':'none';
+  if(show && !document.querySelector('#menu-rows .menu-inp')) renderMenuRows([]);
+}
 function selectCat(val,isEtc){
   selectedCat=val;
+  syncMenuSection();
   document.getElementById('cat-dropdown-txt').textContent=(val==='호텔'?'숙소':val);
   document.querySelectorAll('.cat-opt').forEach(function(o){o.classList.toggle('on',o.textContent.replace('✓','').trim()===val);});
   document.getElementById('cat-dropdown').classList.add('selected');
@@ -1054,6 +1102,7 @@ async function saveStore(){
     payOk: payOkList,
     payNo: payNoList,
     review: document.getElementById('review-inp').value,
+    menus: (MENU_CATS.indexOf(selectedCat)>-1) ? menuValues(false) : [],
     address: parts[1] || '',
     lat: selectedLat,
     lng: selectedLng,

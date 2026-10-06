@@ -577,6 +577,22 @@ async function renderStore(store) {
   document.getElementById('hero-name').textContent = store.name;
   // 현지 간판과 대조할 수 있게 원래 이름도 같이 보여준다
   document.getElementById('hero-cat').textContent = (store.nameLocal ? store.nameLocal + ' · ' : '') + (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
+  // 대표메뉴가 있으면 업종 줄 아래에 "대표메뉴 피자 · 햄버거 · 감자튀김" 으로 보여준다
+  (function(){
+    var catEl = document.getElementById('hero-cat'), old = document.getElementById('hero-menu');
+    if(old) old.remove();
+    var menus = (store.menus || []).filter(Boolean);
+    if(!catEl || !menus.length) return;
+    var el = document.createElement('div');
+    el.id = 'hero-menu';
+    el.style.cssText = 'margin-top:6px;font-size:13px;font-weight:600;color:#374151;line-height:1.5';
+    var lab = document.createElement('span');
+    lab.textContent = '대표메뉴';
+    lab.style.cssText = 'display:inline-block;margin-right:6px;padding:1px 7px;border-radius:8px;background:#FFF1EB;color:#FF3900;font-size:11px;font-weight:800';
+    el.appendChild(lab);
+    el.appendChild(document.createTextNode(menus.join(' · ')));
+    catEl.parentNode.insertBefore(el, catEl.nextSibling);
+  })();
   var sigEl = document.getElementById('signal-badge');
   sigEl.innerHTML = '<span class="signal-dot" style="background:'+signal.dotColor+'"></span>'+signal.txt;
   sigEl.className = 'signal-badge ' + signal.cls;
@@ -674,7 +690,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     } else {
       html = 'ⓘ 오픈스트리트맵 이용자가 올린 정보라 실제와 다를 수 있어요.';
     }
-    // 비고: "현장 매표소 없음" 처럼 결제 칩만으로는 전달 안 되는 내용
+    // 비고: "현장 매표소 없음" 처럼 결제 칩만으로는 전달 안 되는 내용 
     if (store.note) html = '<div style="font-size:12px;color:#1F2937;font-weight:600;margin-bottom:6px">'+e(store.note)+'</div>' + html;
     srcEl.innerHTML = html;
     srcEl.style.display = 'block';
