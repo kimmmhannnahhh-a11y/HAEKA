@@ -429,7 +429,7 @@ onAuthStateChanged(auth, function(u){
 });
 
 function cardColor(card) {
-  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#FFD600','UnionPay':'#e21836','알리페이':'#1677FF','위챗페이':'#07C160','카드가능(브랜드모름)':'#FF3900'};
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#FFD600','UnionPay':'#e21836','알리페이':'#1677FF','위챗페이':'#07C160'};
   return map[card] || '#6B7280';
 }
 function cardTextColor(card) {
@@ -641,7 +641,7 @@ async function renderStore(store) {
     return '<div class="card-chip" style="background:'+cardColor(c)+';color:'+cardTextColor(c)+'"><div class="card-dot" style="background:'+(c==='트래블월렛'?'rgba(31,41,55,.4)':'rgba(255,255,255,.75)')+'"></div>'+c+'</div>';
   });
   if (hasCard) chips.push('<div class="card-chip" style="background:#FF3900"><div class="card-dot"></div>카드가능</div>');
-  if (hasCash) chips.push('<div class="card-chip" style="background:#6B7280"><div class="card-dot"></div>현금가능</div>');
+  if (hasCash) chips.push('<div class="card-chip" style="background:#F0E6D2;color:#6B5A3C"><div class="card-dot" style="background:rgba(107,90,60,.45)"></div>현금가능</div>');
   if (chips.length) {
     document.getElementById('cards-ok').innerHTML = chips.join('');
   }

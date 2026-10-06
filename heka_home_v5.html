@@ -454,7 +454,7 @@ function catBg(cat) {
 
 function cardColor(card) {
   if(card==='현금만'||card==='카드불가'||card==='현금불가') return '#DC2626';
-  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','알리페이':'#1677FF','위챗페이':'#07C160','카드가능':'#FF3900','카드가능(브랜드모름)':'#FF3900','현금가능':'#2e7d32','모르겠어요':'#9e9e9e'};
+  var map = {'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','알리페이':'#1677FF','위챗페이':'#07C160','카드가능':'#FF3900','현금가능':'#F0E6D2','모르겠어요':'#9e9e9e'};
   return map[card] || '#888';
 }
 
@@ -935,7 +935,7 @@ function renderNearby(stores) {
     var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가'; });
     cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
     var pillsHtml = payStatePill(store) + cards.map(function(c){
-      return '<span class="cpill" style="background:'+cardColor(c)+'">'+c+'</span>';
+      return '<span class="cpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':'#fff')+'">'+c+'</span>';
     }).join('');
     var distText = '';
     if (userLat && userLng && store.lat && store.lng) distText = distLbl(calcDist(userLat, userLng, store.lat, store.lng));
@@ -1012,7 +1012,7 @@ window.openFirebaseDetail = async function(store) {
 
   // 결제 카드
   var cards = (store.payOk || []);
-  var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:#fff">'+c+'</span>'; }).join('');
+  var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':'#fff')+'">'+c+'</span>'; }).join('');
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
   var noPills = noCards.map(function(c){
     return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
