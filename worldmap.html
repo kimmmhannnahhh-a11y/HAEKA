@@ -139,7 +139,9 @@ function prep(geom){
 }
 var auto = {};   // 해카에 매장이 등록된 도시가 들어 있는 조각: { 조각 키: [도시 이름] } — 자동으로 노란색
 function isOn(key){ return !!(paint[key] || auto[key]); }
-function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : LAND, fillOpacity: 1 }; }
+var empty = {};  // 조사했지만 넣을 정보가 없던 도시가 든 조각 → 연한 노랑
+var LIGHT_YELLOW = '#FDF1B0';
+function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : (empty[key] ? LIGHT_YELLOW : LAND), fillOpacity: 1 }; }
 function clickPiece(key){
   if(auto[key]) return;   // 해카 등록 지역은 자동으로 칠해지고 지워지지 않는다
   if(paint[key]) delete paint[key]; else paint[key] = 1;
@@ -326,7 +328,15 @@ Promise.all([
   drawNations(r[1], r[2]);
   showLabels(true);
   renderList();
-  return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered);
+  return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered).then(function(){
+    return fetch('data/checked.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(function(list){
+      list.forEach(function(c){
+        var k = pieceAt(c.lat, c.lng, c.name); if(!k || isOn(k)) return;
+        empty[k] = 1;
+        pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); });
+      });
+    }).catch(function(){});
+  });
 }).catch(function(e){ console.error(e); document.getElementById('sum').textContent = '지도를 불러오지 못했어요'; });
 </script>
 </body>
