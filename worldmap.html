@@ -76,15 +76,15 @@ var labels = [];
 // 태평양이 가운데 오도록 서경 쪽(아메리카)을 오른쪽으로 옮겨 그린다
 var SHIFT_AT = -25;
 var map = L.map('map', {
-  preferCanvas:true, zoomControl:false, minZoom:3, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
+  preferCanvas:true, zoomControl:false, minZoom:2, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
   maxBounds:[[-85,-100000],[88,100000]], maxBoundsViscosity:.8
 }).setView([28, 128], 4);
 L.control.zoom({ position:'bottomright' }).addTo(map);
-// 지도는 두 바퀴(-385~-25, -25~335)가 이어져 있다. 가운데가 그 범위를 벗어나면 360도 옆의 같은 자리로 옮겨 끝없이 끌 수 있게 한다
+// 지도는 세 바퀴(-385~-25, -25~335, 335~695)가 이어져 있다. 가운데가 그 범위를 벗어나면 360도 옆의 같은 자리로 옮겨 끝없이 끌 수 있게 한다
 function keepInWorld(){
   var c = map.getCenter(), lng = c.lng;
-  while(lng > 155) lng -= 360;
-  while(lng < -205) lng += 360;
+  while(lng > 335) lng -= 360;
+  while(lng < -25) lng += 360;
   if(lng !== c.lng) map.setView([c.lat, lng], map.getZoom(), { animate:false });
 }
 map.on('moveend', keepInWorld);
@@ -152,7 +152,11 @@ function clickPiece(key){
 
 // 같은 땅을 서쪽으로 360도 옮긴 사본을 붙인다 → 왼쪽으로 끌어도 지도가 이어진다
 function withCopy(polys){
-  return polys.concat(polys.map(function(poly){ return poly.map(function(r){ return r.map(function(p){ return [p[0]-360, p[1]]; }); }); }));
+  var out = polys;
+  [-360, 360].forEach(function(dx){
+    out = out.concat(polys.map(function(poly){ return poly.map(function(r){ return r.map(function(p){ return [p[0]+dx, p[1]]; }); }); }));
+  });
+  return out;
 }
 function drawPieces(topo){
   var fc = topojson.feature(topo, topo.objects.r);
@@ -184,7 +188,7 @@ function drawPieces(topo){
     // 큰 조각은 일찍, 작은 조각은 확대해야 이름이 나온다. 나라 전체가 한 조각이면 나라 이름이 이미 있으니 조각 이름은 뺀다
     if(p.whole) return;
     var z = p.area > 40 ? 3.5 : p.area > 10 ? 4.5 : p.area > 2.5 ? 5 : p.area > .6 ? 6 : p.area > .12 ? 7 : 8;
-    [0, -360].forEach(function(dx){
+    [0, -360, 360].forEach(function(dx){
       var c = [p.center[0], p.center[1] + dx];
       var lb = { z:z, key:key, c:c, on:false, painted:null,
         m: null, make:function(painted){ return L.marker(c, { pane:'names', interactive:false, keyboard:false,
@@ -204,7 +208,7 @@ function drawNations(world, extra){
     L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } },
       { renderer:natRenderer, interactive:false, style:{ color:NATLINE, weight:1.2, fill:false } }).addTo(map);
     var tier = q.area > 250 ? 1 : q.area > 60 ? 2 : q.area > 15 ? 3 : q.area > 3 ? 4 : 5;
-    [0, -360].forEach(function(dx){
+    [0, -360, 360].forEach(function(dx){
       labels.push({ z:[2, 3, 3.5, 4.5, 5.5][tier-1], zMax: tier <= 2 ? 5 : 99, on:false, nat:true,
         m: L.marker([q.best.cy, q.best.cx + dx], { pane:'names', interactive:false, keyboard:false,
           icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl nat t'+tier+'">'+esc(KO[name]||name)+'</span>' }) }) });
