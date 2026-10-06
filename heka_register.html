@@ -338,7 +338,7 @@ window.saveToFirestore = async function(data) {
       if (d.address === data.address) duplicate = true;
     });
     if (duplicate) {
-      showToast('이미 등록된 매장이에요!');
+      window._saveError = '이미 등록된 매장이에요!';
       return null;
     }
     // cell: 지도 칸 번호 (store-cache.js 의 storeCell 과 같은 계산식)
@@ -352,6 +352,7 @@ window.saveToFirestore = async function(data) {
     return docRef.id;
   } catch(e) {
     console.error('저장 오류:', e);
+    window._saveError = '등록에 실패했어요 (' + ((e && (e.code || e.message)) || '알 수 없는 오류') + ')';
     return null;
   }
 };
@@ -1047,7 +1048,9 @@ async function saveStore(){
     videoUrl: videoUrl || null,
     uid: localStorage.getItem('haeka_uid') || '',
   };
-  if(window.saveToFirestore) await window.saveToFirestore(data);
+  window._saveError = '';
+  if(!window.saveToFirestore){ window._saveError = '등록 준비가 아직 안 됐어요. 잠시 후 다시 눌러 주세요.'; return null; }
+  return await window.saveToFirestore(data);
 }
 
 function startProgress(){
@@ -1059,15 +1062,20 @@ function startProgress(){
   setTimeout(next,200);
 }
 function finish(){
-  saveStore().then(function(){
+  saveStore().then(function(id){
     setTimeout(function(){
       document.getElementById('prog-overlay').classList.remove('show');
+      // 저장이 안 됐으면 완료라고 하지 않고 사유를 보여준다
+      if(!id){ showToast(window._saveError || '등록에 실패했어요. 다시 시도해 주세요.'); return; }
       showToast('등록이 완료되었습니다!');
       setTimeout(function(){ location.href='heka_home_v5.html'; }, 1200);
     },400);
+  }).catch(function(e){
+    document.getElementById('prog-overlay').classList.remove('show');
+    showToast('등록에 실패했어요 (' + ((e && (e.code || e.message)) || '알 수 없는 오류') + ')');
   });
 }
-function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2000);}
+function showToast(msg){var t=document.getElementById('reg-toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},/실패|안 됐/.test(msg)?6000:2000);}
 
 
 
