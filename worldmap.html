@@ -141,6 +141,7 @@ var auto = {};   // 해카에 매장이 등록된 도시가 들어 있는 조각
 function isOn(key){ return !!(paint[key] || auto[key]); }
 var empty = {};  // 조사했지만 넣을 정보가 없던 도시가 든 조각 → 연한 노랑
 var LIGHT_YELLOW = '#FDF1B0';
+var LIGHT_NATIONS = ['South Korea', 'North Korea'];
 function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : (empty[key] ? LIGHT_YELLOW : LAND), fillOpacity: 1 }; }
 function clickPiece(key){
   if(auto[key]) return;   // 해카 등록 지역은 자동으로 칠해지고 지워지지 않는다
@@ -175,7 +176,7 @@ function drawPieces(topo){
     var key = whole ? p.a : (p.g ? p.a + '|' + p.g : p.k);
     var name = whole ? (KO[p.a] || p.a) : (p.g || p.n || p.a);
     var piece = pieces[key];
-    if(!piece) piece = pieces[key] = { key:key, name:name, nat:(KO[p.a] || p.a), layers:[], area:0, best:null, whole:whole || N.n === 1 };
+    if(!piece) piece = pieces[key] = { key:key, name:name, nat:(KO[p.a] || p.a), natRaw:p.a, layers:[], area:0, best:null, whole:whole || N.n === 1 };
     piece.area += q.area;
     if(!piece.best || q.best.area > piece.best.area) piece.best = q.best;
     var layer = L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } }, { style: styleOf(key) });
@@ -330,6 +331,12 @@ Promise.all([
   renderList();
   return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered).then(function(){
     return fetch('data/checked.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(function(list){
+      // 한국·북한은 해카 대상(해외)이 아니라서 나라 전체를 연한 노랑으로 칠해 둔다
+      Object.keys(pieces).forEach(function(k){
+        if(LIGHT_NATIONS.indexOf(pieces[k].natRaw) < 0 || isOn(k)) return;
+        empty[k] = 1;
+        pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); });
+      });
       list.forEach(function(c){
         var k = pieceAt(c.lat, c.lng, c.name); if(!k || isOn(k)) return;
         empty[k] = 1;
