@@ -91,6 +91,7 @@ var markRenderer = L.svg({ pane:'marks' });
 var markLayer = L.layerGroup().addTo(map);
 function showMarks(){
   markLayer.clearLayers();
+  return;   // 동그라미 표시는 끈다(정신없다는 요청). 조각 색칠만 남긴다
   var pxPerDeg = 256 * Math.pow(2, map.getZoom()) / 360;
   Object.keys(pieces).forEach(function(k){
     if(!isOn(k)) return;
