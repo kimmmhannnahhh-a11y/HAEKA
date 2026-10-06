@@ -641,7 +641,10 @@ async function renderStore(store) {
     return '<div class="card-chip" style="background:'+cardColor(c)+';color:'+cardTextColor(c)+'"><div class="card-dot" style="background:'+(c==='트래블월렛'?'rgba(31,41,55,.4)':'rgba(255,255,255,.75)')+'"></div>'+c+'</div>';
   });
   if (hasCard) chips.push('<div class="card-chip" style="background:#FF3900"><div class="card-dot"></div>카드가능</div>');
-  if (hasCash) chips.push('<div class="card-chip" style="background:#F0E6D2;color:#6B5A3C"><div class="card-dot" style="background:rgba(107,90,60,.45)"></div>현금가능</div>');
+  // 현금만 되는 곳은 '현금가능' 대신 '현금만'으로 보여준다
+  var cashOnly = (store.payNo || []).indexOf('카드불가') > -1 && allOk.indexOf('현금만') < 0;
+  if (cashOnly) chips.push('<div class="card-chip" style="background:#DC2626"><div class="card-dot"></div>현금만</div>');
+  else if (hasCash) chips.push('<div class="card-chip" style="background:#F0E6D2;color:#6B5A3C"><div class="card-dot" style="background:rgba(107,90,60,.45)"></div>현금가능</div>');
   if (chips.length) {
     document.getElementById('cards-ok').innerHTML = chips.join('');
   }

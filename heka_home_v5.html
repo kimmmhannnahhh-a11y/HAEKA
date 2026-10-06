@@ -932,7 +932,7 @@ function renderNearby(stores) {
   }
   stores.slice(0, 6).forEach(function(store) {
     var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
-    var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가'; });
+    var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
     cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
     var pillsHtml = payStatePill(store) + cards.map(function(c){
       return '<span class="cpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>';
@@ -1011,7 +1011,7 @@ window.openFirebaseDetail = async function(store) {
   }
 
   // 결제 카드
-  var cards = (store.payOk || []);
+  var cards = (store.payOk || []).filter(function(c){ return !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>'; }).join('');
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
   var noPills = noCards.map(function(c){

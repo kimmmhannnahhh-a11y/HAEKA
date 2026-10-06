@@ -303,7 +303,8 @@ function showCard(s){
   _selStore=s;
   document.getElementById('sc-name').textContent=s.name;
   document.getElementById('sc-sub').textContent=[s.category,s.city,s.address?s.address.split(',')[0]:''].filter(Boolean).join(' · ');
-  var cards=(s.payOk||s.cards||[]);
+  var _cashOnly=(s.payNo||[]).indexOf('카드불가')>-1||(s.payOk||[]).indexOf('현금만')>-1;
+  var cards=(s.payOk||s.cards||[]).filter(function(c){return !(c==='현금가능'&&_cashOnly);});
   document.getElementById('sc-cards').innerHTML=cards.map(function(c){
     var cl=_cardMap[c]||'';
     return cl?'<span class="sc-card '+cl+'">'+c+'</span>':'';
