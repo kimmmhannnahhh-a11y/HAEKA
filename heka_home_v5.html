@@ -525,7 +525,7 @@ function loadNearStores() {
     var seen = {};
     // 위치를 알 때는 주변(가까운 도시) 매장만 쓴다. 최근 등록 매장은 먼 나라 것이 섞여서 넣지 않는다
     allStores = rows.filter(function(s){ if (seen[s.id]) return false; seen[s.id] = 1; return true; });
-    renderNearby(sortByDistance(allStores));
+    (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
   }).catch(function(){ _nearKey = null; });
 }
 
@@ -588,7 +588,7 @@ async function loadStores() {
       initHotpl(allStores);
       // 핫플은 최근 등록순 20곳이 아니라 사진·영상이 있는 매장에서 따로 고른다
       loadHotplStores();
-      renderNearby(sortByDistance(allStores));
+      (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
       // 위 20곳은 최근 등록순이라 가까운 가게가 빠진다 → 내 주변 칸만 받아 다시 그린다
       _recentStores = allStores.slice();
       _nearKey = null;
@@ -724,7 +724,7 @@ async function initGPS() {
       userLat = c.lat; userLng = c.lng;
       _gpsLog('cache hit '+userLat+','+userLng);
       loadNearStores();
-      if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+      if (allStores.length > 0) (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
     }
   } catch(e) {}
 
@@ -735,7 +735,7 @@ async function initGPS() {
   if (pos) {
     userLat = pos.lat; userLng = pos.lng;
     _saveGPS(userLat, userLng);
-    if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    if (allStores.length > 0) (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
     loadNearStores();
   } else if (!userLat || !userLng) {
     // 캐시도 없고 새 좌표도 못 얻은 경우만 fallback
@@ -938,7 +938,7 @@ async function retryLocation() {
   if (pos) {
     userLat = pos.lat; userLng = pos.lng;
     _saveGPS(userLat, userLng);
-    if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    if (allStores.length > 0) (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
     loadNearStores();
   } else {
     showToast('위치를 가져오지 못했어요. 설정 > 앱 > 해카 > 위치 확인');
@@ -1121,7 +1121,7 @@ try { initGPS(); window._gpsStarted = true; } catch(e) { console.error(e); }
 // PC 브라우저 뒤로가기 캐시 대응 - 페이지 다시 보일 때 하트 상태 재동기화
 window.addEventListener('pageshow', function(e) {
   if (e.persisted && allStores.length > 0) {
-    renderNearby(sortByDistance(allStores));
+    (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
   }
   // 페이지 복귀 시 항상 찜 UI 재동기화
   try { sessionStorage.removeItem('haeka_zzim_changed'); } catch(ex) {}
