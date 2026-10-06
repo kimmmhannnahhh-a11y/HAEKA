@@ -439,7 +439,7 @@ function renderList(list){
       :'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+catEmoji(s.category)+'</div>';
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var dm=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist"> · '+distLbl(dm)+'</span>';}
-    if(s.city) dist='<span class="store-cat"> · '+(window._esc?window._esc(s.city):s.city)+'</span>'+dist;
+    if(s.city) dist='<span class="store-cat" style="color:#1E40AF;font-weight:700"> · '+(window._esc?window._esc(s.city):s.city)+'</span>'+dist;
     var realIdx=_allStores.indexOf(s);
     return'<div class="store-item" onclick="openDetail('+realIdx+')">'
       +thumb
