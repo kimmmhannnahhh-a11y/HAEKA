@@ -634,7 +634,7 @@ async function renderStore(store) {
   if (store.category === 'ATM') { var _t1=document.getElementById('pay-ok-title'), _t2=document.getElementById('pay-no-title'); if(_t1) _t1.textContent='출금 가능'; if(_t2) _t2.textContent='출금 불가'; }
   // 결제 가능 카드
   var allOk = store.payOk || [];
-  var okCards = allOk.filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '모르겠어요'; });
+  var okCards = allOk.filter(function(c){ return c !== '카드가능' && c !== '현금가능' && c !== '현금만' && c !== '모르겠어요'; });
   var hasCard = allOk.indexOf('카드가능') > -1;
   var hasCash = allOk.indexOf('현금가능') > -1;
   var chips = okCards.map(function(c){
@@ -642,7 +642,7 @@ async function renderStore(store) {
   });
   if (hasCard) chips.push('<div class="card-chip" style="background:#FF3900"><div class="card-dot"></div>카드가능</div>');
   // 현금만 되는 곳은 '현금가능' 대신 '현금만'으로 보여준다
-  var cashOnly = (store.payNo || []).indexOf('카드불가') > -1 && allOk.indexOf('현금만') < 0;
+  var cashOnly = (store.payNo || []).indexOf('카드불가') > -1 || allOk.indexOf('현금만') > -1;
   if (cashOnly) chips.push('<div class="card-chip" style="background:#DC2626"><div class="card-dot"></div>현금만</div>');
   else if (hasCash) chips.push('<div class="card-chip" style="background:#F0E6D2;color:#6B5A3C"><div class="card-dot" style="background:rgba(107,90,60,.45)"></div>현금가능</div>');
   if (chips.length) {
