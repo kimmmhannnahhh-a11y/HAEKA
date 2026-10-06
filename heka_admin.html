@@ -1314,6 +1314,7 @@ async function submitAddStore() {
       address: address,
       lat: isNaN(lat) ? null : lat,
       lng: isNaN(lng) ? null : lng,
+      cell: (isNaN(lat) || isNaN(lng)) ? null : Math.floor(lat * 50) + '_' + Math.floor(lng * 50),
       payOk: _asOkSelected.slice(),
       payNo: _asNoSelected.slice(),
       images: imageUrls,
@@ -1730,6 +1731,7 @@ async function runBulk() {
         name: r.name, category: r.category, address: r.address,
         city: r.city, country: r.country,
         lat: r.lat, lng: r.lng, payOk: ok, payNo: no, images: [],
+        cell: (r.lat != null && r.lng != null) ? Math.floor(r.lat * 50) + '_' + Math.floor(r.lng * 50) : null,
         uid: (window._auth.currentUser || {}).uid,
         createdAt: f.serverTimestamp(), registeredBy: 'admin', source: 'osm'
       });

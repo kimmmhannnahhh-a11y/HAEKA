@@ -213,6 +213,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </style>
 <script src="security.js"></script>
 <script src="map-link.js"></script>
+<script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
 var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg", "코인로커": "img/cat-locker.jpg", "코인세탁소": "img/cat-laundry.jpg", "환전소": "img/cat-exchange.jpg", "온천": "img/cat-bath.jpg", "목욕탕": "img/cat-bath.jpg", "게임센터": "img/cat-arcade.jpg", "노래방": "img/cat-karaoke.jpg", "만화카페": "img/cat-mangacafe.jpg" };
@@ -485,7 +486,7 @@ function toggleHours(){var el=document.getElementById('hours-full');var arrow=do
 <!-- Firebase module (홈화면과 동일 방식) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query, where, updateDoc, arrayUnion, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query, where, limit, updateDoc, arrayUnion, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const app = initializeApp({
@@ -529,12 +530,22 @@ window._getDoc = getDoc; window._setDoc = setDoc;
 window._updateDoc = updateDoc; window._arrayUnion = arrayUnion;
 window._getCurrentUser = function(){ return _currentUser; };
 
-window._fetchStores = async function() {
+// 내 주변 칸만 받는다. 위치를 모르면 최근 등록 100곳만 받는다.
+function _storeRows(snap) {
+  var rows = [];
+  snap.forEach(function(d){ rows.push(Object.assign({id:d.id},d.data())); });
+  return rows;
+}
+window._fetchStores = async function(lat, lng) {
   try {
-    const q = query(collection(db,'stores'), orderBy('createdAt','desc'));
-    const snap = await getDocs(q);
-    window.allStores = [];
-    snap.forEach(function(d){ window.allStores.push(Object.assign({id:d.id},d.data())); });
+    if (lat && lng && window.loadStoresNear) {
+      window.allStores = await window.loadStoresNear(lat, lng, {
+        cells: async function(cells){ return _storeRows(await getDocs(query(collection(db,'stores'), where('cell','in',cells)))); },
+        city: async function(name){ return _storeRows(await getDocs(query(collection(db,'stores'), where('city','==',name), limit(300)))); }
+      });
+    } else {
+      window.allStores = _storeRows(await getDocs(query(collection(db,'stores'), orderBy('createdAt','desc'), limit(100))));
+    }
     window.doFilter();
   } catch(e) {
     console.error(e);
@@ -671,7 +682,8 @@ function init(){
     if(cached){ var c=JSON.parse(cached); userLat=c.lat; userLng=c.lng; gpsGranted=true; }
   } catch(e){}
 
-  window._fetchStores && window._fetchStores();
+  var _fetchedCell = (userLat && userLng && window.storeCell) ? window.storeCell(userLat, userLng) : null;
+  window._fetchStores && window._fetchStores(userLat, userLng);
 
   if(!navigator.geolocation){ showGpsBanner(); return; }
   navigator.geolocation.getCurrentPosition(
@@ -682,6 +694,11 @@ function init(){
       var banner = document.getElementById('gps-banner');
       if(banner) banner.remove();
       if(window.allStores && window.allStores.length) window.doFilter();
+      // 위치가 다른 칸으로 잡혔으면 그 주변으로 다시 받는다
+      if(window.storeCell && window.storeCell(userLat, userLng) !== _fetchedCell){
+        _fetchedCell = window.storeCell(userLat, userLng);
+        window._fetchStores && window._fetchStores(userLat, userLng);
+      }
     },
     function(){
       if(!gpsGranted) showGpsBanner();

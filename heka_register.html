@@ -303,16 +303,13 @@ window._storageReady = true;
 // Firebase 검색
 window.searchFirestore = async function(keyword) {
   try {
+    // 전체를 받지 않는다 — 이름 앞글자로 최대 20곳만
     const results = [];
-    const snapshot = await getDocs(collection(db, 'stores'));
+    const kw = (keyword || '').trim();
+    if (!kw) return results;
+    const snapshot = await getDocs(query(collection(db, 'stores'), where('name', '>=', kw), where('name', '<=', kw + '\uf8ff'), limit(20)));
     snapshot.forEach(doc => {
-      const d = doc.data();
-      const name = (d.name || '').toLowerCase();
-      const addr = (d.address || '').toLowerCase();
-      const kw = keyword.toLowerCase();
-      if (name.includes(kw) || addr.includes(kw)) {
-        results.push({ id: doc.id, ...d, _source: 'haeka' });
-      }
+      results.push({ id: doc.id, ...doc.data(), _source: 'haeka' });
     });
     return results;
   } catch(e) {
@@ -335,8 +332,10 @@ window.saveToFirestore = async function(data) {
       showToast('이미 등록된 매장이에요!');
       return null;
     }
+    // cell: 지도 칸 번호 (store-cache.js 의 storeCell 과 같은 계산식)
     const docRef = await addDoc(collection(db, 'stores'), {
       ...data,
+      cell: (data.lat != null && data.lng != null) ? Math.floor(data.lat * 50) + '_' + Math.floor(data.lng * 50) : null,
       createdAt: serverTimestamp()
     });
     return docRef.id;

@@ -502,6 +502,30 @@ function sortByDistance(stores) {
   });
 }
 
+// 내 주변 매장만 받는다 (전 세계 매장을 통째로 받지 않는다)
+var _recentStores = [];
+var _nearKey = null;
+function _storeRows(snap) {
+  const rows = [];
+  snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+  return rows;
+}
+function loadNearStores() {
+  if (!userLat || !userLng || !window.loadStoresNear) return;
+  var key = window.storeCell(userLat, userLng);
+  if (_nearKey === key) return;
+  _nearKey = key;
+  window.loadStoresNear(userLat, userLng, {
+    cells: async function(cells){ return _storeRows(await getDocs(query(collection(db, 'stores'), where('cell', 'in', cells)))); },
+    city: async function(name){ return _storeRows(await getDocs(query(collection(db, 'stores'), where('city', '==', name), limit(300)))); }
+  }).then(function(rows){
+    if (!rows || !rows.length) return;
+    var seen = {};
+    allStores = rows.concat(_recentStores).filter(function(s){ if (seen[s.id]) return false; seen[s.id] = 1; return true; });
+    renderNearby(sortByDistance(allStores));
+  }).catch(function(){ _nearKey = null; });
+}
+
 async function loadStores() {
   try {
     const q = query(collection(db, 'stores'), orderBy('createdAt', 'desc'), limit(20));
@@ -546,17 +570,10 @@ async function loadStores() {
       // 즉시 핫플 렌더링 (영상이 다 로드되기 전에 화면부터 표시)
       initHotpl(allStores);
       renderNearby(sortByDistance(allStores));
-      // 위 20곳은 최근 등록순이라 가까운 가게가 빠진다 → 전체를 받아 내 주변을 다시 그린다
-      window.loadAllStores(async function(){
-        const all = await getDocs(query(collection(db, 'stores'), orderBy('createdAt', 'desc')));
-        const rows = [];
-        all.forEach(d => rows.push({ id: d.id, ...d.data() }));
-        return rows;
-      }).then(function(rows){
-        if (!rows || !rows.length) return;
-        allStores = rows;
-        renderNearby(sortByDistance(allStores));
-      }).catch(function(){});
+      // 위 20곳은 최근 등록순이라 가까운 가게가 빠진다 → 내 주변 칸만 받아 다시 그린다
+      _recentStores = allStores.slice();
+      _nearKey = null;
+      loadNearStores();
       // 나머지 영상은 1초 후 백그라운드 buffer
       setTimeout(function(){
         hotplCandidates.slice(1).forEach(function(s) {
@@ -687,6 +704,7 @@ async function initGPS() {
       var c = JSON.parse(cachedLocal);
       userLat = c.lat; userLng = c.lng;
       _gpsLog('cache hit '+userLat+','+userLng);
+      loadNearStores();
       if (allStores.length > 0) renderNearby(sortByDistance(allStores));
     }
   } catch(e) {}
@@ -699,6 +717,7 @@ async function initGPS() {
     userLat = pos.lat; userLng = pos.lng;
     _saveGPS(userLat, userLng);
     if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    loadNearStores();
   } else if (!userLat || !userLng) {
     // 캐시도 없고 새 좌표도 못 얻은 경우만 fallback
     showNearbyLocationFallback();
@@ -897,6 +916,7 @@ async function retryLocation() {
     userLat = pos.lat; userLng = pos.lng;
     _saveGPS(userLat, userLng);
     if (allStores.length > 0) renderNearby(sortByDistance(allStores));
+    loadNearStores();
   } else {
     showToast('위치를 가져오지 못했어요. 설정 > 앱 > 해카 > 위치 확인');
   }

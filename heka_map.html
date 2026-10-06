@@ -153,7 +153,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 const app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -163,13 +163,16 @@ const app = initializeApp({
   appId:"1:340038449458:web:14c3327a26d0d2892f3f2b"
 });
 const db = getFirestore(app);
-window._fetchStores = async function(){
-  return loadAllStores(function(){
-    return getDocs(collection(db,'stores')).then(function(snap){
-      var arr = [];
-      snap.forEach(function(d){ arr.push({id:d.id,...d.data()}); });
-      return arr;
-    });
+// 지도 가운데 주변 칸만 받는다 (지도를 옮기면 그 주변을 더 받는다)
+window._fetchStores = async function(lat, lng){
+  return loadStoresNear(lat, lng, {
+    cells: function(cells){
+      return getDocs(query(collection(db,'stores'), where('cell','in',cells))).then(function(snap){
+        var arr = [];
+        snap.forEach(function(d){ arr.push({id:d.id,...d.data()}); });
+        return arr;
+      });
+    }
   });
 };
 </script>
@@ -208,6 +211,9 @@ function initMap(lat,lng){
   // 지도 클릭 시 카드 닫기
   _map.addListener('click',closeCard);
 
+  // 지도를 옮기면 그 주변 매장을 더 받는다
+  _map.addListener('idle',loadAndMark);
+
   // 자동완성 초기화
   initAutocomplete();
 
@@ -215,12 +221,22 @@ function initMap(lat,lng){
   loadAndMark();
 }
 
+var _loadedCells={};
 function loadAndMark(){
   if(!window._fetchStores){ setTimeout(loadAndMark,300); return; }
-  window._fetchStores().then(function(stores){
-    _stores=stores;
+  var c=_map&&_map.getCenter();
+  var lat=c?c.lat():_myLat, lng=c?c.lng():_myLng;
+  var key=storeCell(lat,lng);
+  if(_loadedCells[key]) return;
+  _loadedCells[key]=1;
+  window._fetchStores(lat,lng).then(function(stores){
+    var seen={};
+    _stores.forEach(function(s){ seen[s.id]=1; });
+    var added=(stores||[]).filter(function(s){ return !seen[s.id]; });
+    if(!added.length) return;
+    _stores=_stores.concat(added);
     drawMarkers();
-  }).catch(function(e){ console.error(e); });
+  }).catch(function(e){ delete _loadedCells[key]; console.error(e); });
 }
 
 function drawMarkers(){
