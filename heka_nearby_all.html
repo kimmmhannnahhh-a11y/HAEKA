@@ -90,6 +90,9 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sheet-overlay.open{display:block}
 .bottom-sheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;z-index:21;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;max-height:55%}
 .bottom-sheet.open{transform:translateY(0)}
+/* 선택 창(카드·업종·정렬)은 화면 아래에 붙이고 하단 메뉴보다 위에 띄운다 → 스크롤 위치와 상관없이 전부 보인다 */
+.sheet-overlay{position:fixed!important;inset:0!important;border-radius:0!important;z-index:1000!important}
+.bottom-sheet{position:fixed!important;bottom:0!important;left:var(--ph-left,0px)!important;right:auto!important;width:var(--ph-w,100%)!important;z-index:1001!important;max-height:70vh!important;padding-bottom:env(safe-area-inset-bottom,0px)}
 .sheet-handle{width:34px;height:4px;border-radius:2px;background:#e0e0e0;margin:10px auto 0}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;border-bottom:.5px solid #f0f0f0}
 .sheet-title{font-size:13px;font-weight:700}
@@ -1030,6 +1033,18 @@ function closeNearbyLoginPopup(){
   document.getElementById('nearby-login-overlay').style.display='none';
   document.getElementById('nearby-login-popup').style.display='none';
 }
+</script>
+<script>
+// 선택 창 폭·위치를 화면 가운데의 앱 영역(.phone)에 맞춘다
+(function(){
+  function fit(){
+    var p = document.querySelector('.phone'); if(!p) return;
+    var r = p.getBoundingClientRect();
+    document.documentElement.style.setProperty('--ph-left', r.left + 'px');
+    document.documentElement.style.setProperty('--ph-w', r.width + 'px');
+  }
+  fit(); window.addEventListener('resize', fit); window.addEventListener('load', fit);
+})();
 </script>
 </body>
 </html>
