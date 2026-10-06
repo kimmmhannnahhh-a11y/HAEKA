@@ -2,6 +2,8 @@
 // 이미 들어 있는 것은 건너뛰므로 여러 번 돌아도 중복되지 않는다.
 (function () {
   var DONE_KEY = 'haeka_import_done';
+  // 자료는 사이트가 아니라 저장소에서 바로 읽는다 → 사이트 배포가 밀리거나 막혀도 새 자료가 들어온다
+  var DATA_BASE = 'https://raw.githubusercontent.com/kimmmhannnahhh-a11y/HAEKA/main/data/';
   var _busy = false, _items = [];
 
   function doneMap() { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}'); } catch (e) { return {}; } }
@@ -55,7 +57,7 @@
   // 자료 하나 등록: 매장은 그 도시에 지도·체인 자료가 이미 있으면 건너뛰고, 입장권은 원문 이름이 같으면 건너뛴다
   async function importOne(it) {
     var f = window._fbFns, c = f.collection(window._db, 'stores'), uid = window._auth.currentUser.uid;
-    var res = await fetch('data/' + it.file + '?t=' + Date.now());
+    var res = await fetch(DATA_BASE + it.file + '?t=' + Date.now());
     if (!res.ok) throw new Error('자료 파일을 못 받았어요 (' + res.status + ')');
     var a = await res.json(), added = 0, skipped = 0;
     var cities = []; a.forEach(function (s) { if (cities.indexOf(s.city) < 0) cities.push(s.city); });
@@ -85,7 +87,7 @@
     if (_busy) return; _busy = true;
     var btn = document.getElementById('import-all-btn'); if (btn) btn.disabled = true;
     try {
-      var res = await fetch('data/imports.json?t=' + Date.now());
+      var res = await fetch(DATA_BASE + 'imports.json?t=' + Date.now());
       _items = res.ok ? await res.json() : [];
     } catch (e) { _items = []; }
     render();
