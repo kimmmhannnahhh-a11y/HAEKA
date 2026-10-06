@@ -52,7 +52,7 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .sc-cards{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
 .sc-card{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;color:#fff}
 .c-visa{background:#1a1f71}.c-master{background:#eb001b}.c-jcb{background:#007b40}
-.c-amex{background:#007bc1}.c-tlog{background:#FF6B00}.c-twallet{background:#FFD600;color:#333}.c-union{background:#e21836}
+.c-amex{background:#007bc1}.c-tlog{background:#FF6B00}.c-twallet{background:#FFD600;color:#333}.c-union{background:#e21836}.c-alipay{background:#1677FF}.c-wechat{background:#07C160}.c-cardok{background:#FF3900}
 .sc-btns{display:flex;gap:8px}
 .sc-detail{flex:1;padding:10px;border-radius:10px;background:#FF3900;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .sc-zzim{width:40px;height:40px;border-radius:10px;background:#f5f5f5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -180,7 +180,7 @@ window._fetchStores = async function(lat, lng){
 <!-- Google Maps -->
 <script>
 var _map, _myLat, _myLng, _stores=[], _markers=[], _selStore=null;
-var _cardMap={'VISA':'c-visa','MASTER':'c-master','JCB':'c-jcb','AMEX':'c-amex','트래블로그':'c-tlog','트래블월렛':'c-twallet','UnionPay':'c-union'};
+var _cardMap={'VISA':'c-visa','MASTER':'c-master','JCB':'c-jcb','AMEX':'c-amex','트래블로그':'c-tlog','트래블월렛':'c-twallet','UnionPay':'c-union','알리페이':'c-alipay','위챗페이':'c-wechat','카드가능(브랜드모름)':'c-cardok','카드가능':'c-cardok'};
 
 function getZzim(){ try{return new Set(JSON.parse(localStorage.getItem('haeka_zzim')||'[]'));}catch(e){return new Set();} }
 function saveZzim(s){ localStorage.setItem('haeka_zzim',JSON.stringify([...s])); }
