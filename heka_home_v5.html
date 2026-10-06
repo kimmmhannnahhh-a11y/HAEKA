@@ -979,7 +979,7 @@ function renderNearby(stores) {
       + (store.closed ? '<div style="position:absolute;top:6px;right:6px;z-index:11;background:rgba(220,38,38,.85);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;pointer-events:none">폐업</div>' : '')
       + '<span data-edit-store-id="'+store.id+'" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap;align-items:center"><span class="edit-badge-txt">수정중</span></span>'
       + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div><div class="nn">'+(window._esc?window._esc(store.name):store.name)+localName(store)+'</div><div class="nm-meta"><span class="nm-dist">'+distSafe+'</span>'+catSafe+'</div></div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div><div class="nn">'+(window._esc?window._esc(store.name):store.name)+localName(store)+'</div><div class="nm-meta">'+(store.city?(window._esc?window._esc(store.city):store.city)+' · ':'')+'<span class="nm-dist">'+distSafe+'</span>'+catSafe+'</div></div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     var zzimBtn = card.querySelector('.zzim');
     (function(s){ zzimBtn.onclick = function(e){ e.stopPropagation(); toggleZzim(e, zzimBtn, s); }; })(store);
