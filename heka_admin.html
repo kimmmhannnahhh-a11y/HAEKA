@@ -534,7 +534,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, where, setDoc, getDoc, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 import { getAuth, signInWithEmailAndPassword, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
@@ -552,7 +552,7 @@ window._storage = storage;
 window._storageRef = ref;
 window._uploadBytes = uploadBytes;
 window._getDownloadURL = getDownloadURL;
-window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, where, setDoc, getDoc };
+window._fbFns = { collection, query, orderBy, limit, getDocs, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, where, setDoc, getDoc, getCountFromServer };
 window._fbFns2 = { doc, updateDoc };
 window._doc = doc;
 window._getDoc = getDoc;
@@ -790,13 +790,15 @@ async function loadDashboard() {
   var db = window._db;
   var f = window._fbFns;
   try {
-    var [stSnap, inqSnap, errSnap, editSnap] = await Promise.all([
-      f.getDocs(f.collection(db,'stores')),
+    // 매장은 전체를 읽지 않는다: 개수는 서버에서 세고, 목록은 최근 8곳만 받는다
+    var [stCount, stSnap, inqSnap, errSnap, editSnap] = await Promise.all([
+      f.getCountFromServer(f.collection(db,'stores')),
+      f.getDocs(f.query(f.collection(db,'stores'), f.orderBy('createdAt','desc'), f.limit(8))),
       f.getDocs(f.collection(db,'inquiries')),
       f.getDocs(f.collection(db,'error_reports')),
       f.getDocs(f.collection(db,'editRequests'))
     ]);
-    document.getElementById('stat-stores').textContent = stSnap.size;
+    document.getElementById('stat-stores').textContent = stCount.data().count.toLocaleString();
     var unresInq = 0;
     inqSnap.forEach(function(d){ if(!d.data().resolved) unresInq++; });
     errSnap.forEach(function(d){ if(!d.data().resolved) unresInq++; });
