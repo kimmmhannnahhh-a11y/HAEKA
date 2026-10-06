@@ -77,7 +77,7 @@ var labels = [];
 var SHIFT_AT = -25;
 var map = L.map('map', {
   preferCanvas:true, zoomControl:false, minZoom:2, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
-  maxBounds:[[-85,-40],[88,345]], maxBoundsViscosity:.8
+  maxBounds:[[-85,-400],[88,345]], maxBoundsViscosity:.8
 }).setView([28, 128], 4);
 L.control.zoom({ position:'bottomright' }).addTo(map);
 map.attributionControl.setPrefix(false).addAttribution('Natural Earth');
@@ -132,6 +132,10 @@ function clickPiece(key){
   renderList();
 }
 
+// 같은 땅을 서쪽으로 360도 옮긴 사본을 붙인다 → 왼쪽으로 끌어도 지도가 이어진다
+function withCopy(polys){
+  return polys.concat(polys.map(function(poly){ return poly.map(function(r){ return r.map(function(p){ return [p[0]-360, p[1]]; }); }); }));
+}
 function drawPieces(topo){
   var fc = topojson.feature(topo, topo.objects.r);
   // 나라별 넓이·조각 수: 조각이 지나치게 잘게 나뉜 작은 나라(몰타·싱가포르·홍콩 등)는 나라 전체를 한 조각으로 묶는다
@@ -150,7 +154,7 @@ function drawPieces(topo){
     if(!piece) piece = pieces[key] = { key:key, name:name, nat:(KO[p.a] || p.a), layers:[], area:0, best:null, whole:whole || N.n === 1 };
     piece.area += q.area;
     if(!piece.best || q.best.area > piece.best.area) piece.best = q.best;
-    var layer = L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:q.polys } }, { style: styleOf(key) });
+    var layer = L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } }, { style: styleOf(key) });
     layer.on('click', function(e){ L.DomEvent.stopPropagation(e); clickPiece(key); });
     layer.addTo(map);
     piece.layers.push(layer);
@@ -162,10 +166,14 @@ function drawPieces(topo){
     // 큰 조각은 일찍, 작은 조각은 확대해야 이름이 나온다. 나라 전체가 한 조각이면 나라 이름이 이미 있으니 조각 이름은 뺀다
     if(p.whole) return;
     var z = p.area > 40 ? 3.5 : p.area > 10 ? 4.5 : p.area > 2.5 ? 5 : p.area > .6 ? 6 : p.area > .12 ? 7 : 8;
-    p.label = { z:z, key:key, on:false, painted:null,
-      m: null, make:function(painted){ return L.marker(p.center, { pane:'names', interactive:false, keyboard:false,
-        icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl reg'+(painted?' on':'')+'">'+esc(p.name)+'</span>' }) }); } };
-    labels.push(p.label);
+    [0, -360].forEach(function(dx){
+      var c = [p.center[0], p.center[1] + dx];
+      var lb = { z:z, key:key, c:c, on:false, painted:null,
+        m: null, make:function(painted){ return L.marker(c, { pane:'names', interactive:false, keyboard:false,
+          icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl reg'+(painted?' on':'')+'">'+esc(p.name)+'</span>' }) }); } };
+      if(!dx) p.label = lb;
+      labels.push(lb);
+    });
   });
 }
 
@@ -175,12 +183,14 @@ function drawNations(world, extra){
   fc.features.concat((extra && extra.features) || []).forEach(function(f){
     var name = f.properties && f.properties.name; if(!name || !f.geometry) return;
     var q = prep(f.geometry);
-    L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:q.polys } },
+    L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } },
       { renderer:natRenderer, interactive:false, style:{ color:NATLINE, weight:1.2, fill:false } }).addTo(map);
     var tier = q.area > 250 ? 1 : q.area > 60 ? 2 : q.area > 15 ? 3 : q.area > 3 ? 4 : 5;
-    labels.push({ z:[2, 3, 3.5, 4.5, 5.5][tier-1], zMax: tier <= 2 ? 5 : 99, on:false, nat:true,
-      m: L.marker([q.best.cy, q.best.cx], { pane:'names', interactive:false, keyboard:false,
-        icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl nat t'+tier+'">'+esc(KO[name]||name)+'</span>' }) }) });
+    [0, -360].forEach(function(dx){
+      labels.push({ z:[2, 3, 3.5, 4.5, 5.5][tier-1], zMax: tier <= 2 ? 5 : 99, on:false, nat:true,
+        m: L.marker([q.best.cy, q.best.cx + dx], { pane:'names', interactive:false, keyboard:false,
+          icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl nat t'+tier+'">'+esc(KO[name]||name)+'</span>' }) }) });
+    });
   });
 }
 
@@ -192,7 +202,7 @@ function showLabels(force){
     // 칠한 조각 이름은 조금 일찍부터 보인다
     var want = z >= (painted ? Math.min(l.z, 4.5) : l.z) && z <= (l.zMax || 99);
     if(!l.nat){
-      if(want && !b.contains(pieces[l.key].center)) want = false;
+      if(want && !b.contains(l.c)) want = false;
       if(l.on && (!want || l.painted !== painted)){ labelLayer.removeLayer(l.m); l.on = false; }
       if(want && !l.on){ l.m = l.make(painted); l.painted = painted; labelLayer.addLayer(l.m); l.on = true; }
     } else {
