@@ -84,6 +84,20 @@ map.createPane('nat');   map.getPane('nat').style.zIndex = 420;  map.getPane('na
 map.createPane('names'); map.getPane('names').style.zIndex = 470; map.getPane('names').style.pointerEvents = 'none';
 var natRenderer = L.canvas({ pane:'nat' });
 var labelLayer = L.layerGroup().addTo(map);
+// 파리·런던처럼 조각이 작아서 멀리서는 안 보이는 곳은, 칠해졌다는 걸 알 수 있게 노란 점을 같이 찍는다
+map.createPane('marks'); map.getPane('marks').style.zIndex = 440; map.getPane('marks').style.pointerEvents = 'none';
+var markRenderer = L.svg({ pane:'marks' });
+var markLayer = L.layerGroup().addTo(map);
+function showMarks(){
+  markLayer.clearLayers();
+  var pxPerDeg = 256 * Math.pow(2, map.getZoom()) / 360;
+  Object.keys(pieces).forEach(function(k){
+    if(!isOn(k)) return;
+    var p = pieces[k];
+    if(Math.sqrt(p.area) * pxPerDeg >= 26) return;   // 화면에서 충분히 크게 보이면 점은 필요 없다
+    markLayer.addLayer(L.circleMarker(p.center, { renderer:markRenderer, interactive:false, radius:7, weight:1.5, color:'#8A6D00', fillColor:YELLOW, fillOpacity:1 }));
+  });
+}
 
 function ringInfo(ring){
   var a=0, sx=0, sy=0, n=ring.length;
@@ -169,6 +183,7 @@ function drawNations(world, extra){
 }
 
 function showLabels(force){
+  showMarks();
   var z = map.getZoom(), b = map.getBounds().pad(.2);
   labels.forEach(function(l){
     var painted = !l.nat && isOn(l.key);
