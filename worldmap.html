@@ -76,10 +76,18 @@ var labels = [];
 // 태평양이 가운데 오도록 서경 쪽(아메리카)을 오른쪽으로 옮겨 그린다
 var SHIFT_AT = -25;
 var map = L.map('map', {
-  preferCanvas:true, zoomControl:false, minZoom:2, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
-  maxBounds:[[-85,-400],[88,345]], maxBoundsViscosity:.8
+  preferCanvas:true, zoomControl:false, minZoom:3, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
+  maxBounds:[[-85,-100000],[88,100000]], maxBoundsViscosity:.8
 }).setView([28, 128], 4);
 L.control.zoom({ position:'bottomright' }).addTo(map);
+// 지도는 두 바퀴(-385~-25, -25~335)가 이어져 있다. 가운데가 그 범위를 벗어나면 360도 옆의 같은 자리로 옮겨 끝없이 끌 수 있게 한다
+function keepInWorld(){
+  var c = map.getCenter(), lng = c.lng;
+  while(lng > 155) lng -= 360;
+  while(lng < -205) lng += 360;
+  if(lng !== c.lng) map.setView([c.lat, lng], map.getZoom(), { animate:false });
+}
+map.on('moveend', keepInWorld);
 map.attributionControl.setPrefix(false).addAttribution('Natural Earth');
 map.createPane('nat');   map.getPane('nat').style.zIndex = 420;  map.getPane('nat').style.pointerEvents = 'none';
 map.createPane('names'); map.getPane('names').style.zIndex = 470; map.getPane('names').style.pointerEvents = 'none';
@@ -111,6 +119,16 @@ function prep(geom){
   var polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
   var area = 0, best = null;
   polys = polys.map(function(poly){
+    // 날짜변경선(±180)을 넘는 고리는 경도가 갑자기 360도 튀어 가로줄이 생긴다 → 앞 점에 이어지게 펴 준다
+    poly = poly.map(function(r){
+      var prev = null;
+      return r.map(function(p){
+        var x = p[0];
+        if(prev !== null){ while(x - prev > 180) x -= 360; while(x - prev < -180) x += 360; }
+        prev = x;
+        return [x, p[1]];
+      });
+    });
     var mean = poly[0].reduce(function(s,p){ return s+p[0]; }, 0) / poly[0].length;
     var shifted = mean < SHIFT_AT ? poly.map(function(r){ return r.map(function(p){ return [p[0]+360, p[1]]; }); }) : poly;
     var info = ringInfo(shifted[0]); area += info.area;
