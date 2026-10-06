@@ -24,6 +24,7 @@ html,body{height:100%;margin:0;font-family:Pretendard,-apple-system,BlinkMacSyst
 .row:hover{background:#F7F6F3}
 .row .nm{flex:1;font-weight:700}
 .row .ct{font-size:11.5px;color:#9CA3AF}
+.nat-row{font-size:14px;padding:8px 8px}.nat-row .nm{font-weight:800}.nat-row .arr{width:12px;color:#9CA3AF;font-size:11px;flex-shrink:0}.nat-row .ct{background:#F3F4F6;color:#4B5563;border-radius:10px;padding:1px 8px;font-weight:700}.sub-row{padding-left:28px}
 .sq{width:12px;height:12px;border-radius:3px;background:#FACC15;box-shadow:0 0 0 1px rgba(0,0,0,.18);flex-shrink:0}
 .empty{font-size:12px;color:#9CA3AF;padding:6px 8px}
 .toggle{display:none;position:absolute;z-index:1001;top:8px;left:8px;border:0;background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 20px rgba(17,24,39,.16);cursor:pointer}
@@ -201,28 +202,36 @@ function showLabels(force){
 }
 map.on('moveend zoomend', function(){ showLabels(); });
 
+var openNat = {};   // 펼쳐 둔 나라
+function jsq(v){ return esc(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 function renderList(){
-  var keys = Object.keys(paint).filter(function(k){ return pieces[k] && !auto[k]; });
-  var akeys = Object.keys(auto).filter(function(k){ return pieces[k]; });
-  document.getElementById('sum').innerHTML = '해카 등록 지역 <strong>'+akeys.length+'</strong>곳'+(keys.length?' · 직접 칠한 곳 <strong>'+keys.length+'</strong>곳':'');
+  var keys = Object.keys(pieces).filter(isOn);
+  var byNat = {};
+  keys.forEach(function(k){ var n = pieces[k].nat; (byNat[n] = byNat[n] || []).push(k); });
+  var nats = Object.keys(byNat).sort(function(x, y){ return byNat[y].length - byNat[x].length || x.localeCompare(y, 'ko'); });
+  var manual = Object.keys(paint).filter(function(k){ return pieces[k] && !auto[k]; }).length;
+  document.getElementById('sum').innerHTML = '칠한 나라 <strong>'+nats.length+'</strong>곳 · 지역 <strong>'+keys.length+'</strong>곳';
   var html = '';
-  if(akeys.length){
-    html += '<div class="list-h"><span>해카 등록 지역</span></div>';
-    akeys.sort(function(a,b){ return (pieces[a].nat+pieces[a].name).localeCompare(pieces[b].nat+pieces[b].name,'ko'); }).forEach(function(k){
-      var p = pieces[k], cs = auto[k].filter(function(n){ return n !== p.name; });
-      html += '<div class="row" onclick="focusPiece(\''+esc(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')"><i class="sq"></i><span class="nm">'+esc(p.name)+(cs.length?' <span class="ct">('+esc(cs.join(', '))+')</span>':'')+'</span>'
-        + (p.nat !== p.name ? '<span class="ct">'+esc(p.nat)+'</span>' : '') + '</div>';
+  if(!nats.length) html += '<div class="empty">아직 칠한 곳이 없어요</div>';
+  nats.forEach(function(n){
+    var open = !!openNat[n];
+    html += '<div class="row nat-row" onclick="toggleNat(\''+jsq(n)+'\')"><span class="arr">'+(open?'▾':'▸')+'</span><span class="nm">'+esc(n)+'</span><span class="ct">'+byNat[n].length+'</span></div>';
+    if(!open) return;
+    byNat[n].map(function(k){
+      var p = pieces[k], cs = auto[k] || [];
+      // 해카 도시 이름을 앞에, 조각 이름이 다르면 옆에 작게
+      var main = cs.length ? cs.join(', ') : p.name;
+      var sub = (cs.length && cs.indexOf(p.name) < 0) ? p.name : '';
+      return { k:k, main:main, sub:sub, mine:!auto[k] };
+    }).sort(function(x, y){ return x.main.localeCompare(y.main, 'ko'); }).forEach(function(r){
+      html += '<div class="row sub-row" onclick="focusPiece(\''+jsq(r.k)+'\')"><i class="sq"></i><span class="nm">'+esc(r.main)+'</span>'
+        + (r.sub ? '<span class="ct">'+esc(r.sub)+'</span>' : '') + (r.mine ? '<span class="ct">직접</span>' : '') + '</div>';
     });
-  }
-  html += '<div class="list-h"><span>직접 칠한 곳</span>'+(keys.length?'<button onclick="clearAll()">모두 지우기</button>':'')+'</div>';
-  if(!keys.length) html += '<div class="empty">조각을 누르면 여기에 나와요</div>';
-  keys.sort(function(a,b){ return (pieces[a].nat+pieces[a].name).localeCompare(pieces[b].nat+pieces[b].name,'ko'); }).forEach(function(k){
-    var p = pieces[k];
-    html += '<div class="row" onclick="focusPiece(\''+esc(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')"><i class="sq"></i><span class="nm">'+esc(p.name)+'</span>'
-      + (p.nat !== p.name ? '<span class="ct">'+esc(p.nat)+'</span>' : '') + '</div>';
   });
+  if(manual) html += '<div class="list-h"><span>직접 칠한 곳 '+manual+'곳</span><button onclick="clearAll()">모두 지우기</button></div>';
   document.getElementById('list').innerHTML = html;
 }
+window.toggleNat = function(n){ openNat[n] = !openNat[n]; renderList(); };
 window.clearAll = function(){
   if(!confirm('칠한 곳을 모두 지울까요?')) return;
   var keys = Object.keys(paint); paint = {}; save('haeka_worldmap_pieces', paint);
