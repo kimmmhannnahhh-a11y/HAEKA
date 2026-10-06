@@ -372,7 +372,7 @@ var COUNTRIES=[
   {flag:'🇭🇺', name:'헝가리', cities:['부다페스트']},
   {flag:'🇧🇪', name:'벨기에', cities:['브뤼셀','브뤼헤','겐트','안트베르펜']},
   {flag:'🇲🇳', name:'몽골', cities:['울란바토르']},
-  {flag:'🇹🇼', name:'대만', cities:['타이페이','타이중','가오슝','타이난','화롄','타이동','자이','신주','지룽','이란','핑둥','난터우','윈린','장화','먀오리','타오위안','신베이','펑후','진먼','마쭈']},
+  {flag:'🇹🇼', name:'대만', cities:['타이베이','타이중','가오슝','타이난','화롄','타이동','자이','신주','지룽','이란','핑둥','난터우','윈린','장화','먀오리','타오위안','신베이','펑후','진먼','마쭈']},
   {flag:'🇧🇷', name:'브라질', cities:['리우데자네이루','상파울루','살바도르','포르탈레자','쿠리치바','마나우스','레시페','포르투알레그리','벨루오리존치','브라질리아','플로리아노폴리스','포스두이과수','나탈','마세이오','상루이스','테레시나','캄푸그란지','마나우스','조앙페소아','아라카주']},
   {flag:'🇵🇪', name:'페루', cities:['리마','쿠스코','마추픽추','아레키파','이키토스','트루히요','치클라요','피우라','우아라스','이카','타크나','나스카','푸노','아야쿠초','우안카요','친차','카야오','줄리아카','포르투말도나도','우아초']},
   {flag:'🇲🇦', name:'모로코', cities:['마라케시','페스','카사블랑카','라바트','메크네스','탕헤르','에사우이라','아가디르','샤우엔','메르주가','바하드라','자고라','티즈니트','투드라','우르자자트','달리아','이프란','아지루','켈라아메구나','루사니']},
@@ -453,7 +453,7 @@ var CITY_EN_MAP={
   '싱가포르':'Singapore','시드니':'Sydney','멜버른':'Melbourne','브리즈번':'Brisbane','퍼스':'Perth',
   '토론토':'Toronto','밴쿠버':'Vancouver','몬트리올':'Montreal','캘거리':'Calgary',
   '리스본':'Lisbon','포르투':'Porto','암스테르담':'Amsterdam','빈':'Vienna','프라하':'Prague',
-  '두바이':'Dubai','아부다비':'Abu Dhabi','홍콩':'Hong Kong','마카오':'Macao','타이페이':'Taipei',
+  '두바이':'Dubai','아부다비':'Abu Dhabi','홍콩':'Hong Kong','마카오':'Macao','타이베이':'Taipei',
   '타이중':'Taichung','가오슝':'Kaohsiung','리우데자네이루':'Rio de Janeiro','상파울루':'Sao Paulo',
   '마라케시':'Marrakesh','케이프타운':'Cape Town','요하네스버그':'Johannesburg',
   '쿠알라룸푸르':'Kuala Lumpur','페낭':'Penang','코타키나발루':'Kota Kinabalu',
@@ -647,13 +647,20 @@ var CITY_ALIAS={
   '충칭':['중경'],'선전':['심천'],'항저우':['항주'],'시안':['서안'],'우한':['무한'],'난징':['남경'],'쿤밍':['곤명'],
   '구이린':['계림'],'하얼빈':['합이빈'],'샤먼':['하문'],'칭다오':['청도'],'다롄':['대련'],'쑤저우':['소주'],
   '장자제':['장가계'],'리장':['여강'],
-  '샌디에이고':['샌디에고'],'로스앤젤레스':['LA','엘에이','로스엔젤레스'],'라스베가스':['라스베이거스'],'타이페이':['타이베이','대북'],'워싱턴DC':['워싱턴'],'뉘른베르크':['뉴른베르크','뉘렌베르크'],'안트베르펜':['앤트워프','안트워프'],'브뤼헤':['브뤼주','브루게','브루지'],'겐트':['헨트'],'류블랴나':['루블라냐','류블라나'],'시칠리아':['시실리'],'몰타':['말타']
+  '샌디에이고':['샌디에고'],'로스앤젤레스':['LA','엘에이','로스엔젤레스'],'라스베가스':['라스베이거스'],'타이베이':['타이페이','대북'],'워싱턴DC':['워싱턴'],'뉘른베르크':['뉴른베르크','뉘렌베르크'],'안트베르펜':['앤트워프','안트워프'],'브뤼헤':['브뤼주','브루게','브루지'],'겐트':['헨트'],'류블랴나':['루블라냐','류블라나'],'시칠리아':['시실리'],'몰타':['말타']
 };
 function _cityAlias(city,val){
   var a=CITY_ALIAS[city]||[];
   for(var i=0;i<a.length;i++){ if(a[i].toLowerCase().indexOf(val)>-1) return a[i]; }
   return '';
 }
+// 매장·입장권이 등록된 도시 이름 목록(data/cities.json). 나라로 검색했을 때 등록된 도시만 보여주려고 쓴다
+var _regCities=null;
+fetch('data/cities.json').then(function(r){ return r.json(); }).then(function(list){
+  _regCities={}; (list||[]).forEach(function(c){ _regCities[c.name]=1; });
+  var inp=document.getElementById('search-inp');
+  if(inp && inp.value.trim()) doSearch(inp.value);   // 이미 검색 중이면 다시 그린다
+}).catch(function(){});
 function doSearch(val){
   val=val.trim().toLowerCase();
   document.getElementById('city-img-grid').style.display=val?'none':'grid';document.getElementById('view-country').style.setProperty('display',val?'block':'none','important');
@@ -667,6 +674,15 @@ function doSearch(val){
     c.cities.forEach(function(city){
       if(city.toLowerCase().indexOf(val)>-1) cityResults.push({country:c, city:city});
       else { var al=_cityAlias(city,val); if(al) cityResults.push({country:c, city:city, alias:al}); }
+    });
+  });
+
+  // 2-1. 나라 이름으로 찾았으면 그 나라의 등록된 도시를 모두 보여준다
+  countryMatch.forEach(function(c){
+    c.cities.forEach(function(city){
+      if(_regCities && !_regCities[city]) return;
+      if(cityResults.some(function(m){ return m.city===city && m.country===c; })) return;
+      cityResults.push({country:c, city:city});
     });
   });
 
