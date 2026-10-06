@@ -138,5 +138,12 @@
   "file": "a-n6-tickets-2026-10.json",
   "count": 26,
   "date": "2026-10-06"
+ },
+ {
+  "id": "a-n5-tickets",
+  "title": "인도·아랍에미리트(델리·두바이·아부다비 등) 입장권",
+  "file": "a-n5-tickets-2026-10.json",
+  "count": 15,
+  "date": "2026-10-06"
  }
 ]
