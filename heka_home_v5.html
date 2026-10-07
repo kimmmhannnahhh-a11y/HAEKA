@@ -1678,21 +1678,15 @@ window.closeHomeEditPopup = closeHomeEditPopup;
   </div>
 </div>
 
+<script src="haeka-ads.js?v=1"></script>
 <script>
-// 제휴 광고 목록. 나라마다 하나씩 넣는다(country 는 매장 자료의 나라 이름과 같아야 한다).
-// url 은 마이리얼트립 파트너 화면에서 만든 홍보 링크(파트너 코드 포함)만 넣을 것 — 상품 주소를 그대로 넣으면 수익이 안 잡힌다.
-// img 는 그 상품 페이지의 대표 사진 주소(마이리얼트립 서버의 것을 그대로 불러 쓴다). ratio·pos 는 사진 칸 비율과 보여줄 위치.
-var HK_ADS = [
-  { country: '중국', title: '중국 여행 eSIM', sub: '출발 전에 준비하세요 · 마이리얼트립', url: 'https://myrealt.rip/uRSnf2',
-    img: 'https://dffoxz5he03rp.cloudfront.net/sim/mysim/country/hero-pc/CN.jpg', ratio: '2/1', pos: 'center' },
-  { country: '일본', title: '일본 여행 eSIM', sub: '도착해서 바로 쓰는 데이터 · 마이리얼트립', url: 'https://myrealt.rip/uRUOf5',
-    img: 'https://dry7pvlp22cox.cloudfront.net/mrt-images-prod/2026/08/21/KnaG/kK7sGg557w.jpg', ratio: '1/1', pos: 'center' }
-];
+// 제휴 광고 목록은 haeka-ads.js 에 있다(window.HK_ADS). 나라마다 하나, country '*' 는 전 세계용.
+var HK_ADS = window.HK_ADS || [];
 var _hkAd = null;
 // 지금 있는 나라에 맞는 광고를 고른다.
 //  - 가까운 해카 매장(80km 안)의 나라와 같은 광고가 있으면 그것
-//  - 그 나라 광고가 없으면 띄우지 않는다(엉뚱한 나라 광고 방지)
-//  - 위치를 모르거나 근처에 매장이 없으면(한국 등) 목록에서 아무거나 하나
+//  - 그 나라 광고가 없으면 전 세계용('*'), 그것도 없으면 띄우지 않는다
+//  - 위치를 모르거나 근처에 매장이 없으면(한국 등) 목록 앞쪽 인기 여행지 8곳 중 하나
 function hkPickAd(){
   var w = window._hkWhere ? window._hkWhere() : null, country = null;
   if (w && w.lat && w.lng && w.stores && w.stores.length) {
@@ -1704,11 +1698,11 @@ function hkPickAd(){
     });
     if (best && bd <= 80) country = best.country;
   }
+  var one = function(list){ return list.length ? list[Math.floor(Math.random() * list.length)] : null; };
   if (country) {
-    var hit = HK_ADS.filter(function(a){ return a.country === country; });
-    return hit.length ? hit[Math.floor(Math.random() * hit.length)] : null;
+    return one(HK_ADS.filter(function(a){ return a.country === country; })) || one(HK_ADS.filter(function(a){ return a.country === '*'; }));
   }
-  return HK_ADS.length ? HK_ADS[Math.floor(Math.random() * HK_ADS.length)] : null;
+  return one(HK_ADS.filter(function(a){ return a.country !== '*'; }).slice(0, 8));
 }
 (function(){
   var SKIP_KEY = 'haeka_promo_skip_until';
