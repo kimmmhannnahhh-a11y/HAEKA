@@ -1690,6 +1690,7 @@ var _hkAd = null;
 //  - 그 나라 광고가 없으면 전 세계용('*'), 그것도 없으면 띄우지 않는다
 //  - 위치를 모르거나 근처에 매장이 없으면(한국 등) 목록 앞쪽 인기 여행지 8곳 중 하나
 function hkPickAd(){
+  var HK_ADS = window.HK_ADS || [];   // 목록 파일이 늦게 와도 되게 고르는 순간에 읽는다
   var w = window._hkWhere ? window._hkWhere() : null, country = null;
   if (w && w.lat && w.lng && w.stores && w.stores.length) {
     var best = null, bd = 1e9;
