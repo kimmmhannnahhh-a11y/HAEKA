@@ -754,33 +754,14 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     document.getElementById('review-list').innerHTML = '<div style="font-size:11px;color:#bbb;text-align:center;padding:10px 0">아직 결제 후기가 없어요</div>';
   }
 
-  // Google Places API로 영업시간 가져오기
-  if (store.lat && store.lng && typeof google !== 'undefined') {
-    try {
-      const { Place } = await google.maps.importLibrary('places');
-      const { places } = await Place.searchByText({
-        textQuery: store.name + ' ' + (store.address || ''),
-        fields: ['regularOpeningHours', 'nationalPhoneNumber'],
-        maxResultCount: 1,
-      });
-      if (places && places[0]) {
-        var p = places[0];
-        if (p.regularOpeningHours) {
-          var hours = p.regularOpeningHours.weekdayDescriptions || [];
-          var isOpen = null;
-          try { isOpen = p.regularOpeningHours.isOpen(); } catch(e) {
-            // 직접 계산
-            isOpen = calcIsOpen(hours);
-          }
-          renderHours(hours, isOpen);
-        }
-        if (p.nationalPhoneNumber) {
-          document.getElementById('meta-phone').textContent = p.nationalPhoneNumber;
-          document.getElementById('meta-phone').href = 'tel:'+p.nationalPhoneNumber;
-          document.getElementById('meta-phone-section').style.display = 'block';
-        }
-      }
-    } catch(e) { console.log('Places 오류:', e); }
+  // 영업시간·전화번호는 매장 자료에 들어 있는 것을 쓴다(구글 조회 없음). 없으면 구글 지도에서 보는 버튼
+  var hrs = window.haekaHours ? haekaHours(store) : null;
+  if (hrs) renderHours(hrs.week, hrs.open, hrs.day);
+  else if (store.lat && store.lng) document.getElementById('hours-google-section').style.display = 'block';
+  if (store.phone) {
+    document.getElementById('meta-phone').textContent = store.phone;
+    document.getElementById('meta-phone').href = 'tel:'+String(store.phone).replace(/[^+\d]/g, '');
+    document.getElementById('meta-phone-section').style.display = 'block';
   }
 
   // 지도
@@ -805,48 +786,12 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   }
 }
 
-function calcIsOpen(hours) {
-  try {
-    var now = new Date();
-    var today = now.getDay();
-    var todayIdx = today === 0 ? 6 : today - 1;
-    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
-    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
-    if (todayHours.includes('24시간')) return true;
-
-    // "오전 10:30 ~ 오후 7:30" 형식 파싱
-    var parts = todayHours.split('~');
-    if (parts.length < 2) return null;
-
-    function parseTime(s) {
-      s = s.trim();
-      var isPM = s.includes('오후') || s.includes('PM');
-      var isAM = s.includes('오전') || s.includes('AM');
-      var m = s.match(/(\d{1,2}):(\d{2})/);
-      if (!m) return null;
-      var h = parseInt(m[1]), min = parseInt(m[2]);
-      if (isPM && h < 12) h += 12;
-      if (isAM && h === 12) h = 0;
-      return h * 60 + min;
-    }
-
-    var openMins = parseTime(parts[0]);
-    var closeMins = parseTime(parts[1]);
-    if (openMins === null || closeMins === null) return null;
-
-    var nowMins = now.getHours() * 60 + now.getMinutes();
-    // 자정 넘기는 경우
-    if (closeMins <= openMins) closeMins += 24 * 60;
-    return nowMins >= openMins && nowMins < closeMins;
-  } catch(e) { return null; }
-}
-
-function renderHours(hours, isOpen) {
+function renderHours(hours, isOpen, day) {
   var section = document.getElementById('hours-section');
   section.style.display = 'block';
   var dayNames = ['월','화','수','목','금','토','일'];
   var today = new Date().getDay();
-  var todayIdx = today === 0 ? 6 : today - 1;
+  var todayIdx = day != null ? day : (today === 0 ? 6 : today - 1);   // 매장 현지 요일
   var todayDesc = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '');
   var todayDayName = dayNames[todayIdx];
   var openBadge = isOpen === true ? '<span class="hours-badge-open">영업중</span>'
@@ -876,6 +821,7 @@ window._arrayUnion = arrayUnion;
 </script>
 <script src="security.js"></script>
 <script src="map-link.js"></script>
+<script src="store-hours.js"></script>
 <script type="module" src="admin-edit.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -930,6 +876,10 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
       <div class="hours-all" id="hours-all">
         <div id="hours-all-content"></div>
       </div>
+    </div>
+
+    <div class="section" id="hours-google-section" style="display:none">
+      <span onclick="openMap()" style="font-size:13px;color:#2563eb;font-weight:700;cursor:pointer">구글 지도에서 영업시간 보기 ›</span>
     </div>
 
     <!-- 전화번호 -->

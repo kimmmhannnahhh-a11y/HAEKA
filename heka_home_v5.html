@@ -1045,30 +1045,6 @@ window.openFirebaseDetail = async function(store) {
     return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
   }).join('');
 
-  // Google Places API
-  var placesInfo = { hours: null, phone: null, isOpen: null };
-  try {
-    if (typeof google !== 'undefined' && store.lat && store.lng) {
-      const { Place } = await google.maps.importLibrary('places');
-      const { places } = await Place.searchByText({
-        textQuery: store.name + ' ' + (store.address || ''),
-        fields: ['regularOpeningHours','nationalPhoneNumber'],
-        maxResultCount: 1,
-      });
-      if (places && places[0]) {
-        var p = places[0];
-        placesInfo.phone = p.nationalPhoneNumber || null;
-        if (p.regularOpeningHours) {
-          placesInfo.hours = p.regularOpeningHours.weekdayDescriptions || null;
-          try {
-            placesInfo.isOpen = p.regularOpeningHours.isOpen();
-          } catch(e) {
-            placesInfo.isOpen = p.businessStatus === 'OPERATIONAL' ? null : false;
-          }
-        }
-      }
-    }
-  } catch(e) { console.log('Places 오류:', e); }
 
   // 지도
   var mapHtml = '';
@@ -1079,24 +1055,19 @@ window.openFirebaseDetail = async function(store) {
       + '</div>';
   }
 
-  // 전화번호 제거, 리뷰 제거
-  // 영업시간 - 영업중 + 요일 표시
   var hoursHtml = '';
-  if (placesInfo.hours && placesInfo.hours.length) {
-    var dayNames = ['월','화','수','목','금','토','일'];
-    var today = new Date().getDay();
-    var todayGIdx = today === 0 ? 6 : today - 1;
-    var todayTime = (placesInfo.hours[todayGIdx] || '').replace(/^[^:]+:\s*/, '');
-    var todayDayName = dayNames[todayGIdx];
-    var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
-    var openBadge = isOpenCalc === true
+  var hrs = window.haekaHours ? haekaHours(store) : null;
+  if (hrs) {
+    var openBadge = hrs.open === true
       ? '<span style="color:#FF3900;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
-      : isOpenCalc === false
+      : hrs.open === false
       ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
     hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
       +openBadge
-      +'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span>'
+      +'<span style="font-size:12px;color:#111;font-weight:600">'+hrs.dayName+'요일 '+hrs.todayText+'</span>'
       +'</div>';
+  } else if (store.lat && store.lng) {
+    hoursHtml = '<div style="margin:8px 0 4px"><span onclick="haekaOpenMap(window._mapStore)" style="font-size:12px;color:#2563eb;font-weight:600;cursor:pointer">구글 지도에서 영업시간 보기 ›</span></div>';
   }
 
   document.getElementById('dp-scroll').innerHTML =
@@ -1170,6 +1141,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 </script>
 <script src="security.js"></script>
 <script src="map-link.js"></script>
+<script src="store-hours.js"></script>
 <script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -1534,33 +1506,6 @@ async function toggleDpZzim(){
 }
 
 function syncNcardZzim(id, isOn){ _syncAllZzimUI(id, isOn); }
-function calcIsOpenSlide(hours, todayIdx) {
-  try {
-    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
-    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
-    if (todayHours.includes('24시간')) return true;
-    var parts = todayHours.split('~');
-    if (parts.length < 2) return null;
-    function parseTime(s) {
-      s = s.trim();
-      var isPM = s.includes('오후') || s.includes('PM');
-      var isAM = s.includes('오전') || s.includes('AM');
-      var m = s.match(/(\d{1,2}):(\d{2})/);
-      if (!m) return null;
-      var h = parseInt(m[1]), min = parseInt(m[2]);
-      if (isPM && h < 12) h += 12;
-      if (isAM && h === 12) h = 0;
-      return h * 60 + min;
-    }
-    var now = new Date();
-    var nowMins = now.getHours() * 60 + now.getMinutes();
-    var openMins = parseTime(parts[0]);
-    var closeMins = parseTime(parts[1]);
-    if (openMins === null || closeMins === null) return null;
-    if (closeMins <= openMins) closeMins += 24 * 60;
-    return nowMins >= openMins && nowMins < closeMins;
-  } catch(e) { return null; }
-}
 function goToDetail(){
   var id = window._currentStoreId;
   if(id) window.location.href = 'heka_store_detail.html?id=' + id;

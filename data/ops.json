@@ -8,5 +8,11 @@
   "lat": 37.5079,
   "lng": 15.083,
   "km": 15
+ },
+ {
+  "id": "hours-01-osaka",
+  "type": "hours",
+  "title": "오사카 영업시간 749곳",
+  "file": "hours/h01-osaka.json"
  }
 ]

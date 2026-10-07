@@ -218,6 +218,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 </style>
 <script src="security.js"></script>
 <script src="map-link.js"></script>
+<script src="store-hours.js"></script>
 <script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -385,33 +386,6 @@ function payStatePill(s) {
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 
 <script>
-function calcIsOpenSlide(hours, todayIdx) {
-  try {
-    var todayHours = (hours[todayIdx] || '').replace(/^[^:]+:\s*/, '').trim();
-    if (!todayHours || todayHours.includes('휴무') || todayHours.toLowerCase().includes('closed')) return false;
-    if (todayHours.includes('24시간')) return true;
-    var parts = todayHours.split('~');
-    if (parts.length < 2) return null;
-    function parseTime(s) {
-      s = s.trim();
-      var isPM = s.includes('오후') || s.includes('PM');
-      var isAM = s.includes('오전') || s.includes('AM');
-      var m = s.match(/(\d{1,2}):(\d{2})/);
-      if (!m) return null;
-      var h = parseInt(m[1]), min = parseInt(m[2]);
-      if (isPM && h < 12) h += 12;
-      if (isAM && h === 12) h = 0;
-      return h * 60 + min;
-    }
-    var now = new Date();
-    var nowMins = now.getHours() * 60 + now.getMinutes();
-    var openMins = parseTime(parts[0]);
-    var closeMins = parseTime(parts[1]);
-    if (openMins === null || closeMins === null) return null;
-    if (closeMins <= openMins) closeMins += 24 * 60;
-    return nowMins >= openMins && nowMins < closeMins;
-  } catch(e) { return null; }
-}
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
 function getZzimList(){
   if(window._currentUser && window._zzimStores) return window._zzimStores.slice();
@@ -590,25 +564,6 @@ window.openFirebaseDetail = async function(store) {
   var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
   var pills = payStatePill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>'; }).join('');
 
-  var placesInfo = { hours: null, phone: null, isOpen: null };
-  try {
-    if (typeof google !== 'undefined' && store.lat && store.lng) {
-      const { Place } = await google.maps.importLibrary('places');
-      const { places } = await Place.searchByText({
-        textQuery: store.name + ' ' + (store.address || ''),
-        fields: ['regularOpeningHours','nationalPhoneNumber'],
-        maxResultCount: 1,
-      });
-      if (places && places[0]) {
-        var p = places[0];
-        placesInfo.phone = p.nationalPhoneNumber || null;
-        if (p.regularOpeningHours) {
-          placesInfo.hours = p.regularOpeningHours.weekdayDescriptions || null;
-          try { placesInfo.isOpen = p.regularOpeningHours.isOpen(); } catch(e) { placesInfo.isOpen = null; }
-        }
-      }
-    }
-  } catch(e) { console.log('Places 오류:', e); }
 
   var mapHtml = '';
   if (store.lat && store.lng) {
@@ -619,18 +574,18 @@ window.openFirebaseDetail = async function(store) {
   }
 
   var hoursHtml = '';
-  if (placesInfo.hours && placesInfo.hours.length) {
-    var dayNames = ['월','화','수','목','금','토','일'];
-    var today = new Date().getDay();
-    var todayGIdx = today === 0 ? 6 : today - 1;
-    var todayTime = (placesInfo.hours[todayGIdx] || '').replace(/^[^:]+:\s*/, '');
-    var todayDayName = dayNames[todayGIdx];
-    var isOpenCalc = calcIsOpenSlide(placesInfo.hours, todayGIdx);
-    var openBadge = isOpenCalc === true
+  var hrs = window.haekaHours ? haekaHours(store) : null;
+  if (hrs) {
+    var openBadge = hrs.open === true
       ? '<span style="color:#FF3900;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
-      : isOpenCalc === false
+      : hrs.open === false
       ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
-    hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'+openBadge+'<span style="font-size:12px;color:#111;font-weight:600">'+todayDayName+'요일 '+todayTime+'</span></div>';
+    hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
+      +openBadge
+      +'<span style="font-size:12px;color:#111;font-weight:600">'+hrs.dayName+'요일 '+hrs.todayText+'</span>'
+      +'</div>';
+  } else if (store.lat && store.lng) {
+    hoursHtml = '<div style="margin:8px 0 4px"><span onclick="haekaOpenMap(window._mapStore)" style="font-size:12px;color:#2563eb;font-weight:600;cursor:pointer">구글 지도에서 영업시간 보기 ›</span></div>';
   }
 
   document.getElementById('dp-scroll').innerHTML =
@@ -731,8 +686,8 @@ function renderList(stores){
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+_e(distLbl(m))+'</span>';}
     var status='';
-    var storeHours=s.businessHours||s.hours||s.openingHours;
-    if(storeHours&&storeHours.length){var today=new Date().getDay();var todayGIdx=today===0?6:today-1;var isOpen=calcIsOpenSlide(storeHours,todayGIdx);if(isOpen===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(isOpen===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
+    var hrs=window.haekaHours?haekaHours(s):null;
+    if(hrs){if(hrs.open===true)status='<span class="store-status store-status-open"><i></i>영업중</span>';else if(hrs.open===false)status='<span class="store-status store-status-close"><i></i>영업종료</span>';}
     var _ci=catImage(s.cuisine !== '기타' && s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });

@@ -98,6 +98,36 @@
     return hit.length;
   }
 
+  // 영업시간 자료(data/hours/*.json)를 좌표가 같은 매장에 넣는다. 손으로 고친 영업시간은 건드리지 않는다
+  async function fillHours(op) {
+    var f = window._fbFns, c = f.collection(window._db, 'stores');
+    var res = await fetch(DATA_BASE + op.file + '?t=' + Date.now());
+    if (!res.ok) throw new Error('자료 파일을 못 받았어요 (' + res.status + ')');
+    var groups = await res.json(), n = 0;
+    function key(lat, lng) { return (+lat).toFixed(5) + ',' + (+lng).toFixed(5); }
+    for (var g = 0; g < groups.length; g++) {
+      var grp = groups[g], map = {};
+      grp.rows.forEach(function (r) { map[key(r.lat, r.lng)] = r; });
+      var snap = await f.getDocs(f.query(c, f.where('city', '==', grp.city)));
+      var todo = [];
+      snap.forEach(function (d) {
+        var x = d.data(); if (typeof x.lat !== 'number' || typeof x.lng !== 'number') return;
+        var r = map[key(x.lat, x.lng)]; if (!r) return;
+        if (x.hours && x.hoursSrc !== 'osm') return;
+        if (x.hoursSrc === 'osm' && JSON.stringify(x.hours) === JSON.stringify(r.hours)) return;
+        var up = { hours: r.hours, hoursSrc: 'osm', tz: r.tz };
+        if (r.phone && !x.phone) up.phone = r.phone;
+        todo.push({ ref: d.ref, up: up });
+      });
+      for (var i = 0; i < todo.length; i += 20) {
+        await Promise.all(todo.slice(i, i + 20).map(function (t) { return f.updateDoc(t.ref, t.up); }));
+      }
+      n += todo.length;
+      log('  ' + grp.city + ' 영업시간 ' + todo.length + '곳');
+    }
+    return n;
+  }
+
   // force=true 면 등록 완료로 표시된 것도 다시 확인한다(중복은 생기지 않음)
   window.haekaImportAll = async function (force) {
     if (_busy) return; _busy = true;
@@ -124,19 +154,19 @@
       }
       render();
     }
-    // 추가 작업(도시 이름 옮기기 등). 목록이 없으면 그냥 넘어간다
+    // 추가 작업(도시 이름 옮기기, 영업시간 넣기 등). 목록이 없으면 그냥 넘어간다
     try {
       var ores = await fetch(DATA_BASE + 'ops.json?t=' + Date.now());
       var ops = ores.ok ? await ores.json() : [];
       d = doneMap();
       for (var j = 0; j < ops.length; j++) {
         var op = ops[j];
-        if (d['op:' + op.id] || op.type !== 'recity') continue;
+        if (d['op:' + op.id] || (op.type !== 'recity' && op.type !== 'hours')) continue;
         log(op.title + ' 시작');
         try {
-          var n = await recity(op);
+          var n = op.type === 'hours' ? await fillHours(op) : await recity(op);
           markDone('op:' + op.id, n); total += n;
-          log(op.title + ' 끝 - ' + n + '곳 옮김');
+          log(op.title + ' 끝 - ' + n + (op.type === 'hours' ? '곳 영업시간 넣음' : '곳 옮김'));
         } catch (e) { log(op.title + ' 실패: ' + ((e && e.message) || e)); }
       }
     } catch (e) {}
