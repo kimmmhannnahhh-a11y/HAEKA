@@ -758,6 +758,13 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   var hrs = window.haekaHours ? haekaHours(store) : null;
   if (hrs) renderHours(hrs.week, hrs.open, hrs.day);
   else if (store.lat && store.lng) document.getElementById('hours-google-section').style.display = 'block';
+  // 온라인 예매 버튼
+  var bk = window.haekaBook ? haekaBook(store) : null;
+  if (bk) {
+    document.getElementById('book-title').textContent = bk.t;
+    document.getElementById('book-btn').onclick = function(){ window.open(bk.u, '_blank'); };
+    document.getElementById('book-section').style.display = 'block';
+  }
   if (store.phone) {
     document.getElementById('meta-phone').textContent = store.phone;
     document.getElementById('meta-phone').href = 'tel:'+String(store.phone).replace(/[^+\d]/g, '');
@@ -816,6 +823,7 @@ window._arrayUnion = arrayUnion;
 <script src="security.js"></script>
 <script src="map-link.js"></script>
 <script src="store-hours.js"></script>
+<script src="haeka-book.js?v=1"></script>
 <script type="module" src="admin-edit.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -916,6 +924,14 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 
     <!-- 결제 정보 출처 — 관리자가 넣은 데이터는 실제와 다를 수 있다고 알린다 -->
     <div class="section" id="pay-source" style="display:none;font-size:11px;line-height:1.5;color:#6B7280"></div>
+
+    <!-- 온라인 예매(입장권 매장 중 마이리얼트립 상품이 맞춰진 곳만). 링크는 haeka-book.js -->
+    <div class="section" id="book-section" style="display:none">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px">온라인 예매</div>
+      <div id="book-title" style="font-size:13px;color:#111;font-weight:600;line-height:1.45;margin-bottom:10px"></div>
+      <button id="book-btn" style="width:100%;padding:13px;border:0;border-radius:12px;background:#FF3900;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer">마이리얼트립에서 예매하기 ›</button>
+      <div style="font-size:10px;color:#aaa;margin-top:7px;line-height:1.5">제휴 링크예요. 예매하면 해카가 수수료를 받을 수 있어요.</div>
+    </div>
 
     <!-- 결제 후기 -->
     <div class="section" id="review-section" style="display:none">

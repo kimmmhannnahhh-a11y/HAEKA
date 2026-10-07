@@ -167,6 +167,7 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && s.cuisine !== '기타' && s.cuisine) || catImage(s && s.category) || ""; }
 </script>
 <script src="store-cache.js"></script>
+<script src="haeka-book.js?v=1"></script>
 <script>
 // 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
 function payStatePill(s) {
@@ -639,7 +640,7 @@ function renderStores(stores, el, city, showDist, filtered){
       +'<div class="store-info">'
       +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
       +'<div class="store-sub">'+(showDist&&s._km!=null?'<span class="store-dist">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · '))+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
-      +'<div class="store-cards-row">'+cards+'</div>'
+      +'<div class="store-cards-row">'+cards+((window.haekaBook&&haekaBook(s))?'<span class="sc" style="background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE">온라인 예매</span>':'')+'</div>'
       +'</div></div>';
   }).join('');
 }
