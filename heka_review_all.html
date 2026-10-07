@@ -153,7 +153,7 @@ window._delReview = async function(rid){
   try { await updateDoc(doc(db, 'stores', sid), { reviewCount: increment(-1) }); } catch (e) {}
 };
 // 로그인 상태가 확인되면 내 후기의 ⋮ 버튼을 보여준다
-onAuthStateChanged(auth, function(){ if (window._showMyRevBtns) window._showMyRevBtns(); });
+onAuthStateChanged(auth, function(){ if (window._showMyRevBtns) window._showMyRevBtns(); if (window.fillRevAvatars) { _revAvCache = {}; window.fillRevAvatars(getDoc, doc, db); } });
 window._reloadReviews = function(){ return loadAll(); };
 
 function timeAgo(ts) {
@@ -263,7 +263,7 @@ function renderReviews(wrap, items, avgRating) {
       var photoSrc = _u(r.photoURL);
       var avHtml = photoSrc
         ? '<div class="rev-av"><img src="'+photoSrc+'" onerror="this.style.display=\'none\'" /></div>'
-        : '<div class="rev-av">'+_e(initials(nick))+'</div>';
+        : '<div class="rev-av"'+(r.uid?' data-uid="'+_e(r.uid)+'"':'')+'>'+_e(initials(nick))+'</div>';
 
       var starHtml = r.rating ? '<span class="rev-star">'+'★'.repeat(Math.round(r.rating))+'</span>' : '';
 
@@ -302,7 +302,23 @@ function renderReviews(wrap, items, avgRating) {
     btn.onclick = function(e){ e.stopPropagation(); openRevMenu(btn.getAttribute('data-rid')); };
   });
   window._showMyRevBtns();
+  window.fillRevAvatars(getDoc, doc, db);
 }
+
+// 사진이 안 적힌 후기는 작성자 계정(users 문서)의 프로필 사진으로 채운다. 계정 정보는 로그인해야 읽힌다
+var _revAvCache = {};
+window.fillRevAvatars = function(getDocFn, docFn, db){
+  document.querySelectorAll('.rev-av[data-uid]').forEach(function(el){
+    var uid = el.getAttribute('data-uid'); if (!uid) return;
+    if (!_revAvCache[uid]) _revAvCache[uid] = getDocFn(docFn(db, 'users', uid)).then(function(s){ return (s.exists() && s.data().avatar) || ''; }).catch(function(){ return ''; });
+    _revAvCache[uid].then(function(src){
+      if (!src || (src.indexOf('data:image/') !== 0 && src.indexOf('https://') !== 0)) return;
+      el.style.overflow = 'hidden';
+      el.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      el.removeAttribute('data-uid');
+    });
+  });
+};
 window._showMyRevBtns = function(){
   var me = window._fbAuth && window._fbAuth.currentUser;
   document.querySelectorAll('.rev-report-btn').forEach(function(btn){

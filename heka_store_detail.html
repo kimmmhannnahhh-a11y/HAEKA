@@ -740,7 +740,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
       var nick = r.nickname || r.nick || '익명';
       var avTxt = r.photoURL
         ? '<div class="rev-av" style="overflow:hidden"><img src="'+r.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.textContent=nick.charAt(0)"></div>'
-        : '<div class="rev-av">'+(r.isLegacy?'L':nick.charAt(0))+'</div>';
+        : '<div class="rev-av"'+(r.uid?' data-uid="'+String(r.uid).replace(/[^A-Za-z0-9_-]/g,'')+'"':'')+'>'+(r.isLegacy?'L':nick.charAt(0))+'</div>';
       var starTxt = r.rating ? '<span class="rev-stars">'+renderStars(r.rating)+'</span>' : '';
       return '<div class="rev-item">'
         +avTxt
@@ -750,6 +750,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
         +'<div class="rev-txt">'+(r.text||r.review||'')+'</div>'
         +'</div></div>';
     }).join('');
+    if (window.fillRevAvatars && window._getDoc) window.fillRevAvatars(window._getDoc, window._doc, window._db);
   } else {
     document.getElementById('review-list').innerHTML = '<div style="font-size:11px;color:#bbb;text-align:center;padding:10px 0">아직 결제 후기가 없어요</div>';
   }
@@ -796,6 +797,20 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   }
 }
 
+// 사진이 안 적힌 후기는 작성자 계정(users 문서)의 프로필 사진으로 채운다. 계정 정보는 로그인해야 읽힌다
+var _revAvCache = {};
+window.fillRevAvatars = function(getDocFn, docFn, db){
+  document.querySelectorAll('.rev-av[data-uid]').forEach(function(el){
+    var uid = el.getAttribute('data-uid'); if (!uid) return;
+    if (!_revAvCache[uid]) _revAvCache[uid] = getDocFn(docFn(db, 'users', uid)).then(function(s){ return (s.exists() && s.data().avatar) || ''; }).catch(function(){ return ''; });
+    _revAvCache[uid].then(function(src){
+      if (!src || (src.indexOf('data:image/') !== 0 && src.indexOf('https://') !== 0)) return;
+      el.style.overflow = 'hidden';
+      el.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      el.removeAttribute('data-uid');
+    });
+  });
+};
 function renderHours(hours, isOpen, day) {
   var section = document.getElementById('hours-section');
   section.style.display = 'block';
