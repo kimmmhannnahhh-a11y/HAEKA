@@ -279,6 +279,8 @@ window._loadMyData = async function() {
 
     // 뱃지 업데이트
     if(window._updateBadge) window._updateBadge(myStores.length);
+    // 다음에 열 때 0건·새싹으로 잠깐 뜨지 않게 건수를 기기에 남긴다
+    try { var su = JSON.parse(localStorage.getItem('haeka_user') || '{}'); su.reportCount = myStores.length; su.placeCount = myStores.length; localStorage.setItem('haeka_user', JSON.stringify(su)); } catch(e){} if (window.userData) { window.userData.reportCount = myStores.length; window.userData.placeCount = myStores.length; }
   } catch(e){ console.log('데이터 로드 오류:', e); }
 };
 
@@ -553,7 +555,7 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
   </div>
 
   <!-- 뱃지 설명 팝업 -->
-  <div class="overlay" id="badge-info-overlay">
+  <div class="overlay" id="badge-info-overlay" onclick="if(event.target===this)closeBadgeInfo()">
     <div class="sheet">
       <div class="sheet-handle"></div>
       <div class="sheet-title">🏅 뱃지 등급 안내</div>
@@ -1163,6 +1165,23 @@ window.addEventListener('DOMContentLoaded', function(){
   init();
   setTimeout(function(){ if(window._loadMyData) window._loadMyData(); }, 500);
 });
+</script>
+<style>
+/* 뱃지 안내 창: 하단 메뉴보다 위에 띄운다(닫기 버튼이 메뉴에 가려 안 눌리던 것 수정) */
+#badge-info-overlay{position:fixed!important;inset:0!important;border-radius:0!important;z-index:1000!important}
+#badge-info-overlay .sheet{position:fixed;bottom:0;left:var(--ph-left,0px);width:var(--ph-w,100%);max-height:80vh;overflow-y:auto;box-sizing:border-box;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+</style>
+<script>
+// 안내 창 폭·위치를 화면 가운데의 앱 영역(.phone)에 맞춘다
+(function(){
+  function fit(){
+    var p = document.querySelector('.phone'); if(!p) return;
+    var r = p.getBoundingClientRect();
+    document.documentElement.style.setProperty('--ph-left', r.left + 'px');
+    document.documentElement.style.setProperty('--ph-w', r.width + 'px');
+  }
+  fit(); window.addEventListener('resize', fit); window.addEventListener('load', fit);
+})();
 </script>
 </body>
 </html>

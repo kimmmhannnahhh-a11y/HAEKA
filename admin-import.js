@@ -98,13 +98,14 @@
     return hit.length;
   }
 
-  // 영업시간 자료(data/hours/*.json)를 좌표가 같은 매장에 넣는다. 손으로 고친 영업시간은 건드리지 않는다
+  // 영업시간 자료(data/hours/*.json)를 좌표가 같은 매장에 넣는다
   async function fillHours(op) {
     var f = window._fbFns, c = f.collection(window._db, 'stores');
     var res = await fetch(DATA_BASE + op.file + '?t=' + Date.now());
     if (!res.ok) throw new Error('자료 파일을 못 받았어요 (' + res.status + ')');
     var groups = await res.json(), n = 0;
     function key(lat, lng) { return (+lat).toFixed(5) + ',' + (+lng).toFixed(5); }
+    var RANK = { osm: 1, official: 2 };
     for (var g = 0; g < groups.length; g++) {
       var grp = groups[g], map = {};
       grp.rows.forEach(function (r) { map[key(r.lat, r.lng)] = r; });
@@ -113,9 +114,11 @@
       snap.forEach(function (d) {
         var x = d.data(); if (typeof x.lat !== 'number' || typeof x.lng !== 'number') return;
         var r = map[key(x.lat, x.lng)]; if (!r) return;
-        if (x.hours && x.hoursSrc !== 'osm') return;
-        if (x.hoursSrc === 'osm' && JSON.stringify(x.hours) === JSON.stringify(r.hours)) return;
-        var up = { hours: r.hours, hoursSrc: 'osm', tz: r.tz };
+        // 믿을 만한 순서: 손으로 넣은 것 > 체인 공식 사이트(official) > 지도 자료(osm). 더 믿을 만한 것은 덮지 않는다
+        var src = r.src || 'osm', have = !x.hours ? 0 : RANK[x.hoursSrc] || 3;
+        if (have > RANK[src]) return;
+        if (x.hoursSrc === src && JSON.stringify(x.hours) === JSON.stringify(r.hours)) return;
+        var up = { hours: r.hours, hoursSrc: src, tz: r.tz };
         if (r.phone && !x.phone) up.phone = r.phone;
         todo.push({ ref: d.ref, up: up });
       });
