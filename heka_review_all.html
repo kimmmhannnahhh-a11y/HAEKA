@@ -129,7 +129,7 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -145,6 +145,16 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 window._db = db;
 window._fbAuth = auth;
+// 본인 후기 삭제 · 삭제 뒤 목록 다시 불러오기
+window._delReview = async function(rid){
+  const sid = new URLSearchParams(location.search).get('id');
+  await deleteDoc(doc(db, 'stores', sid, 'reviews', rid));
+  // 매장의 후기 수도 하나 줄인다(쓸 때 +1 했던 것)
+  try { await updateDoc(doc(db, 'stores', sid), { reviewCount: increment(-1) }); } catch (e) {}
+};
+// 로그인 상태가 확인되면 내 후기의 ⋮ 버튼을 보여준다
+onAuthStateChanged(auth, function(){ if (window._showMyRevBtns) window._showMyRevBtns(); });
+window._reloadReviews = function(){ return loadAll(); };
 
 function timeAgo(ts) {
   if (!ts) return '방금 전';
@@ -272,7 +282,7 @@ function renderReviews(wrap, items, avgRating) {
       }
 
       var rIdSafe = _e(r.id||'');
-      var reportBtn = r.id ? '<button class="rev-report-btn" data-rid="'+rIdSafe+'" style="position:absolute;top:14px;right:14px;background:none;border:none;font-size:16px;color:#9CA3AF;cursor:pointer;padding:4px" title="신고" aria-label="신고">⋮</button>' : '';
+      var reportBtn = r.id ? '<button class="rev-report-btn" data-rid="'+rIdSafe+'" data-uid="'+_e(r.uid||'')+'" style="display:none;position:absolute;top:14px;right:14px;background:none;border:none;font-size:16px;color:#9CA3AF;cursor:pointer;padding:4px" title="수정·삭제" aria-label="수정·삭제">⋮</button>' : '';
       return '<div class="rev-item" style="position:relative">'
         + reportBtn
         + '<div class="rev-top">'
@@ -287,34 +297,54 @@ function renderReviews(wrap, items, avgRating) {
         + '</div>';
     }).join('');
 
-  // 신고 버튼 이벤트 바인딩
+  // ⋮ 버튼은 내 후기에만 보인다(수정·삭제)
   wrap.querySelectorAll('.rev-report-btn').forEach(function(btn){
-    btn.onclick = function(e){
-      e.stopPropagation();
-      var rid = btn.getAttribute('data-rid');
-      openReportSheet('review', rid);
-    };
+    btn.onclick = function(e){ e.stopPropagation(); openRevMenu(btn.getAttribute('data-rid')); };
   });
+  window._showMyRevBtns();
 }
+window._showMyRevBtns = function(){
+  var me = window._fbAuth && window._fbAuth.currentUser;
+  document.querySelectorAll('.rev-report-btn').forEach(function(btn){
+    btn.style.display = (me && btn.getAttribute('data-uid') === me.uid) ? '' : 'none';
+  });
+};
 
-// 신고 시트 (공통)
-window.openReportSheet = function(targetType, targetId){
-  if (!window._fbAuth || !window._fbAuth.currentUser){
-    if (confirm('신고는 로그인 후 이용할 수 있어요. 로그인하시겠어요?')) location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href);
-    return;
-  }
-  var reason = prompt('신고 사유를 선택해주세요:\n1. 스팸/광고\n2. 욕설/비방\n3. 부적절한 콘텐츠\n4. 잘못된 정보\n5. 기타\n\n번호 입력 (또는 직접 입력):');
-  if (reason == null || reason.trim() === '') return;
-  var map = {'1':'스팸/광고','2':'욕설/비방','3':'부적절한 콘텐츠','4':'잘못된 정보','5':'기타'};
-  var reasonText = map[reason.trim()] || reason.trim();
-  if (window._report) {
-    window._report(targetType, targetId, reasonText).then(function(){
-      alert('신고가 접수되었어요. 검토 후 조치할게요.');
-    }).catch(function(err){
-      console.error('report err', err);
-      alert('신고 접수 실패. 잠시 후 다시 시도해주세요.');
-    });
-  }
+// ── 후기 ⋮ 메뉴 (화면 아래에서 올라오는 창. 브라우저 기본 창은 쓰지 않는다) ──
+function revSheet(html){
+  closeRevSheet();
+  var ov = document.createElement('div');
+  ov.id = 'rev-sheet';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = function(e){ if (e.target === ov) closeRevSheet(); };
+  ov.innerHTML = '<div style="width:100%;max-width:480px;background:#fff;border-radius:18px 18px 0 0;padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px));font-family:inherit">'
+    + '<div style="width:36px;height:4px;border-radius:2px;background:#E5E7EB;margin:0 auto 12px"></div>' + html + '</div>';
+  document.body.appendChild(ov);
+}
+function closeRevSheet(){ var o = document.getElementById('rev-sheet'); if (o) o.remove(); }
+window.closeRevSheet = closeRevSheet;
+function revBtn(label, fn, color){ return '<button onclick="'+fn+'" style="display:block;width:100%;padding:14px;margin-bottom:8px;border:0;border-radius:12px;background:#F3F4F6;color:'+(color||'#111')+';font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">'+label+'</button>'; }
+function revMsg(text){ revSheet('<div style="font-size:14px;font-weight:700;color:#111;text-align:center;padding:10px 0 16px;line-height:1.5">'+text+'</div>'+revBtn('확인','closeRevSheet()')); }
+
+window.openRevMenu = function(rid){
+  revSheet(revBtn('수정', "editReview('"+rid+"')") + revBtn('삭제', "askDelReview('"+rid+"')", '#DC2626') + revBtn('닫기','closeRevSheet()','#6B7280'));
+};
+window.editReview = function(rid){
+  var p = new URLSearchParams(location.search);
+  location.href = 'heka_review_write.html?id=' + encodeURIComponent(p.get('id')||'') + '&name=' + encodeURIComponent(p.get('name')||'') + '&rid=' + encodeURIComponent(rid);
+};
+window.askDelReview = function(rid){
+  revSheet('<div style="font-size:14px;font-weight:700;color:#111;text-align:center;padding:10px 0 16px">이 후기를 삭제할까요?</div>'
+    + revBtn('삭제', "doDelReview('"+rid+"')", '#DC2626') + revBtn('취소','closeRevSheet()','#6B7280'));
+};
+window.doDelReview = function(rid){
+  window._delReview(rid).then(function(){
+    closeRevSheet();
+    if (window._reloadReviews) window._reloadReviews();
+  }).catch(function(err){
+    console.error('review delete err', err);
+    revMsg('삭제하지 못했어요. 잠시 후 다시 시도해주세요.');
+  });
 };
 
 loadAll();

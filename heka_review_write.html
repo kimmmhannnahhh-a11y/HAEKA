@@ -161,6 +161,9 @@ let selectedCards = new Set();
 let photoFiles = [];
 let photoURLs = [];
 let submitting = false;
+// 수정 모드: 주소에 rid(후기 ID)가 있으면 그 후기를 불러와 고친다
+const editRid = params.get('rid') || '';
+let existingImages = [];
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -270,6 +273,19 @@ window.submitReview = async function() {
       uploadedURLs.push(url);
     }
 
+    if (editRid) {
+      // 수정: 별점·글·카드를 바꾸고, 새로 고른 사진은 기존 사진 뒤에 붙인다
+      await updateDoc(doc(db, 'stores', storeId, 'reviews', editRid), {
+        rating: selectedStar,
+        text: txt.value.trim(),
+        cards: [...selectedCards],
+        images: existingImages.concat(uploadedURLs).slice(0, 4),
+        updatedAt: serverTimestamp()
+      });
+      showToast('후기가 수정됐어요!');
+      setTimeout(() => { history.back(); }, 1200);
+      return;
+    }
     // Firestore 저장
     await addDoc(collection(db, 'stores', storeId, 'reviews'), {
       uid: currentUser.uid,
@@ -294,9 +310,27 @@ window.submitReview = async function() {
     showToast('오류가 발생했어요. 다시 시도해주세요');
     submitting = false;
     checkSubmittable();
-    if (sb) sb.textContent = '후기 등록하기';
+    if (sb) sb.textContent = editRid ? '후기 수정하기' : '후기 등록하기';
   }
 };
+
+// 수정 모드: 내 후기를 불러와 입력칸에 채운다
+async function loadForEdit() {
+  try {
+    const snap = await getDoc(doc(db, 'stores', storeId, 'reviews', editRid));
+    if (!snap.exists() || snap.data().uid !== currentUser.uid) { showToast('수정할 수 없는 후기예요'); setTimeout(() => history.back(), 1200); return; }
+    const r = snap.data();
+    existingImages = Array.isArray(r.images) ? r.images : [];
+    const txt = document.getElementById('rev-text');
+    if (txt) { txt.value = r.text || r.review || ''; const c = document.getElementById('char-cnt'); if (c) c.textContent = txt.value.length + '자'; }
+    (r.cards || []).forEach(c => { if (!selectedCards.has(c)) window._toggleCard(c); });
+    window._setStar(Math.round(r.rating || 0));
+    const sub = document.querySelector('.store-info-sub'); if (sub) sub.textContent = '결제 후기 수정';
+    const sb = document.getElementById('submit-bottom'); if (sb) sb.textContent = '후기 수정하기';
+    const st = document.getElementById('submit-top'); if (st) st.textContent = '수정';
+    checkSubmittable();
+  } catch (e) { console.error(e); showToast('후기를 불러오지 못했어요'); }
+}
 
 function renderLoginWall() {
   document.getElementById('main-wrap').innerHTML = `
@@ -361,6 +395,7 @@ onAuthStateChanged(auth, user => {
     renderLoginWall();
   } else {
     renderForm();
+    if (editRid) loadForEdit();
     checkSubmittable();
   }
 });
