@@ -253,7 +253,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .divline{display:none!important}
 .hotpl-header-row{align-items:center!important}
 .hotpl-section-title{position:relative;display:inline-flex;align-items:center;gap:2px;font-size:21px!important;font-weight:900!important;letter-spacing:-.04em;color:var(--hk-text)!important;transform-origin:center;animation:wiggle 2.4s ease-in-out infinite}
-.hotpl-section-title::before{content:'LIVE';display:inline-flex;align-items:center;justify-content:center;margin-right:6px;padding:2px 6px;border-radius:4px;background:#FF3900;color:#fff;font-size:9px;font-weight:900;letter-spacing:.02em;transform:rotate(-3deg);box-shadow:0 4px 10px rgba(255,57,0,.18)}
+.hotpl-section-title::before{content:'NEW';display:inline-flex;align-items:center;justify-content:center;margin-right:6px;padding:2px 6px;border-radius:4px;background:#FF3900;color:#fff;font-size:9px;font-weight:900;letter-spacing:.02em;transform:rotate(-3deg);box-shadow:0 4px 10px rgba(255,57,0,.18)}
 .hotpl-section-title .hot-now{color:#FF3900}.hotpl-section-title .hot-main{color:var(--hk-text)}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1deg)}75%{transform:rotate(1deg)}}
 .hotpl{background:transparent!important;border:0!important;border-radius:16px!important;box-shadow:var(--hk-card-shadow)!important}
@@ -833,12 +833,15 @@ function renderHotplSlide() {
   var overlay = imgEl.querySelector('.hotpl-overlay');
   if(overlay){
     var _e = window._esc || function(x){return x;};
-    overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+', '+_e(timeAgo(store.createdAt))+' <span class="hotpl-success">결제 성공!</span>"';
-    overlay.querySelector('.rep-name').textContent = nick;
+    // 실제 결제 기록이 아니므로 "결제 성공"이라 하지 않는다. 매장 자료의 결제 정보와 등록 시점만 보여준다
+    var _pay = hotplPay(store);
+    overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+(_pay ? ', <span class="hotpl-success">'+_pay+'</span>' : '')+'"';
+    overlay.querySelector('.rep-name').textContent = timeAgo(store.createdAt);
     overlay.querySelector('.hotpl-dots').innerHTML = dots;
   }
 }
 
+function hotplPay(s){var ok=(s&&s.payOk)||[],no=(s&&s.payNo)||[];if(ok.indexOf('현금만')>-1||no.indexOf('카드불가')>-1)return '현금만 가능';for(var i=0;i<ok.length;i++){if(ok[i]!=='현금가능'&&ok[i]!=='모르겠어요')return '카드 결제 가능';}return '';}
 function _startHotplTimer(){
   if(_hotplTimer) clearInterval(_hotplTimer);
   if(_hotplStores.length <= 1) return;
@@ -1272,15 +1275,15 @@ function payStatePill(s) {
   <!-- 실시간 핫플 -->
   <div class="hotpl-section">
     <div class="hotpl-header-row">
-      <span class="hotpl-section-title"><span class="hot-now">지금 여기!</span><span class="hot-main">실시간 결제 핫플</span></span>
+      <span class="hotpl-section-title"><span class="hot-now">새로 올라온</span><span class="hot-main">결제 가능 장소</span></span>
       <span class="hotpl-more" onclick="window.location.href='heka_hotpl_all.html'">더보기</span>
     </div>
     <div class="hotpl" id="hotpl-dynamic">
       <div class="hotpl-img">
         <div class="hotpl-overlay">
-          <div class="live-badge"><div class="ld"></div><span class="live-txt">LIVE</span></div>
+          <div class="live-badge"><div class="ld"></div><span class="live-txt">NEW</span></div>
           <div class="hotpl-title"></div>
-          <div class="hotpl-reporter"><div class="rep-av">제</div><span class="rep-txt">제보자 <span class="rep-name"></span>님</span></div>
+          <div class="hotpl-reporter"><span class="rep-txt"><span class="rep-name"></span> 등록</span></div>
           <div class="hotpl-dots"></div>
         </div>
       </div>

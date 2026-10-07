@@ -95,12 +95,12 @@ body{background:var(--hk-bg);display:flex;justify-content:center;padding:30px;fo
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">←</button>
-    <span class="hotpl-topbar-title"><span class="hot-live">LIVE</span><span class="hot-now">지금 여기!</span><span class="hot-main">실시간 결제 핫플</span></span>
+    <span class="hotpl-topbar-title"><span class="hot-live">NEW</span><span class="hot-now">새로 올라온</span><span class="hot-main">결제 가능 장소</span></span>
     <div style="width:32px;flex-shrink:0"></div>
   </div>
   <div class="scroll-wrap" id="scroll-wrap">
     <div class="loading" id="loading">불러오는 중...</div>
-    <div class="live-meta-caption">· 실시간 최근 50개 표시 중 ·</div>
+    <div class="live-meta-caption">· 최근 등록된 50곳 ·</div>
     <div id="hotpl-list"></div>
   </div>
 
@@ -204,6 +204,7 @@ function catClass(cat){
   return 'cat-etc';
 }
 
+function hotplPay(s){var ok=(s&&s.payOk)||[],no=(s&&s.payNo)||[];if(ok.indexOf('현금만')>-1||no.indexOf('카드불가')>-1)return '현금만 가능';for(var i=0;i<ok.length;i++){if(ok[i]!=='현금가능'&&ok[i]!=='모르겠어요')return '카드 결제 가능';}return '';}
 function cardBadges(store){
   var cards = store.cards || store.acceptedCards || [];
   var map = {
@@ -247,9 +248,9 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-media">'
       +media
       +'<div class="hotpl-overlay">'
-      +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:10px;color:#fff;font-weight:900;letter-spacing:.04em">LIVE</span></div>'
-      +'<div class="hotpl-title">"'+sName+', '+_e(ago)+' <span class="hotpl-success">결제 성공!</span>"</div>'
-      +'<div class="hotpl-reporter"><div class="rep-av">'+_e(letter)+'</div><span class="rep-name">'+_e(nick)+'</span></div>'
+      +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:10px;color:#fff;font-weight:900;letter-spacing:.04em">NEW</span></div>'
+      +'<div class="hotpl-title">"'+sName+(hotplPay(s) ? ', <span class="hotpl-success">'+hotplPay(s)+'</span>' : '')+'"</div>'
+      +'<div class="hotpl-reporter"><span class="rep-name">'+_e(ago)+' 등록</span></div>'
       +'</div></div>'
       +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="flex:1;min-width:0">'
