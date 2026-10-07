@@ -913,6 +913,29 @@ function saveNickCloud(val) {
     .catch(function() { showToast("닉네임 저장에 실패했어요"); });
 }
 
+// ── 관리자 페이지 메뉴 ──
+// 관리자인지는 Firestore admin_users 로 확인한다. 예전에는 설정을 여는 순간 로그인 확인이 아직 안 끝났으면
+// 그대로 숨긴 채 다시 확인하지 않아서, 한참 뒤에 다시 열어야 메뉴가 보였다.
+//  - 로그인 확인이 끝날 때까지 기다렸다가 확인한다
+//  - 한 번 확인되면 이 기기에 적어 두고 다음부터는 바로 보여준다(뒤에서 다시 확인해 아니면 숨긴다)
+function checkAdminEntry() {
+  var entry = document.getElementById('admin-entry');
+  if (!entry) return;
+  var myUid = localStorage.getItem('haeka_uid') || '';
+  var known = localStorage.getItem('haeka_admin_uid') || '';
+  entry.style.display = (known && known === myUid) ? 'flex' : 'none';
+  var ready = window._fbUserReady ? window._fbUserReady() : Promise.resolve(window._currentUser);
+  ready.then(function(u) {
+    if (!u || !u.uid || !window._db || !window._getDoc || !window._doc) return;
+    return window._getDoc(window._doc(window._db, 'admin_users', u.uid)).then(function(snap) {
+      if (snap.exists()) { entry.style.display = 'flex'; try { localStorage.setItem('haeka_admin_uid', u.uid); } catch (e) {} }
+      else { entry.style.display = 'none'; try { localStorage.removeItem('haeka_admin_uid'); } catch (e) {} }
+    });
+  }).catch(function(){});
+}
+// 화면이 뜨면 미리 확인해 둔다(설정을 열기 전에 준비되도록)
+window.addEventListener('load', function(){ setTimeout(checkAdminEntry, 300); });
+
 // ── 설정 패널 ──
 function openSettings() {
   var email = localStorage.getItem('haeka_email') || '-';
@@ -934,17 +957,8 @@ function openSettings() {
     if (eSub) eSub.textContent = (email && email !== '-') ? '연결됨 (' + email + ')' : '연결하기';
   }
 
-  // 관리자만 관리자 페이지 메뉴 노출 (Firestore admin_users 컬렉션 기반)
-  var adminEntry = document.getElementById('admin-entry');
-  if (adminEntry) {
-    adminEntry.style.display = 'none';
-    var u = window._currentUser;
-    if (u && u.uid && window._db && window._getDoc && window._doc) {
-      window._getDoc(window._doc(window._db, 'admin_users', u.uid))
-        .then(function(snap){ if (snap.exists()) adminEntry.style.display = 'flex'; })
-        .catch(function(){});
-    }
-  }
+  // 관리자만 관리자 페이지 메뉴 노출
+  checkAdminEntry();
 
   // 알림 토글 상태 복원
   ['toggle-approve','toggle-event'].forEach(function(id){
@@ -1052,7 +1066,7 @@ function logout() {
     try{ 
       localStorage.removeItem('haeka_uid');
       localStorage.removeItem('haeka_email');
-      localStorage.removeItem('haeka_user');
+      localStorage.removeItem('haeka_user'); localStorage.removeItem('haeka_admin_uid');
     }catch(e){}
     try{ sessionStorage.clear(); }catch(e){}
     window.location.replace('heka_login_v5.html');
