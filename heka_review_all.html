@@ -299,6 +299,13 @@ function renderReviews(wrap, items, avgRating) {
   window._showMyRevBtns();
 }
 
+window._showMyRevBtns = function(){
+  var me = window._fbAuth && window._fbAuth.currentUser;
+  document.querySelectorAll('.rev-report-btn').forEach(function(btn){
+    btn.style.display = (me && btn.getAttribute('data-uid') === me.uid) ? '' : 'none';
+  });
+};
+
 // ── 후기 ⋮ 메뉴 (화면 아래에서 올라오는 창. 브라우저 기본 창은 쓰지 않는다) ──
 function revSheet(html){
   closeRevSheet();
