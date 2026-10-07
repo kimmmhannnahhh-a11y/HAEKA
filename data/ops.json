@@ -46,5 +46,22 @@
   "type": "hours",
   "title": "일본 편의점 3사 공식 영업시간 1304곳",
   "file": "hours/h03-jp-conbini.json"
+ },
+ {
+  "id": "set-donki-shopping",
+  "type": "set",
+  "title": "돈키호테(마트로 들어간 것) → 쇼핑",
+  "names": [
+   "돈키호테",
+   "메가 돈키호테",
+   "돈돈돈키"
+  ],
+  "where": {
+   "category": "마트"
+  },
+  "set": {
+   "category": "쇼핑",
+   "cuisine": "생활용품점"
+  }
  }
 ]

@@ -131,6 +131,23 @@
     return n;
   }
 
+  // 이름이 names 중 하나이고 where 조건에 맞는 매장의 칸을 set 값으로 바꾼다(업종 바로잡기 등)
+  async function setFields(op) {
+    var f = window._fbFns, c = f.collection(window._db, 'stores'), n = 0;
+    for (var i = 0; i < op.names.length; i++) {
+      var snap = await f.getDocs(f.query(c, f.where('name', '==', op.names[i])));
+      var hit = [];
+      snap.forEach(function (d) {
+        var x = d.data(), ok = true;
+        for (var k in (op.where || {})) if (x[k] !== op.where[k]) ok = false;
+        if (ok) hit.push(d.ref);
+      });
+      for (var j = 0; j < hit.length; j += 20) await Promise.all(hit.slice(j, j + 20).map(function (ref) { return f.updateDoc(ref, op.set); }));
+      n += hit.length;
+    }
+    return n;
+  }
+
   // force=true 면 등록 완료로 표시된 것도 다시 확인한다(중복은 생기지 않음)
   window.haekaImportAll = async function (force) {
     if (_busy) return; _busy = true;
@@ -164,12 +181,12 @@
       d = doneMap();
       for (var j = 0; j < ops.length; j++) {
         var op = ops[j];
-        if (d['op:' + op.id] || (op.type !== 'recity' && op.type !== 'hours')) continue;
+        if (d['op:' + op.id] || (op.type !== 'recity' && op.type !== 'hours' && op.type !== 'set')) continue;
         log(op.title + ' 시작');
         try {
-          var n = op.type === 'hours' ? await fillHours(op) : await recity(op);
+          var n = op.type === 'hours' ? await fillHours(op) : op.type === 'set' ? await setFields(op) : await recity(op);
           markDone('op:' + op.id, n); total += n;
-          log(op.title + ' 끝 - ' + n + (op.type === 'hours' ? '곳 영업시간 넣음' : '곳 옮김'));
+          log(op.title + ' 끝 - ' + n + (op.type === 'hours' ? '곳 영업시간 넣음' : op.type === 'set' ? '곳 바꿈' : '곳 옮김'));
         } catch (e) { log(op.title + ' 실패: ' + ((e && e.message) || e)); }
       }
     } catch (e) {}
