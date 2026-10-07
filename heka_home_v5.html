@@ -1050,6 +1050,7 @@ window.openFirebaseDetail = async function(store) {
   // 결제 카드
   var cards = (store.payOk || []).filter(function(c){ return !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
   var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>'; }).join('');
+  if (window.haekaBook && haekaBook(store)) pills += '<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 7px;border-radius:999px;background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE;white-space:nowrap;flex-shrink:0">온라인 예매</span>';
   var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
   var noPills = noCards.map(function(c){
     return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
@@ -1151,6 +1152,7 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 <script src="security.js"></script>
 <script src="map-link.js"></script>
 <script src="store-hours.js"></script>
+<script src="haeka-book.js?v=1"></script>
 <script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다

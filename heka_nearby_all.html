@@ -219,6 +219,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <script src="security.js"></script>
 <script src="map-link.js"></script>
 <script src="store-hours.js"></script>
+<script src="haeka-book.js?v=1"></script>
 <script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -563,6 +564,7 @@ window.openFirebaseDetail = async function(store) {
 
   var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
   var pills = payStatePill(store).replace(/cpill/g,'dpill') + cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>'; }).join('');
+  if (window.haekaBook && haekaBook(store)) pills += '<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 7px;border-radius:999px;background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE;white-space:nowrap;flex-shrink:0">온라인 예매</span>';
 
 
   var mapHtml = '';
@@ -682,6 +684,7 @@ function renderList(stores){
     var cards=(s.payOk||[]).filter(function(c){return !(c==='현금가능' && ((s.payNo||[]).indexOf('카드불가')>-1||(s.payOk||[]).indexOf('현금만')>-1));});
     cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);ai=ai<0?99:ai;bi=bi<0?99:bi;return ai-bi;});
     var pills=cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+_e(c)+'</span>';}).join('');
+    if(window.haekaBook&&haekaBook(s)) pills+='<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:3px 7px;border-radius:999px;background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE;white-space:nowrap;flex-shrink:0">온라인 예매</span>';
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){var m=calcDist(userLat,userLng,s.lat,s.lng);dist='<span class="store-dist">'+_e(distLbl(m))+'</span>';}
     var status='';

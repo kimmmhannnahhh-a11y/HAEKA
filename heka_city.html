@@ -725,6 +725,7 @@ function doSearch(val){
         +'<div class="store-info">'
         +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
         +'<div class="store-sub">'+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · '))+(s.city?' · '+s.city:s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+        +((window.haekaBook&&haekaBook(s))?'<div class="store-cards-row"><span style="display:inline-flex;align-items:center;font-size:8px;font-weight:800;padding:3px 7px;border-radius:999px;background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE;white-space:nowrap;flex-shrink:0">온라인 예매</span></div>':'')
         +'</div></div>';
     }).join('');
   } else if(countryMatch.length&&!cityResults.length){
