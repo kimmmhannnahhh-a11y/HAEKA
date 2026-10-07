@@ -63,5 +63,11 @@
    "category": "쇼핑",
    "cuisine": "생활용품점"
   }
+ },
+ {
+  "id": "hours-04",
+  "type": "hours",
+  "title": "89개 도시 영업시간 1652곳",
+  "file": "hours/h04.json"
  }
 ]
