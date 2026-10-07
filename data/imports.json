@@ -306,5 +306,12 @@
   "file": "a-k4-2026-10.json",
   "count": 145,
   "date": "2026-10-07"
+ },
+ {
+  "id": "a-tg-tickets",
+  "title": "튀르키예·그리스 입장권 입장권",
+  "file": "a-tg-tickets-2026-10.json",
+  "count": 79,
+  "date": "2026-10-07"
  }
 ]
