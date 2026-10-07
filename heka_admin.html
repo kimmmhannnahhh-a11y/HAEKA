@@ -97,11 +97,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .page-sub { font-size: 12px; margin-bottom: 16px; }
   .card { margin-bottom: 14px; }
   .card-head { padding: 12px 14px; flex-wrap: wrap; gap: 6px; }
-  /* 테이블 가로 스크롤 */
-  .card > table, table { display: block; overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; }
-  table thead, table tbody, table tr { display: table; width: 100%; table-layout: auto; }
+  /* 테이블 가로 스크롤 — 표는 표 그대로 두고(줄마다 칸이 어긋나지 않게) 표를 담은 카드가 옆으로 밀린다 */
+  .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .card-head { position: sticky; left: 0; }
   table { min-width: 540px; }
-  th, td { padding: 9px 10px; font-size: 11px; white-space: nowrap; }
+  th, td { padding: 9px 10px; font-size: 11px; white-space: nowrap; text-align: left; }
+  /* 제휴 링크 표는 폰에서 옆으로 밀지 않고 한 줄씩 카드처럼 쌓는다 */
+  table.links-table { min-width: 0; }
+  table.links-table thead { display: none; }
+  table.links-table tr { display: block; padding: 11px 14px; border-bottom: 1px solid #f0f0f0; position: relative; }
+  table.links-table td { display: block; padding: 0; border: 0; white-space: normal; font-size: 12px; line-height: 1.5; }
+  table.links-table td.lk-place { display: inline; font-size: 11px; color: #9CA3AF; }
+  table.links-table td.lk-place + td.lk-place::before { content: ' · '; }
+  table.links-table td.lk-name { font-size: 13px; padding-right: 44px; }
+  table.links-table td.lk-prod { color: #6B7280; padding-right: 44px; }
+  table.links-table td.lk-go { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
   /* 검색/필터 줄 */
   #member-search-type, #member-search-inp, #member-sort { font-size: 12px; padding: 7px 10px; }
   /* 로그인 박스 모바일 폭 */
@@ -2491,6 +2501,6 @@ async function doChangePw(){
 }
 </script>
 <script src="admin-import.js?v=7"></script>
-<script src="admin-links.js?v=2"></script>
+<script src="admin-links.js?v=3"></script>
 </body>
 </html>

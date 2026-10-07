@@ -34,13 +34,13 @@
       el.innerHTML = status(window.HK_BOOK_DATE || window.HK_ADS_DATE)
         + '<div class="card"><div class="card-head"><span class="card-title">입장권 온라인 예매 · ' + rows.length + '곳</span>' + when(window.HK_BOOK_DATE) + '</div>'
         + '<div style="padding:0 16px 10px;font-size:12px;color:#6B7280;line-height:1.7">' + summary + '</div>'
-        + '<div style="overflow-x:auto"><table><thead><tr><th>나라</th><th>도시</th><th>매장</th><th>붙은 상품</th><th>링크</th></tr></thead><tbody>'
-        + rows.map(function (r) { return '<tr><td>' + esc(r.k) + '</td><td>' + esc(r.c) + '</td><td style="font-weight:700">' + esc(r.n) + '</td><td>' + esc(r.t) + '</td><td>' + link(r.u) + '</td></tr>'; }).join('')
-        + '</tbody></table></div></div>'
+        + '<table class="links-table"><thead><tr><th>나라</th><th>도시</th><th>매장</th><th>붙은 상품</th><th>링크</th></tr></thead><tbody>'
+        + rows.map(function (r) { return '<tr><td class="lk-place">' + esc(r.k) + '</td><td class="lk-place">' + esc(r.c) + '</td><td class="lk-name" style="font-weight:700">' + esc(r.n) + '</td><td class="lk-prod">' + esc(r.t) + '</td><td class="lk-go">' + link(r.u) + '</td></tr>'; }).join('')
+        + '</tbody></table></div>'
         + '<div class="card" style="margin-top:16px"><div class="card-head"><span class="card-title">홈 광고 팝업 · ' + ads.length + '개</span>' + when(window.HK_ADS_DATE) + '</div>'
-        + '<div style="overflow-x:auto"><table><thead><tr><th>나라</th><th>제목</th><th>설명</th><th>링크</th></tr></thead><tbody>'
-        + ads.map(function (a) { return '<tr><td>' + esc(a.country === '*' ? '그 외 전체' : a.country) + '</td><td style="font-weight:700">' + esc(a.title) + '</td><td>' + esc(a.sub) + '</td><td>' + link(a.url) + '</td></tr>'; }).join('')
-        + '</tbody></table></div></div>';
+        + '<table class="links-table"><thead><tr><th>나라</th><th>제목</th><th>설명</th><th>링크</th></tr></thead><tbody>'
+        + ads.map(function (a) { return '<tr><td class="lk-place">' + esc(a.country === '*' ? '그 외 전체' : a.country) + '</td><td class="lk-name" style="font-weight:700">' + esc(a.title) + '</td><td class="lk-prod">' + esc(a.sub) + '</td><td class="lk-go">' + link(a.url) + '</td></tr>'; }).join('')
+        + '</tbody></table></div>';
     });
   }
 
