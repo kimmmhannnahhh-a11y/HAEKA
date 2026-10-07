@@ -286,14 +286,13 @@ window.submitReview = async function() {
       setTimeout(() => { history.back(); }, 1200);
       return;
     }
-    // 프로필 사진·닉네임은 마이페이지에서 정한 것(users 문서)을 먼저 쓴다. 로그인 계정의 사진은 구글 로그인 때만 있어서 그것만 보면 사진이 비었다
+    // 닉네임은 마이페이지에서 정한 것(users 문서)을 먼저 쓴다. 후기에 프로필 사진은 넣지 않는다
     let prof = {};
     try { const us = await getDoc(doc(db, 'users', currentUser.uid)); if (us.exists()) prof = us.data(); } catch (e) {}
     // Firestore 저장
     await addDoc(collection(db, 'stores', storeId, 'reviews'), {
       uid: currentUser.uid,
       nickname: prof.nick || currentUser.displayName || currentUser.email?.split('@')[0] || '익명',
-      photoURL: prof.avatar || currentUser.photoURL || null,
       rating: selectedStar,
       text: txt.value.trim(),
       cards: [...selectedCards],
