@@ -330,7 +330,7 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 @keyframes hkPromoSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .hk-promo-label{position:absolute;top:18px;left:20px;font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.06em;z-index:2}
 .hk-promo-counter{position:absolute;top:14px;right:20px;font-size:11px;color:#fff;font-weight:700;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:999px;z-index:2}
-.hk-promo-head{padding:50px 24px 8px;text-align:center}
+.hk-promo-head{padding:50px 24px 14px;text-align:center}
 .hk-promo-title{font-size:22px;font-weight:800;line-height:1.3;letter-spacing:-.04em;margin-bottom:8px}
 .hk-promo-title b{color:#FF3900}
 .hk-promo-sub{font-size:12.5px;color:rgba(255,255,255,.62);font-weight:500;line-height:1.5}
@@ -495,6 +495,8 @@ function dateOnlyAgo(ts) {
 
 var allStores = [];
 var userLat = null, userLng = null;
+// 제휴 광고가 지금 있는 나라를 알 수 있게 위치·주변 매장을 내어 준다
+window._hkWhere = function(){ return { lat: userLat, lng: userLng, stores: allStores }; };
 
 function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
 function distLbl(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
@@ -1660,14 +1662,9 @@ window.closeHomeEditPopup = closeHomeEditPopup;
 <div class="hk-promo-overlay" id="hk-promo-overlay" onclick="if(event.target.id==='hk-promo-overlay')hkPromoClose()">
   <div class="hk-promo-card" role="dialog" aria-label="제휴 광고">
     <span class="hk-promo-label">AD</span>
-    <span class="hk-promo-counter" id="hk-promo-counter">1/1</span>
-    <div class="hk-promo-head">
-      <div class="hk-promo-title" id="hk-promo-title">해외에서 카드 되는 곳<br><b>지금 바로 찾기</b></div>
-      <div class="hk-promo-sub" id="hk-promo-sub">제휴 파트너 특가 모음을 가장 먼저 확인하세요</div>
-    </div>
-    <div class="hk-promo-media">
-      <span class="hk-promo-badge">LIVE</span>
-      <div class="hk-promo-media-placeholder" id="hk-promo-media">제휴 광고 영역<br>(마리얼·클룩 등 배너 이미지)</div>
+        <div class="hk-promo-head">
+      <div class="hk-promo-title" id="hk-promo-title"></div>
+      <div class="hk-promo-sub" id="hk-promo-sub"></div>
     </div>
     <button class="hk-promo-cta" id="hk-promo-cta" onclick="hkPromoClick()">
       자세히 보기
@@ -1681,14 +1678,51 @@ window.closeHomeEditPopup = closeHomeEditPopup;
 </div>
 
 <script>
+// 제휴 광고 목록. 나라마다 하나씩 넣는다(country 는 매장 자료의 나라 이름과 같아야 한다).
+// url 은 마이리얼트립 파트너 화면에서 만든 홍보 링크(파트너 코드 포함)만 넣을 것 — 상품 주소를 그대로 넣으면 수익이 안 잡힌다.
+var HK_ADS = [
+  { country: '중국', title: '중국 여행 eSIM', sub: '출발 전에 준비하세요 · 마이리얼트립', url: 'https://myrealt.rip/uRSnf2' }
+];
+var _hkAd = null;
+// 지금 있는 나라에 맞는 광고를 고른다.
+//  - 가까운 해카 매장(80km 안)의 나라와 같은 광고가 있으면 그것
+//  - 그 나라 광고가 없으면 띄우지 않는다(엉뚱한 나라 광고 방지)
+//  - 위치를 모르거나 근처에 매장이 없으면(한국 등) 목록에서 아무거나 하나
+function hkPickAd(){
+  var w = window._hkWhere ? window._hkWhere() : null, country = null;
+  if (w && w.lat && w.lng && w.stores && w.stores.length) {
+    var best = null, bd = 1e9;
+    w.stores.forEach(function(st){
+      if (typeof st.lat !== 'number' || typeof st.lng !== 'number' || !st.country) return;
+      var dx = (st.lng - w.lng) * Math.cos(w.lat * Math.PI / 180) * 111.3, dy = (st.lat - w.lat) * 111.3, d = Math.sqrt(dx*dx + dy*dy);
+      if (d < bd) { bd = d; best = st; }
+    });
+    if (best && bd <= 80) country = best.country;
+  }
+  if (country) {
+    var hit = HK_ADS.filter(function(a){ return a.country === country; });
+    return hit.length ? hit[Math.floor(Math.random() * hit.length)] : null;
+  }
+  return HK_ADS.length ? HK_ADS[Math.floor(Math.random() * HK_ADS.length)] : null;
+}
 (function(){
   var SKIP_KEY = 'haeka_promo_skip_until';
   var skipUntil = parseInt(localStorage.getItem(SKIP_KEY) || '0', 10);
   if (Date.now() < skipUntil) return;
-  setTimeout(function(){
+  // 위치와 주변 매장이 준비되면 바로, 늦어도 4초 뒤에는 띄운다
+  var tries = 0, timer = setInterval(function(){
+    tries++;
+    var w = window._hkWhere ? window._hkWhere() : null;
+    var ready = w && w.lat && w.stores && w.stores.length;
+    if (!ready && tries < 16) return;
+    clearInterval(timer);
+    _hkAd = hkPickAd();
+    if (!_hkAd) return;
+    document.getElementById('hk-promo-title').textContent = _hkAd.title;
+    document.getElementById('hk-promo-sub').textContent = _hkAd.sub;
     var el = document.getElementById('hk-promo-overlay');
     if(el) el.classList.add('show');
-  }, 500);
+  }, 250);
 })();
 function hkPromoClose(){
   var el = document.getElementById('hk-promo-overlay');
@@ -1699,8 +1733,7 @@ function hkPromoSkipToday(){
   hkPromoClose();
 }
 function hkPromoClick(){
-  // 제휴 광고 클릭 시 이동할 URL (운영자가 채워넣음)
-  // 예: window.location.href = 'https://partner-link';
+  if (_hkAd && _hkAd.url) window.open(_hkAd.url, '_blank');
   hkPromoClose();
 }
 </script>
