@@ -1,0 +1,31 @@
+# 마이리얼트립 제휴 광고·예매 링크를 매달 새로 만든다(없어진 상품 빼기, 새 상품 넣기)
+name: mrt-refresh
+on:
+  schedule:
+    - cron: '0 18 1 * *'   # 매달 2일 새벽 3시(한국 시간)
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 광고·예매 링크 만들기
+        env:
+          MRT_API_KEY: ${{ secrets.MRT_API_KEY }}
+        run: |
+          node tools/mrt/make-ads.js
+          node tools/mrt/book-search.js
+          node tools/mrt/book-match.js
+          node tools/mrt/book-build.js
+      - name: 바뀐 게 있으면 올리기
+        run: |
+          git config user.name "haeka-bot"
+          git config user.email "haeka-bot@users.noreply.github.com"
+          git add haeka-ads.js haeka-book.js tools/mrt/ads-links.json tools/mrt/book-links.json
+          # 만든 날짜 줄만 바뀐 경우는 올리지 않는다
+          if git diff --cached -I'만든 날' --quiet; then echo "바뀐 것 없음"; else git commit -m "제휴 광고·예매 링크 자동 갱신" && git push; fi
