@@ -50,6 +50,8 @@
 
   // 매장 화면의 작은 지도. 구글 임베드 지도(무료)를 그림처럼 넣고 가운데에 핀을 얹는다.
   // 움직이지 않는 지도라 누르면 바깥 칸의 동작(구글 지도 열기)이 그대로 실행된다.
+  // 지도 서버에 미리 연결해 둔다(매장을 열었을 때 지도가 빨리 뜨게)
+  try { var pc = document.createElement('link'); pc.rel = 'preconnect'; pc.href = 'https://www.google.com'; document.head.appendChild(pc); } catch (e) {}
   var EMBED_KEY = 'AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4';
   window.haekaMiniMap = function (el, s) {
     if (!el || !s || !s.lat || !s.lng) return;
@@ -57,7 +59,7 @@
     // 임베드 지도 왼쪽 위에 붙는 "지도" 버튼은 칸 밖으로 밀어 안 보이게 한다(아래 구글 로고·저작권은 그대로 보인다).
     // 지도를 왼쪽으로 80px 넓혔으니 가운데도 40px 왼쪽이다.
     el.style.position = 'relative'; el.style.overflow = 'hidden';
-    el.innerHTML = '<iframe src="' + src + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="position:absolute;left:-80px;top:0;width:calc(100% + 80px);height:100%;border:0;pointer-events:none"></iframe>'
+    el.innerHTML = '<iframe src="' + src + '" referrerpolicy="no-referrer-when-downgrade" style="position:absolute;left:-80px;top:0;width:calc(100% + 80px);height:100%;border:0;pointer-events:none"></iframe>'
       + '<svg viewBox="0 0 24 36" width="24" height="36" style="position:absolute;left:calc(50% - 40px);top:50%;transform:translate(-50%,-100%);pointer-events:none">'
       + '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EA4335"/><circle cx="12" cy="12" r="4.5" fill="#B31412"/></svg>';
   };
