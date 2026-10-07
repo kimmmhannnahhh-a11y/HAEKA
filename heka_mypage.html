@@ -186,7 +186,7 @@ body,.phone,.scroll-wrap{background:#fff!important}
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc, setDoc, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -261,27 +261,34 @@ window._deleteAccount = async function(password) {
   }
 };
 
+// 등록한 매장 수는 "개수만" 센다. 예전에는 매장 문서를 전부 받아 세었는데,
+// 운영팀 계정처럼 수만 곳을 등록한 경우 화면 전체가 한참 굼떠졌다(읽기 요금도 그만큼 나갔다).
 window._loadMyData = async function() {
   var uid = localStorage.getItem('haeka_uid');
   if (!uid) return;
   try {
-    // 등록한 장소
-    var storesSnap = await getDocs(query(collection(_db,'stores'), where('uid','==',uid)));
-    var myStores = [];
-    storesSnap.forEach(function(d){ myStores.push({id:d.id,...d.data()}); });
-    window._myStores = myStores;
-    document.getElementById('stat-place').textContent = myStores.length;
-
-    // 결제 제보 (hotpl 컬렉션 또는 stores 중 reporter가 uid인 것)
-    // stores에서 createdBy 또는 reporterUid 필드로 카운팅
-    window._myReports = myStores; // 동일 컬렉션 사용
-    document.getElementById('stat-report').textContent = myStores.length;
-
-    // 뱃지 업데이트
-    if(window._updateBadge) window._updateBadge(myStores.length);
+    var cnt = await getCountFromServer(query(collection(_db,'stores'), where('uid','==',uid)));
+    var n = cnt.data().count;
+    document.getElementById('stat-place').textContent = n;
+    // 결제 제보도 같은 매장 수를 쓴다
+    document.getElementById('stat-report').textContent = n;
+    if(window._updateBadge) window._updateBadge(n);
     // 다음에 열 때 0건·새싹으로 잠깐 뜨지 않게 건수를 기기에 남긴다
-    try { var su = JSON.parse(localStorage.getItem('haeka_user') || '{}'); su.reportCount = myStores.length; su.placeCount = myStores.length; localStorage.setItem('haeka_user', JSON.stringify(su)); } catch(e){} if (window.userData) { window.userData.reportCount = myStores.length; window.userData.placeCount = myStores.length; }
+    try { var su = JSON.parse(localStorage.getItem('haeka_user') || '{}'); su.reportCount = n; su.placeCount = n; localStorage.setItem('haeka_user', JSON.stringify(su)); } catch(e){}
+    if (window.userData) { window.userData.reportCount = n; window.userData.placeCount = n; }
+    window._myStoreCount = n;
   } catch(e){ console.log('데이터 로드 오류:', e); }
+};
+// 등록한 매장 목록은 목록을 열 때 받는다(한 번에 100곳까지)
+window._loadMyStoreList = async function() {
+  var uid = localStorage.getItem('haeka_uid');
+  if (!uid) return [];
+  if (window._myStores) return window._myStores;
+  var snap = await getDocs(query(collection(_db,'stores'), where('uid','==',uid), limit(100)));
+  var rows = [];
+  snap.forEach(function(d){ rows.push({id:d.id,...d.data()}); });
+  window._myStores = rows;
+  return rows;
 };
 
 window._submitInquiry = async function(type, content) {
@@ -1122,14 +1129,23 @@ function closeNotice() {}
 
 
 function openMyList(type) {
-  var stores = window._myStores || [];
   var title = type === 'place' ? '등록한 장소' : '결제 제보';
   document.getElementById('mylist-title').textContent = title;
   var content = document.getElementById('mylist-content');
+  document.getElementById('mylist-overlay').style.display = 'block';
+  document.getElementById('mylist-panel').style.display = 'flex';
+  if (!window._myStores) {
+    content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">불러오는 중…</div>';
+    (window._loadMyStoreList ? window._loadMyStoreList() : Promise.resolve([])).then(function(){ if (!window._myStores) window._myStores = []; openMyList(type); })
+      .catch(function(){ content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">불러오지 못했어요</div>'; });
+    return;
+  }
+  var stores = window._myStores;
+  var more = (window._myStoreCount || 0) > stores.length ? '<div style="padding:10px 16px;font-size:11px;color:#9CA3AF;border-bottom:0.5px solid #f5f5f5">전체 ' + window._myStoreCount + '곳 중 ' + stores.length + '곳만 보여요</div>' : '';
   if (!stores.length) {
     content.innerHTML = '<div style="padding:32px 16px;text-align:center;font-size:13px;color:#bbb">아직 없어요</div>';
   } else {
-    content.innerHTML = stores.map(function(s){
+    content.innerHTML = more + stores.map(function(s){
       var img = (s.images && s.images[0]) ? '<img src="'+s.images[0]+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0" onerror="this.parentNode.innerHTML=\'店\'">' : '<div style="width:44px;height:44px;border-radius:8px;background:#f0f0f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#999;font-weight:700">店</div>';
       var cards = (s.payOk||[]).filter(function(v){return v!=='카드가능'&&v!=='현금가능'&&v!=='모르겠어요';}).slice(0,3).map(function(v){return '<span style="font-size:9px;background:#FFF1F3;color:#FF3900;padding:2px 6px;border-radius:4px;font-weight:700">'+v+'</span>';}).join('');
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #f5f5f5;cursor:pointer" onclick="location.href=\'heka_store_detail.html?id='+s.id+'\'">'
