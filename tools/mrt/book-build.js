@@ -17,11 +17,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       fs.writeFileSync(CACHE, JSON.stringify(links, null, 1));
       await sleep(700);
     }
-    book[key] = { u: links[m.gid], t: m.title.trim() };
+    book[key] = { u: links[m.gid], t: m.title.trim(), n: m.name, c: m.city, k: m.country };
   }
   const head = [
     '// 해카 입장권 매장의 온라인 예매 링크 — 손으로 고치지 말 것. tools/mrt/book-*.js 가 만든다(매달 자동 실행).',
-    '// 열쇠는 매장 좌표(위도,경도 소수 5자리). u 는 마이리얼트립 홍보 링크(파트너 코드 포함), t 는 그 상품 이름.',
+    '// 열쇠는 매장 좌표(위도,경도 소수 5자리). u 는 마이리얼트립 홍보 링크(파트너 코드 포함), t 는 그 상품 이름. n·c·k 는 매장 이름·도시·나라(관리자 목록용).',
     '// 만든 날 ' + new Date().toISOString().slice(0, 10) + ' · ' + Object.keys(book).length + '곳',
   ].join('\n');
   fs.writeFileSync(OUT, head + '\nwindow.HK_BOOK = ' + JSON.stringify(book, null, 1) + ';\n'

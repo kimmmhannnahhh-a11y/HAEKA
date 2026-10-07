@@ -28,7 +28,7 @@ for (const [key, s] of Object.entries(cand)) {
     if (!best || sc > best.sc) best = { it, cv, ok, sc, cityOk };
   }
   if (!best) continue;
-  if (best.ok) out[key] = { name: s.name, city: s.city, gid: best.it.gid, title: best.it.t, url: best.it.u, cv: +best.cv.toFixed(2), cityOk: best.cityOk };
+  if (best.ok) out[key] = { name: s.name, city: s.city, country: s.country, gid: best.it.gid, title: best.it.t, url: best.it.u, cv: +best.cv.toFixed(2), cityOk: best.cityOk };
   else review.push(s.name + ' / ' + s.city + '  →  ' + best.it.t.slice(0, 50) + ' (' + best.it.d + ') ' + best.cv.toFixed(2));
 }
 fs.writeFileSync(__dirname + '/book-match.json', JSON.stringify(out, null, 1));
