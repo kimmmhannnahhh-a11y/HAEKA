@@ -774,14 +774,8 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     haekaFindPlace(store);
     setTimeout(function() {
       var mapEl = document.getElementById('detail-map');
-      if (!mapEl || typeof google === 'undefined') return;
-      var map = new google.maps.Map(mapEl, {
-        center: { lat: store.lat, lng: store.lng },
-        zoom: 16,
-        disableDefaultUI: true,
-        gestureHandling: 'none',
-      });
-      new google.maps.Marker({ position: { lat: store.lat, lng: store.lng }, map: map, title: store.name });
+      if (!mapEl) return;
+      haekaMiniMap(mapEl, store);
     }, 300);
   }
 }

@@ -479,7 +479,7 @@ function openDetail(idx){
     +(store.address?'<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>':'')
     +mapHtml;
   if(store.lat&&store.lng&&typeof google!=='undefined'){
-    setTimeout(function(){var el=document.getElementById('dp-gmap');if(!el)return;var map=new google.maps.Map(el,{center:{lat:store.lat,lng:store.lng},zoom:16,disableDefaultUI:true,gestureHandling:'none'});new google.maps.Marker({position:{lat:store.lat,lng:store.lng},map:map,title:store.name});},150);
+    setTimeout(function(){var el=document.getElementById('dp-gmap');if(!el)return;haekaMiniMap(el, store);},150);
   }
 }
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}

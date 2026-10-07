@@ -14,5 +14,11 @@
   "type": "hours",
   "title": "오사카 영업시간 749곳",
   "file": "hours/h01-osaka.json"
+ },
+ {
+  "id": "hours-02",
+  "type": "hours",
+  "title": "73개 도시 영업시간 2071곳",
+  "file": "hours/h02.json"
  }
 ]
