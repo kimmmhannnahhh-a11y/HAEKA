@@ -327,5 +327,12 @@
   "file": "a-tw2-tickets-2026-10.json",
   "count": 72,
   "date": "2026-10-07"
+ },
+ {
+  "id": "a-tw3-tickets",
+  "title": "미국·캐나다·뉴질랜드·크로아티아·모로코·남아공·중남미 입장권 입장권",
+  "file": "a-tw3-tickets-2026-10.json",
+  "count": 91,
+  "date": "2026-10-07"
  }
 ]
