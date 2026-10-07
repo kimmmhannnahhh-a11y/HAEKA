@@ -807,7 +807,7 @@ function openRecentDetail(store) {
     setTimeout(function(){
       var el=document.getElementById('dp-gmap');if(!el)return;
       haekaMiniMap(el, store);
-    },150);
+    },0);
   }
 }
 function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
