@@ -20,5 +20,25 @@
   "type": "hours",
   "title": "73개 도시 영업시간 2071곳",
   "file": "hours/h02.json"
+ },
+ {
+  "id": "recity-palermo",
+  "type": "recity",
+  "title": "시칠리아 → 팔레르모(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "팔레르모",
+  "lat": 38.1157,
+  "lng": 13.3615,
+  "km": 15
+ },
+ {
+  "id": "recity-messina",
+  "type": "recity",
+  "title": "시칠리아 → 메시나(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "메시나",
+  "lat": 38.1938,
+  "lng": 15.554,
+  "km": 15
  }
 ]
