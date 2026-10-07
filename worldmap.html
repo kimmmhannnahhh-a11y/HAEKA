@@ -141,7 +141,15 @@ var auto = {};   // 해카에 매장이 등록된 도시가 들어 있는 조각
 function isOn(key){ return !!(paint[key] || auto[key]); }
 var empty = {};  // 조사했지만 넣을 정보가 없던 도시가 든 조각 → 연한 노랑
 var LIGHT_YELLOW = '#FDF1B0';
-var LIGHT_NATIONS = ['South Korea', 'North Korea'];
+// 매장을 넣지 않는 나라 → 나라 전체를 연한 노랑
+//  - 한국·북한: 해카 대상(해외)이 아님
+//  - 위험 지역: 외교부 여행경보가 나라 전체에 4단계(여행금지)·3단계(출국권고)인 나라 + 캄보디아(운영자 지정). 2026-10-07 확인
+var DANGER_NATIONS = [
+  'Somalia', 'Afghanistan', 'Iraq', 'Yemen', 'Libya', 'Ukraine', 'Sudan', 'Haiti', 'Mali', 'Iran',   // 4단계 여행금지
+  'South Sudan', 'S. Sudan', 'Niger', 'Lebanon', 'Myanmar', 'Belarus', 'Burkina Faso', 'Syria', 'Central African Republic', 'Chad', 'Venezuela',   // 3단계 출국권고(전역)
+  'Cambodia'
+];
+var LIGHT_NATIONS = ['South Korea', 'North Korea'].concat(DANGER_NATIONS);
 function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : (empty[key] ? LIGHT_YELLOW : LAND), fillOpacity: 1 }; }
 function clickPiece(key){
   if(auto[key]) return;   // 해카 등록 지역은 자동으로 칠해지고 지워지지 않는다
@@ -331,7 +339,7 @@ Promise.all([
   renderList();
   return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered).then(function(){
     return fetch('data/checked.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(function(list){
-      // 한국·북한은 해카 대상(해외)이 아니라서 나라 전체를 연한 노랑으로 칠해 둔다
+      // 매장을 넣지 않는 나라(LIGHT_NATIONS)는 나라 전체를 연한 노랑으로 칠해 둔다
       Object.keys(pieces).forEach(function(k){
         if(LIGHT_NATIONS.indexOf(pieces[k].natRaw) < 0 || isOn(k)) return;
         empty[k] = 1;
