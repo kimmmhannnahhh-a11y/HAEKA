@@ -836,7 +836,8 @@ function renderHotplSlide() {
     // 실제 결제 기록이 아니므로 "결제 성공"이라 하지 않는다. 매장 자료의 결제 정보와 등록 시점만 보여준다
     var _pay = hotplPay(store);
     overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+(_pay ? ', <span class="hotpl-success">'+_pay+'</span>' : '')+'"';
-    overlay.querySelector('.rep-name').textContent = timeAgo(store.createdAt);
+    overlay.querySelector('.rep-name').textContent = nick;
+    overlay.querySelector('.rep-ago').textContent = timeAgo(store.createdAt);
     overlay.querySelector('.hotpl-dots').innerHTML = dots;
   }
 }
@@ -1283,7 +1284,7 @@ function payStatePill(s) {
         <div class="hotpl-overlay">
           <div class="live-badge"><div class="ld"></div><span class="live-txt">NEW</span></div>
           <div class="hotpl-title"></div>
-          <div class="hotpl-reporter"><span class="rep-txt"><span class="rep-name"></span> 등록</span></div>
+          <div class="hotpl-reporter"><div class="rep-av">제</div><span class="rep-txt">제보자 <span class="rep-name"></span>님 · <span class="rep-ago"></span> 등록</span></div>
           <div class="hotpl-dots"></div>
         </div>
       </div>
