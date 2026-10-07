@@ -313,5 +313,12 @@
   "file": "a-tg-tickets-2026-10.json",
   "count": 79,
   "date": "2026-10-07"
+ },
+ {
+  "id": "a-te-tickets",
+  "title": "이탈리아 북부·독일·오스트리아·체코 입장권 입장권",
+  "file": "a-te-tickets-2026-10.json",
+  "count": 75,
+  "date": "2026-10-07"
  }
 ]
