@@ -19,12 +19,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     }
     book[key] = { u: links[m.gid], t: m.title.trim(), n: m.name, c: m.city, k: m.country };
   }
+  const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);   // 한국 날짜
   const head = [
     '// 해카 입장권 매장의 온라인 예매 링크 — 손으로 고치지 말 것. tools/mrt/book-*.js 가 만든다(매달 자동 실행).',
     '// 열쇠는 매장 좌표(위도,경도 소수 5자리). u 는 마이리얼트립 홍보 링크(파트너 코드 포함), t 는 그 상품 이름. n·c·k 는 매장 이름·도시·나라(관리자 목록용).',
-    '// 만든 날 ' + new Date().toISOString().slice(0, 10) + ' · ' + Object.keys(book).length + '곳',
+    '// 만든 날 ' + today + ' · ' + Object.keys(book).length + '곳',
   ].join('\n');
-  fs.writeFileSync(OUT, head + '\nwindow.HK_BOOK = ' + JSON.stringify(book, null, 1) + ';\n'
+  // HK_BOOK_DATE: 마지막으로 새로 만든 날(관리자 "제휴 링크" 화면에 표시 — 자동 실행이 잘 도는지 보는 용도)
+  fs.writeFileSync(OUT, head + '\nwindow.HK_BOOK = ' + JSON.stringify(book, null, 1) + ';\nwindow.HK_BOOK_DATE = "' + today + '";\n'
     + "// 매장에 맞는 예매 링크를 돌려준다(없으면 null)\nwindow.haekaBook = function (s) { if (!s || typeof s.lat !== 'number' || typeof s.lng !== 'number') return null; return window.HK_BOOK[s.lat.toFixed(5) + ',' + s.lng.toFixed(5)] || null; };\n");
   console.log('예매 링크', Object.keys(book).length, '곳 / 상품', new Set(Object.values(match).map((m) => m.gid)).size, '개');
 })().catch((e) => console.log('실패:', e.message));

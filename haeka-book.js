@@ -626,5 +626,6 @@ window.HK_BOOK = {
   "k": "일본"
  }
 };
+window.HK_BOOK_DATE = "2026-10-07";
 // 매장에 맞는 예매 링크를 돌려준다(없으면 null)
 window.haekaBook = function (s) { if (!s || typeof s.lat !== 'number' || typeof s.lng !== 'number') return null; return window.HK_BOOK[s.lat.toFixed(5) + ',' + s.lng.toFixed(5)] || null; };

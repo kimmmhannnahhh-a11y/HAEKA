@@ -29,12 +29,14 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       img: it.imageUrl || '', ratio: '513/300', pos: 'center',
     });
   }
+  const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);   // 한국 날짜
   const head = [
     '// 해카 홈 광고 목록 — 손으로 고치지 말 것. tools/mrt/make-ads.js 가 만든다(매달 자동 실행).',
     '// 마이리얼트립 마이심(나라별 eSIM). url 은 파트너 코드가 든 홍보 링크, img 는 마이리얼트립이 내려주는 나라 사진.',
     '// country 는 매장 자료의 나라 이름과 같다. "*" 는 그 나라 광고가 없을 때 쓰는 전 세계용.',
-    '// 만든 날 ' + new Date().toISOString().slice(0, 10) + ' · ' + ads.length + '개',
+    '// 만든 날 ' + today + ' · ' + ads.length + '개',
   ].join('\n');
-  fs.writeFileSync(OUT, head + '\nwindow.HK_ADS = ' + JSON.stringify(ads, null, 1) + ';\n');
+  // HK_ADS_DATE: 마지막으로 새로 만든 날(관리자 "제휴 링크" 화면에 표시 — 자동 실행이 잘 도는지 보는 용도)
+  fs.writeFileSync(OUT, head + '\nwindow.HK_ADS = ' + JSON.stringify(ads, null, 1) + ';\nwindow.HK_ADS_DATE = "' + today + '";\n');
   console.log('광고', ads.length, '개 /', ads.filter((a) => !a.img).length, '개는 사진 없음');
 })().catch((e) => console.log('실패:', e.message));

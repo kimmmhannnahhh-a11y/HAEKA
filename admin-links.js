@@ -9,6 +9,17 @@
       document.head.appendChild(s);
     });
   }
+  // 자료를 마지막으로 불러온(새로 만든) 날. 매달 자동으로 도니까 40일 넘게 그대로면 자동 실행이 멈춘 것이다
+  function when(d) { return '<span style="font-size:12px;color:#6B7280;font-weight:600">' + (d ? esc(d) + ' 불러옴' : '') + '</span>'; }
+  function status(d) {
+    if (!d) return '';
+    var days = Math.floor((Date.now() - new Date(d + 'T00:00:00+09:00').getTime()) / 86400000);
+    var late = days > 40;
+    return '<div style="margin-bottom:16px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;line-height:1.6;'
+      + (late ? 'background:#FEF2F2;color:#DC2626;border:1px solid #FECACA' : 'background:#F0FDF4;color:#15803D;border:1px solid #BBF7D0') + '">'
+      + '마지막으로 불러온 날: ' + esc(d) + ' (' + (days <= 0 ? '오늘' : days + '일 전') + ')'
+      + '<div style="font-weight:500;font-size:12px">' + (late ? '40일 넘게 새로 불러오지 않았어요. 자동 실행이 멈췄는지 확인이 필요해요.' : '매달 2일 새벽에 자동으로 다시 불러와요. 정상이에요.') + '</div></div>';
+  }
   function link(u) { return '<a href="' + esc(u) + '" target="_blank" rel="noopener" style="color:#2563eb;font-weight:700;text-decoration:none">열기</a>'; }
 
   function render() {
@@ -20,13 +31,13 @@
       rows.sort(function (a, b) { return (a.k || '').localeCompare(b.k || '', 'ko') || (a.c || '').localeCompare(b.c || '', 'ko') || (a.n || '').localeCompare(b.n || '', 'ko'); });
       var byCountry = {}; rows.forEach(function (r) { byCountry[r.k || '-'] = (byCountry[r.k || '-'] || 0) + 1; });
       var summary = Object.keys(byCountry).sort(function (a, b) { return byCountry[b] - byCountry[a]; }).map(function (c) { return esc(c) + ' ' + byCountry[c]; }).join(' · ');
-      el.innerHTML =
-        '<div class="card"><div class="card-head"><span class="card-title">입장권 온라인 예매 · ' + rows.length + '곳</span></div>'
+      el.innerHTML = status(window.HK_BOOK_DATE || window.HK_ADS_DATE)
+        + '<div class="card"><div class="card-head"><span class="card-title">입장권 온라인 예매 · ' + rows.length + '곳</span>' + when(window.HK_BOOK_DATE) + '</div>'
         + '<div style="padding:0 16px 10px;font-size:12px;color:#6B7280;line-height:1.7">' + summary + '</div>'
         + '<div style="overflow-x:auto"><table><thead><tr><th>나라</th><th>도시</th><th>매장</th><th>붙은 상품</th><th>링크</th></tr></thead><tbody>'
         + rows.map(function (r) { return '<tr><td>' + esc(r.k) + '</td><td>' + esc(r.c) + '</td><td style="font-weight:700">' + esc(r.n) + '</td><td>' + esc(r.t) + '</td><td>' + link(r.u) + '</td></tr>'; }).join('')
         + '</tbody></table></div></div>'
-        + '<div class="card" style="margin-top:16px"><div class="card-head"><span class="card-title">홈 광고 팝업 · ' + ads.length + '개</span></div>'
+        + '<div class="card" style="margin-top:16px"><div class="card-head"><span class="card-title">홈 광고 팝업 · ' + ads.length + '개</span>' + when(window.HK_ADS_DATE) + '</div>'
         + '<div style="overflow-x:auto"><table><thead><tr><th>나라</th><th>제목</th><th>설명</th><th>링크</th></tr></thead><tbody>'
         + ads.map(function (a) { return '<tr><td>' + esc(a.country === '*' ? '그 외 전체' : a.country) + '</td><td style="font-weight:700">' + esc(a.title) + '</td><td>' + esc(a.sub) + '</td><td>' + link(a.url) + '</td></tr>'; }).join('')
         + '</tbody></table></div></div>';

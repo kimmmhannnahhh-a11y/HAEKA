@@ -571,3 +571,4 @@ window.HK_ADS = [
   "pos": "center"
  }
 ];
+window.HK_ADS_DATE = "2026-10-07";
