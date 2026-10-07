@@ -1666,6 +1666,7 @@ window.closeHomeEditPopup = closeHomeEditPopup;
       <div class="hk-promo-title" id="hk-promo-title"></div>
       <div class="hk-promo-sub" id="hk-promo-sub"></div>
     </div>
+    <div class="hk-promo-media" id="hk-promo-media" style="display:none;cursor:pointer" onclick="hkPromoClick()"><img id="hk-promo-img" alt="" onerror="this.parentNode.style.display='none'"></div>
     <button class="hk-promo-cta" id="hk-promo-cta" onclick="hkPromoClick()">
       자세히 보기
       <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1680,9 +1681,12 @@ window.closeHomeEditPopup = closeHomeEditPopup;
 <script>
 // 제휴 광고 목록. 나라마다 하나씩 넣는다(country 는 매장 자료의 나라 이름과 같아야 한다).
 // url 은 마이리얼트립 파트너 화면에서 만든 홍보 링크(파트너 코드 포함)만 넣을 것 — 상품 주소를 그대로 넣으면 수익이 안 잡힌다.
+// img 는 그 상품 페이지의 대표 사진 주소(마이리얼트립 서버의 것을 그대로 불러 쓴다). ratio·pos 는 사진 칸 비율과 보여줄 위치.
 var HK_ADS = [
-  { country: '중국', title: '중국 여행 eSIM', sub: '출발 전에 준비하세요 · 마이리얼트립', url: 'https://myrealt.rip/uRSnf2' },
-  { country: '일본', title: '일본 여행 eSIM', sub: '도착해서 바로 쓰는 데이터 · 마이리얼트립', url: 'https://myrealt.rip/uRUOf5' }
+  { country: '중국', title: '중국 여행 eSIM', sub: '출발 전에 준비하세요 · 마이리얼트립', url: 'https://myrealt.rip/uRSnf2',
+    img: 'https://www.myrealtrip.com/mysim/assets/mysim/og-image.jpg', ratio: '2/1', pos: 'center' },
+  { country: '일본', title: '일본 여행 eSIM', sub: '도착해서 바로 쓰는 데이터 · 마이리얼트립', url: 'https://myrealt.rip/uRUOf5',
+    img: 'https://dry7pvlp22cox.cloudfront.net/mrt-images-prod/2026/08/21/KnaG/kK7sGg557w.jpg', ratio: '1/1', pos: 'center' }
 ];
 var _hkAd = null;
 // 지금 있는 나라에 맞는 광고를 고른다.
@@ -1721,6 +1725,11 @@ function hkPickAd(){
     if (!_hkAd) return;
     document.getElementById('hk-promo-title').textContent = _hkAd.title;
     document.getElementById('hk-promo-sub').textContent = _hkAd.sub;
+    if (_hkAd.img) {
+      var md = document.getElementById('hk-promo-media'), im = document.getElementById('hk-promo-img');
+      md.style.aspectRatio = _hkAd.ratio || '16/10'; im.style.objectPosition = _hkAd.pos || 'center';
+      im.src = _hkAd.img; md.style.display = '';
+    }
     var el = document.getElementById('hk-promo-overlay');
     if(el) el.classList.add('show');
   }, 250);
