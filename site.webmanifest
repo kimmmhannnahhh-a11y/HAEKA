@@ -1,6 +1,6 @@
 {
-  "name": "HAEKA",
-  "short_name": "HAEKA",
+  "name": "해카",
+  "short_name": "해카",
   "description": "해외에서 내 카드로 결제 가능한 곳을 찾아주는 서비스",
   "start_url": "index.html",
   "display": "standalone",
