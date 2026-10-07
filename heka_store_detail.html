@@ -764,6 +764,15 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     document.getElementById('book-title').textContent = bk.t;
     document.getElementById('book-btn').onclick = function(){ window.open(bk.u, '_blank'); };
     document.getElementById('book-section').style.display = 'block';
+    // 화면 맨 위 업종 옆에도 '온라인 예매' 표시(누르면 예매 칸으로 내려간다)
+    var hc = document.getElementById('hero-cat');
+    if (hc && !document.getElementById('hero-book')) {
+      var chip = document.createElement('span');
+      chip.id = 'hero-book'; chip.textContent = '온라인 예매';
+      chip.style.cssText = 'display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#2563eb;font-size:11px;font-weight:800;letter-spacing:0;cursor:pointer;vertical-align:1px';
+      chip.onclick = function(e){ e.stopPropagation(); document.getElementById('book-section').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+      hc.appendChild(chip);
+    }
   }
   if (store.phone) {
     document.getElementById('meta-phone').textContent = store.phone;
