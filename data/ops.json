@@ -40,5 +40,11 @@
   "lat": 38.1938,
   "lng": 15.554,
   "km": 15
+ },
+ {
+  "id": "hours-03-jp-conbini",
+  "type": "hours",
+  "title": "일본 편의점 3사 공식 영업시간 1304곳",
+  "file": "hours/h03-jp-conbini.json"
  }
 ]
