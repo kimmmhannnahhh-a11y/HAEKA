@@ -116,7 +116,7 @@ body{background:var(--hk-bg);display:flex;justify-content:center;padding:30px;fo
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -128,6 +128,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window._db = db; window._getDoc = getDoc; window._doc = doc;
 
 // 사진·영상이 있는 매장만 받아 최신순으로 보여준다
 const q = query(collection(db,'stores'), where('hasMedia','==',true), limit(60));
@@ -204,6 +205,7 @@ function catClass(cat){
   return 'cat-etc';
 }
 
+var _hotplNickCache={};function hotplNick(uid){if(!uid||!window._getDoc||!window._doc||!window._db)return Promise.resolve('');if(!_hotplNickCache[uid])_hotplNickCache[uid]=window._getDoc(window._doc(window._db,'users',uid)).then(function(s){return (s.exists()&&s.data().nick)||'';}).catch(function(){return '';});return _hotplNickCache[uid];}
 function hotplPay(s){var ok=(s&&s.payOk)||[],no=(s&&s.payNo)||[];if(ok.indexOf('현금만')>-1||no.indexOf('카드불가')>-1)return '현금만 가능';for(var i=0;i<ok.length;i++){if(ok[i]!=='현금가능'&&ok[i]!=='모르겠어요')return '카드 결제 가능';}return '';}
 function cardBadges(store){
   var cards = store.cards || store.acceptedCards || [];
@@ -227,7 +229,7 @@ window.renderHotpl = function(stores){
   var _e = window._esc || function(x){return x==null?'':String(x);};
   var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
   el.innerHTML = stores.map(function(s){
-    var nick = s.nickname||s.nick||'여행자';
+    var nick = s.nickname||s.nick||(s.registeredBy==='admin'?'해카 운영팀':'여행자');
     var letter = nick.charAt(0);
     var ago = timeAgo(s.createdAt);
     var catTxt = s.category||'기타';
@@ -250,7 +252,7 @@ window.renderHotpl = function(stores){
       +'<div class="hotpl-overlay">'
       +'<div class="live-badge"><div class="live-dot"></div><span style="font-size:10px;color:#fff;font-weight:900;letter-spacing:.04em">NEW</span></div>'
       +'<div class="hotpl-title">"'+sName+(hotplPay(s) ? ', <span class="hotpl-success">'+hotplPay(s)+'</span>' : '')+'"</div>'
-      +'<div class="hotpl-reporter"><div class="rep-av">'+_e(letter)+'</div><span class="rep-name">'+_e(nick)+' · '+_e(ago)+' 등록</span></div>'
+      +'<div class="hotpl-reporter"><div class="rep-av">'+_e(letter)+'</div><span class="rep-name"><span class="rep-nick"'+((!s.nickname&&!s.nick&&s.uid&&s.registeredBy!=='admin')?' data-uid="'+_e(s.uid)+'"':'')+'>'+_e(nick)+'</span> · '+_e(ago)+' 등록</span></div>'
       +'</div></div>'
       +'<div class="hotpl-info" style="display:flex;justify-content:space-between;align-items:flex-start">'
       +'<div style="flex:1;min-width:0">'
@@ -264,6 +266,13 @@ window.renderHotpl = function(stores){
       +'</div>'
       +'</div></div>';
   }).join('');
+  // 닉네임이 없는 매장은 등록자 계정의 닉네임으로 채운다
+  el.querySelectorAll('.rep-nick[data-uid]').forEach(function(x){
+    hotplNick(x.getAttribute('data-uid')).then(function(nk){
+      if(!nk) return; x.textContent = nk;
+      var av = x.closest('.hotpl-reporter').querySelector('.rep-av'); if(av) av.textContent = nk.charAt(0);
+    });
+  });
 };
 </script>
 </body>

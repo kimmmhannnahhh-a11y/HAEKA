@@ -785,7 +785,8 @@ function renderHotplSlide() {
   if (!el.querySelector('.hotpl-img')) el.innerHTML = el._tpl;
 
   var store = _hotplStores[_hotplIdx];
-  var nick = store.nickname || store.nick || '여행자';
+  // 운영팀이 넣은 매장은 닉네임 칸이 비어 있다 → '해카 운영팀'으로 보여준다(로그인 안 한 사람에게도)
+  var nick = store.nickname || store.nick || (store.registeredBy === 'admin' ? '해카 운영팀' : '여행자');
   var imgContent = store.videoUrl
     ? '<video src="'+store.videoUrl+'" autoplay muted playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>'
     : store.images && store.images[0]
@@ -837,11 +838,14 @@ function renderHotplSlide() {
     var _pay = hotplPay(store);
     overlay.querySelector('.hotpl-title').innerHTML = '"'+_e(store.name)+(_pay ? ', <span class="hotpl-success">'+_pay+'</span>' : '')+'"';
     overlay.querySelector('.rep-name').textContent = nick;
+    // 매장에 닉네임이 없으면 등록자 계정의 닉네임으로 바꾼다(운영팀이 넣은 자료가 '여행자'로 뜨던 것)
+    if (!store.nickname && !store.nick && store.uid && store.registeredBy !== 'admin') hotplNick(store.uid).then(function(nk){ if (nk && _hotplStores[_hotplIdx] === store) overlay.querySelector('.rep-name').textContent = nk; });
     overlay.querySelector('.rep-ago').textContent = timeAgo(store.createdAt);
     overlay.querySelector('.hotpl-dots').innerHTML = dots;
   }
 }
 
+var _hotplNickCache={};function hotplNick(uid){if(!uid||!window._getDoc||!window._doc||!window._db)return Promise.resolve('');if(!_hotplNickCache[uid])_hotplNickCache[uid]=window._getDoc(window._doc(window._db,'users',uid)).then(function(s){return (s.exists()&&s.data().nick)||'';}).catch(function(){return '';});return _hotplNickCache[uid];}
 function hotplPay(s){var ok=(s&&s.payOk)||[],no=(s&&s.payNo)||[];if(ok.indexOf('현금만')>-1||no.indexOf('카드불가')>-1)return '현금만 가능';for(var i=0;i<ok.length;i++){if(ok[i]!=='현금가능'&&ok[i]!=='모르겠어요')return '카드 결제 가능';}return '';}
 function _startHotplTimer(){
   if(_hotplTimer) clearInterval(_hotplTimer);
