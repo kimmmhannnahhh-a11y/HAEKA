@@ -4,7 +4,7 @@
   var DONE_KEY = 'haeka_import_done';
   // 자료는 사이트가 아니라 저장소에서 바로 읽는다 → 사이트 배포가 밀리거나 막혀도 새 자료가 들어온다
   var DATA_BASE = 'https://raw.githubusercontent.com/kimmmhannnahhh-a11y/HAEKA/main/data/';
-  var _busy = false, _items = [];
+  var _busy = false, _items = [], _open = null;
 
   function doneMap() { try { return JSON.parse(localStorage.getItem(DONE_KEY) || '{}'); } catch (e) { return {}; } }
   function markDone(id, n) { var m = doneMap(); m[id] = { at: Date.now(), n: n }; try { localStorage.setItem(DONE_KEY, JSON.stringify(m)); } catch (e) {} }
@@ -41,14 +41,32 @@
     var el = document.getElementById('import-list'); if (!el) return;
     var d = doneMap();
     if (!_items.length) { el.innerHTML = '<div style="padding:14px 0;font-size:13px;color:#6B7280">올라온 자료가 없어요</div>'; return; }
-    el.innerHTML = _items.map(function (it) {
-      var done = d[it.id], st = it._state || (done ? '등록 완료' : '대기');
-      var color = st === '등록 완료' ? '#16A34A' : st === '실패' ? '#DC2626' : '#6B7280';
-      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F3F4F6">'
-        + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + esc(it.title) + '</div>'
-        + '<div style="font-size:11px;color:#9CA3AF">' + esc(it.count) + '곳' + (it.date ? ' · ' + esc(it.date) : '') + (it._msg ? ' · ' + esc(it._msg) : '') + '</div></div>'
-        + '<span style="font-size:12px;font-weight:700;color:' + color + '">' + esc(st) + '</span></div>';
+    // 날짜별로 묶어 최근 날짜부터 보여 준다. 가장 최근 날짜만 펼쳐 두고, 펼친 상태는 다시 그려도 유지한다
+    var groups = {}, order = [];
+    _items.forEach(function (it) { var k = it.date || '날짜 없음'; if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(it); });
+    order.sort().reverse();
+    if (!_open) { _open = {}; _open[order[0]] = 1; }
+    el.innerHTML = order.map(function (k) {
+      var list = groups[k].slice().reverse(), sum = 0, wait = 0;
+      list.forEach(function (it) { sum += (+it.count || 0); if (!d[it.id]) wait++; });
+      var rows = list.map(function (it) {
+        var done = d[it.id], st = it._state || (done ? '등록 완료' : '대기');
+        var color = st === '등록 완료' ? '#16A34A' : st === '실패' ? '#DC2626' : '#6B7280';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0 10px 14px;border-bottom:1px solid #F3F4F6">'
+          + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + esc(it.title) + '</div>'
+          + '<div style="font-size:11px;color:#9CA3AF">' + esc(it.count) + '곳' + (it._msg ? ' · ' + esc(it._msg) : '') + '</div></div>'
+          + '<span style="font-size:12px;font-weight:700;color:' + color + '">' + esc(st) + '</span></div>';
+      }).join('');
+      return '<details data-date="' + esc(k) + '"' + (_open[k] ? ' open' : '') + ' style="border-bottom:1px solid #E5E7EB">'
+        + '<summary style="cursor:pointer;padding:12px 0;font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px">'
+        + '<span style="flex:1">' + esc(k) + '</span>'
+        + '<span style="font-size:12px;font-weight:600;color:#6B7280">' + list.length + '건 · ' + sum.toLocaleString() + '곳</span>'
+        + (wait ? '<span style="font-size:12px;font-weight:700;color:#EA580C">대기 ' + wait + '</span>' : '<span style="font-size:12px;font-weight:700;color:#16A34A">완료</span>')
+        + '</summary>' + rows + '</details>';
     }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('details'), function (dt) {
+      dt.addEventListener('toggle', function () { if (dt.open) _open[dt.getAttribute('data-date')] = 1; else delete _open[dt.getAttribute('data-date')]; });
+    });
     var left = _items.filter(function (it) { return !d[it.id]; }).length;
     var b = document.getElementById('badge-import');
     if (b) { b.style.display = left ? '' : 'none'; b.textContent = left || ''; }
