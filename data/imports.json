@@ -334,5 +334,12 @@
   "file": "a-tw3-tickets-2026-10.json",
   "count": 91,
   "date": "2026-10-07"
+ },
+ {
+  "id": "a-tx-tickets",
+  "title": "유명 관광지 입장권 보충 입장권",
+  "file": "a-tx-tickets-2026-10.json",
+  "count": 19,
+  "date": "2026-10-08"
  }
 ]
