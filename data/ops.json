@@ -1,0 +1,73 @@
+[
+ {
+  "id": "recity-catania",
+  "type": "recity",
+  "title": "시칠리아 → 카타니아(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "카타니아",
+  "lat": 37.5079,
+  "lng": 15.083,
+  "km": 15
+ },
+ {
+  "id": "hours-01-osaka",
+  "type": "hours",
+  "title": "오사카 영업시간 749곳",
+  "file": "hours/h01-osaka.json"
+ },
+ {
+  "id": "hours-02",
+  "type": "hours",
+  "title": "73개 도시 영업시간 2071곳",
+  "file": "hours/h02.json"
+ },
+ {
+  "id": "recity-palermo",
+  "type": "recity",
+  "title": "시칠리아 → 팔레르모(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "팔레르모",
+  "lat": 38.1157,
+  "lng": 13.3615,
+  "km": 15
+ },
+ {
+  "id": "recity-messina",
+  "type": "recity",
+  "title": "시칠리아 → 메시나(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "메시나",
+  "lat": 38.1938,
+  "lng": 15.554,
+  "km": 15
+ },
+ {
+  "id": "hours-03-jp-conbini",
+  "type": "hours",
+  "title": "일본 편의점 3사 공식 영업시간 1304곳",
+  "file": "hours/h03-jp-conbini.json"
+ },
+ {
+  "id": "set-donki-shopping",
+  "type": "set",
+  "title": "돈키호테(마트로 들어간 것) → 쇼핑",
+  "names": [
+   "돈키호테",
+   "메가 돈키호테",
+   "돈돈돈키"
+  ],
+  "where": {
+   "category": "마트"
+  },
+  "set": {
+   "category": "쇼핑",
+   "cuisine": "생활용품점"
+  }
+ },
+ {
+  "id": "hours-04",
+  "type": "hours",
+  "title": "89개 도시 영업시간 1652곳",
+  "file": "hours/h04.json"
+ }
+]
