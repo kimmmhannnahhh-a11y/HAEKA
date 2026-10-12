@@ -281,7 +281,7 @@ function payStatePill(s) {
       <div class="flt-row" id="flt-cats"></div>
     </div>
     <!-- 이 도시 숙소 예약(트립닷컴 제휴). 도시를 골랐을 때만 보인다. 링크는 haeka-stay.js -->
-    <div id="stay-row" onclick="openStay()" style="display:none;margin:0 16px 10px;padding:11px 14px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;cursor:pointer;align-items:center;gap:8px">
+    <div id="stay-row" onclick="openStay()" style="display:none;margin:12px 16px 0;padding:11px 14px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;cursor:pointer;align-items:center;gap:8px">
       <span id="stay-row-text" style="flex:1;font-size:13px;font-weight:800;color:#2563eb"></span>
       <span style="font-size:10px;color:#6B7280">제휴 링크</span>
     </div>
@@ -485,7 +485,12 @@ function showStayRow(city){
   if(!city || !window.haekaStay){ row.style.display='none'; _stay=null; return; }
   _stay=haekaStay(city,'haeka_city');
   document.getElementById('stay-row-text').textContent=(_stay.city ? city+' 숙소 예약 · 트립닷컴' : '숙소 예약 · 트립닷컴')+' ›';
-  row.style.display='flex';
+  syncStayRow();
+}
+// 업종에서 숙소를 골랐을 때만 보인다(다른 업종과 함께 골라도 숙소가 들어 있으면 보인다)
+function syncStayRow(){
+  var row=document.getElementById('stay-row');
+  if(row) row.style.display=(_stay && _catOn('호텔')) ? 'flex' : 'none';
 }
 function openStay(){ if(_stay) window.open(_stay.u,'_blank'); }
 
@@ -581,6 +586,7 @@ var _me = null;          // 내 위치 {lat,lng}
 
 function resetFilters(){
   _flt = { cards:{}, cat:'' };
+  syncStayRow();
   ['flt-cards','flt-cats'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
   askLocation();
 }
@@ -629,6 +635,7 @@ function _catOn(c){ return _catList().indexOf(c)>-1; }
 function pickCat(c){
   if(!c){ _flt.cat=''; }
   else{ var a=_catList(), i=a.indexOf(c); if(i>-1) a.splice(i,1); else a.push(c); _flt.cat=a.join('|'); }
+  syncStayRow();
   buildFilters(); applyFilters();
 }
 
@@ -835,6 +842,7 @@ window.addEventListener('DOMContentLoaded', function(){
     selectCityDirect(st.country, st.city);
     _flt={ cards:{}, cat:st.cat||'' };
     (st.cards||[]).forEach(function(c){ _flt.cards[c]=1; });
+    syncStayRow();
     _restoreY=st.y||0;
   } else if(st.q){
     var inp=document.getElementById('search-inp');
