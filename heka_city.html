@@ -329,9 +329,13 @@ window._searchStores = function(term){
   var byMenu = getDocs(query(collection(db,'stores'), where('menuKeys','array-contains',k), limit(20)))
     .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
     .catch(function(){ return []; });
-  return Promise.all([run('nameKey'), run('localKey'), byMenu]).then(function(r){
+  // 종류(예: 라멘·환전소)로도 찾는다 — 가게 이름을 몰라도 종류만 치면 나오게
+  var byKind = getDocs(query(collection(db,'stores'), where('cuisine','==',String(term).trim()), limit(20)))
+    .then(function(snap){ var arr=[]; snap.forEach(function(d){ arr.push({id:d.id, ...d.data()}); }); return arr; })
+    .catch(function(){ return []; });
+  return Promise.all([run('nameKey'), run('localKey'), byMenu, byKind]).then(function(r){
     var seen={}, out=[];
-    r[0].concat(r[1], r[2]).forEach(function(x){ if(!seen[x.id]){ seen[x.id]=1; out.push(x); } });
+    r[0].concat(r[1], r[2], r[3]).forEach(function(x){ if(!seen[x.id]){ seen[x.id]=1; out.push(x); } });
     return out;
   });
 };
@@ -584,7 +588,19 @@ function payMatch(s, c){
 var _flt = { cards:{}, cat:'' };
 var _me = null;          // 내 위치 {lat,lng}
 
+// 목록 안 검색에서 견줄 글자(띄어쓰기·기호·대소문자 무시). 매장마다 한 번만 만든다
+function _storeHay(s){
+  if(s._hay==null) s._hay=window._searchKey([s.name, s.nameLocal, s.cuisine, s.category, (s.category==='호텔'?'숙소':''), (s.menus||[]).join(' ')].join(' '));
+  return s._hay;
+}
+var _SEARCH_HINT=null;
+function _syncSearchHint(inStores){
+  var inp=document.getElementById('search-inp'); if(!inp) return;
+  if(_SEARCH_HINT==null) _SEARCH_HINT=inp.getAttribute('placeholder')||'';
+  inp.setAttribute('placeholder', inStores ? (document.getElementById('store-city-name').textContent+' 안에서 검색') : _SEARCH_HINT);
+}
 function resetFilters(){
+  var _inp=document.getElementById('search-inp'); if(_inp) _inp.value='';
   _flt = { cards:{}, cat:'' };
   syncStayRow();
   ['flt-cards','flt-cats'].forEach(function(id){ document.getElementById(id).innerHTML=''; });
@@ -644,14 +660,16 @@ function pickCat(c){
 function applyFilters(){
   if(!_pageState) return;
   var sel=Object.keys(_flt.cards);
+  var qk=_flt.q ? window._searchKey(_flt.q) : '';
   var list=_pageState.rows.filter(function(s){
     var cOk=!sel.length || Object.keys(_flt.cards).some(function(c){ return payMatch(s, c); });
     var tOk=!_flt.cat || _catOn(s.category);
-    return cOk && tOk;
+    var qOk=!qk || _storeHay(s).indexOf(qk)>-1;
+    return cOk && tOk && qOk;
   });
   list.forEach(function(s){ s._km = (_me && s.lat && s.lng) ? distKm(_me, s) : null; });
   if(_me) list.sort(function(a,b){ return (a._km==null?1e9:a._km)-(b._km==null?1e9:b._km); });
-  var total=_pageState.rows.length, filtered=sel.length||_flt.cat;
+  var total=_pageState.rows.length, filtered=sel.length||_flt.cat||qk;
   document.getElementById('store-count').textContent = (filtered ? list.length+' / ' : '') + total + (_pageState.done ? '개' : '개+');
   renderStores(list, document.getElementById('store-list'), _pageState.label, !!_me, !!filtered);
   // 숙소만 골랐는데 등록된 숙소가 없으면 위의 트립닷컴 줄로 안내한다
@@ -703,7 +721,10 @@ fetch('data/cities.json').then(function(r){ return r.json(); }).then(function(li
   var inp=document.getElementById('search-inp');
   if(inp && inp.value.trim()) doSearch(inp.value);   // 이미 검색 중이면 다시 그린다
 }).catch(function(){});
+function _inStores(){ var v=document.getElementById('view-stores'); return !!(v && v.classList.contains('active') && _pageState); }
 function doSearch(val){
+  // 도시(또는 나라 전체) 목록을 보고 있을 때는 그 안에서만 찾는다(이름·현지 이름·종류·업종·대표메뉴)
+  if(_inStores()){ _flt.q=val.trim(); applyFilters(); return; }
   val=val.trim().toLowerCase();
   document.getElementById('city-img-grid').style.display=val?'none':'grid';document.getElementById('view-country').style.setProperty('display',val?'block':'none','important');
   if(!val){ renderCountries(COUNTRIES); showView('view-country'); return; }
@@ -788,8 +809,11 @@ function selectCityDirect(countryName, city){
 
 // 뷰 전환
 function showView(id){
+  // 목록 안에서 치던 검색어는 그 목록용이라, 다른 화면으로 나갈 때 지운다
+  if(id!=='view-stores' && typeof _inStores==='function' && _inStores()){ var _si=document.getElementById('search-inp'); if(_si) _si.value=''; _flt.q=''; }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
+  _syncSearchHint(id==='view-stores');
   // 도시 사진 그리드는 .view 바깥에 있어서 따로 숨겨야 한다
   var grid = document.getElementById('city-img-grid');
   if (grid) grid.style.display = (id === 'view-country' && !(document.getElementById('search-inp')||{}).value) ? 'grid' : 'none';
@@ -797,6 +821,7 @@ function showView(id){
 
 function showCountryView(){
   _currentCity=null;
+  showView('view-country');
   doSearch(document.getElementById('search-inp').value);
   showView('view-country');
 }
@@ -844,7 +869,8 @@ window.addEventListener('DOMContentLoaded', function(){
   if(nav.type && nav.type!=='back_forward') return;   // 뒤로가기로 돌아온 때만 되살린다
   if(st.city && st.country){
     selectCityDirect(st.country, st.city);
-    _flt={ cards:{}, cat:st.cat||'' };
+    _flt={ cards:{}, cat:st.cat||'', q:st.q||'' };
+    if(st.q) document.getElementById('search-inp').value=st.q;
     (st.cards||[]).forEach(function(c){ _flt.cards[c]=1; });
     syncStayRow();
     _restoreY=st.y||0;
