@@ -220,6 +220,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 <script src="map-link.js"></script>
 <script src="store-hours.js"></script>
 <script src="haeka-book.js?v=1"></script>
+<script src="haeka-stay.js?v=2"></script>
 <script src="store-cache.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -299,6 +300,12 @@ function payStatePill(s) {
       </button>
     </div>
     <button class="sort-btn" id="sort-btn" onclick="openSortSheet()">거리순 ▾</button>
+  </div>
+
+  <!-- 지금 있는 도시의 숙소 예약(트립닷컴 제휴). 업종에서 숙소를 골랐을 때만 보인다. 링크는 haeka-stay.js -->
+  <div id="stay-row" onclick="openStay()" style="display:none;margin:10px 16px 0;padding:11px 14px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;cursor:pointer;align-items:center;gap:8px">
+    <span id="stay-row-text" style="flex:1;font-size:13px;font-weight:800;color:#2563eb"></span>
+    <span style="font-size:10px;color:#6B7280">제휴 링크</span>
   </div>
 
   <!-- 매장 수 -->
@@ -822,8 +829,34 @@ function doFilter(){
   else if(sortOrder==='latest'){var _ms=function(c){return !c?0:(c.toMillis?c.toMillis():(c.seconds?c.seconds*1000:(typeof c==='number'?c:0)));};list.sort(function(a,b){return _ms(b.createdAt)-_ms(a.createdAt);});}
   else if(sortOrder==='rating') list.sort(function(a,b){return(b.rating||0)-(a.rating||0);});
   renderList(list);
+  syncStayRow();
 }
 window.doFilter = doFilter;
+
+// ── 숙소 예약 줄 ──
+// 내 위치에서 가장 가까운 해카 도시(30km 안)를 찾아 그 도시의 트립닷컴 숙소로 보낸다. 가까운 도시가 없으면 트립닷컴 숙소 첫 화면.
+var _stayCities=null, _stay=null;
+fetch('data/cities.json').then(function(r){ return r.json(); }).then(function(list){ _stayCities=list||[]; syncStayRow(); }).catch(function(){ _stayCities=[]; });
+function _nearStayCity(){
+  if(!userLat || !userLng || !_stayCities) return '';
+  var best='', bestKm=30;
+  _stayCities.forEach(function(c){
+    var dy=(c.lat-userLat)*111.32, dx=(c.lng-userLng)*111.32*Math.cos(userLat*Math.PI/180);
+    var km=Math.sqrt(dx*dx+dy*dy);
+    if(km<bestKm){ bestKm=km; best=c.name; }
+  });
+  return best;
+}
+function syncStayRow(){
+  var row=document.getElementById('stay-row');
+  if(!row) return;
+  if(!(window.haekaStay && typeof catSel!=='undefined' && catSel.has('호텔'))){ row.style.display='none'; return; }
+  var city=_nearStayCity();
+  _stay=haekaStay(city,'haeka_nearby');
+  document.getElementById('stay-row-text').textContent=(_stay.city ? city+' 숙소 예약 · 트립닷컴' : '숙소 예약 · 트립닷컴')+' ›';
+  row.style.display='flex';
+}
+function openStay(){ if(_stay) window.open(_stay.u,'_blank'); }
 
 // ── 카드사 필터 ──
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1])||(cardSel.has('all')&&m[1]==='all'));});var cb=document.getElementById('card-all-btn');if(cb){if(cardSel.has('all'))cb.classList.add('on');else cb.classList.remove('on');}}
