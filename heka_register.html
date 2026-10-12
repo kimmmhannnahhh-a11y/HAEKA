@@ -866,6 +866,7 @@ async function useMyLocation() {
     _gpsMode = true;
     selectedLat = pos.lat; selectedLng = pos.lng;
     setGpsAddr(g);
+    var nc = await nearCity(pos.lat, pos.lng); if (nc) selectedCity = nc;
     locationSelected = true;
     document.getElementById('err-location').classList.remove('show');
     if (typeof google !== 'undefined' && google.maps) {
@@ -891,7 +892,10 @@ async function useMyLocation() {
 async function movePin(lat, lng) {
   selectedLat = lat; selectedLng = lng;
   var g = await reverseAddr(lat, lng);
-  if (g && selectedLat === lat && selectedLng === lng && _gpsMode) setGpsAddr(g);
+  if (g && selectedLat === lat && selectedLng === lng && _gpsMode) {
+    setGpsAddr(g);
+    var nc = await nearCity(lat, lng); if (nc && selectedLat === lat && selectedLng === lng) selectedCity = nc;
+  }
 }
 
 // 주소에서 도시명 추출
@@ -914,6 +918,24 @@ function extractCity(addr) {
 
 var selectedCity = '';
 
+// 도시 이름은 해카 도시 목록(data/cities.json)에서 가장 가까운 곳으로 맞춘다.
+// 주소 글자에서 뽑으면 'Shan Dong Sheng' 처럼 들어가 도시 검색에 안 잡힌다. 30km 안에 없을 때만 주소에서 뽑은 이름을 쓴다.
+var _cityList = null;
+function loadCityList() {
+  if (!_cityList) _cityList = fetch('data/cities.json').then(function(r){ return r.json(); }).catch(function(){ return []; });
+  return _cityList;
+}
+loadCityList();
+async function nearCity(lat, lng) {
+  var list = await loadCityList(), best = '', bestKm = 30;
+  (list || []).forEach(function(c) {
+    var dy = (c.lat - lat) * 111.32, dx = (c.lng - lng) * 111.32 * Math.cos(lat * Math.PI / 180);
+    var km = Math.sqrt(dx * dx + dy * dy);
+    if (km < bestKm) { bestKm = km; best = c.name; }
+  });
+  return best;
+}
+
 async function selectPlace(i) {
   var p = window._r[i];
 
@@ -929,6 +951,7 @@ async function selectPlace(i) {
   a.classList.add('show');
   document.getElementById('inp-name').value = p.name;
   selectedCity = extractCity(p.addr);
+  if (p.lat && p.lng) { var nc = await nearCity(p.lat, p.lng); if (nc) selectedCity = nc; }
   if (p.cat) selectCat(p.cat);
   selectedLat = p.lat;
   selectedLng = p.lng;

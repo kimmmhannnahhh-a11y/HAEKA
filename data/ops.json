@@ -69,5 +69,20 @@
   "type": "hours",
   "title": "89개 도시 영업시간 1652곳",
   "file": "hours/h04.json"
+ },
+ {
+  "id": "set-yantai-user-1012",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이) 도시 이름 바로잡기",
+  "names": [
+   "Xinjiang Laoyou Barbecue"
+  ],
+  "where": {
+   "city": "Shan Dong Sheng"
+  },
+  "set": {
+   "city": "옌타이",
+   "country": "중국"
+  }
  }
 ]
