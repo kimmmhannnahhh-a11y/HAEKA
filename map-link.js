@@ -54,7 +54,7 @@
   // 지도 칸 아래에 붙이는 버튼. 중국 매장이 아니면 빈 글자
   window.haekaAmapBtn = function (s, onclick) {
     if (!window.haekaIsChina(s)) return '';
-    return '<button type="button" onclick="event.stopPropagation();' + (onclick || 'haekaOpenAmap(window._mapStore)') + '" style="width:100%;margin:0 0 12px;padding:11px;border:1px solid #BFDBFE;border-radius:10px;background:#EEF4FF;color:#2563eb;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer">고덕지도로 보기 ›</button>';
+    return '<button type="button" onclick="event.stopPropagation();' + (onclick || 'haekaOpenAmap(window._mapStore)') + '" style="width:100%;margin:0 0 12px;padding:11px;border:0;border-radius:10px;background:#1F2227;color:#C8FF2E;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer">고덕지도로 보기 ›</button>';
   };
 
   window.haekaOpenMap = function (s) {
