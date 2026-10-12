@@ -30,7 +30,7 @@
   };
   window.haekaAmapUrl = function (s) {
     // OSM 좌표는 GPS 기준(WGS84)이라 중국 좌표(GCJ-02)로 바꿔서 넘긴다(안 바꾸면 수백 m 어긋난다)
-    var p = s.source === 'osm' ? toGcj(+s.lat, +s.lng) : { lat: +s.lat, lng: +s.lng };
+    var p = amapPoint(s);
     return 'https://uri.amap.com/marker?position=' + p.lng.toFixed(6) + ',' + p.lat.toFixed(6) + '&name=' + encodeURIComponent(nameOf(s))
       + '&src=haeka&callnative=1';
   };
@@ -50,7 +50,27 @@
     dLng = (dLng * 180.0) / (A / sq * Math.cos(rad) * PI);
     return { lat: lat + dLat, lng: lng + dLng };
   }
-  window.haekaOpenAmap = function (s) { if (window.haekaIsChina(s)) window.open(window.haekaAmapUrl(s), '_blank'); };
+  function amapPoint(s) { return s.source === 'osm' ? toGcj(+s.lat, +s.lng) : { lat: +s.lat, lng: +s.lng }; }
+  // 폰에 고덕지도 앱이 있으면 앱으로 바로 연다(로그인된 그대로라 저장하기 편하다). 없으면 웹 화면으로 간다.
+  window.haekaOpenAmap = function (s) {
+    if (!window.haekaIsChina(s)) return;
+    var web = window.haekaAmapUrl(s), ua = navigator.userAgent || '';
+    var isAnd = /Android/i.test(ua), isIos = /iPhone|iPad|iPod/i.test(ua);
+    if (!isAnd && !isIos) { window.open(web, '_blank'); return; }
+    var p = amapPoint(s);
+    var q = 'viewMap?sourceApplication=haeka&poiname=' + encodeURIComponent(nameOf(s)) + '&lat=' + p.lat.toFixed(6) + '&lon=' + p.lng.toFixed(6) + '&dev=0';
+    var inApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    // 안드로이드 브라우저: 앱이 없으면 브라우저가 알아서 웹 주소로 넘긴다
+    if (isAnd && !inApp) {
+      location.href = 'intent://' + q + '#Intent;scheme=androidamap;package=com.autonavi.minimap;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+      return;
+    }
+    // 해카 앱·아이폰: 앱 주소를 먼저 열어 보고, 1.5초 안에 화면이 안 넘어가면(앱 없음) 웹으로 간다
+    var timer = setTimeout(function () { if (!document.hidden) window.open(web, '_blank'); }, 1500);
+    var stop = function () { if (document.hidden) { clearTimeout(timer); document.removeEventListener('visibilitychange', stop); } };
+    document.addEventListener('visibilitychange', stop);
+    location.href = (isAnd ? 'androidamap' : 'iosamap') + '://' + q;
+  };
   // 지도 칸 아래에 붙이는 버튼. 중국 매장이 아니면 빈 글자
   window.haekaAmapBtn = function (s, onclick) {
     if (!window.haekaIsChina(s)) return '';
