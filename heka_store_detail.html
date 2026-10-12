@@ -770,6 +770,13 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
       hc.appendChild(chip);
     }
   }
+  // 숙소 예약 버튼(숙소 매장에만)
+  if (store.category === '호텔' && window.haekaStay) {
+    var st = haekaStay(store.city, 'haeka_store');
+    document.getElementById('stay-btn').textContent = (st.city ? '트립닷컴에서 ' + st.city + ' 숙소 보기' : '트립닷컴에서 숙소 찾기') + ' ›';
+    document.getElementById('stay-btn').onclick = function(){ window.open(st.u, '_blank'); };
+    document.getElementById('stay-section').style.display = 'block';
+  }
   if (store.phone) {
     document.getElementById('meta-phone').textContent = store.phone;
     document.getElementById('meta-phone').href = 'tel:'+String(store.phone).replace(/[^+\d]/g, '');
@@ -829,6 +836,7 @@ window._arrayUnion = arrayUnion;
 <script src="map-link.js"></script>
 <script src="store-hours.js"></script>
 <script src="haeka-book.js?v=1"></script>
+<script src="haeka-stay.js?v=1"></script>
 <script type="module" src="admin-edit.js"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
@@ -943,6 +951,13 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
       <div id="book-title" style="font-size:13px;color:#111;font-weight:600;line-height:1.45;margin-bottom:10px"></div>
       <button id="book-btn" style="width:100%;padding:13px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;color:#2563eb;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer">마이리얼트립에서 예매하기 ›</button>
       <div style="font-size:10px;color:#aaa;margin-top:7px;line-height:1.5">제휴 링크예요. 예매하면 해카가 수수료를 받을 수 있어요.</div>
+    </div>
+
+    <!-- 숙소 예약(숙소 매장에만). 링크는 haeka-stay.js -->
+    <div class="section" id="stay-section" style="display:none">
+      <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px">숙소 예약</div>
+      <button id="stay-btn" style="width:100%;padding:13px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;color:#2563eb;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer"></button>
+      <div style="font-size:10px;color:#aaa;margin-top:7px;line-height:1.5">제휴 링크예요. 예약하면 해카가 수수료를 받을 수 있어요.</div>
     </div>
 
     <!-- 결제 후기 -->

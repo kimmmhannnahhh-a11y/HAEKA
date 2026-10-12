@@ -168,6 +168,7 @@ function storeThumb(s) { return (s && s.images && s.images[0]) || catImage(s && 
 </script>
 <script src="store-cache.js"></script>
 <script src="haeka-book.js?v=1"></script>
+<script src="haeka-stay.js?v=1"></script>
 <script>
 // 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
 function payStatePill(s) {
@@ -278,6 +279,11 @@ function payStatePill(s) {
     <div class="flt-wrap" id="flt-wrap">
       <div class="flt-row" id="flt-cards"></div>
       <div class="flt-row" id="flt-cats"></div>
+    </div>
+    <!-- 이 도시 숙소 예약(트립닷컴 제휴). 도시를 골랐을 때만 보인다. 링크는 haeka-stay.js -->
+    <div id="stay-row" onclick="openStay()" style="display:none;margin:0 16px 10px;padding:11px 14px;border:1px solid #BFDBFE;border-radius:12px;background:#EEF4FF;cursor:pointer;align-items:center;gap:8px">
+      <span id="stay-row-text" style="flex:1;font-size:13px;font-weight:800;color:#2563eb"></span>
+      <span style="font-size:10px;color:#6B7280">제휴 링크</span>
     </div>
     <div class="store-list" id="store-list"></div>
   </div>
@@ -471,11 +477,24 @@ var CITY_EN_MAP={
   '오클랜드':'Auckland','웰링턴':'Wellington','크라이스트처치':'Christchurch','퀸스타운':'Queenstown'
 };
 
+// 도시를 골랐을 때 목록 위에 '숙소 예약' 줄을 보여 준다(나라 전체보기에서는 숨김)
+var _stay=null;
+function showStayRow(city){
+  var row=document.getElementById('stay-row');
+  if(!row) return;
+  if(!city || !window.haekaStay){ row.style.display='none'; _stay=null; return; }
+  _stay=haekaStay(city,'haeka_city');
+  document.getElementById('stay-row-text').textContent=(_stay.city ? city+' 숙소 예약 · 트립닷컴' : '숙소 예약 · 트립닷컴')+' ›';
+  row.style.display='flex';
+}
+function openStay(){ if(_stay) window.open(_stay.u,'_blank'); }
+
 // 나라 전체보기
 function selectCountryAll(countryName){
   var country=COUNTRIES.find(function(c){return c.name===countryName;});
   if(!country) return;
   document.getElementById('store-city-name').textContent=country.name+' 전체';
+  showStayRow('');
   document.getElementById('store-count').textContent='';
   var listEl=document.getElementById('store-list');
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
@@ -504,6 +523,7 @@ function selectCity(city){
   document.getElementById('view-country').style.setProperty('display','none','important');
   _currentCity=city;
   document.getElementById('store-city-name').textContent=city;
+  showStayRow(city);
   document.getElementById('store-count').textContent='';
   var listEl=document.getElementById('store-list');
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
