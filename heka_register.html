@@ -868,7 +868,11 @@ async function useMyLocation() {
     setGpsAddr(g);
     locationSelected = true;
     document.getElementById('err-location').classList.remove('show');
-    if (typeof google !== 'undefined' && google.maps) showRealMap(pos.lat, pos.lng, '현위치', true);
+    if (typeof google !== 'undefined' && google.maps) {
+      // 지도를 늦게 받는 화면(앱)에서도 뜨도록 지도·핀 묶음을 먼저 받아 둔다
+      try { if (google.maps.importLibrary) { await google.maps.importLibrary('maps'); await google.maps.importLibrary('marker'); } } catch(e) {}
+      if (google.maps.Map) showRealMap(pos.lat, pos.lng, '현위치', true);
+    }
 
     // 가게 이름은 직접 적는다
     var inp = document.getElementById('inp-name');
