@@ -117,6 +117,7 @@ body{background:var(--hk-bg);display:flex;justify-content:center;padding:30px;fo
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, orderBy, limit, onSnapshot, where, getDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
@@ -129,6 +130,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 window._db = db; window._getDoc = getDoc; window._doc = doc;
+// 등록자 닉네임(users)은 로그인한 사람만 읽을 수 있다. 로그인 정보가 준비된 뒤에 읽어야 '여행자'로 안 뜬다
+window._authReady = new Promise(function(resolve){ onAuthStateChanged(getAuth(app), function(u){ resolve(u); }); });
 
 // 사진·영상이 있는 매장만 받아 최신순으로 보여준다
 const q = query(collection(db,'stores'), where('hasMedia','==',true), limit(60));
@@ -205,7 +208,7 @@ function catClass(cat){
   return 'cat-etc';
 }
 
-var _hotplNickCache={};function hotplNick(uid){if(!uid||!window._getDoc||!window._doc||!window._db)return Promise.resolve('');if(!_hotplNickCache[uid])_hotplNickCache[uid]=window._getDoc(window._doc(window._db,'users',uid)).then(function(s){return (s.exists()&&s.data().nick)||'';}).catch(function(){return '';});return _hotplNickCache[uid];}
+var _hotplNickCache={};function hotplNick(uid){if(!uid||!window._getDoc||!window._doc||!window._db)return Promise.resolve('');if(!_hotplNickCache[uid])_hotplNickCache[uid]=(window._authReady||Promise.resolve()).then(function(){return window._getDoc(window._doc(window._db,'users',uid));}).then(function(s){return (s.exists()&&s.data().nick)||'';}).catch(function(){return '';});return _hotplNickCache[uid];}
 function hotplPay(s){var ok=(s&&s.payOk)||[],no=(s&&s.payNo)||[];if(ok.indexOf('현금만')>-1||no.indexOf('카드불가')>-1)return '현금만 가능';for(var i=0;i<ok.length;i++){if(ok[i]!=='현금가능'&&ok[i]!=='모르겠어요')return '카드 결제 가능';}return '';}
 function cardBadges(store){
   var cards = store.cards || store.acceptedCards || [];
