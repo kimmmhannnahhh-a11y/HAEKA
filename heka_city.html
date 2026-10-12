@@ -614,6 +614,8 @@ function buildFilters(){
       .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" onclick="pickCard(\''+c+'\')">'+c+'</button>'; }).join('');
   var cats=[];
   rows.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
+  // 숙소 매장이 없는 도시에도 숙소 버튼은 둔다(눌러서 트립닷컴 숙소 예약으로 갈 수 있게). 도시를 골랐을 때만
+  if(_stay && cats.indexOf('호텔')<0) cats.push('호텔');
   // 홈·더보기와 같은 순서로 (목록에 없는 업종은 맨 뒤)
   var CAT_ORDER=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
   cats.sort(function(a,b){ var x=CAT_ORDER.indexOf(a), y=CAT_ORDER.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
@@ -652,6 +654,8 @@ function applyFilters(){
   var total=_pageState.rows.length, filtered=sel.length||_flt.cat;
   document.getElementById('store-count').textContent = (filtered ? list.length+' / ' : '') + total + (_pageState.done ? '개' : '개+');
   renderStores(list, document.getElementById('store-list'), _pageState.label, !!_me, !!filtered);
+  // 숙소만 골랐는데 등록된 숙소가 없으면 위의 트립닷컴 줄로 안내한다
+  if(!list.length && _stay && _flt.cat==='호텔' && !sel.length) document.getElementById('store-list').innerHTML='<div class="store-empty">해카에 등록된 숙소는 아직 없어요<br>위의 트립닷컴 숙소 예약을 눌러보세요</div>';
 }
 
 function renderStores(stores, el, city, showDist, filtered){
