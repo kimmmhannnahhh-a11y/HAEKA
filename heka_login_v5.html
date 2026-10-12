@@ -497,29 +497,10 @@ window._doKakaoLogin = async function() {
       cred = await signInWithCustomToken(auth, payload.customToken);
       uid = cred.user.uid;
     } catch(cfErr) {
-      console.warn('Cloud Function 실패, fallback:', _kakaoErrText(cfErr));
-      // Fallback: 카카오 프로필 조회 + Firebase Auth 결정적 PW
-      var kakaoUser = await _kakaoProfile(accessToken);
-      var kakaoId = String(kakaoUser.id||'');
-      var kEmail = (kakaoUser.kakao_account && kakaoUser.kakao_account.email) || (kakaoId + '@kakao.haeka.local');
-      var kNick = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.nickname) || '카카오유저';
-      var kAvatar = (kakaoUser.kakao_account && kakaoUser.kakao_account.profile && kakaoUser.kakao_account.profile.profile_image_url) || '';
-      var kPw = 'kakao_v1_' + kakaoId + '_hkacc';
-      try {
-        cred = await signInWithEmailAndPassword(auth, kEmail, kPw);
-      } catch(inner) {
-        if (inner.code === 'auth/user-not-found' || inner.code === 'auth/invalid-credential') {
-          cred = await createUserWithEmailAndPassword(auth, kEmail, kPw);
-          try {
-            await setDoc(doc(db, 'users', cred.user.uid), {
-              uid: cred.user.uid, email: kEmail, nickname: kNick, avatar: kAvatar,
-              provider: 'kakao', kakao_id: kakaoId, createdAt: new Date(), status: 'active'
-            });
-          } catch(e){ console.error('users 저장 실패:', e); }
-        } else { throw inner; }
-      }
-      uid = cred.user.uid;
-      payload = { email: kEmail, nickname: kNick };
+      // 예전에는 여기서 카카오 회원번호로 만든 비밀번호로 이메일 계정을 만들었다(추측 가능해서 없앰).
+      // 서버 확인이 실패하면 로그인하지 않는다.
+      console.error('카카오 서버 확인 실패:', _kakaoErrText(cfErr));
+      throw cfErr;
     }
 
     // 정지/강퇴 체크

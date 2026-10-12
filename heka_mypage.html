@@ -188,6 +188,7 @@ body,.phone,.scroll-wrap{background:#fff!important}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs, addDoc, orderBy, limit, serverTimestamp, doc, getDoc, setDoc, getCountFromServer } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-functions.js";
 const _app = initializeApp({
   apiKey:"AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
   authDomain:"card-store-finder.firebaseapp.com",
@@ -196,6 +197,7 @@ const _app = initializeApp({
 });
 const _db = getFirestore(_app);
 const _auth = getAuth(_app);
+const _functions = getFunctions(_app, 'asia-northeast3');
 // 로그아웃은 실제 계정 연결(Firebase)도 끊어야 한다 — 저장된 표시만 지우면 계속 로그인 상태로 남는다
 window._fbSignOut = function(){ return signOut(_auth); };
 // 로그인 확인이 끝난 뒤의 계정 (확인 전이면 기다린다)
@@ -235,29 +237,67 @@ onAuthStateChanged(_auth, async function(u){
   }
 });
 
+// 카카오 계정 탈퇴에는 방금 받은 카카오 토큰이 필요하다(본인 확인 + 카카오 연결 끊기).
+// 앱: 네이티브 SDK, 웹: Kakao JS SDK
+async function _kakaoTokenForWithdraw() {
+  var C = window.Capacitor;
+  var isNative = !!(C && typeof C.isNativePlatform === 'function' && C.isNativePlatform());
+  var KakaoLogin = (C && C.Plugins && C.Plugins.KakaoLoginPlugin) || null;
+  if (!KakaoLogin && isNative && C && typeof C.registerPlugin === 'function') { try { KakaoLogin = C.registerPlugin('KakaoLoginPlugin'); } catch(e){} }
+  if (KakaoLogin && typeof KakaoLogin.goLogin === 'function') {
+    try { var r = await KakaoLogin.goLogin(); var t = r && (r.accessToken || r.access_token); if (t) return t; }
+    catch(e) { console.error('[탈퇴] 카카오 네이티브 확인 실패:', e && (e.message || e)); }
+  }
+  if (!window.Kakao) {
+    await new Promise(function(resolve){ var sc = document.createElement('script'); sc.src = 'https://developers.kakao.com/sdk/js/kakao.min.js'; sc.onload = resolve; sc.onerror = resolve; document.head.appendChild(sc); });
+  }
+  if (!window.Kakao || !Kakao.Auth) return null;
+  try { if (!Kakao.isInitialized()) Kakao.init('53803347469de213ee3074ad9d647f71'); } catch(e){}
+  try {
+    var authObj = await new Promise(function(resolve, reject){
+      var done = false;
+      var tm = setTimeout(function(){ if (done) return; done = true; reject(new Error('시간 초과')); }, 90000);
+      Kakao.Auth.login({
+        scope: 'profile_nickname',
+        success: function(r){ if (done) return; done = true; clearTimeout(tm); resolve(r); },
+        fail:    function(r){ if (done) return; done = true; clearTimeout(tm); reject(r); }
+      });
+    });
+    return (authObj && authObj.access_token) || null;
+  } catch(e) { console.error('[탈퇴] 카카오 웹 확인 실패:', e && (e.message || JSON.stringify(e))); return null; }
+}
 window._deleteAccount = async function(password) {
   var user = _auth.currentUser;
   if (!user) return { ok: false, reason: 'no-user' };
+  var provider = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || '';
   try {
     // 이메일/비밀번호 로그인 사용자는 재인증 필수 (탈취 토큰 방어)
-    var provider = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || '';
     if (provider === 'password') {
       if (!password) return { ok: false, reason: 'need-password' };
       var cred = EmailAuthProvider.credential(user.email, password);
       try {
         await reauthenticateWithCredential(user, cred);
+        await user.getIdToken(true);
       } catch(re) {
         return { ok: false, reason: 'wrong-password' };
       }
     }
-    await deleteUser(user);
+    var data = {};
+    if (/^kakao_\d+$/.test(user.uid)) {
+      var tk = await _kakaoTokenForWithdraw();
+      if (!tk) return { ok: false, reason: 'kakao-check' };
+      data.kakaoAccessToken = tk;
+    }
+    // 서버가 프로필·찜을 지우고, 쓴 글의 작성자 정보를 지운 뒤 계정을 삭제한다
+    await httpsCallable(_functions, 'deleteMyAccount')(data);
+    try { await signOut(_auth); } catch(e){}
     return { ok: true };
   } catch(e) {
-    // 최근 로그인 후 시간이 너무 지나면 Firebase가 재인증 요구
-    if (e && e.code === 'auth/requires-recent-login') {
-      return { ok: false, reason: 'need-password' };
-    }
-    return { ok: false, reason: 'error', msg: e && e.message };
+    var m = ((e && e.message) || '') + '';
+    // 로그인한 지 오래됐으면 서버가 다시 로그인을 요구한다
+    if (/recent-login-required/.test(m)) return { ok: false, reason: provider === 'password' ? 'need-password' : 'relogin' };
+    console.error('[탈퇴] 실패:', m);
+    return { ok: false, reason: 'error', msg: m };
   }
 };
 
@@ -1038,11 +1078,16 @@ function clearCache() {
   } catch(e) {}
   showToast('캐시가 삭제됐어요');
 }
+// 이 폰에 남겨 둔 프로필 사진(IndexedDB)을 지운다
+function _clearAvatarCache(){ try{ indexedDB.deleteDatabase('haeka_db'); }catch(e){} }
 async function _attemptDelete(password) {
   if (!window._deleteAccount) return;
+  showToast('탈퇴 처리 중이에요...');
   var result = await window._deleteAccount(password);
   if (result && result.ok) {
     try{ localStorage.clear(); }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    _clearAvatarCache();
     showToast('탈퇴가 완료됐어요');
     setTimeout(function(){ window.location.replace('heka_home_v5.html'); }, 1500);
     return;
@@ -1054,12 +1099,22 @@ async function _attemptDelete(password) {
     _attemptDelete(pw);
     return;
   }
-  showToast('오류가 발생했어요. 재로그인 후 다시 시도해주세요');
+  if (result && result.reason === 'relogin') {
+    showPopup('', '다시 로그인이 필요해요', '안전을 위해 방금 로그인한 상태에서만 탈퇴할 수 있어요.\n다시 로그인한 뒤 탈퇴를 눌러주세요.', '확인', async function(){
+      try{ if(window._fbSignOut) await window._fbSignOut(); }catch(e){}
+      try{ localStorage.removeItem('haeka_uid'); localStorage.removeItem('haeka_email'); localStorage.removeItem('haeka_user'); localStorage.removeItem('haeka_nick'); localStorage.removeItem('haeka_admin_uid'); }catch(e){}
+      _clearAvatarCache();
+      window.location.replace('heka_login_v5.html');
+    });
+    return;
+  }
+  if (result && result.reason === 'kakao-check') { showToast('카카오 본인 확인에 실패했어요. 다시 시도해주세요'); return; }
+  showToast('탈퇴에 실패했어요. 재로그인 후 다시 시도해주세요');
 }
 
 function confirmWithdraw() {
   // 1단계
-  showPopup('', '정말 탈퇴하시겠어요?', '탈퇴 시 계정 및 개인정보가 삭제됩니다.', '탈퇴 진행', function(){
+  showPopup('', '정말 탈퇴하시겠어요?', '탈퇴 시 계정과 프로필·찜이 삭제됩니다.\n작성한 글과 후기는 삭제되지 않고 작성자만 "여행자"로 바뀌어요.\n지우려면 탈퇴 전에 직접 삭제해 주세요.', '탈퇴 진행', function(){
     // 2단계
     showPopup('🗑️', '최종 확인', '정말로 탈퇴할까요?\n이 작업은 되돌릴 수 없어요.', '탈퇴하기', async function(){
       // 이메일 로그인 사용자는 비밀번호 재확인 (토큰 탈취 방어)
@@ -1074,8 +1129,10 @@ function logout() {
       localStorage.removeItem('haeka_uid');
       localStorage.removeItem('haeka_email');
       localStorage.removeItem('haeka_user'); localStorage.removeItem('haeka_admin_uid');
+      localStorage.removeItem('haeka_nick'); localStorage.removeItem('haeka_provider');
     }catch(e){}
     try{ sessionStorage.clear(); }catch(e){}
+    _clearAvatarCache();
     window.location.replace('heka_login_v5.html');
   });
 }
