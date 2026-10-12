@@ -21,6 +21,42 @@
     return null;
   };
 
+  // 중국 매장은 구글 지도가 현지에서 안 열리므로 고덕지도(高德地图) 버튼을 하나 더 둔다.
+  // 좌표·이름을 붙인 주소만 여는 방식이라 키도 요금도 없다. 앱이 있으면 앱으로, 없으면 웹으로 열린다.
+  window.haekaIsChina = function (s) {
+    if (!s || !s.lat || !s.lng) return false;
+    if (s.country) return s.country === '중국';
+    return /중국|中国|China/i.test(s.address || '') && !/홍콩|마카오|대만|Hong Kong|Macau|Taiwan/i.test(s.address || '');
+  };
+  window.haekaAmapUrl = function (s) {
+    // OSM 좌표는 GPS 기준(WGS84)이라 중국 좌표(GCJ-02)로 바꿔서 넘긴다(안 바꾸면 수백 m 어긋난다)
+    var p = s.source === 'osm' ? toGcj(+s.lat, +s.lng) : { lat: +s.lat, lng: +s.lng };
+    return 'https://uri.amap.com/marker?position=' + p.lng.toFixed(6) + ',' + p.lat.toFixed(6) + '&name=' + encodeURIComponent(nameOf(s))
+      + '&src=haeka&callnative=1';
+  };
+  // WGS84 → GCJ-02 (공개된 변환식)
+  function toGcj(lat, lng) {
+    var A = 6378245.0, EE = 0.00669342162296594323, PI = Math.PI, x = lng - 105.0, y = lat - 35.0;
+    var dLat = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+    dLat += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+    dLat += (20.0 * Math.sin(y * PI) + 40.0 * Math.sin(y / 3.0 * PI)) * 2.0 / 3.0;
+    dLat += (160.0 * Math.sin(y / 12.0 * PI) + 320 * Math.sin(y * PI / 30.0)) * 2.0 / 3.0;
+    var dLng = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+    dLng += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+    dLng += (20.0 * Math.sin(x * PI) + 40.0 * Math.sin(x / 3.0 * PI)) * 2.0 / 3.0;
+    dLng += (150.0 * Math.sin(x / 12.0 * PI) + 300.0 * Math.sin(x / 30.0 * PI)) * 2.0 / 3.0;
+    var rad = lat / 180.0 * PI, magic = 1 - EE * Math.sin(rad) * Math.sin(rad), sq = Math.sqrt(magic);
+    dLat = (dLat * 180.0) / ((A * (1 - EE)) / (magic * sq) * PI);
+    dLng = (dLng * 180.0) / (A / sq * Math.cos(rad) * PI);
+    return { lat: lat + dLat, lng: lng + dLng };
+  }
+  window.haekaOpenAmap = function (s) { if (window.haekaIsChina(s)) window.open(window.haekaAmapUrl(s), '_blank'); };
+  // 지도 칸 아래에 붙이는 버튼. 중국 매장이 아니면 빈 글자
+  window.haekaAmapBtn = function (s, onclick) {
+    if (!window.haekaIsChina(s)) return '';
+    return '<button type="button" onclick="event.stopPropagation();' + (onclick || 'haekaOpenAmap(window._mapStore)') + '" style="width:100%;margin:0 0 12px;padding:11px;border:1px solid #BFDBFE;border-radius:10px;background:#EEF4FF;color:#2563eb;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer">고덕지도로 보기 ›</button>';
+  };
+
   window.haekaOpenMap = function (s) {
     var u = window.haekaMapUrl(s);
     if (u) window.open(u, '_blank');
