@@ -1,0 +1,27 @@
+[
+ {
+  "nameLocal": "",
+  "cuisine": "",
+  "menus": [],
+  "address": "山东省烟台市芝罘区西关南街6号 芝罘万达广场",
+  "payNo": [],
+  "name": "신장알리바바",
+  "category": "식당",
+  "city": "옌타이",
+  "country": "중국",
+  "lat": 37.53608,
+  "lng": 121.39594,
+  "payOk": [
+   "알리페이",
+   "위챗페이"
+  ],
+  "note": "완다몰 6번 에스컬레이터 앞이에요. 지도 위치는 몰 기준 대략이에요.",
+  "nameKey": "신장알리바바",
+  "localKey": "",
+  "menuKeys": [],
+  "cell": "1876_6069",
+  "hasMedia": false,
+  "source": "manual",
+  "checkedAt": "2026-10"
+ }
+]
