@@ -141,7 +141,7 @@ async function openEditor() {
   wrap.innerHTML =
     '<div style="background:#fff;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:18px 18px 24px;box-sizing:border-box">'
     + '<div style="display:flex;align-items:center;justify-content:space-between"><b style="font-size:16px">운영자 수정</b><button id="ae-close" style="border:0;background:none;font-size:22px;cursor:pointer">✕</button></div>'
-    + lbl('사진') + '<div id="ae-imgs" style="display:flex;flex-wrap:wrap;gap:6px"></div>'
+    + lbl('사진 (끌어서 순서 변경 · 첫 사진이 대표)') + '<div id="ae-imgs" style="display:flex;flex-wrap:wrap;gap:6px"></div>'
     + '<label style="display:inline-block;margin-top:8px;padding:8px 12px;background:#F3F4F6;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">사진 추가<input id="ae-file" type="file" accept="image/*" multiple style="display:none"></label>'
     + '<span id="ae-up" style="font-size:12px;color:#6B7280;margin-left:8px"></span>'
     + fields
@@ -152,11 +152,15 @@ async function openEditor() {
 
   const drawImgs = () => {
     $('ae-imgs').innerHTML = images.map((u, i) =>
-      '<div style="position:relative;width:76px;height:76px"><img src="' + esc(u) + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px">'
+      '<div data-sort="' + i + '" style="position:relative;width:76px;height:76px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none"><img src="' + esc(u) + '" draggable="false" style="width:100%;height:100%;object-fit:cover;border-radius:8px">'
       + '<button data-del="' + i + '" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:0;background:#111;color:#fff;font-size:12px;cursor:pointer">✕</button></div>').join('')
       || '<span style="font-size:12px;color:#9CA3AF">사진 없음</span>';
   };
   drawImgs();
+  // 사진을 끌어 다른 사진 위에 놓으면 그 자리로 옮긴다(첫 사진이 대표 사진). 도구는 drag-sort.js
+  const bindSort = () => window.haekaDragSort($('ae-imgs'), (from, to) => { window.haekaMoveItem(images, from, to); drawImgs(); });
+  if (window.haekaDragSort) bindSort();
+  else { const sc = document.createElement('script'); sc.src = 'drag-sort.js'; sc.onload = bindSort; document.head.appendChild(sc); }
   $('ae-imgs').onclick = e => {
     const i = e.target.getAttribute('data-del');
     if (i == null) return;
