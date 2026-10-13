@@ -85,7 +85,10 @@
       var hasStore = ex.some(function (x) { return x.source === 'osm' || x.source === 'chain'; });
       var tk = {}; ex.forEach(function (x) { if (x.category === '입장권') tk[x.nameLocal] = 1; });
       var mine = a.filter(function (s) { return s.city === city; });
-      var list = mine.filter(function (s) { return s.category === '입장권' ? !tk[s.nameLocal] : !hasStore; });
+      // force: 한 곳씩 직접 넣는 자료. 그 도시에 매장이 있어도 넣되, 이름(현지 이름)이 같은 매장이 이미 있으면 건너뛴다
+      var has = {}; ex.forEach(function (x) { has[(x.nameLocal || x.name || '')] = 1; });
+      var list = it.force ? mine.filter(function (s) { return !has[(s.nameLocal || s.name || '')]; })
+        : mine.filter(function (s) { return s.category === '입장권' ? !tk[s.nameLocal] : !hasStore; });
       skipped += mine.length - list.length;
       for (var i = 0; i < list.length; i += 20) {
         await Promise.all(list.slice(i, i + 20).map(function (s) {
