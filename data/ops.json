@@ -84,5 +84,20 @@
    "city": "옌타이",
    "country": "중국"
   }
+ },
+ {
+  "id": "set-yantai-user-name-1013",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이) 이름을 등록한 중국어 이름으로",
+  "names": [
+   "Xinjiang Laoyou Barbecue"
+  ],
+  "where": {},
+  "set": {
+   "name": "新疆老尤烧烤",
+   "nameLocal": "新疆老尤烧烤",
+   "nameKey": "新疆老尤烧烤",
+   "localKey": "新疆老尤烧烤"
+  }
  }
 ]
