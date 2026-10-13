@@ -99,5 +99,21 @@
    "nameKey": "新疆老尤烧烤",
    "localKey": "新疆老尤烧烤"
   }
+ },
+ {
+  "id": "set-yantai-wangpo-1013",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이 海德王婆大虾) 한글 이름 넣기",
+  "names": [
+   "海德王婆大虾"
+  ],
+  "where": {},
+  "set": {
+   "name": "왕포따샤",
+   "nameKey": "왕포따샤",
+   "nameLocal": "海德王婆大虾",
+   "localKey": "海德王婆大虾",
+   "country": "중국"
+  }
  }
 ]
