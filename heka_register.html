@@ -613,6 +613,9 @@ async function searchCenter(keyword) {
     if (best) return { lat: best.lat, lng: best.lng, city: best.name };
     var g = JSON.parse(localStorage.getItem('haeka_gps') || sessionStorage.getItem('haeka_gps') || 'null');
     if (g && g.lat && g.lng && !_inKorea(+g.lat, +g.lng)) return { lat: +g.lat, lng: +g.lng };
+    // 한국에서 여행 다녀온 뒤 몰아서 등록하는 경우: 마지막으로 고른 곳 주변을 먼저 본다(30일 안)
+    var last = JSON.parse(localStorage.getItem('haeka_reg_last') || 'null');
+    if (last && last.lat && last.lng && Date.now() - (last.at || 0) < 30 * 86400000) return { lat: +last.lat, lng: +last.lng };
   } catch(e) {}
   return null;
 }
@@ -626,12 +629,17 @@ async function searchGooglePlaces(keyword) {
       language: 'ko',
       maxResultCount: 8,
     };
-    // 한국어로 친 이름도 현지 가게와 잘 맞도록 찾는 지역을 알려 준다(주변 30km 를 먼저 본다. 그 밖도 나온다)
+    // 한국어로 친 이름도 현지 가게와 잘 맞도록 찾는 지역을 알려 준다. 지역 안(가운데에서 약 40km 네모)에서만 찾고,
+    // 거기서 아무것도 안 나오면 지역 없이 한 번 더 찾는다(다른 도시의 가게를 찾는 경우).
     const _ctr = await searchCenter(keyword);
-    if (_ctr) request.locationBias = { center: { lat: _ctr.lat, lng: _ctr.lng }, radius: 30000 };
-    // 도시 이름을 같이 쳤으면 가게 이름만 남겨 찾는다(도시는 위의 지역으로 이미 알려 줬다). 예: "왕포따샤 옌타이" → "왕포따샤"
-    if (_ctr && _ctr.city) { var _only = keyword.split(_ctr.city).join(" ").replace(/\s+/g, " ").trim(); if (_only) request.textQuery = _only; }
-    const { places } = await Place.searchByText(request);
+    let places = [];
+    if (_ctr) {
+      const D = 0.35, q2 = Object.assign({}, request, { locationRestriction: { south: _ctr.lat - D, west: _ctr.lng - D, north: _ctr.lat + D, east: _ctr.lng + D } });
+      // 도시 이름을 같이 쳤으면 가게 이름만 남겨 찾는다. 예: "왕포따샤 옌타이" → "왕포따샤"
+      if (_ctr.city) { var _only = keyword.split(_ctr.city).join(" ").replace(/\s+/g, " ").trim(); if (_only) q2.textQuery = _only; }
+      try { places = (await Place.searchByText(q2)).places || []; } catch(e2) { console.error('지역 검색 오류:', e2); }
+    }
+    if (!places.length) places = (await Place.searchByText(request)).places || [];
     return places
       .filter(function(r){
         var a = (r.formattedAddress || '');
@@ -733,7 +741,7 @@ async function searchPlace() {
   window._r = combined;
 
   if (!combined.length) {
-    el.innerHTML = '<div class="map-empty">검색 결과가 없어요<br><span style="font-size:10px">다른 검색어를 시도해보세요</span></div>';
+    el.innerHTML = '<div class="map-empty">검색 결과가 없어요<br><span style="font-size:10px">도시 이름을 같이 적어 보세요 (예: 가게이름 옌타이)</span></div>';
     return;
   }
 
@@ -753,7 +761,7 @@ async function searchPlace() {
         + '</div>';
     }).join('');
   } else if (haekaResults.length) {
-    html += '<div class="map-empty map-empty-soft">새로 등록 가능한 장소가 없어요<br><span style="font-size:10px">다른 검색어를 시도하거나, 아래 등록된 매장을 확인해보세요</span></div>';
+    html += '<div class="map-empty map-empty-soft">새로 등록 가능한 장소가 없어요<br><span style="font-size:10px">도시 이름을 같이 적어 보거나(예: 가게이름 옌타이), 아래 등록된 매장을 확인해보세요</span></div>';
   }
 
   if (haekaResults.length) {
@@ -1008,6 +1016,7 @@ async function selectPlace(i) {
   _ni.readOnly = false; _ni.style.cursor = 'text';
   _ni.oninput = function(){ if (_ni.value.trim()) document.getElementById('err-name').classList.remove('show'); };
   _pickedName = p.name;
+  try { if (p.lat && p.lng) localStorage.setItem('haeka_reg_last', JSON.stringify({ lat: p.lat, lng: p.lng, at: Date.now() })); } catch(e) {}
   document.getElementById('err-name').textContent = '가게 이름을 적어주세요';
   document.getElementById('name-hint').style.display = 'block';
   document.getElementById('inp-local').value = selectedLocal || '';
