@@ -58,7 +58,14 @@
     var isAnd = /Android/i.test(ua), isIos = /iPhone|iPad|iPod/i.test(ua);
     if (!isAnd && !isIos) { window.open(web, '_blank'); return; }
     var p = amapPoint(s);
-    var q = 'viewMap?sourceApplication=haeka&poiname=' + encodeURIComponent(nameOf(s)) + '&lat=' + p.lat.toFixed(6) + '&lon=' + p.lng.toFixed(6) + '&dev=0';
+    // 한자 이름이 있으면 그 자리 앞뒤 약 500m 안에서 이름으로 검색한 결과를 연다 → 결과를 누르면 고덕의 가게 화면(즐겨찾기 가능)
+    // 한자 이름이 없으면 고덕에서 검색이 안 되므로 그 자리에 핀만 찍는다
+    var kw = /[\u3400-\u9fff]/.test(s.nameLocal || '') ? s.nameLocal : (/[\u3400-\u9fff]/.test(s.name || '') ? s.name : '');
+    var B = 0.005;
+    var q = kw
+      ? 'poi?sourceApplication=haeka&keywords=' + encodeURIComponent(kw) + '&name=' + encodeURIComponent(kw)
+        + '&lat1=' + (p.lat + B).toFixed(6) + '&lon1=' + (p.lng - B).toFixed(6) + '&lat2=' + (p.lat - B).toFixed(6) + '&lon2=' + (p.lng + B).toFixed(6) + '&dev=0'
+      : 'viewMap?sourceApplication=haeka&poiname=' + encodeURIComponent(nameOf(s)) + '&lat=' + p.lat.toFixed(6) + '&lon=' + p.lng.toFixed(6) + '&dev=0';
     var inApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
     // 안드로이드 브라우저: 앱이 없으면 브라우저가 알아서 웹 주소로 넘긴다
     if (isAnd && !inApp) {
