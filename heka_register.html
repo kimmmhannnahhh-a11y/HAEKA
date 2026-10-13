@@ -604,6 +604,18 @@ function openMapSearch(){
 function closeMapSearch(){document.getElementById('map-overlay').classList.remove('open');}
 
 // ── Google Places 텍스트 검색 (New API) ──
+// 검색할 지역의 가운데. 검색어 속 도시 이름이 먼저, 없으면 해외에 있을 때의 내 위치
+function _inKorea(lat, lng) { return lat > 33.0 && lat < 38.7 && lng > 125.0 && lng < 129.6 && !(lat < 34.8 && lng > 129.1); }
+async function searchCenter(keyword) {
+  try {
+    var list = await loadCityList(), best = null;
+    (list || []).forEach(function(c){ if (c.name && c.name.length >= 2 && keyword.indexOf(c.name) > -1 && (!best || c.name.length > best.name.length)) best = c; });
+    if (best) return { lat: best.lat, lng: best.lng, city: best.name };
+    var g = JSON.parse(localStorage.getItem('haeka_gps') || sessionStorage.getItem('haeka_gps') || 'null');
+    if (g && g.lat && g.lng && !_inKorea(+g.lat, +g.lng)) return { lat: +g.lat, lng: +g.lng };
+  } catch(e) {}
+  return null;
+}
 async function searchGooglePlaces(keyword) {
   try {
     if (typeof google === 'undefined' || !google.maps || !google.maps.places) return [];
@@ -614,6 +626,11 @@ async function searchGooglePlaces(keyword) {
       language: 'ko',
       maxResultCount: 8,
     };
+    // 한국어로 친 이름도 현지 가게와 잘 맞도록 찾는 지역을 알려 준다(주변 30km 를 먼저 본다. 그 밖도 나온다)
+    const _ctr = await searchCenter(keyword);
+    if (_ctr) request.locationBias = { center: { lat: _ctr.lat, lng: _ctr.lng }, radius: 30000 };
+    // 도시 이름을 같이 쳤으면 가게 이름만 남겨 찾는다(도시는 위의 지역으로 이미 알려 줬다). 예: "왕포따샤 옌타이" → "왕포따샤"
+    if (_ctr && _ctr.city) { var _only = keyword.split(_ctr.city).join(" ").replace(/\s+/g, " ").trim(); if (_only) request.textQuery = _only; }
     const { places } = await Place.searchByText(request);
     return places
       .filter(function(r){
