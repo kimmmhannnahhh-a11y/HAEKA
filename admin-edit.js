@@ -130,6 +130,7 @@ async function openEditor() {
       + lbl('현지 이름') + '<input id="ae-local" style="' + inp + '" value="' + esc(s.nameLocal) + '">'
       + lbl('업종') + select('ae-cat', STORE_CATS, s.category)
       + lbl('종류 (라멘·수족관 등)') + '<input id="ae-cui" style="' + inp + '" value="' + esc(s.cuisine) + '">'
+      + lbl('대표메뉴 (쉼표로 구분, 최대 5개)') + '<input id="ae-menus" style="' + inp + '" value="' + esc((s.menus || []).join(', ')) + '">'
       + lbl('결제 가능') + '<div>' + OK.map(v => chip('ok', v, okSet.has(v))).join('') + '</div>'
       + lbl('결제 불가') + '<div>' + NO.map(v => chip('no', v, noSet.has(v))).join('') + '</div>'
       + lbl('비고') + '<textarea id="ae-note" rows="3" style="' + inp + ';resize:vertical">' + esc(s.note) + '</textarea>'
@@ -201,6 +202,9 @@ async function openEditor() {
       const key = v => String(v == null ? '' : v).toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
       data.nameKey = key(data.name);
       data.localKey = key(data.nameLocal);
+      // 대표메뉴: 쉼표(또는 가운뎃점)로 나눠 적은 것을 목록으로 저장하고, 메뉴 검색용 열쇠도 같이 맞춘다
+      data.menus = $('ae-menus').value.split(/[,，、·]/).map(v => v.trim()).filter(Boolean).slice(0, 5);
+      data.menuKeys = data.menus.map(key).filter(Boolean);
       data.hasMedia = images.length > 0 || !!s.videoUrl;
       if (images.length > (s.images || []).length) data.mediaAt = new Date();
     }
