@@ -428,6 +428,7 @@ window.saveToFirestore = async function(data) {
         <div class="sec-label">장소<span class="req-star">*</span></div>
         <input class="inline-input" id="inp-name" placeholder="위치 검색 시 자동으로 입력됩니다" type="text" readonly/>
       </div>
+      <div id="name-hint" style="display:none;font-size:10px;font-weight:600;color:#9CA3AF;margin-top:5px">가게 이름이 다르면 직접 고쳐 주세요</div>
       <div class="err-txt" id="err-name">위치를 먼저 검색해주세요</div>
     </div>
 
@@ -866,7 +867,8 @@ async function useMyLocation() {
     if (!g) { showToast('주소를 불러오는 데 실패했어요. 다시 눌러 주세요'); return; }
     if (g.cc === 'kr') { showToast('해카는 해외 매장만 등록할 수 있어요'); return; }
 
-    _gpsMode = true; selectedLocal = '';
+    _gpsMode = true; selectedLocal = ''; _pickedName = '';
+    document.getElementById('name-hint').style.display = 'none';
     selectedLat = pos.lat; selectedLng = pos.lng;
     setGpsAddr(g);
     var nc = await nearCity(pos.lat, pos.lng); if (nc) selectedCity = nc;
@@ -941,7 +943,7 @@ async function nearCity(lat, lng) {
 
 // 그 나라 말로 된 가게 이름. 나라는 좌표로 알아내고(OSM, 무료), 이름은 고른 가게 하나만 그 나라 말로 다시 받는다.
 var LOCAL_LANG = { cn: 'zh-CN', tw: 'zh-TW', hk: 'zh-HK', mo: 'zh-HK', jp: 'ja', th: 'th', vn: 'vi' };
-var selectedLocal = '';
+var selectedLocal = '', _pickedName = '';
 async function localPlaceName(p) {
   try {
     if (!p || !p.pid || !p.lat || !p.lng) return '';
@@ -968,14 +970,19 @@ async function selectPlace(i) {
   if (_gpsMode) {
     _gpsMode = false; _gpsAddr = ''; _gpsCc = '';
     var nameInp = document.getElementById('inp-name');
-    nameInp.readOnly = true; nameInp.style.cursor = ''; nameInp.oninput = null;
     if (_NAME_HINT) nameInp.setAttribute('placeholder', _NAME_HINT);
-    document.getElementById('err-name').textContent = _NAME_ERR;
   }
   var a = document.getElementById('selected-addr');
   a.textContent = p.name+' · '+p.addr;
   a.classList.add('show');
   document.getElementById('inp-name').value = p.name;
+  // 주소로 찾으면 가게 이름 대신 주소가 들어오므로, 고른 뒤에도 이름을 고쳐 쓸 수 있게 한다
+  var _ni = document.getElementById('inp-name');
+  _ni.readOnly = false; _ni.style.cursor = 'text';
+  _ni.oninput = function(){ if (_ni.value.trim()) document.getElementById('err-name').classList.remove('show'); };
+  _pickedName = p.name;
+  document.getElementById('err-name').textContent = '가게 이름을 적어주세요';
+  document.getElementById('name-hint').style.display = 'block';
   selectedCity = extractCity(p.addr);
   if (p.lat && p.lng) { var nc = await nearCity(p.lat, p.lng); if (nc) selectedCity = nc; }
   if (p.cat) selectCat(p.cat);
@@ -1266,7 +1273,12 @@ async function saveStore(){
 
   var data = {
     name: document.getElementById('inp-name').value.trim(),
-    nameLocal: (!_gpsMode && selectedLocal) ? selectedLocal : '',
+    nameLocal: (function(){
+      var nm = document.getElementById('inp-name').value.trim();
+      if (_gpsMode) return '';
+      if (nm === _pickedName) return selectedLocal || '';
+      return /[^\u0000-\u024f\uac00-\ud7a3\u3131-\u318e\s]/.test(nm) ? nm : '';
+    })(),
     category: selectedCat,
     city: selectedCity || '',
     payOk: payOkList,
