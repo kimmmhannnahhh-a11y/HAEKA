@@ -679,18 +679,20 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
   //   official : 시설 공식 홈페이지에서 확인 (sourceUrl, checkedAt '2026-10')
   //   osm      : 오픈스트리트맵 이용자가 올린 정보
   var srcEl = document.getElementById('pay-source');
-  if (srcEl && (store.source === 'official' || store.source === 'osm')) {
+  if (srcEl && (store.note || store.source === 'official' || store.source === 'osm')) {
     var e = window._esc || function(x){ return x==null?'':String(x); };
-    var html;
-    if (store.source === 'official') {
-      var when = /^\d{4}-\d{2}/.test(store.checkedAt || '') ? store.checkedAt.slice(0,4)+'년 '+(+store.checkedAt.slice(5,7))+'월 ' : '';
-      html = 'ⓘ 공식 홈페이지 기준이에요' + (when ? ' ('+when+'확인)' : '') + '. 현장 사정에 따라 다를 수 있어요.';
-      if (/^https?:\/\//.test(store.sourceUrl || '')) html += ' <a href="'+e(store.sourceUrl)+'" target="_blank" rel="noopener" style="color:#2563EB;text-decoration:underline">출처 보기</a>';
-    } else {
-      html = 'ⓘ 오픈스트리트맵 이용자가 올린 정보라 실제와 다를 수 있어요.';
+    var html = '';
+    if (store.source === 'official' || store.source === 'osm') {
+      if (store.source === 'official') {
+        var when = /^\d{4}-\d{2}/.test(store.checkedAt || '') ? store.checkedAt.slice(0,4)+'년 '+(+store.checkedAt.slice(5,7))+'월 ' : '';
+        html = 'ⓘ 공식 홈페이지 기준이에요' + (when ? ' ('+when+'확인)' : '') + '. 현장 사정에 따라 다를 수 있어요.';
+        if (/^https?:\/\//.test(store.sourceUrl || '')) html += ' <a href="'+e(store.sourceUrl)+'" target="_blank" rel="noopener" style="color:#2563EB;text-decoration:underline">출처 보기</a>';
+      } else {
+        html = 'ⓘ 오픈스트리트맵 이용자가 올린 정보라 실제와 다를 수 있어요.';
+      }
     }
-    // 비고: "현장 매표소 없음" 처럼 결제 칩만으로는 전달 안 되는 내용 
-    if (store.note) html = '<div style="font-size:12px;color:#1F2937;font-weight:600;margin-bottom:6px">'+e(store.note)+'</div>' + html;
+    // 비고: "현장 매표소 없음", "6번 에스컬레이터 앞" 처럼 다른 칸으로는 전달 안 되는 내용. 자료 출처와 상관없이 있으면 보여 준다
+    if (store.note) html = '<div style="font-size:13px;color:#1F2937;font-weight:600;line-height:1.5' + (html ? ';margin-bottom:6px' : '') + '">'+e(store.note)+'</div>' + html;
     srcEl.innerHTML = html;
     srcEl.style.display = 'block';
   }
