@@ -115,5 +115,20 @@
    "localKey": "海德王婆大虾",
    "country": "중국"
   }
+ },
+ {
+  "id": "set-yantai-alibaba-1013",
+  "type": "set",
+  "title": "옌타이 신장알리바바 현지 이름 넣기",
+  "names": [
+   "신장알리바바"
+  ],
+  "where": {
+   "city": "옌타이"
+  },
+  "set": {
+   "nameLocal": "新疆阿里巴巴",
+   "localKey": "新疆阿里巴巴"
+  }
  }
 ]
