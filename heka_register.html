@@ -223,6 +223,12 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 .bnav .npbtn{width:36px;height:36px;border-radius:50%;background:#FF3900;display:flex;align-items:center;justify-content:center;color:#fff;border:none;cursor:pointer;margin-bottom:2px;margin-top:-4px;box-shadow:0 8px 16px rgba(255,57,0,.25)}
 .bnav .nplbl{font-size:10px;color:#FF3900;font-weight:700}
 body{padding-bottom:78px}
+/* 장소 검색 창: 결과 목록은 창 안에서 스크롤된다. flex 칸은 min-height:0 이 있어야 내용보다 작아질 수 있다 */
+.map-box-popup{overflow:hidden}
+.map-results{min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:16px!important}
+/* 검색 창이 열려 있는 동안 아래 메뉴는 숨긴다(목록 끝이 메뉴에 가려지지 않게) */
+body.map-open .bnav{display:none}
+body.map-open .map-overlay{z-index:200}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places,marker&language=ko&v=beta"></script>
@@ -599,9 +605,10 @@ function goBack(){if(window.history.length>1)window.history.back();else window.l
 function openGoogleMap(){window.open('https://maps.google.com','_blank');}
 function openMapSearch(){
   document.getElementById('map-overlay').classList.add('open');
+  document.body.classList.add('map-open');
   setTimeout(function(){document.getElementById('map-search-inp').focus();},300);
 }
-function closeMapSearch(){document.getElementById('map-overlay').classList.remove('open');}
+function closeMapSearch(){document.getElementById('map-overlay').classList.remove('open');document.body.classList.remove('map-open');}
 
 // ── Google Places 텍스트 검색 (New API) ──
 // 검색할 지역의 가운데. 검색어 속 도시 이름이 먼저, 없으면 해외에 있을 때의 내 위치
