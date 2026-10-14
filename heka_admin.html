@@ -2159,18 +2159,26 @@ async function loadAllMembers() {
   try {
     var snap = await f.getDocs(f.collection(db, 'users'));
     _allMembers = [];
-    snap.forEach(function(d) { _allMembers.push({ id: d.id, ...d.data() }); });
+    // 가입일은 글자(ISO)로 저장된 회원도 있고 날짜(Timestamp)로 저장된 회원도 있다 → 화면에서는 글자로 맞춰 쓴다
+    var _iso = function(v){
+      try {
+        if (!v) return '';
+        if (typeof v === 'string') return v;
+        if (typeof v.toDate === 'function') return v.toDate().toISOString();
+        if (v.seconds != null) return new Date(v.seconds * 1000).toISOString();
+        if (v instanceof Date) return v.toISOString();
+        if (typeof v === 'number') return new Date(v).toISOString();
+      } catch(e) {}
+      return '';
+    };
+    snap.forEach(function(d) { var m = { id: d.id, ...d.data() }; m.createdAt = _iso(m.createdAt); _allMembers.push(m); });
 
-    // 회원별 매장 등록 갯수 집계
+    // 회원별 매장 등록 갯수: 매장 전체(수만 건)를 읽지 않고 회원마다 개수만 센다
     try {
-      var storeSnap = await f.getDocs(f.collection(db, 'stores'));
-      var countByUid = {};
-      storeSnap.forEach(function(d){
-        var uid = (d.data() && d.data().uid) || '';
-        if (!uid) return;
-        countByUid[uid] = (countByUid[uid] || 0) + 1;
-      });
-      _allMembers.forEach(function(m){ m.storeCount = countByUid[m.id] || 0; });
+      await Promise.all(_allMembers.map(async function(m){
+        try { m.storeCount = (await f.getCountFromServer(f.query(f.collection(db, 'stores'), f.where('uid', '==', m.id)))).data().count; }
+        catch(e3) { m.storeCount = 0; }
+      }));
     } catch(e2) { console.log('store count err:', e2); }
 
     renderMembers(_allMembers);
