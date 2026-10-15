@@ -170,6 +170,8 @@ window._delReview = async function(rid){
   // 매장의 후기 수도 하나 줄인다(쓸 때 +1 했던 것)
   try { await updateDoc(doc(db, 'stores', sid), { reviewCount: increment(-1) }); } catch (e) {}
   if (star) { try { await updateDoc(doc(db, 'stores', sid), { ratingSum: increment(-star), ratingCnt: increment(-1) }); } catch (e) {} }
+  // 홈이 저장해 둔 매장 목록을 지워 바로 새 숫자가 보이게
+  try { Object.keys(sessionStorage).forEach(function(k){ if (k.indexOf('haeka_near_')===0) sessionStorage.removeItem(k); }); } catch (e) {}
 };
 // 로그인 상태가 확인되면 내 후기의 ⋮ 버튼을 보여준다
 onAuthStateChanged(auth, function(){ if (window._showMyRevBtns) window._showMyRevBtns(); });
@@ -245,7 +247,7 @@ async function loadAll() {
 
         // 홈 목록의 별점이 실제 후기와 다르면 바로잡는다
         { const sub = items.filter(x => x.id), rs = sub.map(x => +x.rating || 0).filter(Boolean), sum = rs.reduce((x, y) => x + y, 0);
-          if ((+s.ratingCnt || 0) !== rs.length || (+s.ratingSum || 0) !== sum) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: sum, ratingCnt: rs.length, reviewCount: sub.length }); } catch (e) {} } }
+          if ((+s.ratingCnt || 0) !== rs.length || (+s.ratingSum || 0) !== sum) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: sum, ratingCnt: rs.length, reviewCount: sub.length }); try { Object.keys(sessionStorage).forEach(function(k){ if (k.indexOf('haeka_near_')===0) sessionStorage.removeItem(k); }); } catch (e) {} } catch (e) {} } }
         renderReviews(wrap, items, s.rating);
       }
     } catch(e) {

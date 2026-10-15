@@ -286,6 +286,7 @@ window.submitReview = async function() {
       });
       // 매장 별점 합계를 바뀐 만큼 고친다(홈 목록의 ★ 평균에 쓰인다)
       if (selectedStar !== editOldStar) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: increment(selectedStar - editOldStar), ratingCnt: increment(editOldStar ? 0 : 1) }); } catch (e) {} }
+      try { Object.keys(sessionStorage).forEach(function(k){ if (k.indexOf('haeka_near_')===0) sessionStorage.removeItem(k); }); } catch (e) {}
       showToast('후기가 수정됐어요!');
       setTimeout(() => { history.back(); }, 1200);
       return;
@@ -309,6 +310,8 @@ window.submitReview = async function() {
     // 별점 합계·개수(홈 목록의 ★ 평균). 실패해도 후기 등록은 그대로 둔다
     if (selectedStar) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: increment(selectedStar), ratingCnt: increment(1) }); } catch (e) {} }
 
+    // 홈이 저장해 둔 매장 목록을 지워 바로 새 별점이 보이게
+    try { Object.keys(sessionStorage).forEach(function(k){ if (k.indexOf('haeka_near_')===0) sessionStorage.removeItem(k); }); } catch (e) {}
     showToast('후기가 등록됐어요!');
     setTimeout(() => {
       history.back();
