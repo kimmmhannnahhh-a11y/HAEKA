@@ -759,7 +759,7 @@ function fmt(ts) {
 
 function tagBadge(tag) {
   var map = {'결제정보 오류':'bg-red','지도 위치 오류':'bg-red','매장 정보 오류':'bg-yellow','카테고리 추가':'bg-blue','기능 제안':'bg-purple','기타':'bg-gray','잘못된 결제 정보':'bg-yellow','업데이트':'bg-green','점검':'bg-yellow','이벤트':'bg-purple','공지':'bg-gray'};
-  return '<span class="badge '+(map[tag]||'bg-gray')+'">'+tag+'</span>';
+  return '<span class="badge '+(map[tag]||'bg-gray')+'">'+(window._esc?window._esc(tag):(tag))+'</span>';
 }
 
 function updateNavBadges(inqSnap, errSnap, editSnap) {
@@ -883,7 +883,7 @@ function renderEditReqs(list) {
     if (r.payNo && r.payNo.length) changes.push('결제불가: '+r.payNo.join(', '));
     if (r.isClosed) changes.push('폐업 처리');
     var changesTxt = changes.length ? changes.join(' / ') : (r.description||'-');
-    return '<tr><td><b>'+(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+changesTxt+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="applyEditReq(\''+r.id+'\')">반영하기</button>')+'</td></tr>';
+    return '<tr><td><b>'+(window._esc?window._esc(r.storeName||r.storeId||'-'):(r.storeName||r.storeId||'-'))+'</b></td><td class="content-expand">'+changesTxt+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="applyEditReq(\''+r.id+'\')">반영하기</button>')+'</td></tr>';
   });
   document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
@@ -966,7 +966,7 @@ function renderInquiries(list) {
       ? '<span class="badge bg-red" style="font-size:10px">오류제보</span>'
       : '<span class="badge bg-blue" style="font-size:10px">1:1문의</span>';
     var type = r.type || r.category || '기타';
-    return '<tr><td>'+divBadge+'</td><td>'+tagBadge(type)+'</td><td class="content-expand">'+(r.content||'-')+'</td><td style="font-size:11px">'+(r.email||'-')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\''+r._col+'\',\''+r.id+'\',\'inq\')">확인완료</button>')+'</td></tr>';
+    return '<tr><td>'+divBadge+'</td><td>'+tagBadge(type)+'</td><td class="content-expand">'+(window._esc?window._esc(r.content||'-'):(r.content||'-'))+'</td><td style="font-size:11px">'+(window._esc?window._esc(r.email||'-'):(r.email||'-'))+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(done?'<span class="badge bg-green">확인완료</span>':'<button class="btn-sm" onclick="resolveDoc(\''+r._col+'\',\''+r.id+'\',\'inq\')">확인완료</button>')+'</td></tr>';
   });
   document.getElementById('inq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
