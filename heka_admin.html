@@ -2319,6 +2319,16 @@ function openMemberModal(uid) {
       b4.onclick = function(){ setMemberStatus(uid, 'active'); };
       btnWrap.appendChild(b4);
     }
+    // 테스트로 만든 회원 등: 회원 목록(users 문서)만 지운다. 로그인 계정 자체는 그대로 남는다
+    var b5 = document.createElement('button');
+    b5.style.cssText = 'flex:1 1 100%;padding:10px;background:#fff;color:#6B7280;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer';
+    b5.textContent = '🗑 회원 목록에서 삭제';
+    b5.onclick = async function(){
+      if (!confirm('이 회원을 회원 목록에서 지울까요? 되돌릴 수 없어요.')) return;
+      try { await window._fbFns.deleteDoc(window._fbFns.doc(window._db, 'users', uid)); closeMemberModal(); loadAllMembers(); }
+      catch (e) { alert('삭제 실패: ' + e.message); }
+    };
+    btnWrap.appendChild(b5);
   }
   document.getElementById('member-modal-overlay').style.display = 'block';
   document.getElementById('member-modal').style.display = 'block';
