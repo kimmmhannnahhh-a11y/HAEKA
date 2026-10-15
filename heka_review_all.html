@@ -89,6 +89,21 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
   body{padding:0!important;background:var(--hk-bg)!important}
   .phone{width:100%!important;height:100vh!important;height:100dvh!important;border-radius:0!important;box-shadow:none!important;min-height:100vh!important}
 }
+/* 화이트 카드형: 흰 바탕, 카드는 얇은 테두리와 옅은 그림자, 글자는 이름만 굵게 */
+body,.phone,.scroll-area{background:#fff!important}
+.store-header{margin:14px 16px 6px!important;padding:18px 20px!important;border:1px solid #EEEDEA!important;border-radius:18px!important;box-shadow:0 2px 12px rgba(17,24,39,.06)!important}
+.store-name{font-size:18px!important;font-weight:800!important;letter-spacing:-.02em!important;margin-bottom:8px!important}
+.rating-big{font-size:24px!important;color:#111!important;gap:5px!important}.rating-big .star-mark{color:#F5A623!important;font-size:22px!important}
+.rating-count{font-size:13px!important;color:#9CA3AF!important;font-weight:500!important;margin-left:6px!important}
+.section-bar{padding:16px 20px 10px!important;font-size:13px!important;color:#111!important;font-weight:700!important;letter-spacing:-.01em!important}
+.rev-item{margin:0 16px 12px!important;padding:18px 18px 16px!important;border:1px solid #EEEDEA!important;border-radius:18px!important;box-shadow:0 2px 12px rgba(17,24,39,.05)!important}
+.rev-av{width:34px;height:34px;border-radius:50%;background:#FFF1EA;color:#FF5A1F;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.rev-name{font-size:14px!important;font-weight:700!important}
+.rev-meta{font-size:12px!important;color:#9CA3AF!important}
+.rev-star{color:#F5A623!important;font-size:14px!important;letter-spacing:2px!important;margin-bottom:6px!important}
+.rev-txt{font-size:14.5px!important;color:#374151!important;line-height:1.7!important;font-weight:400!important}
+.rev-imgs{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important;margin-top:4px!important}
+.rev-img{width:100%!important;height:auto!important;aspect-ratio:1/1!important;object-fit:cover!important;border-radius:12px!important}
 </style>
 <script src="security.js"></script>
 </head>
@@ -237,12 +252,16 @@ async function loadAll() {
   }
 }
 
+// 화면 확인용(시험에서 가짜 후기로 그려 볼 때 쓴다)
+window._renderReviews = function(w, it){ renderReviews(w, it, null); };
 function cardBadgeClass(name){
   var map = {'VISA':'cb-visa','MASTER':'cb-master','JCB':'cb-jcb','AMEX':'cb-amex','트래블로그':'cb-tlog','트래블월렛':'cb-twallet','UnionPay':'cb-union','현금':'cb-cash'};
   return map[name] || 'cb-etc';
 }
 
 function renderReviews(wrap, items, avgRating) {
+  // 위쪽 가게 카드: 후기 별점 평균(별점 있는 후기만). 후기가 없으면 0
+  (function(){ var rs=items.map(function(r){return +r.rating||0;}).filter(Boolean); var big=document.getElementById('rating-big'); if(big) big.innerHTML='<span class="star-mark">★</span>'+(rs.length?(rs.reduce(function(a,b){return a+b;},0)/rs.length).toFixed(1):'0'); })();
   const countEl = document.getElementById('rating-count');
   if (countEl) countEl.textContent = '후기 ' + items.length + '개';
 
@@ -285,7 +304,8 @@ function renderReviews(wrap, items, avgRating) {
       return '<div class="rev-item" style="position:relative">'
         + reportBtn
         // 프로필 사진 없이: 닉네임 · 시간(한 줄)
-        + '<div class="rev-top" style="margin-bottom:6px;gap:8px">'
+        + '<div class="rev-top" style="margin-bottom:8px;gap:10px;align-items:center">'
+        + '<div class="rev-av">'+_e(String(nick||'?').trim().charAt(0))+'</div>'
         + '<div class="rev-name">'+_e(nick)+'</div>'
         + '<div class="rev-meta" style="margin-top:0">'+_e(timeAgo(r.createdAt))+'</div>'
         + '</div>'
