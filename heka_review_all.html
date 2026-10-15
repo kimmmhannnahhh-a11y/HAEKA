@@ -25,7 +25,7 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .scroll-area::-webkit-scrollbar{display:none}
 .back-btn{width:34px;height:34px;border-radius:50%;background:#F5F5F3;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:10px;border:none;font-size:17px;color:var(--hk-text);flex-shrink:0}
-.topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em}
+.topbar-title{font-size:16px;font-weight:800;color:var(--hk-text);flex:1;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 
 /* 매장 헤더 카드 */
 .store-header{background:#fff;margin:14px 14px 10px;border-radius:16px;padding:16px 18px;box-shadow:var(--hk-card-shadow)}
@@ -95,7 +95,7 @@ body,.phone,.scroll-area{background:#fff!important}
 .store-name{font-size:18px!important;font-weight:800!important;letter-spacing:-.02em!important;margin-bottom:8px!important}
 .rating-big{font-size:24px!important;color:#111!important;gap:5px!important}.rating-big .star-mark{color:#F5A623!important;font-size:22px!important}
 .rating-count{font-size:13px!important;color:#9CA3AF!important;font-weight:500!important;margin-left:6px!important}
-.section-bar{padding:16px 20px 10px!important;font-size:13px!important;color:#111!important;font-weight:700!important;letter-spacing:-.01em!important}
+.section-bar{padding:18px 20px 10px!important;font-size:13px!important;color:#111!important;font-weight:700!important;letter-spacing:-.01em!important}
 .rev-item{margin:0 16px 12px!important;padding:18px 18px 16px!important;border:1px solid #EEEDEA!important;border-radius:18px!important;box-shadow:0 2px 12px rgba(17,24,39,.05)!important}
 .rev-av{width:34px;height:34px;border-radius:50%;background:#FFF1EA;color:#FF5A1F;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
 .rev-name{font-size:14px!important;font-weight:700!important}
@@ -218,7 +218,9 @@ async function loadAll() {
         const hdr = document.getElementById('store-header');
         document.getElementById('store-name-txt').textContent = s.name || storeName;
         document.getElementById('rating-big').textContent = s.rating ? '★' + s.rating : '★-';
-        hdr.style.display = 'block';
+        // 위쪽 가게 카드는 보이지 않게 하고, 가게 이름은 맨 위 제목에 붙인다
+        hdr.style.display = 'none';
+        var tt = document.querySelector('.topbar-title'); if (tt) tt.textContent = (s.name || storeName) + ' · 결제 후기';
 
         // store.review (단일 텍스트) 가 있으면 기본 리뷰로 포함
         const items = [];
