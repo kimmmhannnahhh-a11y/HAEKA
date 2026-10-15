@@ -163,6 +163,8 @@ let photoURLs = [];
 let submitting = false;
 // 수정 모드: 주소에 rid(후기 ID)가 있으면 그 후기를 불러와 고친다
 const editRid = params.get('rid') || '';
+// 수정할 때 원래 별점(매장 별점 합계를 고칠 때 쓴다)
+let editOldStar = 0;
 let existingImages = [];
 
 function showToast(msg) {
@@ -282,6 +284,8 @@ window.submitReview = async function() {
         images: existingImages.concat(uploadedURLs).slice(0, 4),
         updatedAt: serverTimestamp()
       });
+      // 매장 별점 합계를 바뀐 만큼 고친다(홈 목록의 ★ 평균에 쓰인다)
+      if (selectedStar !== editOldStar) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: increment(selectedStar - editOldStar), ratingCnt: increment(editOldStar ? 0 : 1) }); } catch (e) {} }
       showToast('후기가 수정됐어요!');
       setTimeout(() => { history.back(); }, 1200);
       return;
@@ -302,6 +306,8 @@ window.submitReview = async function() {
 
     // reviewCount +1
     await updateDoc(doc(db, 'stores', storeId), { reviewCount: increment(1) });
+    // 별점 합계·개수(홈 목록의 ★ 평균). 실패해도 후기 등록은 그대로 둔다
+    if (selectedStar) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: increment(selectedStar), ratingCnt: increment(1) }); } catch (e) {} }
 
     showToast('후기가 등록됐어요!');
     setTimeout(() => {
@@ -327,6 +333,7 @@ async function loadForEdit() {
     if (txt) { txt.value = r.text || r.review || ''; const c = document.getElementById('char-cnt'); if (c) c.textContent = txt.value.length + '자'; }
     (r.cards || []).forEach(c => { if (!selectedCards.has(c)) window._toggleCard(c); });
     window._setStar(Math.round(r.rating || 0));
+    editOldStar = +r.rating || 0;
     const sub = document.querySelector('.store-info-sub'); if (sub) sub.textContent = '결제 후기 수정';
     const sb = document.getElementById('submit-bottom'); if (sb) sb.textContent = '후기 수정하기';
     const st = document.getElementById('submit-top'); if (st) st.textContent = '수정';
