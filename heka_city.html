@@ -151,9 +151,11 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .ch-hint{font-size:12px;color:#9CA3AF}
 .ch-pop{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .ch-pop::-webkit-scrollbar{display:none}
+.ch-pop{user-select:none;-webkit-user-select:none;cursor:grab}.ch-pop.dragging{cursor:grabbing}.ch-pop img{-webkit-user-drag:none;pointer-events:none}
 .ch-card{position:relative;flex:0 0 132px;height:168px;border-radius:16px;overflow:hidden;cursor:pointer;background:linear-gradient(160deg,#3A3F4B,#1F2229)}
 .ch-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ch-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 55%)}
+.ch-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.25) 38%,rgba(0,0,0,0) 62%)}
+.ch-card .ch-nm,.ch-card .ch-co{text-shadow:0 1px 6px rgba(0,0,0,.45)}
 .ch-card .flag{position:absolute;top:10px;left:10px;width:22px;height:15px;border-radius:3px;object-fit:cover;z-index:1;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
 .ch-card .ch-nm{position:absolute;left:12px;bottom:28px;z-index:1;color:#fff;font-size:17px;font-weight:800;letter-spacing:-.02em}
 .ch-card .ch-co{position:absolute;left:12px;bottom:11px;z-index:1;color:rgba(255,255,255,.8);font-size:12px;font-weight:600}
@@ -432,7 +434,7 @@ function getSortedCountries(list){
 // 인기 도시: [나라, 도시]. 사진은 CITY_PHOTOS(도시 → {src, credit})에 있는 것만 깔고, 없으면 어두운 바탕에 이름만.
 // 아래 나라별 도시는 사진 없이 글자 칩으로만 보여 준다
 var POPULAR_CITIES=[['일본','도쿄'],['일본','오사카'],['중국','상하이'],['홍콩','홍콩'],['베트남','다낭'],['태국','방콕'],['대만','타이베이']];
-var CITY_PHOTOS={ '도쿄':{src:'img/city/tokyo.jpg?v=1'} };   // 사진은 사용자가 직접 만든 것(출처 표시 필요 없음)
+var CITY_PHOTOS={ '도쿄':{src:'img/city/tokyo.jpg?v=1'}, '오사카':{src:'img/city/osaka.jpg?v=1'} };   // 사진은 사용자가 직접 만든 것(출처 표시 필요 없음)
 function _flagCode(emoji){ var cps=Array.from(emoji||''); if(cps.length<2) return ''; return cps.slice(0,2).map(function(ch){ return String.fromCharCode(ch.codePointAt(0)-0x1F1E6+97); }).join(''); }
 function _flagImg(c, cls){ var code=_flagCode(c&&c.flag); return code?'<img class="'+cls+'" src="img/flags/'+code+'.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">':''; }
 function _go(country, city){ return 'selectCityDirect(\''+country+'\',\''+city+'\')'; }
@@ -457,6 +459,15 @@ function renderCityHome(){
   var old=document.getElementById('ch-credit'); if(old) old.remove();
   if(cr.length){ var d=document.createElement('div'); d.id='ch-credit'; d.className='ch-credit'; d.textContent='도시 사진 출처 · '+cr.join(' / '); acc.parentNode.appendChild(d); }
 }
+// 인기 도시 카드: PC 에서는 마우스로 끌어서 옆으로 넘긴다(끌고 놓았을 때는 카드가 눌리지 않게)
+(function(){
+  var el=null, down=false, sx=0, sl=0, moved=false;
+  document.addEventListener('mousedown',function(e){ el=e.target.closest&&e.target.closest('.ch-pop'); if(!el) return; down=true; moved=false; sx=e.pageX; sl=el.scrollLeft; e.preventDefault(); });
+  document.addEventListener('mousemove',function(e){ if(!down||!el) return; var dx=e.pageX-sx; if(Math.abs(dx)>4){ moved=true; el.classList.add('dragging'); } el.scrollLeft=sl-dx; });
+  document.addEventListener('mouseup',function(){ if(el) el.classList.remove('dragging'); down=false; });
+  document.addEventListener('click',function(e){ if(moved && e.target.closest&&e.target.closest('.ch-pop')){ e.stopPropagation(); e.preventDefault(); moved=false; } },true);
+})();
+
 // 나라 목록 렌더링
 function renderCountries(list){
   var sorted=getSortedCountries(list);
