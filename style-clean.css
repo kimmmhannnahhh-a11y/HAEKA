@@ -18,5 +18,7 @@ body, .phone, .store-list { background: #FFFFFF !important; }
 /* 글자 */
 .nn, .store-name { font-size: 16px !important; font-weight: 700 !important; letter-spacing: -.02em !important; }
 .nm-meta, .store-meta { font-size: 12.5px !important; color: #8B9099 !important; }
-.nm-dist, .store-dist, .nm-city, .store-city, .store-cat { color: #8B9099 !important; font-weight: 500 !important; }
+.nm-city, .store-city, .store-cat { color: #8B9099 !important; font-weight: 500 !important; }
+/* 거리는 원래대로 초록 */
+.nm-dist, .store-dist { color: #16A34A !important; font-weight: 600 !important; }
 .nm-rate .mn { color: #8B9099 !important; }
