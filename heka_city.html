@@ -144,6 +144,32 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 #view-city{display:none!important}
 .bnav{display:flex!important;border-top:1px solid var(--hk-border);background:#FFFFFF;padding:8px 0 10px;position:sticky;bottom:0;z-index:20}
 .city-list-simple{padding:6px 0 90px;background:var(--hk-bg)}
+/* 도시 선택 첫 화면: 인기 도시 사진 카드 + 나라별 펼치기 */
+.city-home{padding:4px 0 100px;background:#fff}
+.ch-head{display:flex;align-items:baseline;justify-content:space-between;padding:22px 16px 12px}
+.ch-t{font-size:19px;font-weight:800;color:#1A1A1A;letter-spacing:-.03em}
+.ch-hint{font-size:12px;color:#9CA3AF}
+.ch-pop{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ch-pop::-webkit-scrollbar{display:none}
+.ch-card{position:relative;flex:0 0 132px;height:168px;border-radius:16px;overflow:hidden;cursor:pointer;background:linear-gradient(160deg,#3A3F4B,#1F2229)}
+.ch-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ch-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 55%)}
+.ch-card .flag{position:absolute;top:10px;left:10px;width:22px;height:15px;border-radius:3px;object-fit:cover;z-index:1;box-shadow:0 0 0 1px rgba(255,255,255,.5)}
+.ch-card .ch-nm{position:absolute;left:12px;bottom:28px;z-index:1;color:#fff;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.ch-card .ch-co{position:absolute;left:12px;bottom:11px;z-index:1;color:rgba(255,255,255,.8);font-size:12px;font-weight:600}
+.ch-acc{padding:0 16px}
+.ch-ct{border:1px solid #F0F0EE;border-radius:16px;margin-bottom:10px;background:#fff;overflow:hidden}
+.ch-ct-h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.ch-ct-h .flag{width:30px;height:21px;border-radius:4px;object-fit:cover;box-shadow:0 0 0 1px #EEE}
+.ch-ct-h .ch-nm{font-size:15px;font-weight:700;color:#1A1A1A}
+.ch-ct-h .cnt{font-size:12px;color:#9CA3AF;margin-left:2px}
+.ch-ct-h .arr{margin-left:auto;width:9px;height:9px;border-right:2px solid #9CA3AF;border-bottom:2px solid #9CA3AF;transform:rotate(45deg);transition:transform .2s;margin-top:-4px}
+.ch-ct.open .ch-ct-h .arr{transform:rotate(-135deg);margin-top:4px}
+.ch-ct-b{display:none;padding:0 14px 14px;flex-wrap:wrap;gap:8px}
+.ch-ct.open .ch-ct-b{display:flex}
+.ch-chip{padding:8px 13px;border-radius:999px;background:#F5F5F3;color:#374151;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ch-chip.all{background:#1A1A1A;color:#fff}
+.ch-credit{padding:18px 16px 0;font-size:10px;color:#B0B4BA;line-height:1.5}
 .city-list-head{font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:.06em;padding:12px 16px 6px}
 .city-row{display:flex;align-items:center;gap:11px;padding:11px 16px;background:#fff;border-bottom:1px solid #F3F4F6;cursor:pointer}
 .city-row:active{background:#FAFAF8}
@@ -223,33 +249,12 @@ function payStatePill(s) {
     </div>
   </div>
 
-  <div class='city-list-simple' id='city-img-grid'>
-    <div class='city-list-head'>인기 도시</div>
-    <div class='city-row' onclick="selectCityDirect('일본','도쿄')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>도쿄</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('일본','오사카')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>오사카</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('일본','후쿠오카')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>후쿠오카</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('일본','오키나와')"><img class='city-flag' src='img/flags/jp.png' alt='' loading='lazy'/><span class='city-row-name'>오키나와</span><span class='city-row-country'>일본</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('중국','상하이')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>상하이</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('중국','베이징')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>베이징</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('중국','충칭')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>충칭</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('중국','청두')"><img class='city-flag' src='img/flags/cn.png' alt='' loading='lazy'/><span class='city-row-name'>청두</span><span class='city-row-country'>중국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('대만','타이베이')"><img class='city-flag' src='img/flags/tw.png' alt='' loading='lazy'/><span class='city-row-name'>타이베이</span><span class='city-row-country'>대만</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('홍콩','홍콩')"><img class='city-flag' src='img/flags/hk.png' alt='' loading='lazy'/><span class='city-row-name'>홍콩</span><span class='city-row-country'>홍콩</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('마카오','마카오')"><img class='city-flag' src='img/flags/mo.png' alt='' loading='lazy'/><span class='city-row-name'>마카오</span><span class='city-row-country'>마카오</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('싱가포르','싱가포르')"><img class='city-flag' src='img/flags/sg.png' alt='' loading='lazy'/><span class='city-row-name'>싱가포르</span><span class='city-row-country'>싱가포르</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('베트남','다낭')"><img class='city-flag' src='img/flags/vn.png' alt='' loading='lazy'/><span class='city-row-name'>다낭</span><span class='city-row-country'>베트남</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('베트남','호치민')"><img class='city-flag' src='img/flags/vn.png' alt='' loading='lazy'/><span class='city-row-name'>호치민</span><span class='city-row-country'>베트남</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('태국','방콕')"><img class='city-flag' src='img/flags/th.png' alt='' loading='lazy'/><span class='city-row-name'>방콕</span><span class='city-row-country'>태국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('필리핀','세부')"><img class='city-flag' src='img/flags/ph.png' alt='' loading='lazy'/><span class='city-row-name'>세부</span><span class='city-row-country'>필리핀</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('필리핀','보라카이')"><img class='city-flag' src='img/flags/ph.png' alt='' loading='lazy'/><span class='city-row-name'>보라카이</span><span class='city-row-country'>필리핀</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('미국','뉴욕')"><img class='city-flag' src='img/flags/us.png' alt='' loading='lazy'/><span class='city-row-name'>뉴욕</span><span class='city-row-country'>미국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('미국','로스앤젤레스')"><img class='city-flag' src='img/flags/us.png' alt='' loading='lazy'/><span class='city-row-name'>로스앤젤레스</span><span class='city-row-country'>미국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('프랑스','파리')"><img class='city-flag' src='img/flags/fr.png' alt='' loading='lazy'/><span class='city-row-name'>파리</span><span class='city-row-country'>프랑스</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('영국','런던')"><img class='city-flag' src='img/flags/gb.png' alt='' loading='lazy'/><span class='city-row-name'>런던</span><span class='city-row-country'>영국</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('스페인','바르셀로나')"><img class='city-flag' src='img/flags/es.png' alt='' loading='lazy'/><span class='city-row-name'>바르셀로나</span><span class='city-row-country'>스페인</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('이탈리아','로마')"><img class='city-flag' src='img/flags/it.png' alt='' loading='lazy'/><span class='city-row-name'>로마</span><span class='city-row-country'>이탈리아</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('체코','프라하')"><img class='city-flag' src='img/flags/cz.png' alt='' loading='lazy'/><span class='city-row-name'>프라하</span><span class='city-row-country'>체코</span><span class='city-row-arr'>›</span></div>
-    <div class='city-row' onclick="selectCityDirect('호주','시드니')"><img class='city-flag' src='img/flags/au.png' alt='' loading='lazy'/><span class='city-row-name'>시드니</span><span class='city-row-country'>호주</span><span class='city-row-arr'>›</span></div>
+  <div class="city-home" id="city-img-grid">
+    <!-- 위: 지금 인기 있는 도시(가로로 넘기는 사진 카드). 아래: 나라를 누르면 펼쳐지는 등록 도시. 그리는 코드는 renderCityHome() -->
+    <div class="ch-head"><span class="ch-t">지금 인기있는 도시</span></div>
+    <div class="ch-pop" id="ch-pop"></div>
+    <div class="ch-head"><span class="ch-t">나라별 도시 찾기</span><span class="ch-hint">나라를 누르면 도시가 보여요</span></div>
+    <div class="ch-acc" id="ch-acc"></div>
   </div>
 
   <!-- 정렬 버튼 -->
@@ -423,6 +428,36 @@ function getSortedCountries(list){
   });
 }
 
+// ── 도시 선택 첫 화면(인기 도시 카드 + 나라별 펼치기) ──
+// 인기 도시: [나라, 도시]. 사진은 CITY_PHOTOS(도시 → {src, credit})에 있는 것만 깔고, 없으면 어두운 바탕에 이름만.
+// 아래 나라별 도시는 사진 없이 글자 칩으로만 보여 준다
+var POPULAR_CITIES=[['일본','도쿄'],['일본','오사카'],['중국','상하이'],['홍콩','홍콩'],['베트남','다낭'],['태국','방콕'],['대만','타이베이']];
+var CITY_PHOTOS=window.CITY_PHOTOS||{};
+function _flagCode(emoji){ var cps=Array.from(emoji||''); if(cps.length<2) return ''; return cps.slice(0,2).map(function(ch){ return String.fromCharCode(ch.codePointAt(0)-0x1F1E6+97); }).join(''); }
+function _flagImg(c, cls){ var code=_flagCode(c&&c.flag); return code?'<img class="'+cls+'" src="img/flags/'+code+'.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">':''; }
+function _go(country, city){ return 'selectCityDirect(\''+country+'\',\''+city+'\')'; }
+function renderCityHome(){
+  var pop=document.getElementById('ch-pop'), acc=document.getElementById('ch-acc');
+  if(!pop||!acc) return;
+  pop.innerHTML=POPULAR_CITIES.map(function(p){
+    var c=COUNTRIES.find(function(x){return x.name===p[0];});
+    var ph=CITY_PHOTOS[p[1]] ? '<img src="'+CITY_PHOTOS[p[1]].src+'" alt="" loading="lazy">' : '';
+    return '<div class="ch-card" onclick="'+_go(p[0],p[1])+'">'+ph+_flagImg(c,'flag')+'<span class="ch-nm">'+p[1]+'</span><span class="ch-co">'+p[0]+'</span></div>';
+  }).join('');
+  var open={}; acc.querySelectorAll('.ch-ct.open').forEach(function(el){ open[el.getAttribute('data-c')]=1; });
+  acc.innerHTML=getSortedCountries(COUNTRIES).map(function(c){
+    var cities=c.cities.filter(function(city){ return !_regCities || _regCities[city]; });
+    if(!cities.length) return '';
+    var body='<span class="ch-chip all" onclick="selectCountryAll(\''+c.name+'\')">'+c.name+' 전체</span>'
+      +cities.map(function(city){ return '<span class="ch-chip" onclick="'+_go(c.name,city)+'">'+city+'</span>'; }).join('');
+    return '<div class="ch-ct'+(open[c.name]?' open':'')+'" data-c="'+c.name+'"><div class="ch-ct-h" onclick="this.parentNode.classList.toggle(\'open\')">'
+      +_flagImg(c,'flag')+'<span class="ch-nm">'+c.name+'</span><span class="cnt">'+cities.length+'개 도시</span><span class="arr"></span></div><div class="ch-ct-b">'+body+'</div></div>';
+  }).join('');
+  // 사진 출처(무료 사진의 저작자 표시)
+  var cr=Object.keys(CITY_PHOTOS).map(function(k){ return CITY_PHOTOS[k].credit ? k+': '+CITY_PHOTOS[k].credit : ''; }).filter(Boolean);
+  var old=document.getElementById('ch-credit'); if(old) old.remove();
+  if(cr.length){ var d=document.createElement('div'); d.id='ch-credit'; d.className='ch-credit'; d.textContent='도시 사진 출처 · '+cr.join(' / '); acc.parentNode.appendChild(d); }
+}
 // 나라 목록 렌더링
 function renderCountries(list){
   var sorted=getSortedCountries(list);
@@ -721,6 +756,7 @@ function _cityAlias(city,val){
 var _regCities=null;
 fetch('data/cities.json').then(function(r){ return r.json(); }).then(function(list){
   _regCities={}; (list||[]).forEach(function(c){ _regCities[c.name]=1; });
+  renderCityHome();
   var inp=document.getElementById('search-inp');
   if(inp && inp.value.trim()) doSearch(inp.value);   // 이미 검색 중이면 다시 그린다
 }).catch(function(){});
@@ -729,7 +765,7 @@ function doSearch(val){
   // 도시(또는 나라 전체) 목록을 보고 있을 때는 그 안에서만 찾는다(이름·현지 이름·종류·업종·대표메뉴)
   if(_inStores()){ _flt.q=val.trim(); applyFilters(); return; }
   val=val.trim().toLowerCase();
-  document.getElementById('city-img-grid').style.display=val?'none':'grid';document.getElementById('view-country').style.setProperty('display',val?'block':'none','important');
+  document.getElementById('city-img-grid').style.display=val?'none':'block';document.getElementById('view-country').style.setProperty('display',val?'block':'none','important');
   if(!val){ renderCountries(COUNTRIES); showView('view-country'); return; }
 
   // 1. 나라명 매칭
@@ -819,7 +855,7 @@ function showView(id){
   _syncSearchHint(id==='view-stores');
   // 도시 사진 그리드는 .view 바깥에 있어서 따로 숨겨야 한다
   var grid = document.getElementById('city-img-grid');
-  if (grid) grid.style.display = (id === 'view-country' && !(document.getElementById('search-inp')||{}).value) ? 'grid' : 'none';
+  if (grid) grid.style.display = (id === 'view-country' && !(document.getElementById('search-inp')||{}).value) ? 'block' : 'none';
 }
 
 function showCountryView(){
@@ -892,7 +928,7 @@ function handleBack(){
 }
 
 // 초기화
-renderCountries(COUNTRIES);
+renderCountries(COUNTRIES); renderCityHome();
 </script>
 </body>
 </html>
