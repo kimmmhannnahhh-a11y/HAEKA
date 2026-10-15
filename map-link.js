@@ -1,0 +1,144 @@
+// 지도 버튼 → 구글 지도에서 그 가게 페이지가 바로 열리게 한다
+// 좌표만 넘기면 빈 지점이, 이름만 넘기면 검색 목록이 뜬다.
+// 그래서 이름 + 좌표로 구글 장소 ID를 미리 찾아두고, ID로 연다.
+// ID만 받는 조회는 구글 요금이 붙지 않는다. 찾은 ID는 이 기기에 저장해 다시 묻지 않는다.
+(function () {
+  var PREFIX = 'haeka_pid:';
+  var BOX = 0.0015; // 좌표 앞뒤 약 150m 안에서만 찾는다 (다른 지점과 헷갈리지 않게)
+
+  function keyOf(s) { return PREFIX + (+s.lat).toFixed(5) + ',' + (+s.lng).toFixed(5); }
+  function nameOf(s) { return s.nameLocal || s.name || ''; }
+  function getPid(s) { try { return localStorage.getItem(keyOf(s)); } catch (e) { return null; } }
+
+  window.haekaMapUrl = function (s) {
+    if (!s) return null;
+    if (s.lat && s.lng) {
+      var pid = getPid(s);
+      if (pid) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(nameOf(s)) + '&query_place_id=' + pid;
+      return 'https://www.google.com/maps/search/' + encodeURIComponent(nameOf(s)) + '/@' + s.lat + ',' + s.lng + ',18z';
+    }
+    if (s.address) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.address);
+    return null;
+  };
+
+  // 중국 매장은 구글 지도가 현지에서 안 열리므로 고덕지도(高德地图) 버튼을 하나 더 둔다.
+  // 좌표·이름을 붙인 주소만 여는 방식이라 키도 요금도 없다. 앱이 있으면 앱으로, 없으면 웹으로 열린다.
+  window.haekaIsChina = function (s) {
+    if (!s || !s.lat || !s.lng) return false;
+    if (s.country) return s.country === '중국';
+    return /중국|中国|China/i.test(s.address || '') && !/홍콩|마카오|대만|Hong Kong|Macau|Taiwan/i.test(s.address || '');
+  };
+  window.haekaAmapUrl = function (s) {
+    // OSM 좌표는 GPS 기준(WGS84)이라 중국 좌표(GCJ-02)로 바꿔서 넘긴다(안 바꾸면 수백 m 어긋난다)
+    var p = amapPoint(s);
+    return 'https://uri.amap.com/marker?position=' + p.lng.toFixed(6) + ',' + p.lat.toFixed(6) + '&name=' + encodeURIComponent(nameOf(s))
+      + '&src=haeka&callnative=1';
+  };
+  // WGS84 → GCJ-02 (공개된 변환식)
+  function toGcj(lat, lng) {
+    var A = 6378245.0, EE = 0.00669342162296594323, PI = Math.PI, x = lng - 105.0, y = lat - 35.0;
+    var dLat = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * Math.sqrt(Math.abs(x));
+    dLat += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+    dLat += (20.0 * Math.sin(y * PI) + 40.0 * Math.sin(y / 3.0 * PI)) * 2.0 / 3.0;
+    dLat += (160.0 * Math.sin(y / 12.0 * PI) + 320 * Math.sin(y * PI / 30.0)) * 2.0 / 3.0;
+    var dLng = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * Math.sqrt(Math.abs(x));
+    dLng += (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) * 2.0 / 3.0;
+    dLng += (20.0 * Math.sin(x * PI) + 40.0 * Math.sin(x / 3.0 * PI)) * 2.0 / 3.0;
+    dLng += (150.0 * Math.sin(x / 12.0 * PI) + 300.0 * Math.sin(x / 30.0 * PI)) * 2.0 / 3.0;
+    var rad = lat / 180.0 * PI, magic = 1 - EE * Math.sin(rad) * Math.sin(rad), sq = Math.sqrt(magic);
+    dLat = (dLat * 180.0) / ((A * (1 - EE)) / (magic * sq) * PI);
+    dLng = (dLng * 180.0) / (A / sq * Math.cos(rad) * PI);
+    return { lat: lat + dLat, lng: lng + dLng };
+  }
+  function amapPoint(s) { return s.source === 'osm' ? toGcj(+s.lat, +s.lng) : { lat: +s.lat, lng: +s.lng }; }
+  // 폰에 고덕지도 앱이 있으면 앱으로 바로 연다(로그인된 그대로라 저장하기 편하다). 없으면 웹 화면으로 간다.
+  window.haekaOpenAmap = function (s) {
+    if (!window.haekaIsChina(s)) return;
+    var web = window.haekaAmapUrl(s), ua = navigator.userAgent || '';
+    var isAnd = /Android/i.test(ua), isIos = /iPhone|iPad|iPod/i.test(ua);
+    if (!isAnd && !isIos) { window.open(web, '_blank'); return; }
+    var p = amapPoint(s);
+    // 한자 이름이 있으면 그 자리 앞뒤 약 500m 안에서 이름으로 검색한 결과를 연다 → 결과를 누르면 고덕의 가게 화면(즐겨찾기 가능)
+    // 한자 이름이 없으면 고덕에서 검색이 안 되므로 그 자리에 핀만 찍는다
+    var kw = /[\u3400-\u9fff]/.test(s.nameLocal || '') ? s.nameLocal : (/[\u3400-\u9fff]/.test(s.name || '') ? s.name : '');
+    var B = 0.005;
+    var q = kw
+      ? 'poi?sourceApplication=haeka&keywords=' + encodeURIComponent(kw) + '&name=' + encodeURIComponent(kw)
+        + '&lat1=' + (p.lat + B).toFixed(6) + '&lon1=' + (p.lng - B).toFixed(6) + '&lat2=' + (p.lat - B).toFixed(6) + '&lon2=' + (p.lng + B).toFixed(6) + '&dev=0'
+      : 'viewMap?sourceApplication=haeka&poiname=' + encodeURIComponent(nameOf(s)) + '&lat=' + p.lat.toFixed(6) + '&lon=' + p.lng.toFixed(6) + '&dev=0';
+    var inApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    // 안드로이드 브라우저: 앱이 없으면 브라우저가 알아서 웹 주소로 넘긴다
+    if (isAnd && !inApp) {
+      location.href = 'intent://' + q + '#Intent;scheme=androidamap;package=com.autonavi.minimap;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+      return;
+    }
+    // 해카 앱·아이폰: 앱 주소를 먼저 열어 보고, 1.5초 안에 화면이 안 넘어가면(앱 없음) 웹으로 간다
+    var timer = setTimeout(function () { if (!document.hidden) window.open(web, '_blank'); }, 1500);
+    var stop = function () { if (document.hidden) { clearTimeout(timer); document.removeEventListener('visibilitychange', stop); } };
+    document.addEventListener('visibilitychange', stop);
+    location.href = (isAnd ? 'androidamap' : 'iosamap') + '://' + q;
+  };
+  // 지도 칸 아래에 붙이는 버튼. 중국 매장이 아니면 빈 글자
+  window.haekaAmapBtn = function (s, onclick) {
+    if (!window.haekaIsChina(s)) return '';
+    return '<button type="button" onclick="event.stopPropagation();' + (onclick || 'haekaOpenAmap(window._mapStore)') + '" style="width:100%;margin:0 0 12px;padding:11px;border:1.5px solid #1C8BE6;border-radius:10px;background:#fff;color:#1C8BE6;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer">고덕지도로 보기 ›</button>';
+  };
+
+  window.haekaOpenMap = function (s) {
+    var u = window.haekaMapUrl(s);
+    if (u) window.open(u, '_blank');
+  };
+
+  // 가게 화면을 열 때 불러둔다. 지도 스크립트가 늦게 뜨면 잠깐 기다린다
+  window.haekaFindPlace = function (s, tries) {
+    if (!s || !s.lat || !s.lng || !nameOf(s) || getPid(s)) return;
+    tries = tries || 0;
+    if (!(window.google && google.maps && google.maps.importLibrary)) {
+      if (tries < 20) setTimeout(function () { window.haekaFindPlace(s, tries + 1); }, 300);
+      return;
+    }
+    var lat = +s.lat, lng = +s.lng;
+    google.maps.importLibrary('places').then(function (lib) {
+      return lib.Place.searchByText({
+        textQuery: nameOf(s),
+        fields: ['id'],
+        locationRestriction: { south: lat - BOX, west: lng - BOX, north: lat + BOX, east: lng + BOX },
+        maxResultCount: 1
+      });
+    }).then(function (res) {
+      var p = res && res.places && res.places[0];
+      if (p && p.id) { try { localStorage.setItem(keyOf(s), p.id); } catch (e) {} }
+    }).catch(function () {});
+  };
+
+  // 매장 화면의 작은 지도. 구글 임베드 지도(무료)를 그림처럼 넣고 가운데에 핀을 얹는다.
+  // 움직이지 않는 지도라 누르면 바깥 칸의 동작(구글 지도 열기)이 그대로 실행된다.
+  // 지도 서버에 미리 연결해 둔다(매장을 열었을 때 지도가 빨리 뜨게)
+  try { var pc = document.createElement('link'); pc.rel = 'preconnect'; pc.href = 'https://www.google.com'; document.head.appendChild(pc); } catch (e) {}
+  var EMBED_KEY = 'AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4';
+  // 임베드 지도는 처음 한 번이 느리다(약 1.3초). 화면이 뜬 뒤 안 보이는 곳에 미리 한 번 불러 두면
+  // 매장을 열었을 때 0.5초 안팎에 뜬다. 무료 지도라 미리 불러도 요금이 없다.
+  function warmUp() {
+    try {
+      var f = document.createElement('iframe');
+      f.src = 'https://www.google.com/maps/embed/v1/view?key=' + EMBED_KEY + '&center=0,0&zoom=16&language=ko';
+      f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
+      f.style.cssText = 'position:fixed;left:-9999px;top:0;width:300px;height:150px;border:0;visibility:hidden;pointer-events:none';
+      f.onload = function () { setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 4000); };
+      document.body.appendChild(f);
+    } catch (e) {}
+  }
+  if (document.readyState === 'complete') setTimeout(warmUp, 800);
+  else window.addEventListener('load', function () { setTimeout(warmUp, 800); });
+
+  window.haekaMiniMap = function (el, s) {
+    if (!el || !s || !s.lat || !s.lng) return;
+    var src = 'https://www.google.com/maps/embed/v1/view?key=' + EMBED_KEY + '&center=' + (+s.lat) + ',' + (+s.lng) + '&zoom=16&language=ko';
+    // 임베드 지도 왼쪽 위에 붙는 "지도" 버튼은 칸 밖으로 밀어 안 보이게 한다(아래 구글 로고·저작권은 그대로 보인다).
+    // 지도를 왼쪽으로 80px 넓혔으니 가운데도 40px 왼쪽이다.
+    el.style.position = 'relative'; el.style.overflow = 'hidden';
+    el.innerHTML = '<iframe src="' + src + '" referrerpolicy="no-referrer-when-downgrade" style="position:absolute;left:-80px;top:0;width:calc(100% + 80px);height:100%;border:0;pointer-events:none" onload="var p=this.nextSibling;if(p)p.style.visibility=&quot;visible&quot;"></iframe>'
+      + '<svg viewBox="0 0 24 36" width="24" height="36" style="position:absolute;left:calc(50% - 40px);top:50%;transform:translate(-50%,-100%);pointer-events:none;visibility:hidden">'
+      + '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#EA4335"/><circle cx="12" cy="12" r="4.5" fill="#B31412"/></svg>';
+  };
+})();
