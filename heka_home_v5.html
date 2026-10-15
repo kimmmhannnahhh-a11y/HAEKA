@@ -247,7 +247,8 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .nm-dist{color:#16A34A!important;font-weight:800!important}
 .nm-city{color:#1E40AF!important;font-weight:500!important}
 /* 매장 이름 아래 별점(후기가 있을 때만) */
-.nm-rate{font-size:12px;font-weight:700;color:#111;margin-top:3px;display:flex;align-items:center;gap:3px}
+.nm-rate{font-size:12px;font-weight:700;color:#111;margin-top:3px;display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden}
+.nm-rate .mn{font-weight:500;color:#6B7280;margin-left:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .nm-rate .st{color:#F5A623}
 .nm-rate .ct{font-weight:400;color:#9CA3AF}
 .nm-cards{display:flex!important;gap:4px!important;flex-wrap:wrap!important;margin-top:8px!important;overflow:visible!important;cursor:default!important}
@@ -985,6 +986,9 @@ function renderNearby(stores) {
     var distSafe = window._esc ? window._esc(distText) : distText;
     var catText = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
     var catSafe = catText ? ' · '+(window._esc ? window._esc(catText) : catText) : '';
+    // 홈 카드: 둘째 줄은 거리·도시·업종만, 셋째 줄에 별점과 대표메뉴(없으면 세부 업종)
+    var catOnly = store.category==='호텔' ? '숙소' : (store.category||'');
+    var catOnlySafe = catOnly ? ' · '+(window._esc ? window._esc(catOnly) : catOnly) : '';
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
       ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
@@ -1000,7 +1004,7 @@ function renderNearby(stores) {
       + (store.closed ? '<div style="position:absolute;top:6px;right:6px;z-index:11;background:rgba(220,38,38,.85);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;pointer-events:none">폐업</div>' : '')
       + '<span data-edit-store-id="'+store.id+'" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap;align-items:center"><span class="edit-badge-txt">수정중</span></span>'
       + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div><div class="nn">'+(window._esc?window._esc(store.name):store.name)+localName(store)+'</div>'+rateHtml(store)+'<div class="nm-meta"><span class="nm-dist">'+distSafe+'</span>'+(store.city?' · <span class="nm-city">'+(window._esc?window._esc(store.city):store.city)+'</span>':'')+catSafe+'</div></div><div class="nm-cards">'+pillsHtml+'</div></div>';
+      + '<div class="nbody"><div><div class="nn">'+(window._esc?window._esc(store.name):store.name)+localName(store)+'</div><div class="nm-meta"><span class="nm-dist">'+distSafe+'</span>'+(store.city?' · <span class="nm-city">'+(window._esc?window._esc(store.city):store.city)+'</span>':'')+catOnlySafe+'</div>'+rateHtml(store)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
     card.onclick = function() { openFirebaseDetail(store); };
     var zzimBtn = card.querySelector('.zzim');
     (function(s){ zzimBtn.onclick = function(e){ e.stopPropagation(); toggleZzim(e, zzimBtn, s); }; })(store);
@@ -1178,10 +1182,14 @@ function payStatePill(s) {
 </script>
 <script>
 // 후기 별점: 매장 문서의 ratingSum/ratingCnt 로 평균을 낸다. 후기가 없으면 아무것도 안 그린다
+// 후기가 없어도 ★0(0) 으로 늘 보여 준다. 뒤에 대표메뉴(없으면 업종과 다른 세부 업종)를 붙인다
 function rateHtml(s) {
   var n = +s.ratingCnt || 0;
-  if (n < 1 || !s.ratingSum) return '';
-  return '<div class="nm-rate"><span class="st">★</span>' + (s.ratingSum / n).toFixed(1) + '<span class="ct">(' + n.toLocaleString() + ')</span></div>';
+  var avg = (n > 0 && s.ratingSum) ? (s.ratingSum / n).toFixed(1) : '0';
+  var menu = (Array.isArray(s.menus) && s.menus.length) ? s.menus.join(', ') : ((s.cuisine && s.cuisine !== s.category) ? s.cuisine : '');
+  var esc = window._esc || function (t) { return t; };
+  return '<div class="nm-rate"><span class="st">★</span>' + avg + '<span class="ct">(' + n.toLocaleString() + ')</span>'
+    + (menu ? '<span class="mn">· ' + esc(menu) + '</span>' : '') + '</div>';
 }
 // 한글로 바꾼 가게는 현지 간판 이름도 작게 같이 보여준다
 function localName(s) {
