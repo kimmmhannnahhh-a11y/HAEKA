@@ -851,7 +851,7 @@ function doFilter(){
     var kOk=!kw?true:searchMatch(s.name, s.address, kw, s.nameEn);
     return cOk&&tOk&&kOk;
   });
-  if(sortOrder==='distance'&&userLat&&userLng){ list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);}); list=userFirstWhenFar(list); }
+  if(sortOrder==='distance'&&userLat&&userLng){ list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);}); /* 전체보기의 거리순은 진짜 거리순(직접 등록 먼저는 홈 카드에만) */ }
   else if(sortOrder==='latest'){var _ms=function(c){return !c?0:(c.toMillis?c.toMillis():(c.seconds?c.seconds*1000:(typeof c==='number'?c:0)));};list.sort(function(a,b){return _ms(b.createdAt)-_ms(a.createdAt);});}
   else if(sortOrder==='rating') list.sort(function(a,b){return(b.rating||0)-(a.rating||0);});
   renderList(list);
