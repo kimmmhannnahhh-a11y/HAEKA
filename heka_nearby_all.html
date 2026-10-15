@@ -166,7 +166,12 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 .store-name{font-size:16px!important;font-weight:800!important;line-height:1.3!important;color:var(--hk-text)!important;margin:0 28px 4px 0!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
 .store-meta{display:flex!important;align-items:center!important;gap:5px!important;margin:0!important;flex-wrap:wrap!important;font-size:12px!important}
 .store-dist{order:-1!important;color:#16A34A!important;font-size:12px!important;font-weight:800!important}
-.store-city{order:-1!important;color:#1E40AF!important;font-size:12px!important;font-weight:800!important}
+.store-city{order:-1!important;color:#1E40AF!important;font-size:12px!important;font-weight:500!important}
+/* 별점(후기 수)과 대표메뉴 — 홈 카드와 같은 모양 */
+.nm-rate{font-size:12px;font-weight:700;color:#111;margin-top:3px;display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden}
+.nm-rate .st{color:#F5A623}
+.nm-rate .ct{font-weight:400;color:#9CA3AF}
+.nm-rate .mn{font-weight:500;color:#6B7280;margin-left:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .store-cat{font-size:12px!important;font-weight:700!important;color:var(--hk-sub)!important}
 .store-time{font-size:11px!important;font-weight:600!important;color:var(--hk-muted)!important}
 .store-status{display:inline-flex!important;align-items:center!important;gap:4px!important;font-size:10px!important;font-weight:800!important}
@@ -624,6 +629,14 @@ window.openFirebaseDetail = async function(store) {
 function cardColor(c){if(c==='현금만'||c==='카드불가'||c==='현금불가')return'#DC2626';var m={'VISA':'#1a1f71','MASTER':'#eb001b','JCB':'#007b40','AMEX':'#007bc1','트래블로그':'#FF6B00','트래블월렛':'#b8970a','UnionPay':'#9b7fe8','알리페이':'#1677FF','위챗페이':'#07C160','카드가능':'#FF3900','현금가능':'#F0E6D2','카드가능(브랜드모름)':'#E5E7EB','모르겠어요':'#9e9e9e'};return m[c]||'#888';}
 function catEmoji(c){return (c||'매장').slice(0,1);}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
+// 후기가 없어도 ★0(0) 으로 늘 보여 준다. 뒤에 대표메뉴(없으면 업종과 다른 세부 업종)를 붙인다 — 홈과 같은 함수
+function rateHtml(s){
+  var n=+s.ratingCnt||0;
+  var avg=(n>0&&s.ratingSum)?(s.ratingSum/n).toFixed(1):'0';
+  var menu=(Array.isArray(s.menus)&&s.menus.length)?s.menus.join(', '):((s.cuisine&&s.cuisine!==s.category)?s.cuisine:'');
+  var esc=window._esc||function(t){return t;};
+  return '<div class="nm-rate"><span class="st">★</span>'+avg+'<span class="ct">('+n.toLocaleString()+')</span>'+(menu?'<span class="mn">· '+esc(menu)+'</span>':'')+'</div>';
+}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:ts),d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
 function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
 function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
@@ -705,7 +718,7 @@ function renderList(stores){
     var thumb=imgSrc?'<div class="store-thumb"><img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'"></div>':'<div class="store-thumb" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');
-    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+sIdSafe+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+_e(s.name)+localName(s)+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+(s.city?'<span class="store-city">'+(dist?'· ':'')+_e(s.city)+' ·</span>':'')+status+'<span class="store-cat">'+_e((((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · ')))+'</span><span class="store-time"> · '+_e(timeAgo(s.createdAt))+'</span></div><div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+sIdSafe+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
+    return'<div class="store-item" style="position:relative" data-idx="'+idx+'" onclick="openStoreByIdx(this)"><span data-edit-store-id="'+sIdSafe+'" style="display:none;position:absolute;top:8px;left:8px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap">수정중</span>'+thumb+'<div class="store-info"><div class="store-name">'+_e(s.name)+localName(s)+(s.closed?'<span style="background:#dc2626;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:5px">폐업</span>':'')+'</div><div class="store-meta">'+dist+(s.city?'<span class="store-city">'+(dist?'· ':'')+_e(s.city)+' ·</span>':'')+status+'<span class="store-cat">'+_e(s.category==='호텔'?'숙소':(s.category||''))+'</span><span class="store-time"> · '+_e(timeAgo(s.createdAt))+'</span></div>'+rateHtml(s)+'<div class="store-cards">'+pills+'</div></div><button class="store-zzim'+(isOn?' on':'')+'" data-store-id="'+sIdSafe+'" onclick="toggleZzimStore(event,this,'+idx+')"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button></div>';
   }).join('');
 }
 function openStoreByIdx(el){
