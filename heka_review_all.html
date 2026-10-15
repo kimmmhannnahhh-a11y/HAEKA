@@ -243,6 +243,9 @@ async function loadAll() {
           rSnap.forEach(r => items.push({ id: r.id, ...r.data() }));
         } catch(e) { console.error('reviews 서브컬렉션 로드 실패:', e); }
 
+        // 홈 목록의 별점이 실제 후기와 다르면 바로잡는다
+        { const sub = items.filter(x => x.id), rs = sub.map(x => +x.rating || 0).filter(Boolean), sum = rs.reduce((x, y) => x + y, 0);
+          if ((+s.ratingCnt || 0) !== rs.length || (+s.ratingSum || 0) !== sum) { try { await updateDoc(doc(db, 'stores', storeId), { ratingSum: sum, ratingCnt: rs.length, reviewCount: sub.length }); } catch (e) {} } }
         renderReviews(wrap, items, s.rating);
       }
     } catch(e) {

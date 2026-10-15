@@ -713,6 +713,9 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     if (_sid) {
       var rSnap = await getDocs(collection(db, 'stores', _sid, 'reviews'));
       rSnap.forEach(function(d){ subReviews.push({id:d.id,...d.data()}); });
+      // 홈 목록의 별점(ratingSum·ratingCnt)이 실제 후기와 다르면 바로잡는다(삭제가 반영 안 됐을 때 등)
+      (function(){ var rs=subReviews.map(function(r){return +r.rating||0;}).filter(Boolean), sum=rs.reduce(function(x,y){return x+y;},0);
+        if ((+store.ratingCnt||0)!==rs.length || (+store.ratingSum||0)!==sum) { updateDoc(doc(db,'stores',_sid),{ratingSum:sum,ratingCnt:rs.length,reviewCount:subReviews.length}).catch(function(){}); } })();
       revCount = rSnap.size + (store.review ? 1 : 0);
     } else {
       revCount = store.review ? 1 : 0;
