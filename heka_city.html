@@ -165,10 +165,10 @@ body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont
 .ch-ct-h .cnt{font-size:12px;color:#9CA3AF;margin-left:2px}
 .ch-ct-h .arr{margin-left:auto;width:9px;height:9px;border-right:2px solid #9CA3AF;border-bottom:2px solid #9CA3AF;transform:rotate(45deg);transition:transform .2s;margin-top:-4px}
 .ch-ct.open .ch-ct-h .arr{transform:rotate(-135deg);margin-top:4px}
-.ch-ct-b{display:none;padding:0 14px 14px;flex-wrap:wrap;gap:8px}
-.ch-ct.open .ch-ct-b{display:flex}
-.ch-chip{padding:8px 13px;border-radius:999px;background:#F5F5F3;color:#374151;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
-.ch-chip.all{background:#1A1A1A;color:#fff}
+.ch-ct-b{display:none;padding:2px 14px 14px;grid-template-columns:repeat(3,1fr);gap:6px}
+.ch-ct.open .ch-ct-b{display:grid}
+.ch-chip{display:flex;align-items:center;justify-content:center;height:40px;padding:0 6px;border-radius:10px;background:#F7F7F5;color:#374151;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-chip.all{grid-column:1/-1;background:#fff;color:#1A1A1A;border:1px solid #E5E7EB;font-weight:700}
 .ch-credit{padding:18px 16px 0;font-size:10px;color:#B0B4BA;line-height:1.5}
 .city-list-head{font-size:11px;font-weight:800;color:#9CA3AF;letter-spacing:.06em;padding:12px 16px 6px}
 .city-row{display:flex;align-items:center;gap:11px;padding:11px 16px;background:#fff;border-bottom:1px solid #F3F4F6;cursor:pointer}
@@ -440,9 +440,8 @@ function renderCityHome(){
   var pop=document.getElementById('ch-pop'), acc=document.getElementById('ch-acc');
   if(!pop||!acc) return;
   pop.innerHTML=POPULAR_CITIES.map(function(p){
-    var c=COUNTRIES.find(function(x){return x.name===p[0];});
     var ph=CITY_PHOTOS[p[1]] ? '<img src="'+CITY_PHOTOS[p[1]].src+'" alt="" loading="lazy">' : '';
-    return '<div class="ch-card" onclick="'+_go(p[0],p[1])+'">'+ph+_flagImg(c,'flag')+'<span class="ch-nm">'+p[1]+'</span><span class="ch-co">'+p[0]+'</span></div>';
+    return '<div class="ch-card" onclick="'+_go(p[0],p[1])+'">'+ph+'<span class="ch-nm">'+p[1]+'</span><span class="ch-co">'+p[0]+'</span></div>';
   }).join('');
   var open={}; acc.querySelectorAll('.ch-ct.open').forEach(function(el){ open[el.getAttribute('data-c')]=1; });
   acc.innerHTML=getSortedCountries(COUNTRIES).map(function(c){
