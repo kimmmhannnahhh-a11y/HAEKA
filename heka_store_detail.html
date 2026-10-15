@@ -398,6 +398,7 @@ body,.phone,.scroll-wrap,.section,.meta-row,.hours-row,.rev-item{font-family:'Pl
 /* 최소 픽스 — ::before ● 차단만 (cardColor 인라인 카드 표준색 살림) + 결제후기 글씨 색 진하게 */
 .section.hk-pay-strip .sec-title-blue::before,#cards-no-section .sec-title-red::before{content:''!important;display:none!important}
 #review-title span{color:var(--hk-text)!important;font-size:13px!important;font-weight:800!important;letter-spacing:.04em!important}
+#review-title .rev-star{color:#F5A623!important;font-weight:800}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&language=ko&v=beta"></script>
@@ -717,7 +718,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
       revCount = store.review ? 1 : 0;
     }
   } catch(e) { revCount = store.review ? 1 : 0; }
-  var ratingLabel = '(<span style="color:#F5A623">★</span>'+revCount+')';
+  var ratingLabel = '(<b class="rev-star">★</b>'+revCount+')';
   var ratingTxt = '<button onclick="goReviewAll()" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:underline;font-family:inherit"> '+ratingLabel+'</button>';
   document.getElementById('review-title').innerHTML =
     '<span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase">결제 후기</span>'
@@ -861,6 +862,8 @@ function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
 .back-btn{color:#fff!important}
 .share-btn svg,.zzim-btn:not(.on) svg{stroke:#fff!important;fill:none!important}
 /* 결제 후기 칸: 흰 카드에 얇은 테두리와 옅은 그림자(흰 배경 위에서도 구분되게) */
+/* 아래 버튼 줄이 화면 흐름 안에 있어서(떠 있지 않음) 스크롤 아래 큰 여백은 필요 없다 → 결제 후기 칸 바로 아래로 버튼이 오게 */
+.scroll-wrap{padding-bottom:6px!important}
 #review-section{background:#fff!important;border:1px solid #EEEDEA!important;border-radius:16px!important;margin:12px 20px 14px!important;padding:16px!important;box-shadow:0 2px 12px rgba(17,24,39,.06)!important}
 .rev-empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 0 22px;border:1px solid #F1F1EF;border-radius:12px;background:#FCFCFB}
 .rev-empty svg{width:40px;height:40px;stroke:#C9CDD3;fill:none;stroke-width:1.6;margin-bottom:4px}
