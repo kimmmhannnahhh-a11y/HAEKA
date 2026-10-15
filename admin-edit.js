@@ -71,7 +71,8 @@ function addButtons() {
     [['운영자 수정', openEditor, '#111827'], ['운영자 삭제', removeIt, '#B91C1C']].forEach(([t, fn, bg]) => {
       const b = makeBtn(t, true, fn);
       b.className = 'btn-report';
-      b.style.cssText = 'background:' + bg + '!important;color:#fff!important;border-color:' + bg + '!important';
+      // 운영자만 보는 버튼이라 작게: 글자 폭만큼만 차지하고 손님용 버튼(수정 요청 등)이 넓게 남게 한다
+      b.style.cssText = 'flex:0 0 auto!important;padding:9px 10px!important;font-size:11px!important;font-weight:700!important;border-radius:9px!important;background:' + bg + '!important;color:#fff!important;border-color:' + bg + '!important';
       box.appendChild(b);
     });
     btns.insertBefore(box, btns.firstChild);
