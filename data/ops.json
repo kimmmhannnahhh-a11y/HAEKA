@@ -159,5 +159,21 @@
    "tz": "Asia/Shanghai",
    "phone": "0535-2162007"
   }
+ },
+ {
+  "id": "set-wangpo-photo",
+  "type": "set",
+  "title": "왕포따샤: 사진을 줄인 것(5.2MB → 0.27MB)으로 바꿔 목록에서 빨리 뜨게",
+  "names": [
+   "왕포따샤"
+  ],
+  "where": {
+   "city": "옌타이"
+  },
+  "set": {
+   "images": [
+    "https://haeka.vercel.app/img/stores/wangpo-1791864453196.jpg"
+   ]
+  }
  }
 ]
