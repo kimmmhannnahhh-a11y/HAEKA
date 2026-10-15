@@ -324,6 +324,10 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .bottom-btns{position:sticky;bottom:0;left:0;right:0;padding:14px 20px 20px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--hk-border);box-shadow:0 -4px 20px rgba(0,0,0,.06);display:flex;gap:10px;z-index:30}
 .btn-report{flex:1;padding:15px;border:1.5px solid #E5E7EB;border-radius:12px;background:#fff;color:var(--hk-accent);font-size:14px;font-weight:800;box-shadow:none;cursor:pointer}
 .btn-report:hover{background:#FFF7F5}
+/* 아래 버튼을 차분하게: 회색 글씨·얇은 테두리, 삭제만 빨간 글씨 */
+#bottom-btns .btn-report{padding:13px 8px;border:1px solid #E5E7EB;border-radius:12px;background:#fff;color:#374151;font-size:13px;font-weight:600;box-shadow:none}
+#bottom-btns .btn-report:hover{background:#F9FAFB}
+#bottom-btns .btn-report.danger{color:#DC2626}
 
 /* 긴급 수정: 버튼 고정 해제 + 결제가능 가독성 + 신호등 형광연두 */
 .bottom-btns{position:relative;bottom:auto;left:auto;right:auto;background:transparent;backdrop-filter:none;border-top:0;box-shadow:none}
@@ -622,7 +626,7 @@ async function renderStore(store) {
     var btns = document.getElementById('bottom-btns');
     if(btns){
       var delBtn = document.createElement('button');
-      delBtn.className = 'btn-report';
+      delBtn.className = 'btn-report danger';
       delBtn.textContent = '매장 삭제';
       delBtn.onclick = async function(){
         if(!confirm('정말 이 매장을 삭제할까요?')) return;
@@ -748,7 +752,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
         +'</div></div>';
     }).join('');
   } else {
-    document.getElementById('review-list').innerHTML = '<div style="font-size:11px;color:#bbb;text-align:center;padding:10px 0">아직 결제 후기가 없어요</div>';
+    document.getElementById('review-list').innerHTML = '<div class="rev-empty"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><circle cx="9" cy="12" r=".6"/><circle cx="12.5" cy="12" r=".6"/><circle cx="16" cy="12" r=".6"/></svg><b>아직 결제 후기가 없어요</b><span>첫 번째 후기를 남겨보세요.</span></div>';
   }
 
   // 영업시간·전화번호는 매장 자료에 들어 있는 것을 쓴다(구글 조회 없음). 없으면 구글 지도에서 보는 버튼
@@ -843,7 +847,7 @@ window._arrayUnion = arrayUnion;
 <script src="store-hours.js"></script>
 <script src="haeka-book.js?v=1"></script>
 <script src="haeka-stay.js?v=2"></script>
-<script type="module" src="admin-edit.js?v=2"></script>
+<script type="module" src="admin-edit.js?v=4"></script>
 <script>
 // 사진이 없는 매장은 카테고리 그림으로 대신한다
 var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg?v=3", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg", "코인로커": "img/cat-locker.jpg", "짐 운반": "img/cat-luggage.jpg", "코인세탁소": "img/cat-laundry.jpg", "환전소": "img/cat-exchange.jpg", "온천": "img/cat-bath.jpg", "목욕탕": "img/cat-bath.jpg", "게임센터": "img/cat-arcade.jpg", "노래방": "img/cat-karaoke.jpg", "만화카페": "img/cat-mangacafe.jpg" };
@@ -856,8 +860,12 @@ function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
 /* 위쪽 뒤로·찜·공유 버튼 안의 그림은 흰색(어두운 버튼 위에서 주황·검정은 안 보인다). 찜한 상태의 색은 그대로 둔다 */
 .back-btn{color:#fff!important}
 .share-btn svg,.zzim-btn:not(.on) svg{stroke:#fff!important;fill:none!important}
-/* 결제 후기 칸은 베이지 바탕 */
-#review-section{background:#F5EFE3!important;border-radius:14px 14px 0 0!important;margin:6px 14px 0!important;padding:14px 14px 16px!important;border:0!important;box-shadow:0 50px 0 0 #F5EFE3,0 100px 0 0 #F5EFE3,0 150px 0 0 #F5EFE3,0 200px 0 0 #F5EFE3,0 250px 0 0 #F5EFE3,0 300px 0 0 #F5EFE3,0 350px 0 0 #F5EFE3,0 400px 0 0 #F5EFE3,0 450px 0 0 #F5EFE3,0 500px 0 0 #F5EFE3,0 550px 0 0 #F5EFE3,0 600px 0 0 #F5EFE3,0 650px 0 0 #F5EFE3,0 700px 0 0 #F5EFE3!important}  /* 그림자로 아래 버튼 바로 위까지 베이지를 이어 칠한다 */
+/* 결제 후기 칸: 흰 카드에 얇은 테두리와 옅은 그림자(흰 배경 위에서도 구분되게) */
+#review-section{background:#fff!important;border:1px solid #EEEDEA!important;border-radius:16px!important;margin:10px 14px 12px!important;padding:16px!important;box-shadow:0 2px 12px rgba(17,24,39,.06)!important}
+.rev-empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 0 22px;border:1px solid #F1F1EF;border-radius:12px;background:#FCFCFB}
+.rev-empty svg{width:40px;height:40px;stroke:#C9CDD3;fill:none;stroke-width:1.6;margin-bottom:4px}
+.rev-empty b{font-size:14px;font-weight:700;color:#4B5563}
+.rev-empty span{font-size:12px;color:#9CA3AF}
 </style>
 </head>
 <body>

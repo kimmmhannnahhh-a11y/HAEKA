@@ -62,20 +62,19 @@ function addButtons() {
     const report = bar.querySelector('[onclick="reportPost()"]');
     bar.insertBefore(box, report || null);
   } else {
-    // 가게 상세: 맨 아래 버튼 줄 앞에
+    // 가게 상세: 손님용 버튼 줄 위에 작은 글자 링크로(운영자만 보인다)
     const btns = document.getElementById('bottom-btns');
     if (!btns) return;
-    const box = document.createElement('span');
+    const box = document.createElement('div');
     box.id = 'admin-btns';
-    box.style.cssText = 'display:contents';
-    [['운영자 수정', openEditor, '#111827'], ['운영자 삭제', removeIt, '#B91C1C']].forEach(([t, fn, bg]) => {
-      const b = makeBtn(t, true, fn);
-      b.className = 'btn-report';
-      // 운영자만 보는 버튼이라 작게: 글자 폭만큼만 차지하고 손님용 버튼(수정 요청 등)이 넓게 남게 한다
-      b.style.cssText = 'flex:0 0 auto!important;padding:9px 10px!important;font-size:11px!important;font-weight:700!important;border-radius:9px!important;background:' + bg + '!important;color:#fff!important;border-color:' + bg + '!important';
+    box.style.cssText = 'display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:8px 20px 0;font-size:12px;color:#9CA3AF';
+    box.appendChild(document.createTextNode('운영자'));
+    [['수정', openEditor, '#374151'], ['삭제', removeIt, '#DC2626']].forEach(([t, fn, color]) => {
+      const b = makeBtn(t, false, fn);
+      b.style.cssText = 'border:0;background:none;padding:2px 0;font-size:12px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:inherit;color:' + color;
       box.appendChild(b);
     });
-    btns.insertBefore(box, btns.firstChild);
+    btns.parentNode.insertBefore(box, btns);
   }
 }
 
