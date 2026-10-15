@@ -211,7 +211,8 @@ async function openEditor() {
     $('ae-save').disabled = true; $('ae-save').textContent = '저장 중…';
     try {
       await updateDoc(doc(db, COL, id), data);
-      try { sessionStorage.removeItem('haeka_stores_cache'); } catch (e) {}
+      // 홈·전체보기가 저장해 둔 매장 목록(haeka_near_*)을 지워 바로 새 내용이 보이게
+      try { sessionStorage.removeItem('haeka_stores_cache'); Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf('haeka_near_') === 0) sessionStorage.removeItem(k); }); } catch (e) {}
       location.reload();
     } catch (err) {
       alert('저장 실패: ' + err.message);
