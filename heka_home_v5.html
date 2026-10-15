@@ -506,13 +506,23 @@ window._hkWhere = function(){ return { lat: userLat, lng: userLng, stores: allSt
 function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
 function distLbl(m){return m<1000?m+'m':(m/1000).toFixed(1)+'km';}
 
+// 가장 가까운 매장도 50km 넘게 멀면(예: 한국에서 열었을 때) 사람이 직접 등록한 매장을 먼저 보여 준다.
+// 자동 수집(osm·chain)이 아닌 것이 직접 등록한 매장. 그 안에서도, 그 뒤 나머지도 거리순은 그대로 둔다
+function userFirstWhenFar(list){
+  if(!userLat||!userLng||!list.length) return list;
+  var first=list[0]; if(!(first.lat&&first.lng)) return list;
+  if(calcDist(userLat,userLng,first.lat,first.lng)<=50000) return list;
+  var mine=list.filter(function(s){ return s.source!=='osm'&&s.source!=='chain'; });
+  if(!mine.length) return list;
+  return mine.concat(list.filter(function(s){ return s.source==='osm'||s.source==='chain'; }));
+}
 function sortByDistance(stores) {
   if (!userLat || !userLng) return stores;
-  return stores.slice().sort(function(a, b) {
+  return userFirstWhenFar(stores.slice().sort(function(a, b) {
     var da = (a.lat && a.lng) ? calcDist(userLat, userLng, a.lat, a.lng) : 99999;
     var db2 = (b.lat && b.lng) ? calcDist(userLat, userLng, b.lat, b.lng) : 99999;
     return da - db2;
-  });
+  }));
 }
 
 // 내 주변 매장만 받는다 (전 세계 매장을 통째로 받지 않는다)

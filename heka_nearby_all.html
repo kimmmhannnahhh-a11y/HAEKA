@@ -637,6 +637,16 @@ function rateHtml(s){
   var esc=window._esc||function(t){return t;};
   return '<div class="nm-rate"><span class="st">★</span>'+avg+'<span class="ct">('+n.toLocaleString()+')</span>'+(menu?'<span class="mn">· '+esc(menu)+'</span>':'')+'</div>';
 }
+// 가장 가까운 매장도 50km 넘게 멀면(예: 한국에서 열었을 때) 사람이 직접 등록한 매장을 먼저 보여 준다.
+// 자동 수집(osm·chain)이 아닌 것이 직접 등록한 매장. 그 안에서도, 그 뒤 나머지도 거리순은 그대로 둔다
+function userFirstWhenFar(list){
+  if(!userLat||!userLng||!list.length) return list;
+  var first=list[0]; if(!(first.lat&&first.lng)) return list;
+  if(calcDist(userLat,userLng,first.lat,first.lng)<=50000) return list;
+  var mine=list.filter(function(s){ return s.source!=='osm'&&s.source!=='chain'; });
+  if(!mine.length) return list;
+  return mine.concat(list.filter(function(s){ return s.source==='osm'||s.source==='chain'; }));
+}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(ts.seconds?ts.seconds*1000:ts),d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
 function calcDist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180,x=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)*Math.sin(dG/2);return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));}
 function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
@@ -841,7 +851,7 @@ function doFilter(){
     var kOk=!kw?true:searchMatch(s.name, s.address, kw, s.nameEn);
     return cOk&&tOk&&kOk;
   });
-  if(sortOrder==='distance'&&userLat&&userLng) list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);});
+  if(sortOrder==='distance'&&userLat&&userLng){ list.sort(function(a,b){return(a.lat&&a.lng?calcDist(userLat,userLng,a.lat,a.lng):99999)-(b.lat&&b.lng?calcDist(userLat,userLng,b.lat,b.lng):99999);}); list=userFirstWhenFar(list); }
   else if(sortOrder==='latest'){var _ms=function(c){return !c?0:(c.toMillis?c.toMillis():(c.seconds?c.seconds*1000:(typeof c==='number'?c:0)));};list.sort(function(a,b){return _ms(b.createdAt)-_ms(a.createdAt);});}
   else if(sortOrder==='rating') list.sort(function(a,b){return(b.rating||0)-(a.rating||0);});
   renderList(list);
