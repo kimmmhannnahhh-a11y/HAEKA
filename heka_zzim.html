@@ -408,7 +408,6 @@ function renderChips(){
     names.forEach(function(n){
       var code=_zzFlag[n];
       g+='<div class="zz-chip" data-country="'+_hkdE(n)+'" onclick="selectCountry(this.getAttribute(\'data-country\'))">'
-        +(code?'<img class="flag" src="img/flags/'+code+'.png" alt="" onerror="this.style.display=\'none\'">':'')
         +'<span>'+_hkdE(n)+'</span></div>';
     });
     g+='<span class="zz-chip-gap"></span>';
@@ -419,7 +418,7 @@ function renderChips(){
     var cities=Object.keys(cc).sort(function(a,b){ if(a==='기타') return 1; if(b==='기타') return -1; return (cc[b]-cc[a])||a.localeCompare(b,'ko'); });
     var code2=_zzFlag[_selCountry];
     g='<div class="zz-chip back" onclick="selectCountry(null)" aria-label="나라 목록으로"><svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>'
-      +(code2?'<img class="flag" src="img/flags/'+code2+'.png" alt="" onerror="this.style.display=\'none\'">':'')+'<span>'+_hkdE(_selCountry)+'</span></div>';
+      +'<span>'+_hkdE(_selCountry)+'</span></div>';
     g+='<div class="zz-chip'+(_selCity==='전체'?' on':'')+'" onclick="selectCity(null)">전체</div>';
     cities.forEach(function(c){ g+='<div class="zz-chip'+(_selCity===c?' on':'')+'" data-city="'+_hkdE(c)+'" onclick="selectCity(this.getAttribute(\'data-city\'))"><span>'+_hkdE(c)+'</span></div>'; });
     g+='<span class="zz-chip-gap"></span>';
