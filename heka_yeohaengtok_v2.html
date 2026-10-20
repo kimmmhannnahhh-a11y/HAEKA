@@ -121,7 +121,8 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 body,.phone{background:#FDFAF5!important}
 .phone{box-shadow:none!important}
 body{font-family:Pretendard,'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
-.talk-hero{position:relative;padding:0 0 1px;background:url('img/bg/talk-header.jpg') right top/auto 124px no-repeat,linear-gradient(180deg,#FCEEEA 0,#FDF2EC 70px,#FDF6F0 110px,#FDFAF5 150px)}
+.talk-hero{position:relative;padding:0 0 1px;background:linear-gradient(180deg,#FCEEEA 0,#FDF2EC 70px,#FDF6F0 110px,#FDFAF5 150px)}
+.talk-hero::before{content:'';position:absolute;top:0;right:0;width:220px;height:82px;background:url('img/bg/talk-header.jpg') right top/auto 82px no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%);mask-image:linear-gradient(90deg,transparent 0,#000 34%);pointer-events:none;z-index:0}.talk-hero>*{position:relative;z-index:1}
 .talk-head{position:relative;height:91px;padding:26px 16px 0 50px}
 .talk-back{position:absolute;left:13px;top:7px;width:28px;height:28px;border-radius:50%;background:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(120,60,40,.10);padding:0}
 .talk-back svg{width:14px;height:14px;stroke:#FD6E5F;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}

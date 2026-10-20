@@ -370,6 +370,13 @@ body #detail-panel .dp-btn-row{border-top:0!important;padding:10px 17px max(16px
 body #detail-panel .dp-btn-more{height:43px!important;padding:0!important;border-radius:12px!important;background:#FD4748!important;color:#fff!important;font-size:17px!important;font-weight:800!important;letter-spacing:-.03em;box-shadow:0 8px 20px rgba(253,71,72,.28)!important}
 
 body .store-list{background:var(--hkd-bg)!important;padding:6px 13px 14px!important}
+/* 검색칸: 도시 검색 화면과 같은 흰 둥근 막대(돋보기 왼쪽, 코랄) */
+body .search-sort-bar .search-box{background:#fff!important;border:0!important;border-radius:999px!important;height:44px;padding:0 16px!important;gap:9px!important;box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1px rgba(0,0,0,.04)!important}
+body .search-sort-bar .search-box:focus-within{box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1.5px rgba(253,91,80,.6)!important}
+body .search-sort-bar .search-icon-btn{order:-1;padding:0!important;background:none!important;border:0!important;display:flex;align-items:center}
+body .search-sort-bar .search-icon-btn svg{width:19px;height:19px;fill:none;stroke:#FD5B50;stroke-width:2.2;stroke-linecap:round}
+body .search-sort-bar .search-input{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;font-size:14px!important;height:100%}
+body .search-sort-bar .sort-btn{height:44px;padding:0 15px!important;background:#fff!important;box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1px rgba(0,0,0,.04)!important;font-size:13px!important}
 </style>
 <script>
 // ===== 2026-10-20 시안용 그림 조각: 선 아이콘, 결제수단 배지 (홈·전체보기에 같은 코드가 들어 있다 — 하나만 고치지 말 것) =====
@@ -1289,6 +1296,7 @@ function closeNearbyLoginPopup(){
 })();
 </script>
 <link rel="stylesheet" href="style-clean.css?v=2">
+<script>window.HKD_SQ = 1;</script>
 <script src="sheet-chips.js"></script>
 </body>
 </html>

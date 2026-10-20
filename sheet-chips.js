@@ -11,6 +11,11 @@
     + '.hkd-sc .sc-mask{display:inline-block;flex-shrink:0;-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}'
     + '.hkd-sc .sc-ali{width:16px;height:16px;background:#1677FF;-webkit-mask-image:url(img/pay/alipay.svg);mask-image:url(img/pay/alipay.svg)}'
     + '.hkd-sc .sc-we{width:17px;height:17px;background:#07C160;-webkit-mask-image:url(img/pay/wechat.svg);mask-image:url(img/pay/wechat.svg)}';
+  // 전체보기처럼 위쪽 칩이 아직 글자만인 화면(window.HKD_SQ)은 위쪽 칩도 홈과 같게 맞춘다
+  if (window.HKD_SQ) css += ''
+    + 'body .chip-row .sq-chip.hkd-sc,body .chip-row .sq-chip-all.hkd-sc,body .cat-wrap .sq-chip.hkd-sc,body .cat-wrap .sq-chip-all.hkd-sc{height:32px;display:inline-flex!important;align-items:center;justify-content:center;gap:5px;padding:0 13px!important;border-radius:999px!important;border:0!important;background:#F2F1EF!important;color:#2B2F38!important;font-size:13px!important;font-weight:600!important;line-height:1!important;letter-spacing:-.02em;box-shadow:none!important;flex-shrink:0}'
+    + 'body .chip-row .sq-chip.hkd-sc.on,body .cat-wrap .sq-chip.hkd-sc.on{background:#FFE6E0!important;color:#FD5B50!important;box-shadow:inset 0 0 0 1.5px rgba(253,91,80,.55)!important}'
+    + 'body .chip-row .sq-chip-all.hkd-sc,body .cat-wrap .sq-chip-all.hkd-sc{min-width:56px;font-size:14px!important;font-weight:700!important;background:#16181D!important;color:#fff!important}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   function ic(paths) { return '<svg class="hkd-ic" viewBox="0 0 24 24" aria-hidden="true">' + paths + '</svg>'; }
@@ -29,7 +34,8 @@
 
   function decorate(el) {
     if (el.classList.contains('hkd-sc')) return;
-    var m = (el.getAttribute('onclick') || '').match(/toggleCardChip\(this,'([^']+)'\)/);
+    if (el.classList.contains('sq-chip-all')) { el.classList.add('hkd-sc'); return; }
+    var m = (el.getAttribute('onclick') || '').match(/toggle(?:CardChip|CardMain)\(this,'([^']+)'\)/);
     if (m) {
       var key = m[1];
       if (key === 'all') { el.classList.add('hkd-sc', 'hkd-sc-all'); return; }
@@ -49,7 +55,7 @@
     }
     el.classList.add('hkd-sc');
   }
-  function run() { document.querySelectorAll('.sheet-chip').forEach(decorate); }
+  function run() { document.querySelectorAll(window.HKD_SQ ? '.sheet-chip, .chip-row .sq-chip, .chip-row .sq-chip-all, .cat-wrap .sq-chip, .cat-wrap .sq-chip-all' : '.sheet-chip').forEach(decorate); }
   run();
   // 업종 칩은 업종 목록을 받은 뒤 다시 만들어진다 → 새로 생긴 칩도 맞춘다
   new MutationObserver(run).observe(document.body, { childList: true, subtree: true });
