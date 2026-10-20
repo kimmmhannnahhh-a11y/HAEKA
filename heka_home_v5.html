@@ -1588,9 +1588,9 @@ function hkdDpRows(store, distText) {
     <div class="hkd-dots" id="hkd-dots" style="display:none"></div>
   </section>
   <script>
-  // 배너 사진 슬라이드: img/banner/home-1~3.jpg 중 있는 것만. 하나도 없으면 어두운 배경만, 점 숨김
+  // 배너 사진 슬라이드: img/banner/home-1~10.jpg 중 있는 것만(파일만 넣으면 늘어난다). 하나도 없으면 어두운 배경만, 점 숨김
   (function(){
-    var srcs = ['img/banner/home-1.jpg','img/banner/home-2.jpg','img/banner/home-3.jpg'];
+    var srcs = []; for (var n = 1; n <= 10; n++) srcs.push('img/banner/home-' + n + '.jpg');
     var box = document.getElementById('hkd-slides'), dots = document.getElementById('hkd-dots'), hero = document.getElementById('hkd-hero');
     var ok = new Array(srcs.length), left = srcs.length, imgs = [], idx = 0, timer = null;
     srcs.forEach(function(src, i){
