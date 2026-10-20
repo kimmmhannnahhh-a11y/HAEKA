@@ -544,7 +544,7 @@ function hkdDpRows(store, distText) {
   <div class="filterbar">
     <div>
       <div class="chip-row">
-        <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드 ▾</div>
+        <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardMain(this,'all')">카드</div>
         <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'VISA')">VISA</div>
         <div class="sq-chip cc-master" onclick="toggleCardMain(this,'MASTER')">MASTER</div>
         <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'JCB')">JCB</div>
@@ -559,7 +559,7 @@ function hkdDpRows(store, distText) {
     </div>
     <div>
       <div class="cat-wrap" id="cat-wrap">
-        <div class="sq-chip-all on" id="cat-all-btn" onclick="toggleCatSheet()">업종 ▾</div>
+        <div class="sq-chip-all on" id="cat-all-btn" onclick="catSelectAll()">업종</div>
       </div>
     </div>
   </div>
@@ -1119,7 +1119,7 @@ function openStay(){ if(_stay) window.open(_stay.u,'_blank'); }
 // ── 카드사 필터 ──
 function syncCardChips(){document.querySelectorAll('.chip-row .sq-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardMain\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1])||(cardSel.has('all')&&m[1]==='all'));});var cb=document.getElementById('card-all-btn');if(cb){if(cardSel.has('all'))cb.classList.add('on');else cb.classList.remove('on');}}
 function syncCardSheet(){document.querySelectorAll('#card-sheet-wrap .sheet-chip').forEach(function(c){var m=(c.getAttribute('onclick')||'').match(/toggleCardChip\(this,'([^']+)'\)/);if(m)c.classList.toggle('on',cardSel.has(m[1]));});}
-function toggleCardMain(el,v){if(v==='all'){cardSel.clear();cardSel.add('all');}else{cardSel.delete('all');cardSel.has(v)?cardSel.delete(v):cardSel.add(v);if(!cardSel.size)cardSel.add('all');}syncCardChips();syncCardSheet();doFilter();}
+function toggleCardMain(el,v){if(v==='all'){cardSel.clear();cardSel.add('all');}else{cardSel.delete('all');cardSel.has(v)?cardSel.delete(v):cardSel.add(v);if(!cardSel.size)cardSel.add('all');}syncCardChips();var _cab=document.getElementById('card-all-btn');if(_cab)_cab.classList.toggle('on',cardSel.has('all'));syncCardSheet();doFilter();}
 function toggleCardChip(el,v){if(v==='all'){cardSel.clear();cardSel.add('all');}else{cardSel.delete('all');cardSel.has(v)?cardSel.delete(v):cardSel.add(v);if(!cardSel.size)cardSel.add('all');}syncCardSheet();syncCardChips();doFilter();}
 function cardReset(){cardSel.clear();cardSel.add('all');syncCardSheet();syncCardChips();doFilter();}
 var cardSO=false;
