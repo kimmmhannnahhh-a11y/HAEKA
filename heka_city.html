@@ -233,12 +233,97 @@ function payStatePill(s) {
 /* 검색칸 안쪽 입력칸의 회색 테두리 없애기(흰 상자 안에 선이 한 겹 더 보이던 것) */
 .search-box input{border:0!important;box-shadow:none!important;outline:none!important;background:transparent!important}
 </style>
+<style>
+/* ── 2026-10-20 시안 디자인: 그림 헤더 + 흰 시트 + 로고 필터 + 매장 카드 ── */
+.phone{font-family:Pretendard,'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+.hk-hero{position:relative;z-index:0;flex-shrink:0;padding-bottom:28px;
+  background:url('img/bg/search-header.jpg') right center/auto 100% no-repeat,linear-gradient(180deg,#FBE1E0 0%,#FCE8E3 55%,#FDEFEA 100%)}
+.hk-hero .topbar{display:block!important;position:relative;background:transparent!important;padding:13px 15px 0!important;border:0!important;box-shadow:none!important}
+.hk-hero .topbar>div{display:none}
+.hk-hero .back-btn{width:30px;height:30px;padding:0;background:#fff!important;border:0!important;border-radius:50%;box-shadow:0 2px 8px rgba(120,60,50,.10);color:#1A1A1A!important}
+.hk-hero .back-btn svg{width:17px;height:17px;fill:none;stroke:#1A1A1A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hk-hero #top-title{display:block;height:34px;margin-top:-7px;padding-left:31px;line-height:34px;white-space:nowrap}
+.hk-hero #top-title::before{content:'어디로\00a0';font-family:Pretendard,-apple-system,sans-serif!important;font-size:29px!important;font-weight:800!important;letter-spacing:-.04em!important;color:#141414!important}
+.hk-hero #top-title::after{content:'떠나볼까?';font-family:Pretendard,-apple-system,sans-serif;font-size:29px;font-weight:800;letter-spacing:-.04em;color:#FF3900}
+.hk-hero .search-wrap{background:transparent!important;padding:9px 13px 0!important}
+.hk-hero .search-box{height:35px;border-radius:999px!important;padding:0 14px 0 13px!important;gap:8px!important;background:#fff!important;box-shadow:0 4px 14px rgba(200,90,70,.10)!important}
+.hk-hero .search-box svg{width:16px!important;height:16px!important;stroke:#FF3900!important;stroke-width:2.3!important}
+.hk-hero .search-box input{font-size:14px!important;font-family:inherit!important}
+.hk-hero .search-box input::placeholder{color:#9A9A9A}
+/* 헤더 아래 흰 시트: 위 모서리가 둥글게 헤더 위로 올라온다 */
+.hk-hero ~ .city-home,.hk-hero ~ .view{position:relative;z-index:1;margin-top:-20px;border-radius:20px 20px 0 0}
+#view-stores{background:#fff!important}
+/* 버그 수정: 매장 목록이 따로 높이가 정해진 스크롤 상자였다(헤더·필터 아래 남은 칸만큼만 보임).
+   이제 화면 전체가 같이 내려가서 목록이 하단 내비 위까지 길게 보인다 */
+#view-stores{overflow:visible!important;flex:1 0 auto!important}
+.store-list{overflow:visible!important;flex:none!important;padding:6px 13px 90px!important;background:#fff}
+/* 도시·개수 줄 */
+.store-header{background:transparent!important;border:0!important;padding:12px 14px 0 19px!important;gap:11px!important;align-items:center!important}
+.store-back{display:inline-flex;align-items:center;gap:5px;font-size:15px!important;font-weight:800!important;color:#FF3900!important;letter-spacing:-.02em}
+.store-back svg{width:17px;height:17px;fill:none;stroke:#FF3900;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.store-city-name{font-size:18px!important;font-weight:800!important;color:#141414!important;letter-spacing:-.03em}
+.store-count{font-size:15px!important;font-weight:800!important;color:#FF3900!important}
+/* 카드사·업종 필터 칩 */
+.flt-wrap{background:transparent!important;border:0!important;padding:5px 0 0!important}
+.flt-row{gap:6px!important;padding:3px 13px 4px!important}
+.flt-chip{display:inline-flex;align-items:center;gap:6px;height:29px;padding:0 11px 0 10px;border:1px solid #F0ECEB;border-radius:999px;background:#fff;color:#2A2A2A;font-size:12px;font-weight:500;letter-spacing:-.02em;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.flt-chip.on{background:#FFE7E3;border-color:#FFE7E3;color:#141414;font-weight:800;box-shadow:none}
+.flt-chip .ic{width:16px;height:16px;flex-shrink:0;fill:none;stroke:#2A2A2A;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.flt-chip.all .ic{width:18px;height:18px;stroke:#FF3900}
+#flt-cards .flt-chip{font-weight:700;font-size:11.5px;gap:5px}
+.flt-chip.all{font-size:12.5px!important;font-weight:800!important}
+.flt-chip .lg{display:block;flex-shrink:0;background-position:center;background-size:contain;background-repeat:no-repeat}
+.lg-visa-c{width:25px;height:9px;background-image:url('img/pay/visa-c.svg')}
+.lg-mc-c{width:19px;height:12px;background-image:url('img/pay/mastercard-mark.svg')}
+.lg-jcb-c{width:18px;height:14px;background-image:url('img/pay/jcb-c.svg')}
+.lg-amex-c{width:15px;height:15px;background-image:url('img/pay/amex-c.svg')}
+.lg-up-c{width:18px;height:11px;background-image:url('img/pay/unionpay-c.svg')}
+.lg-ali-c{width:15px;height:15px;background:#1677FF;-webkit-mask:url('img/pay/alipay.svg') center/contain no-repeat;mask:url('img/pay/alipay.svg') center/contain no-repeat}
+.lg-wc-c{width:16px;height:16px;background:#07C160;-webkit-mask:url('img/pay/wechat.svg') center/contain no-repeat;mask:url('img/pay/wechat.svg') center/contain no-repeat}
+.flt-chip .t-amex{color:#2E77BC;font-weight:800;font-size:10.5px}
+/* 매장 카드 */
+.store-item{margin:0 0 9px!important;padding:9px!important;gap:11px!important;align-items:flex-start!important;border:1px solid #F4F1F0!important;border-radius:14px!important;background:#fff!important;box-shadow:0 2px 10px rgba(0,0,0,.05)!important}
+.store-item:hover{background:#fff!important}
+.store-thumb{width:75px!important;height:75px!important;border-radius:9px!important;background:#F3F4F6!important}
+.store-info{padding-top:2px}
+.store-top{display:flex;align-items:center;gap:6px}
+.store-top .store-name{flex:1;min-width:0;margin:0!important}
+.store-name{font-size:16px!important;font-weight:800!important;color:#141414!important;letter-spacing:-.03em}
+.store-name>span{font-size:12.5px!important;font-weight:400!important;letter-spacing:0}
+.store-km{flex-shrink:0;font-size:13px;color:#555;font-weight:500}
+.store-chev{flex-shrink:0;width:7px;height:7px;margin:0 3px 0 2px;border-right:1.7px solid #555;border-top:1.7px solid #555;transform:rotate(45deg)}
+.store-sub{font-size:12.5px!important;color:#8A8A8A!important;margin:3px 0 6px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.store-cards-row{gap:6px 5px!important}
+.sc{display:inline-flex!important;align-items:center;gap:4px;height:16px;padding:0 8px!important;border-radius:999px!important;font-size:10px!important;font-weight:800!important;line-height:1;white-space:nowrap;letter-spacing:-.01em}
+.sc .lg{display:block;flex-shrink:0;background-position:center;background-size:contain;background-repeat:no-repeat}
+.sc-visa{background:#1A1F71!important}
+.sc-visa .lg{width:24px;height:8px;background:#fff;-webkit-mask:url('img/pay/visa-c.svg') center/contain no-repeat;mask:url('img/pay/visa-c.svg') center/contain no-repeat}
+.sc-master{background:linear-gradient(90deg,#E5141F,#F0412D)!important;padding-left:5px!important;font-size:8.5px!important;font-weight:700!important}
+.sc-master .lg{width:16px;height:10px;background-image:url('img/pay/mastercard-mark.svg')}
+.sc-jcb{background:linear-gradient(100deg,#163F86 0%,#0F6A3A 30%,#11793F 88%,#8E1F2A 100%)!important;font-size:11px!important}
+.sc-amex{background:#2E78D2!important}
+.sc-union{background:linear-gradient(90deg,#D9132E,#EC3A55)!important;padding-left:5px!important;font-size:9.5px!important}
+.sc-union .lg{width:15px;height:10px;background-image:url('img/pay/unionpay-c.svg')}
+.sc-alipay{background:#1677FF!important;padding-left:6px!important}
+.sc-alipay .lg{width:10px;height:10px;background:#fff;-webkit-mask:url('img/pay/alipay.svg') center/contain no-repeat;mask:url('img/pay/alipay.svg') center/contain no-repeat}
+.sc-wechat{background:#07C160!important;padding-left:6px!important}
+.sc-wechat .lg{width:11px;height:11px;background:#fff;-webkit-mask:url('img/pay/wechat.svg') center/contain no-repeat;mask:url('img/pay/wechat.svg') center/contain no-repeat}
+.sc-tlog,.sc-twallet{background:#FCEDB9!important;color:#2B2410!important;padding:0 10px!important;height:17px}
+.sc-cardok{background:#EDF1F7!important;color:#2A2A2A!important}
+.sc-cash{background:#F3EBDD!important;color:#2A2A2A!important}
+.sc-cardok,.sc-cash{height:19px;padding:0 10px!important;gap:5px;font-weight:700!important}
+.sc .ic{width:13px;height:13px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.store-list .store-empty,.store-list .store-loading{padding-top:40px}
+#stay-row{margin:10px 13px 0!important}
+</style>
 </head>
 <body>
 <div class="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●</span></div>
+  <!-- 위쪽 그림 헤더(뒤로·제목·검색창). 그림은 img/bg/search-header.jpg, 없으면 연분홍 그라데이션만 -->
+  <div class="hk-hero">
   <div class="topbar">
-    <button class="back-btn" id="main-back" onclick="handleBack()">←</button>
+    <button class="back-btn" id="main-back" onclick="handleBack()"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
     <span style="font-size:13px;font-weight:700;color:#111" id="top-title">매장 찾기</span>
     <div style="width:30px"></div>
   </div>
@@ -249,6 +334,7 @@ function payStatePill(s) {
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
       <input id="search-inp" placeholder="나라명, 도시명, 상호명으로 검색" oninput="doSearch(this.value)"/>
     </div>
+  </div>
   </div>
 
   <div class="city-home" id="city-img-grid">
@@ -281,7 +367,7 @@ function payStatePill(s) {
   <!-- 매장 목록 뷰 -->
   <div class="view" id="view-stores">
     <div class="store-header">
-      <button class="store-back" id="store-back-btn" onclick="showCityView()">← 도시 선택</button>
+      <button class="store-back" id="store-back-btn" onclick="showCityView()"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>도시 선택</button>
       <span class="store-city-name" id="store-city-name"></span>
       <span class="store-count" id="store-count"></span>
     </div>
@@ -601,6 +687,11 @@ function _bindStoreScroll(){
   el.addEventListener('scroll', function(){
     if(el.scrollTop + el.clientHeight >= el.scrollHeight - 300) loadMoreStores(el);
   });
+  // 목록이 더는 따로 스크롤되지 않고 화면 전체(.phone)가 내려가므로 거기도 본다
+  var ph=document.querySelector('.phone');
+  if(ph) ph.addEventListener('scroll', function(){
+    if(_inStores() && ph.scrollTop + ph.clientHeight >= ph.scrollHeight - 300) loadMoreStores(el);
+  });
 }
 // 필터·정렬이 맞으려면 그 도시 매장이 다 있어야 해서, 끝까지 이어 받는다
 function loadMoreStores(listEl, first){
@@ -670,12 +761,55 @@ function distKm(a, b){
   return 2*R*Math.asin(Math.sqrt(h));
 }
 
+// 칩·배지에 쓰는 선 아이콘(24칸 기준, 굵기는 CSS)
+var _IC={
+  card:'<rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M3 10h18M6.5 14.5h4"/>',
+  cash:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/>',
+  all:'<path d="M3.5 9.5 5 4.5h14l1.5 5"/><path d="M3.5 9.5a2.8 2.8 0 0 0 5.67 0 2.8 2.8 0 0 0 5.66 0 2.8 2.8 0 0 0 5.67 0"/><path d="M5 12.5V20h14v-7.5M10 20v-4.5h4V20"/>',
+  '식당':'<path d="M6 3v6a2 2 0 0 0 4 0V3M8 3v18M17.5 21V3c-2 0-3.5 2.5-3.5 6v4h3.5"/>',
+  '카페':'<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c-.8 1 .8 2 0 3M12 3.5c-.8 1 .8 2 0 3"/>',
+  '술집':'<path d="M5 9h10v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M15 11.5h2a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2h-2"/><path d="M5 9a2.5 2.5 0 0 1 2.5-4 3 3 0 0 1 5 0A2.5 2.5 0 0 1 15 9M8.5 12.5v5M11.5 12.5v5"/>',
+  '패스트푸드':'<path d="M4 11c0-3.6 3.6-6 8-6s8 2.4 8 6z"/><path d="M3 14.5h18"/><path d="M4.5 17.5h15v.5a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 18z"/>',
+  '편의점':'<path d="M4 10v10h16V10"/><path d="M3 10h18l-1.5-5h-15z"/><path d="M8 14h3v3H8zM14 14h2v6"/>',
+  '쇼핑':'<path d="M5.5 8h13l-1 13h-11z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+  '마트':'<path d="M3 4h2.5l2.2 11h10.6l2-8H6.3"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="16.5" cy="19.5" r="1.3"/>',
+  '입장권':'<path d="M3 7h18v3.2a1.8 1.8 0 0 0 0 3.6V17H3v-3.2a1.8 1.8 0 0 0 0-3.6z"/><path d="M14.5 7v2M14.5 11v2M14.5 15v2"/>',
+  '호텔':'<path d="M3 5v14M3 15h18v4"/><path d="M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+  'ATM':'<rect x="3" y="4" width="18" height="10" rx="1.5"/><path d="M7 14v6h10v-6M10 9h4M12 17h.01"/>',
+  '기타':'<circle cx="12" cy="12" r="9"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>',
+  tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="7.5" r="1.2"/>'
+};
+function _ic(k){ return '<svg class="ic" viewBox="0 0 24 24">'+(_IC[k]||_IC.tag)+'</svg>'; }
+// 카드사 필터 칩 안쪽: 흰 칩 위 실제 브랜드 로고(로고 없는 항목은 글자만)
+function _cardChip(c){
+  switch(c){
+    case 'VISA': return '<i class="lg lg-visa-c"></i>';
+    case 'MASTER': return '<i class="lg lg-mc-c"></i>MASTER';
+    case 'JCB': return '<i class="lg lg-jcb-c"></i>';
+    case 'AMEX': return '<i class="lg lg-amex-c"></i><span class="t-amex">AMEX</span>';
+    case 'UnionPay': return '<i class="lg lg-up-c"></i>UnionPay';
+    case '알리페이': return '<i class="lg lg-ali-c"></i>알리페이';
+    case '위챗페이': return '<i class="lg lg-wc-c"></i>위챗페이';
+    case '현금': return _ic('cash')+'현금';
+    default: return c;
+  }
+}
+// 매장 카드의 결제수단 배지(색 배경 알약)
+function _payBadge(c, cl){
+  var inner=c;
+  if(c==='VISA') inner='<i class="lg"></i>';
+  else if(c==='MASTER'||c==='UnionPay'||c==='알리페이'||c==='위챗페이') inner='<i class="lg"></i>'+c;
+  else if(cl==='sc-cardok') inner=_ic('card')+c;
+  else if(cl==='sc-cash') inner=_ic('cash')+c;
+  return '<span class="sc '+cl+'" title="'+c+'" aria-label="'+c+'">'+inner+'</span>';
+}
+
 function buildFilters(){
   if(!_pageState) return;
   var rows=_pageState.rows;
-  var cardHtml='<button class="flt-chip'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">카드 전체</button>'
+  var cardHtml='<button class="flt-chip all'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">'+_ic('card')+'카드 전체</button>'
     + FLT_CARDS.filter(function(c){ return rows.some(function(s){ return payMatch(s, c); }); })
-      .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" onclick="pickCard(\''+c+'\')">'+c+'</button>'; }).join('');
+      .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" aria-label="'+c+'" onclick="pickCard(\''+c+'\')">'+_cardChip(c)+'</button>'; }).join('');
   var cats=[];
   rows.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
   // 숙소 매장이 없는 도시에도 숙소 버튼은 둔다(눌러서 트립닷컴 숙소 예약으로 갈 수 있게). 도시를 골랐을 때만
@@ -683,8 +817,8 @@ function buildFilters(){
   // 홈·더보기와 같은 순서로 (목록에 없는 업종은 맨 뒤)
   var CAT_ORDER=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
   cats.sort(function(a,b){ var x=CAT_ORDER.indexOf(a), y=CAT_ORDER.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
-  var catHtml='<button class="flt-chip'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">업종 전체</button>'
-    + cats.map(function(c){ return '<button class="flt-chip'+(_catOn(c)?' on':'')+'" onclick="pickCat(\''+c+'\')">'+(c==='호텔'?'숙소':c)+'</button>'; }).join('');
+  var catHtml='<button class="flt-chip all'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">'+_ic('all')+'업종 전체</button>'
+    + cats.map(function(c){ return '<button class="flt-chip'+(_catOn(c)?' on':'')+'" onclick="pickCat(\''+c+'\')">'+_ic(c)+(c==='호텔'?'숙소':c)+'</button>'; }).join('');
   document.getElementById('flt-cards').innerHTML=rows.length?cardHtml:'';
   document.getElementById('flt-cats').innerHTML=rows.length?catHtml:'';
 }
@@ -734,13 +868,14 @@ function renderStores(stores, el, city, showDist, filtered){
   el.innerHTML=stores.map(function(s){
     var _t=storeThumb(s); var thumb=_t?'<img src="'+_t+'" loading="eager"/>':'';
     var cards=payStatePill(s).replace(/cpill/,"sc")+(s.payOk||s.cards||[]).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((s.payNo||[]).indexOf('카드불가')>-1||(s.payOk||[]).indexOf('현금만')>-1)); }).map(function(c){
-      var cl=CARD_MAP[c]||''; return cl?'<span class="sc '+cl+'">'+c+'</span>':'';
+      var cl=CARD_MAP[c]||''; return cl?_payBadge(c, cl):'';
     }).join('');
     return '<div class="store-item" onclick="openStore(\''+s.id+'\')">'
       +'<div class="store-thumb">'+thumb+'</div>'
       +'<div class="store-info">'
-      +'<div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
-      +'<div class="store-sub">'+(showDist&&s._km!=null?'<span class="store-dist">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · '))+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
+      +'<div class="store-top"><div class="store-name">'+(window._esc?window._esc(s.name):String(s.name||''))+localName(s)+'</div>'
+      +(showDist&&s._km!=null?'<span class="store-km">'+(s._km<1?Math.round(s._km*1000)+'m':s._km.toFixed(1)+'km')+'</span>':'')+'<span class="store-chev"></span></div>'
+      +'<div class="store-sub">'+(((s.category==='호텔'||s.cuisine===s.category)&&s.cuisine)?s.cuisine:[s.cuisine, (s.category==='호텔'?'숙소':s.category)].filter(Boolean).join(' · '))+(s.address?' · '+s.address.split(',')[0]:'')+'</div>'
       +'<div class="store-cards-row">'+cards+((window.haekaBook&&haekaBook(s))?'<span class="sc" style="background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE">온라인 예매</span>':'')+'</div>'
       +'</div></div>';
   }).join('');

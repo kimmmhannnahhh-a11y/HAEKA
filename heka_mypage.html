@@ -182,6 +182,86 @@ body,.phone,.scroll-wrap{background:#fff!important}
 .menu-item{background:#fff!important;border-radius:0!important;padding:16px 18px!important;margin:0!important;border-bottom:1px solid #F3F4F6!important;width:100%!important}
 .menu-item:hover{background:#FAFAFA!important}
 .menu-ico,.menu-badge,.menu-toggle,.social-ico,.zzim-card,.country-chip{border-radius:0!important}
+
+/* ── 마이페이지 시안(2026-10-20) ── */
+.scroll-wrap.mp{background:#FBF8F7!important;font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1A1A1A;letter-spacing:-.02em}
+.mp button{font-family:inherit}
+.mp svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* 상단: 연분홍~살구 그라데이션 위에 그림(오른쪽 정렬)을 겹친다. 그림 파일이 없어도 그라데이션은 보인다 */
+.mp-hero{position:relative;padding:0 0 4px;background:
+  linear-gradient(180deg,rgba(251,248,247,0) 62%,#FBF8F7 100%) right top/100% 128px no-repeat,
+  linear-gradient(90deg,#FCEAE4 0%,rgba(252,234,228,.85) 34%,rgba(252,234,228,0) 62%) left top/100% 128px no-repeat,
+  url('img/bg/mypage-header.jpg') right top/auto 128px no-repeat,
+  linear-gradient(180deg,#FCE7E1 0%,#FDEEE8 70px,#FDF4F0 120px,#FBF8F7 170px)}
+.mp-head{position:relative;height:50px;display:flex;align-items:center;justify-content:center}
+.mp-head-title{font-size:18px;font-weight:800;color:#1A1A1A;letter-spacing:-.03em}
+.mp-round{position:absolute;top:9px;width:32px;height:32px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1A1A1A;padding:0}
+.mp-round:first-child{left:14px}
+.mp-round:last-child{right:14px}
+.mp-round svg{width:18px;height:18px;stroke-width:2.2}
+.mp-profile{display:flex;align-items:center;gap:15px;padding:4px 19px 0}
+.mp-avatar-wrap{position:relative;flex-shrink:0}
+.mp-avatar{width:56px;height:56px;border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;overflow:hidden}
+.mp-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.mp-avatar-cam{position:absolute;right:-7px;bottom:-6px;width:21px;height:21px;border-radius:50%;background:#fff;border:1.5px solid #F0453A;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#F0453A}
+.mp-avatar-cam svg{width:11px;height:11px;stroke-width:2.2}
+.mp-pinfo{flex:1;min-width:0}
+.mp-nick-row{display:flex;align-items:center;gap:7px}
+.mp-nick{font-size:19px;font-weight:800;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.03em}
+.mp-nick-edit{background:none;border:0;padding:2px;cursor:pointer;display:flex;align-items:center;color:#9A9A9A;flex-shrink:0}
+.mp-nick-edit svg{width:16px;height:16px}
+.mp-badge-row{display:flex;align-items:center;gap:7px;margin-top:5px}
+.mp-badge{font-size:13px;color:#8A8A8A;font-weight:500}
+.mp-badge-info{background:none;border:0;padding:0;cursor:pointer;display:flex;align-items:center;color:#B5B5B5}
+.mp-badge-info svg{width:14px;height:14px;stroke-width:1.8}
+.mp-stats{display:flex;gap:7px;padding:16px 17px 0}
+.mp-stat{flex:1;min-width:0;height:54px;display:flex;align-items:center;padding:0 10px;border:1px solid #F6BDB5;border-radius:12px;background:rgba(255,255,255,.72);cursor:pointer;transition:background .15s}
+.mp-stat:active{background:#FFF1EE}
+.mp-stat-ico{width:36px;height:36px;border-radius:50%;background:#FDE9E6;display:flex;align-items:center;justify-content:center;color:#F0453A;flex-shrink:0}
+.mp-stat-ico svg{width:18px;height:18px}
+.mp-stat-txt{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.mp-stat-num{font-size:20px;font-weight:800;color:#F0453A;letter-spacing:-.01em;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.mp-stat-lbl{font-size:12px;color:#5F5F5F;font-weight:500;margin-top:3px}
+/* 최근 본 항목 */
+.mp-recent{margin:13px 7px 0;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.045);padding:12px 0 10px}
+.mp-recent-head{display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 9px;margin-bottom:9px}
+.mp-recent-title{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:800;color:#1A1A1A}
+.mp-recent-title svg{width:19px;height:19px;color:#F0453A;stroke-width:2}
+.mp-recent-clear{display:flex;align-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;font-size:12.5px;color:#9A9A9A}
+.mp-recent-clear svg{width:13px;height:13px;stroke-width:2}
+.mp-recent-row{display:flex;gap:7px;overflow-x:auto;padding:0 9px 4px;scrollbar-width:none}
+.mp-recent-row::-webkit-scrollbar{display:none}
+.rv-card{position:relative;flex:0 0 117px;border-radius:10px;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.09);overflow:hidden;cursor:pointer}
+.rv-img{width:100%;height:75px;background:#F4F4F4 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:24px;color:#9A9A9A;font-weight:700}
+.rv-x{position:absolute;top:6px;right:6px;width:17px;height:17px;border-radius:50%;background:rgba(70,70,70,.62);border:1.3px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;z-index:2;color:#fff}
+.rv-x svg{width:8px;height:8px;stroke-width:2.6}
+.rv-body{padding:7px 5px 8px 6px}
+.rv-name{line-height:18px;height:18px;font-size:13.5px;font-weight:700;color:#1A1A1A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-time{font-size:11px;line-height:14px;color:#A8A8A8;margin-top:1px}
+.rv-pays{display:flex;gap:3px;margin-top:6px;overflow-x:auto;scrollbar-width:none}
+.rv-pays::-webkit-scrollbar{display:none}
+.rv-pay{flex-shrink:0;display:inline-flex;align-items:center;gap:2px;height:15px;padding:0 3px 0 2px;border-radius:4px;border:1px solid var(--pb);background:var(--pg);color:var(--pc);font-size:8px;font-weight:600;white-space:nowrap;letter-spacing:-.01em}
+.rv-pay.nologo{padding-left:4px}
+.rv-pay i{display:block;width:10px;height:10px;background:var(--pc);-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.rv-pay img{display:block;width:auto;height:9px;max-width:15px}
+/* 메뉴 카드 */
+.mp-menu{display:flex;align-items:center;gap:13px;margin:7px 13px 0;padding:6px 12px 6px 7px;min-height:44px;background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.045);cursor:pointer}
+.mp-recent+.mp-menu{margin-top:10px}
+.mp-menu:active{background:#FFF8F7}
+.mp-menu-ico{width:32px;height:32px;border-radius:9px;background:#FDECE9;display:flex;align-items:center;justify-content:center;color:#F0453A;flex-shrink:0}
+.mp-menu-ico svg{width:18px;height:18px}
+.mp-menu-ico svg.fill{fill:#F0453A;stroke:none}
+.mp-menu-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.mp-menu-title{font-size:15px;font-weight:600;color:#1F1F1F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-menu-sub{font-size:11.5px;color:#9A9A9A;margin-top:1px}
+.mp-menu-pill{flex-shrink:0;font-size:10px;font-weight:600;color:#F0453A;background:#FDE8E5;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.mp-arr{width:15px;height:15px;color:#B0B0B0;flex-shrink:0}
+/* 특허 */
+.mp-patent{display:flex;align-items:center;gap:10px;margin:7px 14px 16px;padding:8px 12px;min-height:57px;border:1.5px solid #F5CCA3;border-radius:12px;background:linear-gradient(90deg,#FFF5EA 0%,#FFFBF6 55%,#FFFDFB 100%)}
+.mp-patent-img{width:48px;height:48px;object-fit:contain;flex-shrink:0}
+.mp-patent-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.mp-patent-title{font-size:15px;font-weight:800;color:#1F1F1F}
+.mp-patent-sub{font-size:11.5px;color:#7A7A7A;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
 <script type="module">
@@ -229,7 +309,7 @@ onAuthStateChanged(_auth, async function(u){
         // 다른 기기에서 올린 프로필 사진 복원
         if(uData.avatar) {
           var avEl = document.getElementById("avatar");
-          if(avEl) avEl.innerHTML = '<img src="'+uData.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+          if(avEl) avEl.innerHTML = '<img src="'+uData.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
           if(typeof saveAvatar === "function") saveAvatar(uData.avatar);
         }
       }
@@ -380,81 +460,94 @@ function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
 <div class="phone" id="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
-  <!-- 상단바 -->
-  <div class="topbar">
-    <button class="back-btn" onclick="window.location.href='heka_home_v5.html'">←</button>
-    <span class="topbar-title">마이페이지</span>
-    <button class="gear-btn" onclick="openSettings()">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    </button>
-  </div>
+  <div class="scroll-wrap mp">
 
-  <div class="scroll-wrap">
+    <!-- 상단 그림 배경 + 프로필 + 통계 -->
+    <div class="mp-hero">
+      <div class="mp-head">
+        <button class="mp-round" aria-label="뒤로" onclick="window.location.href='heka_home_v5.html'">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        </button>
+        <span class="mp-head-title">마이페이지</span>
+        <button class="mp-round" aria-label="설정" onclick="openSettings()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </button>
+      </div>
 
-    <!-- 프로필 카드 -->
-    <div class="profile-card">
-      <div class="profile-top">
-        <div class="avatar-wrap">
-          <div class="avatar" id="avatar" onclick="document.getElementById('avatar-input').click()">🧳</div>
-          <div class="avatar-cam" onclick="document.getElementById('avatar-input').click()">
+      <div class="mp-profile">
+        <div class="mp-avatar-wrap">
+          <div class="mp-avatar" id="avatar" onclick="document.getElementById('avatar-input').click()">🧳</div>
+          <div class="mp-avatar-cam" onclick="document.getElementById('avatar-input').click()">
             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </div>
           <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="changeAvatar(this)"/>
         </div>
-        <div class="profile-info">
-          <div class="nick-row">
-            <span class="nick" id="nick-txt">로딩 중...</span>
-            <button class="nick-edit-btn" onclick="openNickEdit()">
+        <div class="mp-pinfo">
+          <div class="mp-nick-row">
+            <span class="mp-nick" id="nick-txt">로딩 중...</span>
+            <button class="mp-nick-edit" aria-label="닉네임 변경" onclick="openNickEdit()">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
           </div>
-          <div class="badge-row">
-            <span class="badge-txt" id="badge-txt">여행 새싹</span>
-            <button onclick="openBadgeInfo()" style="background:none;border:none;cursor:pointer;padding:0 0 0 4px;opacity:0.5;display:flex;align-items:center">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="mp-badge-row">
+            <span class="mp-badge" id="badge-txt">여행 새싹</span>
+            <button class="mp-badge-info" aria-label="뱃지 안내" onclick="openBadgeInfo()">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </button>
           </div>
         </div>
       </div>
-      <div class="stats-row">
-        <div class="stat-box" onclick="openMyList('report')" style="cursor:pointer">
-          <div class="stat-num" id="stat-report">-</div>
-          <div class="stat-lbl">결제 제보</div>
+
+      <div class="mp-stats">
+        <div class="mp-stat" onclick="openMyList('report')">
+          <span class="mp-stat-ico"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><line x1="2.5" y1="10" x2="21.5" y2="10"/><line x1="15" y1="15" x2="18" y2="15"/></svg></span>
+          <span class="mp-stat-txt"><span class="mp-stat-num" id="stat-report">-</span><span class="mp-stat-lbl">결제 제보</span></span>
         </div>
-        <div class="stat-box" onclick="openMyList('place')" style="cursor:pointer">
-          <div class="stat-num" id="stat-place">-</div>
-          <div class="stat-lbl">등록한 장소</div>
+        <div class="mp-stat" onclick="openMyList('place')">
+          <span class="mp-stat-ico"><svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <span class="mp-stat-txt"><span class="mp-stat-num" id="stat-place">-</span><span class="mp-stat-lbl">등록한 장소</span></span>
         </div>
       </div>
     </div>
 
     <!-- 최근 본 항목 -->
-    <div id="recent-head" style="display:none;justify-content:space-between;align-items:center;padding:12px 14px 7px;margin-top:10px">
-      <span style="font-size:13px;font-weight:500;color:#111">최근 본 항목</span>
-      <span style="font-size:11px;color:#999;cursor:pointer" onclick="clearRecent()">전체 삭제</span>
-    </div>
-    <div id="recent-row" style="display:none;flex-direction:row;gap:6px;overflow-x:auto;padding:0 14px 10px;scrollbar-width:none"></div>
-
-    <!-- 저장한 글 -->
-    <div class="menu-item" onclick="openSavedPosts()">
-      <div class="menu-txt"><div class="menu-title">내가 찜한 여행톡</div></div>
-      <span class="menu-arr">›</span>
+    <div class="mp-recent" id="recent-card" style="display:none">
+      <div class="mp-recent-head" id="recent-head">
+        <span class="mp-recent-title"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>최근 본 항목</span>
+        <button class="mp-recent-clear" onclick="clearRecent()">전체 삭제<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="mp-recent-row" id="recent-row"></div>
     </div>
 
-    <!-- 고객센터 -->
-    <div class="menu-item" onclick="openNotice()">
-      <div class="menu-txt"><div class="menu-title">공지사항</div></div>
-      <span class="menu-arr">›</span>
+    <!-- 메뉴 -->
+    <div class="mp-menu" onclick="openSavedPosts()">
+      <span class="mp-menu-ico"><svg viewBox="0 0 24 24" class="fill"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>
+      <span class="mp-menu-txt"><span class="mp-menu-title">내가 찜한 여행톡</span></span>
+      <svg class="mp-arr" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
     </div>
-    <div class="menu-item" onclick="openInvite()">
-      <div class="menu-txt"><div class="menu-title">친구 초대하기</div></div>
-      <span class="menu-arr">›</span>
+    <div class="mp-menu" onclick="openNotice()">
+      <span class="mp-menu-ico"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></span>
+      <span class="mp-menu-txt"><span class="mp-menu-title">공지사항</span></span>
+      <svg class="mp-arr" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
     </div>
-    <div class="menu-item" onclick="openInquiry()" style="border-bottom:none">
-      <div class="menu-txt"><div class="menu-title">1:1 문의 / 오류제보</div><div class="menu-sub">서비스 불편·오류·제안 접수</div></div>
-      <span class="menu-arr">›</span>
+    <div class="mp-menu" onclick="openInvite()">
+      <span class="mp-menu-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></span>
+      <span class="mp-menu-txt"><span class="mp-menu-title">친구 초대하기</span></span>
+      <span class="mp-menu-pill">친구와 함께 더 편리한 여행!</span>
+      <svg class="mp-arr" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
     </div>
-    <div style="text-align:center;font-size:10.5px;color:#C4C4C4;font-weight:500;letter-spacing:-.01em;padding:22px 16px 10px;line-height:1.6">특허 제10-2344982호<br>해외 신용카드 결제가능 매장 검색 서비스 제공 시스템</div>
+    <div class="mp-menu" onclick="openInquiry()">
+      <span class="mp-menu-ico"><svg viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 012 2v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a9 9 0 0118 0v7a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3"/><path d="M21 16v2a4 4 0 01-4 4h-5"/></svg></span>
+      <span class="mp-menu-txt"><span class="mp-menu-title">1:1 문의 / 오류제보</span><span class="mp-menu-sub">서비스 불편·오류·제안 접수</span></span>
+      <svg class="mp-arr" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+
+    <!-- 특허 -->
+    <div class="mp-patent">
+      <img class="mp-patent-img" src="img/bg/patent-shield.png" alt="" onerror="this.remove()"/>
+      <span class="mp-patent-txt"><span class="mp-patent-title">특허 제10-2344982호</span><span class="mp-patent-sub">해외 신용카드 결제가능 매장 검색 서비스 제공 시스템</span></span>
+      <svg class="mp-arr" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
 
   </div>
 
@@ -725,7 +818,7 @@ function init() {
 
   // 아바타 복원 (IndexedDB)
   loadAvatar(function(src) {
-    document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
   });
   document.getElementById('nick-txt').textContent = userData.nick;
   document.getElementById('stat-report').textContent = userData.reportCount;
@@ -744,55 +837,85 @@ function catEmoji(c){return c?c.slice(0,1):'店';}
 function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
 function timeAgo(ts){if(!ts)return'방금 전';var t=ts.toMillis?ts.toMillis():(typeof ts==='number'?ts:Date.now());var d=Math.floor((Date.now()-t)/60000);if(d<1)return'방금 전';if(d<60)return d+'분 전';if(d<1440)return Math.floor(d/60)+'시간 전';return Math.floor(d/1440)+'일 전';}
 
+// 결제수단 배지: 로고 파일이 있는 것만 로고, 단색 로고는 브랜드색으로 칠한다
+var PAY_BADGES = {
+  '알리페이': {t:'Alipay', c:'#1677FF', g:'#EEF5FF', b:'#BFD8FF', m:'img/pay/alipay.svg'},
+  '위챗페이': {t:'WeChat Pay', c:'#07A350', g:'#EDFAF2', b:'#AEE6C4', m:'img/pay/wechat.svg', mc:'#07C160'},
+  'VISA': {t:'VISA', c:'#1A1F71', g:'#F1F2FA', b:'#C9CCE8', i:'img/pay/visa-c.svg'},
+  'MASTER': {t:'Mastercard', c:'#333', g:'#FFF5EE', b:'#F6CFB4', i:'img/pay/mastercard-mark.svg'},
+  'JCB': {t:'JCB', c:'#0A5F38', g:'#EEF8F2', b:'#B5DEC6', i:'img/pay/jcb-c.svg'},
+  'AMEX': {t:'AMEX', c:'#007BC1', g:'#EEF7FD', b:'#B5DAF0', i:'img/pay/amex-c.svg'},
+  'UnionPay': {t:'UnionPay', c:'#C8102E', g:'#FDF0F1', b:'#F2BEC5', i:'img/pay/unionpay-c.svg'},
+  '트래블로그': {t:'트래블로그', c:'#E05E00', g:'#FFF4EC', b:'#F8CDAE'},
+  '트래블월렛': {t:'트래블월렛', c:'#9A7D06', g:'#FCF8E8', b:'#E9DC9F'}
+};
+function payBadgeHtml(c) {
+  var _e = window._esc || function(x){return x==null?'':String(x);};
+  var p = PAY_BADGES[c];
+  if (!p) return '';
+  var st = '--pc:'+p.c+';--pg:'+p.g+';--pb:'+p.b;
+  var logo = '';
+  if (p.m) { logo = '<i style="-webkit-mask-image:url('+p.m+');mask-image:url('+p.m+');background:'+(p.mc||p.c)+'"></i>'; }
+  else if (p.i) { logo = '<img src="'+p.i+'" alt="" onerror="this.remove()">'; }
+  return '<span class="rv-pay'+(logo?'':' nologo')+'" style="'+st+'">'+logo+_e(p.t)+'</span>';
+}
+
 function renderRecent() {
+  var box = document.getElementById('recent-card');
+  var row = document.getElementById('recent-row');
   try {
     var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
-    var row = document.getElementById('recent-row');
-    var head = document.getElementById('recent-head');
-    if (!recent.length) { head.style.display='none'; row.style.display='none'; return; }
-    head.style.display = 'flex';
-    row.style.display = 'flex';
+    if (!Array.isArray(recent)) recent = [];
+    if (!recent.length) { box.style.display='none'; row.innerHTML=''; return; }
+    box.style.display = 'block';
     row.innerHTML = '';
     var _e = window._esc || function(x){return x==null?'':String(x);};
     var _u = window._safeImg || function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
-    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
-    recent.forEach(function(store) {
-      var cards = (store.payOk||[]).filter(function(c){return c!=='카드가능'&&c!=='현금가능'&&c!=='모르겠어요'&&c!=='현금만'&&c!=='카드불가';});
-      cards.sort(function(a,b){var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
-      var pillsHtml = cards.map(function(c){return'<span class="cpill" style="background:'+cardColor(c)+'">'+_e(c)+'</span>';}).join('');
+    var cardOrder = ['알리페이','위챗페이','VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛'];
+    recent.forEach(function(store, idx) {
+      if (!store || typeof store !== 'object') return;
+      var cards = Array.isArray(store.payOk) ? store.payOk.filter(function(c){ return !!PAY_BADGES[c]; }) : [];
+      cards = cards.filter(function(c,i){ return cards.indexOf(c) === i; });
+      cards.sort(function(a,b){ return cardOrder.indexOf(a) - cardOrder.indexOf(b); });
+      var pays = cards.map(payBadgeHtml).join('');
       var _ci = brandImage(store) || catImage(store.cuisine !== '기타' && store.cuisine) || catImage(store.category);
-      var imgSrc = (store.images&&store.images[0]) ? _u(store.images[0]) : _ci;
+      var photo = (Array.isArray(store.images) && store.images[0]) ? _u(store.images[0]) : '';
+      var imgSrc = photo || _ci;
       var imgHtml = imgSrc
-        ?'<div class="nimg" style="background-image:url(\''+imgSrc.replace(/'/g,'%27')+'\');background-position:center;background-size:cover;background-repeat:no-repeat"></div>'
-        :'<div class="nimg" style="background:'+catBg(store.category)+'">'+_e(catEmoji(store.category))+'</div>';
-      var fakeStore = Object.assign({},store);
-      if(typeof store.createdAt==='number') fakeStore.createdAt={toMillis:function(){return store.createdAt;}};
+        ? '<div class="rv-img" style="background-image:url(\''+String(imgSrc).replace(/'/g,'%27')+'\')"></div>'
+        : '<div class="rv-img" style="background:'+catBg(store.category)+'">'+_e(catEmoji(store.category))+'</div>';
+      var fakeStore = Object.assign({}, store);
+      if (typeof store.createdAt === 'number') fakeStore.createdAt = {toMillis:function(){return store.createdAt;}};
+      var when = store.viewedAt || fakeStore.createdAt;
       var card = document.createElement('div');
-      card.className = 'ncard';
-      card.style.position = 'relative';
-      var storeIdSafe = String(store.id||'').replace(/[^a-zA-Z0-9_-]/g,'');
+      card.className = 'rv-card';
       card.innerHTML = imgHtml
-        +'<button onclick="event.stopPropagation();removeRecent(\''+storeIdSafe+'\')" style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.45);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;padding:0"><svg width="9" height="9" viewBox="0 0 10 10" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>'
-        +'<div class="nbody"><div class="nn">'+_e(store.name)+'</div><div class="nm-time">'+_e(timeAgo(fakeStore.createdAt))+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+        + '<button class="rv-x" aria-label="삭제" onclick="event.stopPropagation();removeRecent('+idx+')"><svg viewBox="0 0 10 10"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5"/></svg></button>'
+        + '<div class="rv-body"><div class="rv-name">'+_e(store.name || store.nameLocal)+'</div><div class="rv-time">'+_e(timeAgo(when))+'</div>'
+        + (pays ? '<div class="rv-pays">'+pays+'</div>' : '')
+        + '</div>';
       card.onclick = function(){ openRecentDetail(fakeStore); };
       row.appendChild(card);
     });
-  } catch(e) {}
+  } catch(e) { console.log('최근 본 항목 표시 오류:', e); }
 }
 
 function clearRecent() {
-  localStorage.removeItem('haeka_recent');
-  document.getElementById('recent-head').style.display = 'none';
-  document.getElementById('recent-row').style.display = 'none';
+  try { localStorage.removeItem('haeka_recent'); } catch(e) {}
+  document.getElementById('recent-card').style.display = 'none';
+  document.getElementById('recent-row').innerHTML = '';
 }
 
-function removeRecent(id) {
+// 카드 하나만 지운다(목록 순서 번호로 찾는다 — 매장 id 에 특수문자가 있어도 정확히 지워지게)
+function removeRecent(idx) {
   try {
     var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
-    recent = recent.filter(function(s){ return s.id !== id; });
-    localStorage.setItem('haeka_recent', JSON.stringify(recent));
-    renderRecent();
+    if (!Array.isArray(recent)) recent = [];
+    recent.splice(idx, 1);
+    if (recent.length) localStorage.setItem('haeka_recent', JSON.stringify(recent));
+    else localStorage.removeItem('haeka_recent');
   } catch(e) {}
+  renderRecent();
 }
 
 // ── 뱃지 설명 ──
@@ -902,7 +1025,7 @@ function changeAvatar(input) {
   var r = new FileReader();
   r.onload = function(e) {
     resizeAvatar(e.target.result, function(src) {
-      document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      document.getElementById('avatar').innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
       saveAvatar(src);
       saveAvatarCloud(src);
     });

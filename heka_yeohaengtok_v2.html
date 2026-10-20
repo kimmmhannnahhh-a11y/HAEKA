@@ -116,23 +116,82 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 /* 상단 바가 흰색이라 흰 화살표가 안 보였다 → 회색 원 + 진한 화살표 */
 .topbar .back-btn{width:30px!important;height:30px!important;border-radius:50%!important;background:#F3F4F6!important;color:#111!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:16px!important;top:50%!important;transform:translateY(-50%)!important}
 </style>
+<style>
+/* ===== 10/20 여행톡 시안 디자인 ===== */
+body,.phone{background:#FDFAF5!important}
+.phone{box-shadow:none!important}
+body{font-family:Pretendard,'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+.talk-hero{position:relative;padding:0 0 1px;background:url('img/bg/talk-header.jpg') right top/auto 124px no-repeat,linear-gradient(180deg,#FCEEEA 0,#FDF2EC 70px,#FDF6F0 110px,#FDFAF5 150px)}
+.talk-head{position:relative;height:91px;padding:26px 16px 0 50px}
+.talk-back{position:absolute;left:13px;top:7px;width:28px;height:28px;border-radius:50%;background:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(120,60,40,.10);padding:0}
+.talk-back svg{width:14px;height:14px;stroke:#FD6E5F;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.talk-title{font-size:29px;line-height:1;font-weight:900;letter-spacing:-1.2px;color:#0A1033;margin:0}
+.talk-title b{color:#FE3B32;font-weight:900}
+.talk-desc{margin-top:7px;font-size:12.5px;line-height:14.5px;color:#5B606B;letter-spacing:-.2px;font-weight:500}
+.talk-hero .search-wrap{padding:0 13px}
+.talk-hero .search-box{height:37px;background:#fff!important;border:0!important;border-radius:999px;padding:0 3px 0 6px;gap:0;box-shadow:0 3px 14px rgba(150,90,70,.08),0 1px 3px rgba(0,0,0,.04)}
+.talk-hero .search-box:focus-within{background:#fff!important}
+.talk-hero .city-chip{height:26px;padding:0 9px 0 11px;gap:5px;border:1px solid #E7E4E1;border-radius:999px;background:#fff;font-size:12.5px;font-weight:700;color:#1F2430;letter-spacing:-.3px}
+.talk-hero .city-chip:hover{border-color:#E7E4E1;color:#1F2430}
+.talk-hero .city-chip svg{width:9px;height:9px;stroke:#6B7280;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.talk-sicon{width:13px;height:13px;margin:0 6px 0 11px;flex-shrink:0;stroke:#FF5A4A;fill:none;stroke-width:2.4;stroke-linecap:round}
+.talk-hero .search-input{font-size:12.5px;color:#1F2430;letter-spacing:-.3px}
+.talk-hero .search-input::placeholder{color:#A3A6AD}
+.talk-hero .search-btn{width:31px;height:31px;background:#FC4142;box-shadow:0 3px 8px rgba(252,65,66,.28)}
+.talk-hero .search-btn:hover{background:#FC4142}
+.talk-hero .search-btn svg{width:14px;height:14px;stroke-width:2.4}
+.talk-hero .search-result-bar{padding:8px 16px 0}
+.talk-hero .filt{gap:10px;padding:9px 13px 4px}
+.talk-hero .fb{height:26px;padding:0 13px;display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;background:#fff;color:#1F2430;font-size:12px;font-weight:500;letter-spacing:-.3px;box-shadow:0 2px 8px rgba(150,90,70,.09),0 1px 2px rgba(0,0,0,.03)}
+.talk-hero .fb:first-child{padding:0 19px}
+.talk-hero .fb:hover{color:#1F2430}
+.talk-hero .fb svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.talk-hero .fb.on{background:linear-gradient(180deg,#FF7E6E,#FC6E5E);color:#fff;font-weight:600;box-shadow:0 3px 8px rgba(252,100,85,.25)}
+.post-list{padding:7px 13px 80px;gap:8px}
+.fpost{padding:8px 10px 7px 12px;border-radius:12px;gap:12px;align-items:center;background:#fff;box-shadow:0 2px 10px rgba(150,100,80,.06),0 1px 2px rgba(0,0,0,.02)}
+.fpost:hover{transform:none;box-shadow:0 2px 10px rgba(150,100,80,.06),0 1px 2px rgba(0,0,0,.02)}
+.fpleft{gap:0}
+.fphead{gap:5px;height:22px}
+.fpav{width:22px;height:22px;background:#FDF1EC;font-size:0}
+.fpav svg{width:13px;height:13px}
+.fpu{font-size:12.5px;font-weight:700;color:#111;letter-spacing:-.3px;margin-left:3px}
+.fpd{font-size:11.5px;color:#9CA3AF;font-weight:500}
+.fpmain{gap:0}
+.fptagrow{display:flex;align-items:center;gap:8px;margin-top:5px;height:15px}
+.fptag{height:15px;padding:0 7px;font-size:10.5px;font-weight:700;letter-spacing:0}
+.new-dot{width:5px;height:5px;margin:0;background:#FC483B}
+.fptitle{margin-top:5px;font-size:15px;font-weight:800;line-height:20px;letter-spacing:-.5px;color:#111;display:block;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fpflag{height:13px;width:auto;border-radius:2px;vertical-align:-1px;margin-right:7px;box-shadow:0 0 0 .5px rgba(0,0,0,.06)}
+.fpbody{margin-top:2px;padding-right:18px;font-size:12.5px;line-height:16px;color:#868D99;letter-spacing:-.3px}
+.fpbottom{margin-top:6px;gap:18px;font-size:12.5px;color:#868D99;height:14px}
+.fpbottom .meta{gap:5px;font-weight:500}
+.fpbottom .meta svg{width:13px;height:13px;stroke:#868D99;stroke-width:1.7}
+.fpthumb{width:108px;height:108px;border-radius:10px}
+.fpthumb img{width:108px;height:108px}
+.write-fab{right:13px;bottom:80px;width:44px;height:44px;background:#FC5840;box-shadow:0 6px 16px rgba(252,88,64,.35),0 2px 5px rgba(0,0,0,.08)}
+.write-fab svg{width:20px;height:20px}
+@media (min-width:481px){.write-fab{right:13px;bottom:80px}}
+</style>
 </head>
 <body>
 <div class="phone-wrap">
 <div class="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
 
-  <div class="topbar">
-    <button class="back-btn" onclick="window.location.href='heka_home_v5.html'">←</button>
-    <span class="topbar-title">여행톡</span>
+  <div class="talk-hero">
+  <div class="talk-head">
+    <button class="talk-back" aria-label="뒤로" onclick="window.location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="11 5 4 12 11 19"/></svg></button>
+    <h1 class="talk-title">여행<b>톡</b></h1>
+    <div class="talk-desc">여행 정보부터 실시간 질문까지,<br>지금 바로 여행톡에서 이야기해요!</div>
   </div>
 
   <div class="search-wrap">
     <div class="search-box">
       <div class="city-chip" onclick="openPanel()">
         <span id="city-chip-txt">도시검색</span>
-        <span class="city-chip-arrow">∨</span>
+        <svg viewBox="0 0 24 24"><polyline points="5 9 12 16 19 9"/></svg>
       </div>
+      <svg class="talk-sicon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
       <input class="search-input" id="search-input" placeholder="지역, 일정, 여행 키워드 입력" type="text"
         onkeydown="if(event.key==='Enter'||event.keyCode===13) doSearch()"/>
       <button class="search-btn" onclick="doSearch()">
@@ -149,10 +208,11 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
 
   <div class="filt">
     <button class="fb on" onclick="toggleF(this)">전체</button>
-    <button class="fb" onclick="toggleF(this)">동행</button>
-    <button class="fb" onclick="toggleF(this)">맛집</button>
-    <button class="fb" onclick="toggleF(this)">날씨</button>
-    <button class="fb" onclick="toggleF(this)">정보</button>
+    <button class="fb" onclick="toggleF(this)"><svg viewBox="0 0 24 24"><path d="M12 2.5c.9 0 1.5.9 1.5 2V9.5l7.5 4.3v2l-7.5-2.3v4.6l2.3 1.7v1.6L12 20.4l-3.8 1V19.8l2.3-1.7v-4.6L3 15.8v-2l7.5-4.3V4.5c0-1.1.6-2 1.5-2z"/></svg>동행</button>
+    <button class="fb" onclick="toggleF(this)"><svg viewBox="0 0 24 24"><path d="M6 2.5v6a2.5 2.5 0 005 0v-6M8.5 2.5v19M17 21.5V2.5c-2.2 1.2-3.3 3.6-3.3 6.5v4.5H17"/></svg>맛집</button>
+    <button class="fb" onclick="toggleF(this)"><svg viewBox="0 0 24 24"><path d="M7 19.5h10.5a3.5 3.5 0 00.4-7 5 5 0 00-9.6-1A4 4 0 007 19.5z"/><path d="M10.2 8.4A3.6 3.6 0 0116.4 6M13.3 2.2v1.3M18.6 4.4l-.9.9M20.6 9.4h-1.3M6.5 4.3l.9.9"/></svg>날씨</button>
+    <button class="fb" onclick="toggleF(this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><line x1="12" y1="11" x2="12" y2="17"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg>정보</button>
+  </div>
   </div>
 
   <div class="post-list" id="post-list"></div>
@@ -318,16 +378,20 @@ function renderPosts(list){
     var dotHtml = isNew ? '<span class="new-dot"></span>' : '';
     var detailUrl = p.id ? 'heka_post_detail.html?id='+p.id : 'heka_post_detail.html';
     var onclickFn = p.id ? "markRead('"+p.id+"');location.href='"+detailUrl+"'" : "location.href='"+detailUrl+"'";
+    var fl = postFlag(p);
+    var titleTxt = fl ? fl.title : String(p.title||'');
+    var flagHtml = fl ? '<img class="fpflag" src="img/flags/'+fl.code+'.png" alt="" onerror="this.style.display=\'none\'"/>' : '';
     return '<div class="fpost" onclick="'+onclickFn+'">'
       + '<div class="fpleft">'
         + '<div class="fphead">'
-          + '<div class="fpav" data-uid="'+(p.uid||'')+'">'+p.av+'</div>'
+          + '<div class="fpav" data-uid="'+(p.uid||'')+'">'+DEFAULT_AV+'</div>'
           + '<span class="fpu">'+p.user+'</span>'
           + '<span class="fpd">·</span>'
           + '<span class="fpd">'+p.time+'</span>'
         + '</div>'
         + '<div class="fpmain">'
-          + '<div class="fptitle"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+'<span>'+(window._esc?window._esc(p.title):String(p.title||''))+'</span></div>'
+          + '<div class="fptagrow"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+'</div>'
+          + '<div class="fptitle">'+flagHtml+(window._esc?window._esc(titleTxt):titleTxt)+'</div>'
           + (p.body ? '<div class="fpbody">'+p.body+'</div>' : '')
           + '<div class="fpbottom">'
             + '<span class="meta'+(p.id&&likedSet.has(p.id)?' liked':'')+'">'+heartSvg+(p.likes||0)+'</span>'
@@ -338,8 +402,43 @@ function renderPosts(list){
       + thumbHtml
     + '</div>';
   }).join('');
+  if(typeof applyMyAvatar==='function') applyMyAvatar();
 }
 window.renderPosts = renderPosts;
+
+// 기본 아바타(시안: 연한 살구 동그라미 + 빨간 선 아이콘)
+var DEFAULT_AV = '<svg viewBox="0 0 24 24" fill="none" stroke="#F0574A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17s5.5-4.6 5.5-9A5.5 5.5 0 006.5 8c0 4.4 5.5 9 5.5 9z"/><circle cx="12" cy="8" r="2"/><path d="M7.5 18.5c-1.6.4-2.5 1-2.5 1.7 0 1.3 3.1 2.3 7 2.3s7-1 7-2.3c0-.7-.9-1.3-2.5-1.7"/></svg>';
+
+// 국기: 글의 도시/나라 → 나라 → img/flags/xx.png. 도시→나라 자료는 글쓰기 화면(heka_write.html)·도시 화면의 COUNTRIES 를 그대로 읽어 쓴다
+var _cityFlag = {}, _countryFlag = {};
+function _emojiCode(e){ var cps=Array.from(e||''); if(cps.length<2) return ''; var a=cps[0].codePointAt(0), b=cps[1].codePointAt(0); if(a<0x1F1E6||a>0x1F1FF||b<0x1F1E6||b>0x1F1FF) return ''; return String.fromCharCode(a-0x1F1E6+97)+String.fromCharCode(b-0x1F1E6+97); }
+var _FLAG_RE = /^\s*([\u{1F1E6}-\u{1F1FF}]{2})\s*/u;
+function postFlag(p){
+  var city = String(p.city||'').trim(), code = '';
+  if(city){
+    var cn = city.replace(/\s*전체$/,'');
+    code = _countryFlag[cn] || _cityFlag[city] || _cityFlag[cn] || '';
+  }
+  var t = String(p.title||''), m = t.match(_FLAG_RE);
+  if(!code && m) code = _emojiCode(m[1]);
+  if(!code) return null;
+  return { code: code, title: m ? t.slice(m[0].length) : t };
+}
+(function loadFlags(){
+  var re = /\{flag:'([^']+)',\s*name:'([^']+)',\s*cities:\[([^\]]*)\]/g;
+  Promise.all(['heka_write.html','heka_city.html'].map(function(u){ return fetch(u).then(function(r){ return r.ok?r.text():''; }).catch(function(){ return ''; }); }))
+    .then(function(txts){
+      txts.forEach(function(txt){
+        var m; re.lastIndex=0;
+        while((m=re.exec(txt))){
+          var code=_emojiCode(m[1]); if(!code) continue;
+          if(!_countryFlag[m[2]]) _countryFlag[m[2]]=code;
+          (m[3].match(/'([^']+)'/g)||[]).forEach(function(c){ c=c.slice(1,-1); if(!_cityFlag[c]) _cityFlag[c]=code; });
+        }
+      });
+      if(window.posts && window.posts.length){ if(document.getElementById('search-result-bar').classList.contains('show')) doSearch(); else applyCityFilter(); }
+    });
+})();
 
 function getSavedPosts(){ try{ return JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){ return []; } }
 function isSaved(id){ return getSavedPosts().some(function(p){ return p.id===id; }); }
@@ -373,13 +472,13 @@ function applyMyAvatar(){
       var me=''; try{ me=localStorage.getItem('haeka_uid')||''; }catch(e){}
       document.querySelectorAll('.fpav').forEach(function(el){
         if(src && me && el.getAttribute('data-uid')===me) el.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:cover"/>';
-        else el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+        else el.innerHTML=DEFAULT_AV;
       });
     };
     r.onerror=function(){setDefaultAv();};
   });
 }
-function setDefaultAv(){document.querySelectorAll('.fpav').forEach(function(el){el.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';});}
+function setDefaultAv(){document.querySelectorAll('.fpav').forEach(function(el){el.innerHTML=DEFAULT_AV;});}
 
 function doSearch(){
   var kw=document.getElementById('search-input').value.trim();

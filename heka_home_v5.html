@@ -988,12 +988,8 @@ function renderNearby(stores) {
     return;
   }
   stores.slice(0, 6).forEach(function(store) {
-    var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
-    var cards = (store.payOk || []).filter(function(c){ return c!=='현금만' && c!=='카드불가' && !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
-    cards.sort(function(a,b){ var ai=cardOrder.indexOf(a),bi=cardOrder.indexOf(b); return (ai<0?99:ai)-(bi<0?99:bi); });
-    var pillsHtml = payStatePill(store) + cards.map(function(c){
-      return '<span class="cpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>';
-    }).join('');
+    // 결제수단: 기존 규칙(현금만·카드 정보 없음 표시, 카드 순서) 그대로 로고 배지로
+    var pillsHtml = hkdPays(store, false);
     var distText = '';
     if (userLat && userLng && store.lat && store.lng) distText = distLbl(calcDist(userLat, userLng, store.lat, store.lng));
     else if (store.distance) distText = (typeof store.distance === 'number') ? distLbl(Math.round(store.distance)) : store.distance;
@@ -1006,29 +1002,34 @@ function renderNearby(stores) {
     var catOnlySafe = catOnly ? ' · '+(window._esc ? window._esc(catOnly) : catOnly) : '';
     // 영업중/영업종료(전체보기와 같은 표시). 영업시간 자료가 없으면 안 붙인다
     var _hrs = window.haekaHours ? haekaHours(store) : null;
-    var openSafe = !_hrs ? '' : _hrs.open === true ? ' · <span class="nm-open on"><i></i>영업중</span>' : _hrs.open === false ? ' · <span class="nm-open off"><i></i>영업종료</span>' : '';
+    var openSafe = !_hrs ? '' : _hrs.open === true ? ' · <span class="hkd-on">영업중</span>' : _hrs.open === false ? ' · <span class="hkd-off">영업종료</span>' : '';
     var firstIsVideo = store.videoUrl && (!store.images || !store.images.length || store.firstMediaIsVideo);
     var imgHtml = firstIsVideo
-      ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
+      ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline></video>'
       : storeThumb(store)
-      ? '<div class="nimg" style="padding:0;overflow:hidden"><img src="'+storeThumb(store)+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\''+catEmoji(store.category)+'\'"/></div>'
+      ? '<img src="'+storeThumb(store)+'" loading="eager" decoding="async" onerror="this.parentNode.innerHTML=\'<div class=hkd-ph-emo>'+catEmoji(store.category)+'</div>\'"/>'
       : store.videoUrl
-      ? '<div class="nimg" style="padding:0;overflow:hidden"><video src="'+store.videoUrl+'" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video></div>'
-      : '<div class="nimg" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
+      ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline></video>'
+      : '<div class="hkd-ph-emo" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
     var isZzimed = getZzimList().some(function(s){ return s.id === store.id; });
     var card = document.createElement('div');
-    card.className = 'ncard';
-    card.innerHTML = imgHtml
-      + (store.closed ? '<div style="position:absolute;top:6px;right:6px;z-index:11;background:rgba(220,38,38,.85);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;pointer-events:none">폐업</div>' : '')
-      + '<span data-edit-store-id="'+store.id+'" style="display:none;position:absolute;top:6px;left:6px;z-index:10;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;cursor:default;white-space:nowrap;align-items:center"><span class="edit-badge-txt">수정중</span></span>'
-      + '<button class="zzim'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>'
-      + '<div class="nbody"><div><div class="nn">'+(window._esc?window._esc(store.name):store.name)+localName(store)+'</div><div class="nm-meta"><span class="nm-dist">'+distSafe+'</span>'+(store.city?' · <span class="nm-city">'+(window._esc?window._esc(store.city):store.city)+'</span>':'')+openSafe+catOnlySafe+'</div>'+rateHtml(store)+'</div><div class="nm-cards">'+pillsHtml+'</div></div>';
+    card.className = 'hkd-card';
+    card.dataset.sid = store.id || '';
+    card.innerHTML = '<div class="hkd-ph">' + imgHtml
+      + (store.closed ? '<div class="hkd-badge-closed">폐업</div>' : '')
+      + '<span class="hkd-badge-edit" data-edit-store-id="'+store.id+'"><span class="edit-badge-txt">수정중</span></span></div>'
+      + '<div class="hkd-bd"><div class="hkd-nm"><b>'+_hkdE(store.name)+'</b>'+(store.nameLocal?'<span class="ln">'+_hkdE(store.nameLocal)+'</span>':'')+'</div>'
+      + '<div class="hkd-row"><svg class="pin" viewBox="0 0 24 24">'+HKD_PIN+'</svg><span>'+distSafe+(store.city?' · '+_hkdE(store.city):'')+openSafe+catOnlySafe+'</span></div>'
+      + hkdRate(store)
+      + '<div class="hkd-pays">'+pillsHtml+'</div></div>'
+      + '<button class="zzim hkd-heart'+(isZzimed?' on':'')+'" data-store-id="'+store.id+'" aria-label="찜"><svg viewBox="0 0 24 24">'+HKD_HEART+'</svg></button>'
+      + '<svg class="hkd-chev" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5L9 18.5"/></svg>';
     card.onclick = function() { openFirebaseDetail(store); };
     var zzimBtn = card.querySelector('.zzim');
     (function(s){ zzimBtn.onclick = function(e){ e.stopPropagation(); toggleZzim(e, zzimBtn, s); }; })(store);
     row.appendChild(card);
   });
-  row.querySelectorAll('.nm-cards').forEach(addDragScroll);
+  row.querySelectorAll('.hkd-pays').forEach(addDragScroll);
   addDragScroll(row);
   // 수정중 배지 로드
   var ids = stores.slice(0,6).map(function(s){ return s.id; }).filter(Boolean);
@@ -1040,18 +1041,12 @@ window.openFirebaseDetail = async function(store) {
   window._currentStoreId = store.id || null;
   window._currentDpStore = store;
 
-  // 최근 본 항목 저장
-  try {
-    var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
-    recent = recent.filter(function(s){ return s.id !== store.id; });
-    var slim = { id: store.id, name: store.name, category: store.category, payOk: store.payOk, images: store.images, lat: store.lat, lng: store.lng, address: store.address, createdAt: store.createdAt ? (store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt) : null };
-    recent.unshift(slim);
-    if (recent.length > 10) recent = recent.slice(0, 10);
-    localStorage.setItem('haeka_recent', JSON.stringify(recent));
-  } catch(e) {}
+  // 최근 본 항목 저장 (마이페이지용 결제수단·현지어 이름·대표 사진·본 시각 포함)
+  hkdSaveRecent(store);
 
   document.getElementById('dp-name').textContent = store.name;
-  document.getElementById('dp-cat').textContent = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
+  var _catTxt = (((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
+  document.getElementById('dp-cat').textContent = [store.nameLocal, _catTxt].filter(Boolean).join(' · ');
   // 폐업 뱃지
   var existBadge = document.getElementById('dp-closed-badge');
   if (existBadge) existBadge.remove();
@@ -1061,7 +1056,11 @@ window.openFirebaseDetail = async function(store) {
     badge.textContent = '폐업';
     badge.style.cssText = 'background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;flex-shrink:0';
     document.getElementById('dp-name').after(badge);
-  }  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
+  }
+  hkdDpPhoto(store);
+  var _dist = (userLat && userLng && store.lat && store.lng) ? distLbl(calcDist(userLat, userLng, store.lat, store.lng)) : '';
+  hkdDpRows(store, _dist);
+  document.getElementById('dp-scroll').innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">정보 불러오는 중...</div>';
   document.getElementById('detail-overlay').classList.add('open');
   document.getElementById('detail-panel').classList.add('open');
   document.getElementById('dp-scroll').scrollTop = 0;
@@ -1073,49 +1072,8 @@ window.openFirebaseDetail = async function(store) {
     if(isZzimed) dpZzim.classList.add('on'); else dpZzim.classList.remove('on');
   }
 
-  // 결제 카드
-  var cards = (store.payOk || []).filter(function(c){ return !(c==='현금가능' && ((store.payNo||[]).indexOf('카드불가')>-1||(store.payOk||[]).indexOf('현금만')>-1)); });
-  var pills = cards.map(function(c){ return '<span class="dpill" style="background:'+cardColor(c)+';color:'+(c==='현금가능'?'#6B5A3C':c==='카드가능(브랜드모름)'?'#4B5563':'#fff')+'">'+c+'</span>'; }).join('');
-  if (window.haekaBook && haekaBook(store)) pills += '<span style="display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 7px;border-radius:999px;background:#EEF4FF;color:#2563eb;border:1px solid #BFDBFE;white-space:nowrap;flex-shrink:0">온라인 예매</span>';
-  var noCards = (store.payNo || []).filter(function(c){ return c !== '카드불가' && c !== '현금불가' && c !== '모르겠어요'; });
-  var noPills = noCards.map(function(c){
-    return '<span class="dpill" style="background:#fff0f0;color:#dc2626;border:1px solid #fecaca;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600">'+c+'</span>';
-  }).join('');
-
-
-  // 지도
-  var mapHtml = '';
-  if (store.lat && store.lng) {
-    window._mapStore=store; window.haekaFindPlace&&haekaFindPlace(store);
-    mapHtml = '<div style="width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0;margin-bottom:12px;cursor:pointer" onclick="haekaOpenMap(window._mapStore)">'
-      + '<div id="dp-gmap" style="width:100%;height:100%"></div>'
-      + '</div>'
-      +(window.haekaAmapBtn?haekaAmapBtn(store):'');
-  }
-
-  var hoursHtml = '';
-  var hrs = window.haekaHours ? haekaHours(store) : null;
-  if (hrs) {
-    var openBadge = hrs.open === true
-      ? '<span style="color:#FF3900;font-size:11px;font-weight:700;margin-right:5px">영업중</span>'
-      : hrs.open === false
-      ? '<span style="color:#ff3b30;font-size:11px;font-weight:700;margin-right:5px">영업종료</span>' : '';
-    hoursHtml = '<div style="display:flex;align-items:center;margin:8px 0 4px">'
-      +openBadge
-      +'<span style="font-size:12px;color:#111;font-weight:600">'+hrs.dayName+'요일 '+hrs.todayText+'</span>'
-      +'</div>';
-  } else if (store.lat && store.lng) {
-    hoursHtml = '<div style="margin:8px 0 4px"><span onclick="haekaOpenMap(window._mapStore)" style="font-size:12px;color:#2563eb;font-weight:600;cursor:pointer">구글 지도에서 영업시간 보기 ›</span></div>';
-  }
-
-  document.getElementById('dp-scroll').innerHTML =
-    '<div style="margin-bottom:8px">'
-    +'<div style="font-size:10px;font-weight:700;color:#2563eb;margin-bottom:5px">'+(store.category==='ATM'?'출금 가능':'결제 가능')+'</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:5px">'+pills+'</div>'
-    +'</div>'
-    +hoursHtml
-    +(store.address ? '<div style="font-size:11px;color:#777;margin-bottom:8px">'+store.address+'</div>' : '')
-    +mapHtml;
+  // 결제 가능 줄 + 영업시간·주소·지도
+  document.getElementById('dp-scroll').innerHTML = hkdDpBody(store, true);
 
   // 지도 렌더링
   if (store.lat && store.lng && typeof google !== 'undefined') {
@@ -1126,6 +1084,7 @@ window.openFirebaseDetail = async function(store) {
     }, 0);
   }
 };
+
 
 window.initGPS = initGPS;
 // 폴링 대기 없이 즉시 실행 — 첫 화면 데이터 로딩 지연 제거
@@ -1232,17 +1191,328 @@ function payStatePill(s) {
   return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
 }
 </script>
+<style id="hkd-style">
+/* ===== 2026-10-20 홈 시안 적용 (위쪽 제목·필터 칩·광고 배너·내 주변 매장 카드·매장 팝업) =====
+   style-clean.css·app-mobile.css 가 뒤에서 !important 로 덮으므로 여기서는 한 단계 더 구체적으로 쓴다 */
+:root{--hkd-coral:#FD5B50;--hkd-bg:#FCF9F6;--hkd-text:#16181D;--hkd-sub:#62697B;--hkd-muted:#9CA3AF;--hkd-chip:#F4F4F6}
+html body,body .phone{background:var(--hkd-bg)!important}
+body .sb{background:var(--hkd-bg)!important}
+body .topbar,body .filterbar{background:transparent!important;box-shadow:none!important;border-bottom:0!important}
+/* 제목 */
+body .topbar{padding:20px 16px 0 18px!important;align-items:center!important}
+.hkd-logo{display:flex;align-items:baseline;white-space:nowrap;color:var(--hkd-text);letter-spacing:-.04em;line-height:1.1}
+.hkd-logo .b{font-size:37px;font-weight:900}
+.hkd-logo .s{font-size:21px;font-weight:800;margin-right:1px}
+.hkd-logo .c{color:var(--hkd-coral);font-size:34px;font-weight:900;margin-left:5px;margin-right:1px}
+body .logo-sub{font-size:14.5px!important;font-weight:500!important;color:#6B7280!important;margin-top:8px!important;letter-spacing:-.02em}
+body .topbar-right{position:relative}
+body .search-icon-btn{width:47px!important;height:47px!important;background:var(--hkd-coral)!important;border-color:var(--hkd-coral)!important;box-shadow:0 8px 18px rgba(253,91,80,.32)!important}
+body .search-icon-btn svg{width:21px!important;height:21px!important;stroke-width:2.6!important}
+.hkd-spark{position:absolute;right:-9px;top:-11px;width:14px;height:14px;pointer-events:none}
+/* 필터 칩 */
+body .filterbar{padding:24px 0 0 12px!important;gap:8px!important}
+body .chip-fade::after{display:none}
+body .chip-row,body .cat-wrap{gap:6px!important}
+body .filterbar .sq-chip,body .filterbar .sq-chip-all{height:30px;display:inline-flex!important;align-items:center;justify-content:center;gap:5px;padding:0 13px!important;border-radius:999px!important;border:0!important;background:var(--hkd-chip)!important;color:#2B2F38!important;font-size:13px!important;font-weight:600!important;line-height:1!important;letter-spacing:-.02em;box-shadow:none!important}
+body .filterbar .sq-chip-all{min-width:56px;padding:0 11px!important;font-size:14px!important;font-weight:700!important}
+body .filterbar .sq-chip-all.on,body .filterbar .sq-chip-all.open{background:#16181D!important;color:#fff!important}
+body .filterbar .sq-chip.on{background:#FFE6E0!important;color:var(--hkd-coral)!important;box-shadow:inset 0 0 0 1.5px rgba(253,91,80,.55)!important}
+.hkd-ic{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hkd-logo-visa{height:11px;width:auto;display:block}
+.hkd-logo-mc{height:16px;width:auto;display:block}
+.hkd-logo-jcb{height:18px;width:auto;display:block}
+.hkd-logo-amex{height:20px;width:auto;display:block;border-radius:2px}
+.hkd-logo-up{height:16px;width:auto;display:block}
+.hkd-mask{display:inline-block;flex-shrink:0;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.hkd-m-ali{-webkit-mask-image:url(img/pay/alipay.svg);mask-image:url(img/pay/alipay.svg)}
+.hkd-m-we{-webkit-mask-image:url(img/pay/wechat.svg);mask-image:url(img/pay/wechat.svg)}
+.hkd-chip-ali{width:16px;height:16px;background:#1677FF}
+.hkd-chip-we{width:17px;height:17px;background:#07C160}
+/* 광고 배너 */
+body .hk-pay-hero{position:relative;overflow:hidden;margin:18px 12px 0!important;padding:18px 19px 16px!important;min-height:207px;border-radius:14px!important;background:#1A1C21!important;box-shadow:0 10px 24px rgba(17,19,24,.16)!important;touch-action:pan-y}
+.hkd-slides{position:absolute;inset:0;z-index:0}
+.hkd-slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center;opacity:0;transition:opacity .6s ease}
+.hkd-slides img.on{opacity:1}
+.hkd-slides::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(26,28,33,.97) 0%,rgba(26,28,33,.9) 34%,rgba(26,28,33,.45) 56%,rgba(26,28,33,0) 74%)}
+.hkd-hero-in{position:relative;z-index:1}
+.hkd-hero-tag{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:rgba(255,255,255,.88);margin-bottom:9px;letter-spacing:-.02em}
+.hkd-hero-tag svg{width:16px;height:16px;fill:#FF8A7E}
+body .hk-pay-hero h2{font-size:26.5px!important;line-height:1.14!important;font-weight:800!important;letter-spacing:-.05em!important;margin-bottom:10px!important;color:#fff}
+body .hk-pay-hero h2 .c{color:#FF6B61}
+body .hk-pay-hero p{font-size:13px!important;line-height:1.3!important;color:rgba(255,255,255,.9)!important;margin-bottom:15px!important;letter-spacing:-.02em}
+body .hk-pay-hero .hero-cta{height:35px!important;padding:0 16px 0 17px!important;border-radius:999px!important;background:var(--hkd-coral)!important;font-size:14px!important;font-weight:800!important;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 18px rgba(253,91,80,.3)!important}
+body .hk-pay-hero .hero-cta svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.hkd-dots{position:absolute;z-index:2;left:314px;bottom:13px;display:flex;gap:7px}
+.hkd-dots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.55)}
+.hkd-dots i.on{background:var(--hkd-coral)}
+/* 내 주변 제목 */
+body .sec-head{margin-top:18px!important;margin-bottom:14px!important;padding:0 16px 0 12px!important}
+.hkd-sec-pin{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#FFE9E5;margin-right:9px;vertical-align:middle;flex-shrink:0}
+.hkd-sec-pin svg{width:14px;height:14px;fill:var(--hkd-coral)}
+body .sec-t{display:inline-flex;align-items:center;font-size:20px!important;font-weight:800!important;color:var(--hkd-text)!important;letter-spacing:-.04em!important}
+body .sec-more{color:#8A8F99!important;font-size:14.5px!important;font-weight:500!important}
+/* 매장 카드 (홈·전체보기 공통 모양) */
+body .nrow{padding:0 13px!important}
+.hkd-card{position:relative;display:flex;gap:13px;align-items:stretch;padding:7px 30px 7px 8px;margin-bottom:10px;background:#fff;border-radius:14px;border:1px solid #F1EEEA;box-shadow:0 2px 10px rgba(30,24,16,.05);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hkd-ph{position:relative;width:108px;height:96px;flex-shrink:0;border-radius:9px;overflow:hidden;background:#F3F1EE}
+.hkd-ph img,.hkd-ph video{width:100%;height:100%;object-fit:cover;display:block}
+.hkd-ph-emo{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:34px}
+.hkd-bd{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:4px 0 3px}
+.hkd-nm{display:flex;align-items:baseline;gap:6px;min-width:0;white-space:nowrap;padding-right:6px}
+.hkd-nm b{font-size:17px;font-weight:800;color:var(--hkd-text);letter-spacing:-.04em;overflow:hidden;text-overflow:ellipsis;flex-shrink:1;min-width:0}
+.hkd-nm .ln{font-size:11px;font-weight:500;color:var(--hkd-muted);overflow:hidden;text-overflow:ellipsis;flex-shrink:2;min-width:0}
+.hkd-nm .cl{flex-shrink:0;background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;align-self:center}
+.hkd-row{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:12.5px;font-weight:500;color:var(--hkd-sub);white-space:nowrap;min-width:0;letter-spacing:-.02em}
+.hkd-row>span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hkd-row svg{width:14px;height:14px;flex-shrink:0}
+.hkd-row .pin{fill:none;stroke:#8B909B;stroke-width:2}
+.hkd-row .star{fill:#FDB927}
+.hkd-row .avg{font-weight:800;color:var(--hkd-text)}
+.hkd-off{color:#F04438;font-weight:600}
+.hkd-on{color:#16A34A;font-weight:600}
+.hkd-pays{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.hkd-pay{height:22px;display:inline-flex;align-items:center;gap:4px;padding:0 7px 0 4px;border-radius:7px;border:1px solid #E6E8EC;background:#fff;font-size:12px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;flex-shrink:0;color:#374151}
+.hkd-pay.t{padding:0 8px}
+.hkd-pay.logo{padding:0 7px}
+.hkd-pay.ali{background:#EEF5FF;border-color:#C9DEFF;color:#1677FF}
+.hkd-pay.we{background:#E9F8EF;border-color:#BCE9CE;color:#07A752}
+.hkd-pay .ali-i{width:15px;height:15px;background:#1677FF}
+.hkd-pay .we-b{width:15px;height:15px;border-radius:4px;background:#07C160;display:inline-flex;align-items:center;justify-content:center}
+.hkd-pay .we-b .hkd-mask{width:11px;height:11px;background:#fff}
+.hkd-pay img{display:block}
+.hkd-pay .visa{height:8px}.hkd-pay .mc{height:12px}.hkd-pay .jcb{height:13px}.hkd-pay .amex{height:14px;border-radius:2px}.hkd-pay .up{height:12px}
+.hkd-pay.red{background:#FEF1F1;border-color:#FBD0D0;color:#DC2626}
+.hkd-pay.gray{background:#F3F4F6;border-color:#E5E7EB;color:#6B7280}
+.hkd-pay.book{background:#EEF4FF;border-color:#BFDBFE;color:#2563eb}
+.hkd-pay.cash{background:#FBF6EC;border-color:#EADFC8;color:#6B5A3C}
+.hkd-heart.zzim,body .hkd-heart.store-zzim{position:absolute!important;top:7px!important;right:7px!important;left:auto!important;width:30px!important;height:30px!important;border-radius:50%!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer;z-index:3}
+.hkd-heart.zzim svg,body .hkd-heart.store-zzim svg{width:21px!important;height:21px!important;fill:none!important;stroke:#B9BDC5!important;stroke-width:1.7!important}
+.hkd-heart.zzim.on svg,body .hkd-heart.store-zzim.on svg{fill:#F2344A!important;stroke:#F2344A!important}
+.hkd-chev{position:absolute;right:11px;top:50%;margin-top:-8px;width:16px;height:16px;fill:none;stroke:#8B909B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.hkd-badge-closed{position:absolute;top:5px;right:5px;z-index:2;background:rgba(220,38,38,.85);color:#fff;font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;pointer-events:none}
+.hkd-badge-edit{display:none;position:absolute;top:5px;left:5px;z-index:2;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.5);font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;align-items:center}
+/* 매장 팝업 */
+body #detail-panel{border-radius:22px 22px 0 0!important;max-height:86vh!important;background:#fff!important}
+#detail-panel .dp-handle{width:37px;height:4px;background:#D9D9DC;margin:10px auto 0}
+#detail-panel .dp-topbar{display:flex;align-items:stretch;gap:13px;padding:16px 14px 0 17px;position:relative}
+.hkd-dp-ph{position:relative;width:144px;height:107px;flex-shrink:0;border-radius:9px;overflow:hidden;background:#F3F1EE;cursor:pointer}
+.hkd-dp-ph img,.hkd-dp-ph video{width:100%;height:100%;object-fit:cover;display:block}
+.hkd-dp-cnt{position:absolute;left:6px;bottom:6px;display:inline-flex;align-items:center;gap:4px;height:23px;padding:0 8px;border-radius:12px;background:rgba(20,20,24,.62);color:#fff;font-size:12.5px;font-weight:600}
+.hkd-dp-cnt svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.hkd-dp-info{flex:1;min-width:0;padding-top:13px}
+#detail-panel .dp-name{font-size:19px!important;font-weight:800!important;color:var(--hkd-text)!important;max-width:none!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.04em;padding-right:62px}
+#detail-panel .dp-cat{font-size:13px!important;color:#7D828D!important;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em}
+.hkd-dp-row{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;color:#2B2F38;white-space:nowrap;overflow:hidden;letter-spacing:-.02em}
+.hkd-dp-row>span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hkd-dp-row svg{width:15px;height:15px;flex-shrink:0}
+.hkd-dp-row .pin{fill:#22B45A}
+.hkd-dp-row .star{fill:#FDB927}
+.hkd-dp-row b{font-weight:800}
+.hkd-dp-row .g{color:#7D828D}
+.hkd-dp-btns{position:absolute;right:13px;top:21px;display:flex;gap:6px;z-index:2}
+.hkd-dp-btns button{width:30px!important;height:30px!important;border-radius:50%!important;background:#F3F3F5!important;border:0!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;cursor:pointer}
+#dp-zzim svg{width:16px;height:16px;fill:none;stroke:#9CA0A8;stroke-width:2}
+#dp-zzim.on svg{fill:#F2344A!important;stroke:#F2344A!important}
+#dp-zzim.on #dp-zzim-svg{fill:#F2344A!important;stroke:#F2344A!important}
+.hkd-dp-btns .dp-close svg{width:15px;height:15px;fill:none;stroke:#555A63;stroke-width:2.2;stroke-linecap:round}
+#detail-panel .dp-scroll{padding:12px 17px 4px!important}
+.hkd-payrow{display:flex;align-items:center;gap:10px;padding:7px 8px 7px 14px;border-radius:11px;background:linear-gradient(90deg,#FCEFEC 0%,#F6F2F0 50%,#E6F7F1 100%);margin-bottom:9px;min-height:41px}
+.hkd-payrow-l{display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:14px;color:#2B2F38;font-weight:500;letter-spacing:-.02em}
+.hkd-payrow-l svg{width:21px;height:21px;fill:none;stroke:var(--hkd-coral);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hkd-payrow-l i{width:1px;height:17px;background:#E3D9D6}
+.hkd-payrow-r{flex:1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;min-width:0}
+.hkd-bp{height:27px;display:inline-flex;align-items:center;gap:7px;padding:0 13px 0 4px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap;letter-spacing:-.02em;background:#fff;color:#2B2F38;box-shadow:inset 0 0 0 1px #E6E8EC}
+.hkd-bp.t{padding:0 12px}
+.hkd-bp.logo{padding:0 12px}
+.hkd-bp .ic{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2)}
+.hkd-bp .ic .hkd-mask{width:13px;height:13px;background:#fff}
+.hkd-bp.ali{background:#1677FF;color:#fff;box-shadow:none;min-width:102px;justify-content:center}
+.hkd-bp.we{background:#09C163;color:#fff;box-shadow:none;min-width:93px;justify-content:center}
+.hkd-bp.red{background:#FEF1F1;color:#DC2626;box-shadow:inset 0 0 0 1px #FBD0D0}
+.hkd-bp.gray{background:#F3F4F6;color:#6B7280}
+.hkd-bp.book{background:#EEF4FF;color:#2563eb;box-shadow:inset 0 0 0 1px #BFDBFE}
+.hkd-bp.cash{background:#FBF6EC;color:#6B5A3C;box-shadow:inset 0 0 0 1px #EADFC8}
+.hkd-bp .visa{height:10px}.hkd-bp .mc{height:15px}.hkd-bp .jcb{height:17px}.hkd-bp .amex{height:18px;border-radius:2px}.hkd-bp .up{height:15px}
+.hkd-bp .hkd-ic{width:15px;height:15px}
+.hkd-infobox{border:1px solid #F0EEEC;border-radius:10px;padding:11px 7px 7px 9px;background:#fff;box-shadow:0 1px 6px rgba(30,24,16,.03);margin-bottom:4px}
+.hkd-info{display:flex;align-items:flex-start;gap:12px;padding:0 4px 0 1px;margin-bottom:9px;font-size:13.5px;line-height:1.38;color:#5F6470;letter-spacing:-.02em}
+.hkd-info>svg{width:17px;height:17px;flex-shrink:0;fill:none;stroke:#2B2F38;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+.hkd-info .lnk{color:#2C6CF0;font-weight:700;cursor:pointer}
+.hkd-info .op{font-weight:700;margin-right:5px}
+.hkd-info .op.on{color:#16A34A}.hkd-info .op.off{color:#F04438}
+.hkd-info .tt{color:#2B2F38;font-weight:600}
+.hkd-map{position:relative;height:88px;border-radius:7px;overflow:hidden;border:1px solid #E4E4E7;cursor:pointer}
+.hkd-map #dp-gmap{width:100%;height:100%}
+.hkd-amap{position:absolute;right:4px;bottom:3px;z-index:2}
+.hkd-amap button{width:auto!important;margin:0!important;height:32px!important;padding:0 11px 0 6px!important;border:0!important;border-radius:999px!important;background:#fff!important;color:#2B2F38!important;font-size:12.5px!important;font-weight:600!important;display:inline-flex!important;align-items:center!important;gap:6px!important;box-shadow:0 2px 10px rgba(0,0,0,.14)!important;white-space:nowrap}
+.hkd-amap button::before{content:'';width:20px;height:20px;border-radius:50%;background:#EAF2FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 4l8 8-8 8-8-8z' fill='%231C6EF2'/%3E%3C/svg%3E") center/12px no-repeat;flex-shrink:0}
+body #detail-panel .dp-btn-row{border-top:0!important;padding:10px 17px max(16px,env(safe-area-inset-bottom))!important;background:#fff!important}
+body #detail-panel .dp-btn-more{height:43px!important;padding:0!important;border-radius:12px!important;background:#FD4748!important;color:#fff!important;font-size:17px!important;font-weight:800!important;letter-spacing:-.03em;box-shadow:0 8px 20px rgba(253,71,72,.28)!important}
+</style>
+<script>
+// ===== 2026-10-20 시안용 그림 조각: 선 아이콘, 결제수단 배지 (홈·전체보기에 같은 코드가 들어 있다 — 하나만 고치지 말 것) =====
+var HKD_IC = {
+  '식당':'<path d="M6 3v6a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1.3-3.3 4-3.3 7.5V13h3.3"/>',
+  '카페':'<path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M4 21h12"/>',
+  '술집':'<path d="M5.5 9h9.5v10a2 2 0 0 1-2 2H7.5a2 2 0 0 1-2-2V9zM15 11.5h1.8a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2H15M5.5 9a2.6 2.6 0 0 1 2.4-4 3 3 0 0 1 5.2-.3A2.4 2.4 0 0 1 15 9M8.7 12.5v5M11.8 12.5v5"/>',
+  '패스트푸드':'<path d="M4 11c0-3.5 3.6-6 8-6s8 2.5 8 6H4zM3 14.5h18M4.5 17.5h15v.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-.5z"/>',
+  '편의점':'<path d="M4 9.5 5.5 4h13L20 9.5M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0M5.2 12v8h13.6v-8M10 20v-4.5h4V20"/>',
+  '쇼핑':'<path d="M5.5 8h13l-1 13h-11l-1-13zM9 10V6.5a3 3 0 0 1 6 0V10"/>',
+  '마트':'<path d="M3 4h2.5l2.2 11h10.6l2-8H6.3"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
+  '입장권':'<path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6zM14.5 6.5v2M14.5 11v2M14.5 15.5v2"/>',
+  '호텔':'<path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+  'ATM':'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>',
+  '기타':'<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>',
+  '코인로커':'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M5 9h14M5 15h14M8.5 6h2M8.5 12h2M8.5 18h2"/>',
+  '짐 운반':'<rect x="6" y="7" width="12" height="13" rx="1.5"/><path d="M10 7V4h4v3M10 11v5M14 11v5"/>',
+  '코인세탁소':'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M5 7h14"/><circle cx="12" cy="13.5" r="3.8"/>',
+  '환전소':'<path d="M4 8.5h14l-3.5-3.5M20 15.5H6l3.5 3.5"/>',
+  '온천':'<path d="M4 14.5h16M4 14.5c0 3 3.6 5.5 8 5.5s8-2.5 8-5.5M8 4c-1 1.5 1 2.5 0 4.5M12 4c-1 1.5 1 2.5 0 4.5M16 4c-1 1.5 1 2.5 0 4.5"/>',
+  '게임센터':'<path d="M7 8h10a4 4 0 0 1 4 4v2a3 3 0 0 1-5.2 2l-1.3-1.5h-5L8.2 16A3 3 0 0 1 3 14v-2a4 4 0 0 1 4-4zM7.5 10.5v3.5M5.8 12.2h3.4M16 11.5v.01M18 13.5v.01"/>',
+  '노래방':'<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6"/>',
+  '만화카페':'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5v-15zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5v-15z"/>',
+  '전철 티켓':'<path d="M7 3h10a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 10h14M8 21l2-4M16 21l-2-4"/>',
+  '버스':'<rect x="5" y="4" width="14" height="13" rx="2"/><path d="M5 11h14M8 17v3M16 17v3"/>',
+  '_tag':'<path d="M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9-8-8z"/><circle cx="8" cy="8" r="1.3"/>',
+  '_card':'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M14.5 14.5h3"/>',
+  '_wallet':'<path d="M4 7.5h14a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7.5zM4 7.5 15 4.5v3M16 13.8h1.5"/>',
+  '_cash':'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>'
+};
+HKD_IC['목욕탕'] = HKD_IC['온천'];
+function hkdIcon(key, cls) { return '<svg class="' + (cls || 'hkd-ic') + '" viewBox="0 0 24 24" aria-hidden="true">' + (HKD_IC[key] || HKD_IC._tag) + '</svg>'; }
+var HKD_PIN = '<path d="M12 21.5s-7-6.3-7-11.7a7 7 0 0 1 14 0c0 5.4-7 11.7-7 11.7z"/><circle cx="12" cy="9.8" r="2.5"/>';
+var HKD_PIN_SOLID = '<path d="M12 22s-7.2-6.4-7.2-12A7.2 7.2 0 0 1 19.2 10c0 5.6-7.2 12-7.2 12zm0-9.2a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6z" fill-rule="evenodd"/>';
+var HKD_STAR = '<path d="M12 2.6l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5-4.9-4.5 6.6-.8z"/>';
+var HKD_HEART = '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>';
+function _hkdE(t) { return window._esc ? window._esc(t) : (t == null ? '' : String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; })); }
+// 결제수단 하나를 배지로. big=true 는 팝업의 큰 배지
+function hkdPay(c, big) {
+  var k = big ? 'hkd-bp' : 'hkd-pay';
+  if (c === '알리페이') return big
+    ? '<span class="' + k + ' ali"><span class="ic"><span class="hkd-mask hkd-m-ali"></span></span>알리페이</span>'
+    : '<span class="' + k + ' ali"><span class="hkd-mask hkd-m-ali ali-i"></span>Alipay</span>';
+  if (c === '위챗페이') return big
+    ? '<span class="' + k + ' we"><span class="ic"><span class="hkd-mask hkd-m-we"></span></span>위챗페이</span>'
+    : '<span class="' + k + ' we"><span class="we-b"><span class="hkd-mask hkd-m-we"></span></span>WeChat Pay</span>';
+  var L = { 'VISA': ['visa-c.svg', 'visa'], 'MASTER': ['mastercard-mark.svg', 'mc'], 'JCB': ['jcb-c.svg', 'jcb'], 'AMEX': ['amex-c.svg', 'amex'], 'UnionPay': ['unionpay-c.svg', 'up'] }[c];
+  if (L) return '<span class="' + k + ' logo" title="' + c + '"><img class="' + L[1] + '" src="img/pay/' + L[0] + '" alt="' + c + '"></span>';
+  if (c === '트래블로그') return '<span class="' + k + ' t">' + hkdIcon('_card') + c + '</span>';
+  if (c === '트래블월렛') return '<span class="' + k + ' t">' + hkdIcon('_wallet') + c + '</span>';
+  if (c === '현금가능') return '<span class="' + k + ' t cash">' + hkdIcon('_cash') + c + '</span>';
+  if (c === '현금만' || c === '카드불가' || c === '현금불가') return '<span class="' + k + ' t red">' + _hkdE(c) + '</span>';
+  if (c === '카드 정보 없음' || c === '모르겠어요' || c === '카드가능(브랜드모름)') return '<span class="' + k + ' t gray">' + _hkdE(c) + '</span>';
+  return '<span class="' + k + ' t">' + _hkdE(c) + '</span>';
+}
+// 매장 결제수단 → 배지 줄 (기존 목록 규칙 그대로: 현금만·카드 정보 없음 표시, 카드 순서)
+function hkdPays(store, big, noUnknown) {
+  var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
+  var ok = store.payOk || [], no = store.payNo || [];
+  var cards = ok.filter(function (c) { return c !== '현금만' && c !== '카드불가' && !(c === '현금가능' && (no.indexOf('카드불가') > -1 || ok.indexOf('현금만') > -1)); });
+  cards.sort(function (a, b) { var ai = cardOrder.indexOf(a), bi = cardOrder.indexOf(b); return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi); });
+  var st = '';
+  if (ok.indexOf('현금만') > -1 || no.indexOf('현금만') > -1 || no.indexOf('카드불가') > -1) st = hkdPay('현금만', big);
+  else if (!noUnknown && !ok.some(function (c) { return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이|카드가능/.test(c); })) st = hkdPay('카드 정보 없음', big);
+  var h = st + cards.map(function (c) { return hkdPay(c, big); }).join('');
+  if (window.haekaBook && haekaBook(store)) h += '<span class="' + (big ? 'hkd-bp' : 'hkd-pay') + ' t book">온라인 예매</span>';
+  return h;
+}
+// 별점 줄: 후기가 없으면 "리뷰 없음 (0)", 있으면 평균 (개수). 뒤에 대표메뉴(없으면 세부 업종)
+function hkdMenu(s) { return (Array.isArray(s.menus) && s.menus.length) ? s.menus.join(', ') : ((s.cuisine && s.cuisine !== s.category) ? s.cuisine : ''); }
+function hkdRate(s) {
+  var n = +s.ratingCnt || 0;
+  var avg = (n > 0 && s.ratingSum) ? (s.ratingSum / n).toFixed(1) : '0';
+  var menu = hkdMenu(s);
+  return '<div class="hkd-row"><svg class="star" viewBox="0 0 24 24">' + HKD_STAR + '</svg><span>'
+    + (n > 0 ? '<b class="avg">' + avg + '</b> (' + n.toLocaleString() + ')' : '리뷰 없음 (0)')
+    + (menu ? ' · ' + _hkdE(menu) : '') + '</span></div>';
+}
+// 최근 본 항목(localStorage.haeka_recent) 저장 — 마이페이지 카드가 쓰는 필드 포함
+function hkdSaveRecent(store) {
+  try {
+    var recent = JSON.parse(localStorage.getItem('haeka_recent') || '[]');
+    recent = recent.filter(function (s) { return s.id !== store.id; });
+    var slim = { id: store.id, name: store.name, category: store.category, payOk: store.payOk, images: store.images, lat: store.lat, lng: store.lng, address: store.address, createdAt: store.createdAt ? (store.createdAt.toMillis ? store.createdAt.toMillis() : store.createdAt) : null };
+    slim.payNo = store.payNo || [];
+    slim.nameLocal = store.nameLocal || '';
+    slim.image = (store.images && store.images[0]) || '';
+    slim.thumb = (window.storeThumb && storeThumb(store)) || '';
+    slim.cuisine = store.cuisine || '';
+    slim.city = store.city || '';
+    slim.viewedAt = Date.now();
+    recent.unshift(slim);
+    if (recent.length > 10) recent = recent.slice(0, 10);
+    localStorage.setItem('haeka_recent', JSON.stringify(recent));
+  } catch (e) {}
+}
+// 팝업 사진 칸: 매장 사진이 있으면 그 사진들(눌러서 다음 장, n/m 표시), 없으면 목록과 같은 대표 그림
+var _hkdDp = { s: null, i: 0 };
+function hkdDpPhoto(store) {
+  _hkdDp = { s: store, i: 0 };
+  hkdDpDraw();
+}
+function hkdDpDraw() {
+  var el = document.getElementById('hkd-dp-ph'); if (!el) return;
+  var s = _hkdDp.s; if (!s) { el.innerHTML = ''; return; }
+  var imgs = (s.images || []).filter(function (u) { return typeof u === 'string' && u; });
+  var cam = '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.8-2.5h6.4L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg>';
+  if (imgs.length) {
+    var i = _hkdDp.i % imgs.length;
+    el.innerHTML = '<img src="' + _hkdE(imgs[i]) + '" alt="" decoding="async">' + '<span class="hkd-dp-cnt">' + cam + (i + 1) + '/' + imgs.length + '</span>';
+  } else if (s.videoUrl) {
+    el.innerHTML = '<video src="' + _hkdE(s.videoUrl) + '" autoplay muted loop playsinline></video>';
+  } else {
+    var t = window.storeThumb ? storeThumb(s) : '';
+    el.innerHTML = t ? '<img src="' + _hkdE(t) + '" alt="">' : '';
+  }
+}
+function hkdDpNext() {
+  var s = _hkdDp.s; if (!s || !s.images || s.images.length < 2) return;
+  _hkdDp.i = (_hkdDp.i + 1) % s.images.length; hkdDpDraw();
+}
+// 팝업 본문(결제 가능 줄 + 영업시간·주소·지도 칸). 영업시간은 기존 방식(OSM hours) 그대로
+function hkdDpBody(store, noUnknown) {
+  var pays = hkdPays(store, true, noUnknown);
+  var mapHtml = '';
+  if (store.lat && store.lng) {
+    window._mapStore = store; window.haekaFindPlace && haekaFindPlace(store);
+    var am = window.haekaAmapBtn ? haekaAmapBtn(store) : '';
+    mapHtml = '<div class="hkd-map" onclick="haekaOpenMap(window._mapStore)"><div id="dp-gmap"></div>' + (am ? '<div class="hkd-amap">' + am + '</div>' : '') + '</div>';
+  }
+  var clock = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+  var hoursHtml = '';
+  var hrs = window.haekaHours ? haekaHours(store) : null;
+  if (hrs) {
+    var openBadge = hrs.open === true ? '<span class="op on">영업중</span>' : hrs.open === false ? '<span class="op off">영업종료</span>' : '';
+    hoursHtml = '<div class="hkd-info">' + clock + '<div>' + openBadge + '<span class="tt">' + hrs.dayName + '요일 ' + hrs.todayText + '</span></div></div>';
+  } else if (store.lat && store.lng) {
+    hoursHtml = '<div class="hkd-info">' + clock + '<span class="lnk" onclick="haekaOpenMap(window._mapStore)">구글 지도에서 영업시간 보기 ›</span></div>';
+  }
+  var addr = store.address ? '<div class="hkd-info"><svg viewBox="0 0 24 24">' + HKD_PIN + '</svg><div>' + _hkdE(store.address) + '</div></div>' : '';
+  var box = (hoursHtml || addr || mapHtml) ? '<div class="hkd-infobox">' + hoursHtml + addr + mapHtml + '</div>' : '';
+  return '<div class="hkd-payrow"><div class="hkd-payrow-l"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M14 14.5h3.5"/></svg><i></i>' + (store.category === 'ATM' ? '출금 가능' : '결제 가능') + '</div><div class="hkd-payrow-r">' + pays + '</div></div>' + box;
+}
+// 팝업 이름 아래 줄들: 거리·도시, 별점·대표메뉴
+function hkdDpRows(store, distText) {
+  var n = +store.ratingCnt || 0;
+  var avg = (n > 0 && store.ratingSum) ? (store.ratingSum / n).toFixed(1) : '0';
+  var menu = hkdMenu(store);
+  var r1 = (distText || store.city) ? '<div class="hkd-dp-row"><svg class="pin" viewBox="0 0 24 24">' + HKD_PIN_SOLID + '</svg><span>' + _hkdE(distText || '') + (distText && store.city ? ' · ' : '') + _hkdE(store.city || '') + '</span></div>' : '';
+  var r2 = '<div class="hkd-dp-row"><svg class="star" viewBox="0 0 24 24">' + HKD_STAR + '</svg><span><b>' + avg + '</b> <span class="g">(' + n.toLocaleString() + ')' + (menu ? ' · ' + _hkdE(menu) : '') + '</span></span></div>';
+  var el = document.getElementById('hkd-dp-rows'); if (el) el.innerHTML = r1 + r2;
+}
+</script>
 </head>
 <body>
 <div class="phone">
   <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
   <div class="topbar">
     <div>
-      <div class="logo"><span style="font-size:26px;font-weight:800">해</span><span style="font-size:16px;font-weight:600;letter-spacing:-0.2px">외에서 </span><span style="font-size:26px;font-weight:800">카</span><span style="font-size:16px;font-weight:600;letter-spacing:-0.2px;margin-left:2px">드결제하자!</span></div>
-      <div class="logo-sub" style="font-size:13px;font-weight:500;margin-top:4px">카드 거절 걱정 없이, 지금 바로 결제되는 곳</div>
+      <div class="logo hkd-logo"><span class="b">해</span><span class="s">외에서</span><span class="c">카드</span><span class="s">결제하자!</span></div>
+      <div class="logo-sub">카드 거절 걱정 없이, 지금 바로 결제되는 곳</div>
     </div>
     <div class="topbar-right">
       <div class="search-icon-btn" onclick="location.href='heka_city.html'"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg></div>
+      <svg class="hkd-spark" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 1.5l1 4.5M8 7.5l4.5-2.5" fill="none" stroke="#FD5B50" stroke-width="2" stroke-linecap="round"/></svg>
     </div>
   </div>
 
@@ -1250,16 +1520,16 @@ function payStatePill(s) {
     <div class="chip-fade">
       <div class="chip-row">
         <div class="sq-chip-all on" id="card-all-btn" onclick="toggleCardSheet()">카드 ▾</div>
-        <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')">VISA</div>
-        <div class="sq-chip cc-master" onclick="toggleCardMain(this,'master')">MASTER</div>
-        <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'jcb')">JCB</div>
-        <div class="sq-chip cc-amex" onclick="toggleCardMain(this,'amex')">AMEX</div>
-        <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')">트래블로그</div>
-        <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')">트래블월렛</div>
-        <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')">UnionPay</div>
-        <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')">알리페이</div>
-        <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')">위챗페이</div>
-        <div class="sq-chip cc-cash" onclick="toggleCardMain(this,'현금')">현금</div>
+        <div class="sq-chip cc-visa" onclick="toggleCardMain(this,'visa')" title="VISA"><img class="hkd-logo-visa" src="img/pay/visa-c.svg" alt="VISA"></div>
+        <div class="sq-chip cc-master" onclick="toggleCardMain(this,'master')" title="MASTER"><img class="hkd-logo-mc" src="img/pay/mastercard-mark.svg" alt="MASTER"></div>
+        <div class="sq-chip cc-jcb" onclick="toggleCardMain(this,'jcb')" title="JCB"><img class="hkd-logo-jcb" src="img/pay/jcb-c.svg" alt="JCB"></div>
+        <div class="sq-chip cc-amex" onclick="toggleCardMain(this,'amex')" title="AMEX"><img class="hkd-logo-amex" src="img/pay/amex-c.svg" alt="AMEX"></div>
+        <div class="sq-chip cc-tlog" onclick="toggleCardMain(this,'트래블로그')"><svg class="hkd-ic" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M14.5 14.5h3"/></svg>트래블로그</div>
+        <div class="sq-chip cc-twallet" onclick="toggleCardMain(this,'트래블월렛')"><svg class="hkd-ic" viewBox="0 0 24 24"><path d="M4 7.5h14a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7.5zM4 7.5 15 4.5v3M16 13.8h1.5"/></svg>트래블월렛</div>
+        <div class="sq-chip cc-union" onclick="toggleCardMain(this,'UnionPay')" title="UnionPay"><img class="hkd-logo-up" src="img/pay/unionpay-c.svg" alt="UnionPay"></div>
+        <div class="sq-chip cc-alipay" onclick="toggleCardMain(this,'알리페이')"><span class="hkd-mask hkd-m-ali hkd-chip-ali"></span>알리페이</div>
+        <div class="sq-chip cc-wechat" onclick="toggleCardMain(this,'위챗페이')"><span class="hkd-mask hkd-m-we hkd-chip-we"></span>위챗페이</div>
+        <div class="sq-chip cc-cash" onclick="toggleCardMain(this,'현금')"><svg class="hkd-ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/></svg>현금</div>
         <span class="chip-spacer" aria-hidden="true"></span>
       </div>
     </div>
@@ -1307,15 +1577,59 @@ function payStatePill(s) {
     <button class="sheet-done" onclick="closeSheet()">적용하기</button>
   </div>
 
-  <section class="hk-pay-hero" aria-label="해외 카드결제 가능 매장 찾기">
-    <h2>환전 부족할 때?<br>당황 말고 여기로</h2>
-    <p>지갑은 가볍게! 여행은 끊김 없이!<br>카드 결제 가능한 곳 지금 확인하세요!</p>
-    <button class="hero-cta" onclick="location.href='heka_city.html'">지금 결제 가능한 곳 찾기</button>
+  <section class="hk-pay-hero" id="hkd-hero" aria-label="해외 카드결제 가능 매장 찾기">
+    <div class="hkd-slides" id="hkd-slides"></div>
+    <div class="hkd-hero-in">
+      <div class="hkd-hero-tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 15.6v-1.9l-8.2-5.1V3.4a1.5 1.5 0 0 0-3 0v5.2l-8.2 5.1v1.9l8.2-2.6v5.6l-2 1.5v1.5l3.5-1 3.5 1v-1.5l-2-1.5V13z"/></svg>해외여행도 걱정없이</div>
+      <h2>환전 부족할 때?<br><span class="c">당황 말고</span> 여기로</h2>
+      <p>지갑은 가볍게! 여행은 끊김 없이!<br>카드 결제 가능한 곳 지금 확인하세요!</p>
+      <button class="hero-cta" onclick="location.href='heka_city.html'">지금 결제 가능한 곳 찾기<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <div class="hkd-dots" id="hkd-dots" style="display:none"></div>
   </section>
+  <script>
+  // 배너 사진 슬라이드: img/banner/home-1~3.jpg 중 있는 것만. 하나도 없으면 어두운 배경만, 점 숨김
+  (function(){
+    var srcs = ['img/banner/home-1.jpg','img/banner/home-2.jpg','img/banner/home-3.jpg'];
+    var box = document.getElementById('hkd-slides'), dots = document.getElementById('hkd-dots'), hero = document.getElementById('hkd-hero');
+    var ok = new Array(srcs.length), left = srcs.length, imgs = [], idx = 0, timer = null;
+    srcs.forEach(function(src, i){
+      var im = new Image();
+      im.onload = function(){ ok[i] = im; done(); };
+      im.onerror = function(){ done(); };
+      im.src = src;
+    });
+    function done(){
+      if (--left) return;
+      imgs = ok.filter(Boolean);
+      if (!imgs.length) return;
+      imgs.forEach(function(im){ im.alt = ''; box.appendChild(im); });
+      if (imgs.length > 1) {
+        dots.innerHTML = imgs.map(function(){ return '<i></i>'; }).join('');
+        dots.style.display = '';
+      }
+      show(0); start();
+    }
+    function show(i){
+      idx = (i + imgs.length) % imgs.length;
+      imgs.forEach(function(im, k){ im.classList.toggle('on', k === idx); });
+      [].forEach.call(dots.children, function(d, k){ d.classList.toggle('on', k === idx); });
+    }
+    function start(){ if (timer) clearInterval(timer); if (imgs.length > 1) timer = setInterval(function(){ show(idx + 1); }, 4000); }
+    var sx = 0, sy = 0, on = false;
+    hero.addEventListener('touchstart', function(e){ if (imgs.length < 2) return; on = true; sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    hero.addEventListener('touchend', function(e){
+      if (!on) return; on = false;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) < 30 || Math.abs(dy) > Math.abs(dx)) return;
+      show(idx + (dx < 0 ? 1 : -1)); start();
+    }, { passive: true });
+  })();
+  </script>
 
   <!-- 내 주변 카드 결제 매장 -->
   <div class="sec-head" style="margin-top:32px">
-    <span class="sec-t">내 주변 카드 결제 매장</span>
+    <span class="sec-t"><span class="hkd-sec-pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s-7.2-6.4-7.2-12A7.2 7.2 0 0 1 19.2 10c0 5.6-7.2 12-7.2 12zm0-9.2a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6z" fill-rule="evenodd"/></svg></span>내 주변 카드 결제 매장</span>
     <span class="sec-more" onclick="window.location.href='heka_nearby_all.html'">더보기</span>
   </div>
   <div class="nrow" id="nearby-row">
@@ -1365,17 +1679,17 @@ function payStatePill(s) {
   <div class="detail-panel" id="detail-panel">
     <div class="dp-handle"></div>
     <div class="dp-topbar">
-      <div style="flex:1;min-width:0;overflow:hidden">
-        <div style="display:flex;align-items:baseline;gap:5px">
-          <div class="dp-name" id="dp-name"></div>
-          <div class="dp-cat" id="dp-cat"></div>
-        </div>
+      <div class="hkd-dp-ph" id="hkd-dp-ph" onclick="hkdDpNext()"></div>
+      <div class="hkd-dp-info">
+        <div style="display:flex;align-items:center;min-width:0"><div class="dp-name" id="dp-name"></div></div>
+        <div class="dp-cat" id="dp-cat"></div>
+        <div id="hkd-dp-rows"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-        <button id="dp-zzim" onclick="toggleDpZzim()" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <div class="hkd-dp-btns">
+        <button id="dp-zzim" onclick="toggleDpZzim()" aria-label="찜">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </button>
-        <button class="dp-close" onclick="closeDetail()">✕</button>
+        <button class="dp-close" onclick="closeDetail()" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
     </div>
     <div class="dp-scroll" id="dp-scroll"></div>
@@ -1440,7 +1754,7 @@ function buildCatChips(list) {
     sw.appendChild(allChip);
   }
   list.forEach(function(lbl){
-    var d=document.createElement('div');d.className='sq-chip';d.textContent=(lbl==='호텔'?'숙소':lbl);d.dataset.lbl=lbl;
+    var d=document.createElement('div');d.className='sq-chip';d.innerHTML=hkdIcon(lbl)+'<span>'+_hkdE(lbl==='호텔'?'숙소':lbl)+'</span>';d.dataset.lbl=lbl;
     d.onclick=function(){toggleCat(lbl);syncAll();};wrap.appendChild(d);
     var d2=document.createElement('div');d2.className='sheet-chip';d2.textContent=(lbl==='호텔'?'숙소':lbl);d2.dataset.lbl=lbl;
     d2.onclick=function(){toggleCat(lbl);syncAll();updateCatCount();};sw.appendChild(d2);
