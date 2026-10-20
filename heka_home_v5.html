@@ -296,6 +296,11 @@ body{background:var(--hk-bg);font-family:'Plus Jakarta Sans',Pretendard,-apple-s
 .ycard-time{font-size:10px;color:var(--hk-muted);margin-left:auto;font-weight:500}
 .ycard-stats{display:flex;gap:12px;font-size:10px;color:var(--hk-muted);margin-top:4px}
 .ycard-stats span{display:inline-flex;align-items:center;gap:3px}
+.ycard-stats{align-items:center;margin-top:7px!important}
+.ycard-stats .ycard-who{gap:5px;min-width:0;margin-left:2px}
+.ycard-who .ythumb{width:18px!important;height:18px!important;flex-shrink:0}
+.ycard-who .ycard-nick{font-size:11px;font-weight:600;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.ycard-who .ycard-time{font-size:11px;color:#A0A6B1;white-space:nowrap}
 .ytitle{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;margin-bottom:6px!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;white-space:normal!important}
 .ybody{font-size:13px!important;font-weight:500!important;color:var(--hk-sub)!important;line-height:1.45!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
 .yfoot{font-size:10px!important;color:var(--hk-muted)!important;gap:5px!important}
@@ -642,6 +647,7 @@ const catBadgeMap = {'동행':'yb-mate','맛집':'yb-food','날씨':'yb-weather'
 const catEmojiMap2 = {'동행':'동','맛집':'맛','날씨':'날','정보':'정'};
 const catBgMap2 = {'동행':'#F0FDF4','맛집':'#FFF7E6','날씨':'#E0F2FE','정보':'#F3E8FF'};
 
+function _noFlag(t){ return String(t||'').replace(/^(?:\uD83C[\uDDE6-\uDDFF]){2}\s*/,''); }
 const postsQ = query(collection(db,'posts'), orderBy('createdAt','desc'), limit(6));
 onSnapshot(postsQ, function(snapshot){
   if(snapshot.empty) return;
@@ -667,9 +673,8 @@ onSnapshot(postsQ, function(snapshot){
     var comments = p.commentCount||0;
     html += '<div class="ycard" onclick="window.location.href=\'heka_post_detail.html?id='+doc.id+'\'">'
       +'<div class="ycard-left">'
-        +'<div class="ycard-head">'+avatarHtml+'<span class="ycard-nick">'+(window._esc?window._esc(nick):nick)+'</span><span class="ycard-time">'+ago+'</span></div>'
-        +'<div class="ycard-body"><span class="ybadge '+badge+'" style="margin-right:5px;vertical-align:middle">'+(window._esc?window._esc(p.category||'정보'):(p.category||'정보'))+'</span>'+(window._esc?window._esc(p.title):p.title)+'</div>'
-        +'<div class="ycard-stats"><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'+likes+'</span><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+comments+'</span></div>'
+        +'<div class="ycard-body"><span class="ybadge '+badge+'" style="margin-right:5px;vertical-align:middle">'+(window._esc?window._esc(p.category||'정보'):(p.category||'정보'))+'</span>'+(window._esc?window._esc(_noFlag(p.title)):_noFlag(p.title))+'</div>'
+        +'<div class="ycard-stats"><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'+likes+'</span><span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'+comments+'</span><span class="ycard-who">'+avatarHtml+'<span class="ycard-nick">'+(window._esc?window._esc(nick):nick)+'</span><span class="ycard-time">'+ago+'</span></span></div>'
       +'</div>'
       +thumb+'</div>';
   });

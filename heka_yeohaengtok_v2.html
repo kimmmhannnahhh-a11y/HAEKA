@@ -69,6 +69,14 @@ body{background:#f0f0f0;display:flex;justify-content:center;padding:30px;font-fa
 .fpbottom .meta{display:inline-flex;align-items:center;gap:4px;font-weight:600}
 .fpbottom .meta svg{width:13px;height:13px;stroke:#9CA3AF;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fpbottom .meta.liked svg{fill:#FF3900;stroke:#FF3900}
+.fptitle{margin-top:0!important}
+.fptitle .fptag{display:inline-flex;vertical-align:2px;margin-right:6px}
+.fptitle .new-dot{display:inline-block;vertical-align:4px;margin-right:6px}
+.fptitle .fpflag{vertical-align:-2px;margin-right:5px}
+.fpbottom .fpwho{display:inline-flex!important;align-items:center;gap:5px!important;height:auto!important;min-width:0;overflow:hidden}
+.fpbottom .fpwho .fpav{width:18px!important;height:18px!important;flex-shrink:0}
+.fpbottom .fpwho .fpu{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fpbottom .fpwho .fpd{white-space:nowrap}
 .fptag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;flex-shrink:0;letter-spacing:.02em}
 .fptag-mate{background:#F0FDF4;color:#16A34A}
 .fptag-food{background:#FFF7E6;color:#D97706}
@@ -384,19 +392,13 @@ function renderPosts(list){
     var flagHtml = fl ? '<img class="fpflag" src="img/flags/'+fl.code+'.png" alt="" onerror="this.style.display=\'none\'"/>' : '';
     return '<div class="fpost" onclick="'+onclickFn+'">'
       + '<div class="fpleft">'
-        + '<div class="fphead">'
-          + '<div class="fpav" data-uid="'+(p.uid||'')+'">'+DEFAULT_AV+'</div>'
-          + '<span class="fpu">'+p.user+'</span>'
-          + '<span class="fpd">·</span>'
-          + '<span class="fpd">'+p.time+'</span>'
-        + '</div>'
         + '<div class="fpmain">'
-          + '<div class="fptagrow"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+'</div>'
-          + '<div class="fptitle">'+flagHtml+(window._esc?window._esc(titleTxt):titleTxt)+'</div>'
+          + '<div class="fptitle"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+flagHtml+(window._esc?window._esc(titleTxt):titleTxt)+'</div>'
           + (p.body ? '<div class="fpbody">'+p.body+'</div>' : '')
           + '<div class="fpbottom">'
             + '<span class="meta'+(p.id&&likedSet.has(p.id)?' liked':'')+'">'+heartSvg+(p.likes||0)+'</span>'
             + '<span class="meta">'+commentSvg+(p.cmts||0)+'</span>'
+            + '<span class="fphead fpwho"><span class="fpav" data-uid="'+(p.uid||'')+'">'+DEFAULT_AV+'</span><span class="fpu">'+p.user+'</span><span class="fpd">·</span><span class="fpd">'+p.time+'</span></span>'
           + '</div>'
         + '</div>'
       + '</div>'
