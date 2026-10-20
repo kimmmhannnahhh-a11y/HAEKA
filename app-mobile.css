@@ -134,6 +134,8 @@ html, body {
   .bnav, .detail-panel {
     left: calc(50% - 240px) !important;
     right: calc(50% - 240px) !important;
+    width: auto !important;
+    max-width: 480px !important;
   }
   .write-fab { right: calc(50% - 240px + 18px) !important; }
   .phone-wrap { width: 100% !important; max-width: 480px !important; margin: 0 auto !important; overflow-x: clip !important; }
