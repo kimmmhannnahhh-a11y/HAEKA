@@ -304,6 +304,7 @@ function renderPosts(list){
   var el = document.getElementById('post-list');
   if(!list.length){ el.innerHTML='<div style="padding:48px 16px;text-align:center;font-size:13px;color:#9CA3AF">아직 글이 없어요<br><span style="font-size:11px;color:#bbb">첫 번째 여행톡을 남겨보세요</span></div>'; return; }
   var readSet = getReadSet();
+  var likedSet; try{ likedSet = new Set(JSON.parse(localStorage.getItem('haeka_liked_posts')||'[]')); }catch(e){ likedSet = new Set(); }
   var heartSvg = '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
   var commentSvg = '<svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>';
   el.innerHTML = list.map(function(p){
@@ -329,7 +330,7 @@ function renderPosts(list){
           + '<div class="fptitle"><span class="fptag '+tagClass+'">'+(window._esc?window._esc(p.tagTxt):String(p.tagTxt||''))+'</span>'+dotHtml+'<span>'+(window._esc?window._esc(p.title):String(p.title||''))+'</span></div>'
           + (p.body ? '<div class="fpbody">'+p.body+'</div>' : '')
           + '<div class="fpbottom">'
-            + '<span class="meta">'+heartSvg+(p.likes||0)+'</span>'
+            + '<span class="meta'+(p.id&&likedSet.has(p.id)?' liked':'')+'">'+heartSvg+(p.likes||0)+'</span>'
             + '<span class="meta">'+commentSvg+(p.cmts||0)+'</span>'
           + '</div>'
         + '</div>'
@@ -522,6 +523,14 @@ function showToast(msg){
 }
 
 renderPosts(posts);
+// 계정에 저장된 하트로 다시 그린다
+var _mn=0, _mt=setInterval(function(){
+  if(++_mn>200){ clearInterval(_mt); return; }
+  if(!window._postMarks) return;
+  clearInterval(_mt);
+  window._postMarks.then(function(m){ if(m && window.posts) renderPosts(window.posts); });
+},50);
 </script>
+<script type="module" src="post-marks.js"></script>
 </body>
 </html>

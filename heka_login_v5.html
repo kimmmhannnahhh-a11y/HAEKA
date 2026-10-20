@@ -224,6 +224,8 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 const functions = getFunctions(app, 'asia-northeast3');
+// 카카오 로그인 서버 함수가 잠들어 있으면 깨우는 데 몇 초 걸린다 → 화면을 열 때 미리 한 번 깨워 둔다(빈 요청이라 바로 거절된다)
+try { httpsCallable(functions, 'kakaoSignIn')({}).catch(function(){}); } catch(e) {}
 window._db = db;
 window._fbAuth = auth;
 window._fbFns = { collection, query, where, getDocs };

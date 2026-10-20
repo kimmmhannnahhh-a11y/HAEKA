@@ -285,6 +285,7 @@ _auth.authStateReady().then(function(){
   listenComments();
 });
 </script>
+<script type="module" src="post-marks.js"></script>
 
 <script>
 function timeAgo(ts){
@@ -412,7 +413,25 @@ window.renderPost=function(p){
     if(likeBtn) likeBtn.classList.add('liked');
   }
   if(_images.length>1) initSlideSwipe();
+  applyPostMarks();
 };
+
+// 계정에 저장된 하트·찜 상태로 버튼을 맞춘다(폰 기록이 지워져도 유지)
+function applyPostMarks(){
+  if(!window._postMarks) return;
+  window._postMarks.then(function(m){
+    if(!m) return;
+    _liked = m.liked.indexOf(window._postId)>-1;
+    _saved = m.saved.some(function(s){ return s.id===window._postId; });
+    var lb=document.getElementById('like-btn'); if(lb) lb.classList.toggle('liked', _liked);
+    var sb=document.getElementById('save-btn'); if(sb) sb.classList.toggle('saved', _saved);
+  });
+}
+function needLogin(what){
+  if(window._fbAuth && window._fbAuth.currentUser) return false;
+  if(confirm(what+'는 로그인 후 이용할 수 있어요. 로그인하시겠어요?')) location.href='heka_login_v5.html?redirect='+encodeURIComponent(location.href);
+  return true;
+}
 
 window.renderComments=function(cmts){
   var el=document.getElementById('cmt-list');
@@ -551,20 +570,21 @@ async function submitReply(cmtId){
   }catch(e){ showToast(e && e.message==='로그인이 필요해요' ? '로그인 후 답글을 쓸 수 있어요' : '답글 등록에 실패했어요'); if(btn) btn.disabled=false; }
 }
 
-function toggleLike(){
-  _liked=!_liked;
+var _likeBusy=false;
+async function toggleLike(){
+  if(needLogin('좋아요')) return;
+  if(_likeBusy) return;
+  _likeBusy=true;
+  // 계정 기준 상태를 먼저 받아 둔다(폰 기록만 보고 두 번 누르는 것 방지)
+  var m = window._postMarks ? await window._postMarks : null;
+  var likedPosts = m ? m.liked : [];
+  _liked = likedPosts.indexOf(window._postId)===-1;
   var btn=document.getElementById('like-btn');
   var cnt=document.getElementById('like-count');
-  // localStorage에 좋아요 상태 저장
-  try{
-    var likedPosts=JSON.parse(localStorage.getItem('haeka_liked_posts')||'[]');
-    if(_liked){
-      if(likedPosts.indexOf(window._postId)===-1) likedPosts.push(window._postId);
-    } else {
-      likedPosts=likedPosts.filter(function(id){return id!==window._postId;});
-    }
-    localStorage.setItem('haeka_liked_posts',JSON.stringify(likedPosts));
-  }catch(e){}
+  if(_liked) likedPosts.push(window._postId);
+  else likedPosts.splice(likedPosts.indexOf(window._postId),1);
+  try{ if(window._savePostMarks) await window._savePostMarks({likedPosts:likedPosts}); }catch(e){ console.error(e); }
+  _likeBusy=false;
   if(_liked){
     if(btn) btn.classList.add('liked');
     if(cnt) cnt.textContent=parseInt(cnt.textContent||0)+1;
@@ -576,22 +596,29 @@ function toggleLike(){
   }
 }
 
-function toggleSave(){
-  _saved=!_saved;
+var _saveBusy=false;
+async function toggleSave(){
+  if(needLogin('찜')) return;
+  if(_saveBusy) return;
+  _saveBusy=true;
+  var m = window._postMarks ? await window._postMarks : null;
+  var saved = m ? m.saved : [];
+  var idx = saved.findIndex(function(s){return s.id===window._postId;});
+  _saved = idx===-1;
   var btn=document.getElementById('save-btn');
+  if(_saved){
+    var p=window._post||{};
+    var img=(p.images&&typeof p.images[0]==='string')?p.images[0]:'';
+    saved.unshift({id:window._postId,title:p.title||'',category:p.category||'',city:p.city||'',nickname:p.nickname||'',image:img,savedAt:Date.now()});
+  } else {
+    saved.splice(idx,1);
+  }
+  if(btn) btn.classList.toggle('saved', _saved);
   try{
-    var saved=JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]');
-    if(_saved){
-      if(btn) btn.classList.add('saved');
-      if(window._post) saved.unshift({id:window._postId,title:window._post.title,category:window._post.category,city:window._post.city,nickname:window._post.nickname,savedAt:Date.now()});
-      showToast('저장됐어요. 마이페이지에서 확인하세요');
-    } else {
-      if(btn) btn.classList.remove('saved');
-      saved=saved.filter(function(s){return s.id!==window._postId;});
-      showToast('저장이 취소됐어요');
-    }
-    localStorage.setItem('haeka_saved_posts',JSON.stringify(saved));
-  }catch(e){}
+    if(window._savePostMarks) await window._savePostMarks({savedPosts:saved});
+    showToast(_saved?'저장됐어요. 마이페이지에서 확인하세요':'저장이 취소됐어요');
+  }catch(e){ console.error(e); showToast('저장에 실패했어요'); }
+  _saveBusy=false;
 }
 
 function sharePost(){

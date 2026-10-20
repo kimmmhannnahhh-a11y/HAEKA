@@ -1134,6 +1134,9 @@ try { initGPS(); window._gpsStarted = true; } catch(e) { console.error(e); }
 window.addEventListener('pageshow', function(e) {
   if (e.persisted && allStores.length > 0) {
     (window.applyFilters ? window.applyFilters() : renderNearby(sortByDistance(allStores)));
+    // 후기를 쓰고 돌아오면 저장해 둔 목록이 지워져 있다 → 다시 받아 새 후기 수를 보여 준다
+    _nearKey = null;
+    loadNearStores();
   }
   // 페이지 복귀 시 항상 찜 UI 재동기화
   try { sessionStorage.removeItem('haeka_zzim_changed'); } catch(ex) {}
@@ -1795,6 +1798,43 @@ function hkPromoClick(){
     document.documentElement.style.setProperty('--ph-w', r.width + 'px');
   }
   fit(); window.addEventListener('resize', fit); window.addEventListener('load', fit);
+})();
+</script>
+<script>
+// 다른 화면(여행톡 글 등)에 갔다가 뒤로 오면 보던 위치로 돌아간다.
+// 앱에서는 뒤로 오면 홈을 새로 그려서 맨 위로 가 있었다. 목록이 늦게 채워지므로 높이가 될 때까지 몇 번 다시 맞춘다
+(function(){
+  var KEY = 'haeka_home_scroll';
+  function save(){
+    var b = document.body, d = document.scrollingElement || document.documentElement;
+    var y = Math.max(b.scrollTop || 0, d.scrollTop || 0, window.scrollY || 0);
+    try { sessionStorage.setItem(KEY, String(y)); } catch(e) {}
+  }
+  window.addEventListener('pagehide', save);
+  document.addEventListener('click', save, true);
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  function restore(){
+    var y = 0; try { y = +sessionStorage.getItem(KEY) || 0; } catch(e) {}
+    if (!y) return;
+    var tries = 0, stop = false;
+    function cancel(){ stop = true; }
+    window.addEventListener('touchstart', cancel, { once: true, passive: true });
+    window.addEventListener('wheel', cancel, { once: true, passive: true });
+    (function go(){
+      if (stop) return;
+      var b = document.body, d = document.scrollingElement || document.documentElement;
+      b.scrollTop = y; d.scrollTop = y;
+      var now = Math.max(b.scrollTop, d.scrollTop);
+      if (Math.abs(now - y) < 2 || ++tries > 40) return;
+      setTimeout(go, 100);
+    })();
+  }
+  // 뒤로 와서 새로 그린 경우
+  var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
+  if (nav.type === 'back_forward') restore();
+  else { try { sessionStorage.removeItem(KEY); } catch(e) {} }
+  // 뒤로 와서 그려 둔 화면을 그대로 꺼낸 경우
+  window.addEventListener('pageshow', function(e){ if (e.persisted) restore(); });
 })();
 </script>
 <link rel="stylesheet" href="style-clean.css?v=2">

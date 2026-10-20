@@ -68,7 +68,10 @@ var TAG_TEXT = {'동행':'동','맛집':'맛','날씨':'날','정보':'정'};
 var TAG_BG = {'동행':'#F0FDF4','맛집':'#FFF7E6','날씨':'#E0F2FE','정보':'#F3E8FF'};
 
 function getSaved(){ try{ return JSON.parse(localStorage.getItem('haeka_saved_posts')||'[]'); }catch(e){ return []; } }
-function setSaved(list){ try{ localStorage.setItem('haeka_saved_posts', JSON.stringify(list)); }catch(e){} }
+function setSaved(list){
+  try{ localStorage.setItem('haeka_saved_posts', JSON.stringify(list)); }catch(e){}
+  if(window._savePostMarks) window._savePostMarks({savedPosts:list}).catch(function(e){ console.error(e); });
+}
 
 function render(){
   var list = getSaved();
@@ -78,20 +81,23 @@ function render(){
     return;
   }
   el.innerHTML = list.map(function(p, i){
-    var tag = p.tagTxt||'정보';
+    var tag = p.tagTxt||p.category||'정보';
+    var img0 = p.image || (p.images && p.images[0]);
+    var who = p.user||p.nickname||'여행자';
+    var when = p.time||p.city||'';
     var tagColor = TAG_COLOR[tag]||'#FF3900';
     var emoji = TAG_TEXT[tag]||'톡';
     var bg = TAG_BG[tag]||'#f5f5f5';
-    var hasImg = p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length>10;
+    var hasImg = img0 && typeof img0==='string' && img0.length>10;
     var thumb = hasImg
-      ? '<div class="post-thumb"><img src="'+p.images[0]+'" onerror="this.parentNode.style.background=\''+bg+'\';this.parentNode.innerHTML=\''+emoji+'\'"></div>'
+      ? '<div class="post-thumb"><img src="'+img0+'" onerror="this.parentNode.style.background=\''+bg+'\';this.parentNode.innerHTML=\''+emoji+'\'"></div>'
       : '<div class="post-thumb" style="background:'+bg+'">'+emoji+'</div>';
     return '<div class="post-item" onclick="location.href=\'heka_post_detail.html?id='+(p.id||'')+'\'">'
       +thumb
       +'<div class="post-body">'
       +'<span class="post-tag" style="background:'+tagColor+'">'+tag+'</span>'
       +'<div class="post-title">'+(window._esc?window._esc(p.title):String(p.title||''))+'</div>'
-      +'<div class="post-meta">'+p.user+' · '+p.time+'</div>'
+      +'<div class="post-meta">'+(window._esc?window._esc(who):who)+(when?' · '+(window._esc?window._esc(when):when):'')+'</div>'
       +'</div>'
       +'<button class="del-btn" onclick="event.stopPropagation();removeSaved('+i+')" aria-label="삭제"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg></button>'
       +'</div>';
@@ -106,6 +112,14 @@ function removeSaved(idx){
 }
 
 render();
+// 계정에 저장된 목록으로 다시 그린다(폰 기록이 지워져도 남아 있게)
+var _tn=0, _t=setInterval(function(){
+  if(++_tn>200){ clearInterval(_t); return; }
+  if(!window._postMarks) return;
+  clearInterval(_t);
+  window._postMarks.then(function(m){ if(m) render(); });
+},50);
 </script>
+<script type="module" src="post-marks.js"></script>
 </body>
 </html>

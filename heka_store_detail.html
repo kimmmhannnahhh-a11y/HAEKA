@@ -722,7 +722,7 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
     }
   } catch(e) { revCount = store.review ? 1 : 0; }
   var ratingLabel = '(<b class="rev-star">★</b>'+revCount+')';
-  var ratingTxt = '<button onclick="goReviewAll()" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:none;font-family:inherit"> '+ratingLabel+'</button>';
+  var ratingTxt = '<button type="button" style="font-size:12px;font-weight:800;color:#111;background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:4px;text-decoration:none;font-family:inherit"> '+ratingLabel+'</button>';
   document.getElementById('review-title').innerHTML =
     '<span style="font-size:10px;font-weight:700;color:#bbb;letter-spacing:.08em;text-transform:uppercase">결제 후기</span>'
     + ratingTxt;
@@ -746,13 +746,14 @@ document.getElementById('cards-no').innerHTML = noCards.map(function(c){
 
   if (previewItems.length) {
     document.getElementById('review-list').innerHTML = previewItems.map(function(r){
-      var nick = r.nickname || r.nick || '익명';
+      var _e = window._esc || function(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); };
+      var nick = _e(r.nickname || r.nick || '익명');
       var starTxt = r.rating ? '<span class="rev-stars">'+renderStars(r.rating)+'</span>' : '';
       // 프로필 사진 없이: 닉네임 · 시간(한 줄) / 내용
       return '<div class="rev-item">'
         +'<div class="rev-body">'
         +'<div class="rev-top" style="justify-content:flex-start!important;gap:6px!important"><span class="rev-name">'+nick+'</span><span class="rev-date" style="display:inline!important;margin:0!important">'+timeAgo(r.createdAt)+'</span><span style="margin-left:auto">'+starTxt+'</span></div>'
-        +'<div class="rev-txt">'+(r.text||r.review||'')+'</div>'
+        +'<div class="rev-txt">'+_e(r.text||r.review||'')+'</div>'
         +'</div></div>';
     }).join('');
   } else {
@@ -991,7 +992,7 @@ function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
     </div>
 
     <!-- 결제 후기 -->
-    <div class="section" id="review-section" style="display:none">
+    <div class="section" id="review-section" style="display:none;cursor:pointer" onclick="goReviewAll()">
       <div style="display:flex;align-items:center;margin-bottom:10px">
         <div class="sec-title" id="review-title" style="margin-bottom:0">결제 후기</div>
       </div>
