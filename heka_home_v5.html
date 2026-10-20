@@ -1608,7 +1608,8 @@ function hkdDpRows(store, distText) {
         dots.innerHTML = imgs.map(function(){ return '<i></i>'; }).join('');
         dots.style.display = '';
       }
-      show(0); start();
+      // 들어올 때마다 아무 사진부터(늘 캐리어부터 나오지 않게)
+      show(Math.floor(Math.random() * imgs.length)); start();
     }
     function show(i){
       idx = (i + imgs.length) % imgs.length;
