@@ -822,7 +822,7 @@ function _payBadgeOld(c, cl){
 function buildFilters(){
   if(!_pageState) return;
   var rows=_pageState.rows;
-  var cardHtml='<button class="flt-chip all'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">'+_ic('card')+'카드 전체</button>'
+  var cardHtml='<button class="flt-chip all'+(Object.keys(_flt.cards).length?'':' on')+'" onclick="pickCard(\'\')">'+_ic('card')+'전체</button>'
     + FLT_CARDS.filter(function(c){ return rows.some(function(s){ return payMatch(s, c); }); })
       .map(function(c){ return '<button class="flt-chip'+(_flt.cards[c]?' on':'')+'" aria-label="'+c+'" onclick="pickCard(\''+c+'\')">'+_cardChip(c)+'</button>'; }).join('');
   var cats=[];
@@ -832,7 +832,7 @@ function buildFilters(){
   // 홈·더보기와 같은 순서로 (목록에 없는 업종은 맨 뒤)
   var CAT_ORDER=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
   cats.sort(function(a,b){ var x=CAT_ORDER.indexOf(a), y=CAT_ORDER.indexOf(b); return (x<0?99:x)-(y<0?99:y); });
-  var catHtml='<button class="flt-chip all'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">'+_ic('all')+'업종 전체</button>'
+  var catHtml='<button class="flt-chip all'+(_flt.cat?'':' on')+'" onclick="pickCat(\'\')">'+_ic('all')+'전체</button>'
     + cats.map(function(c){ return '<button class="flt-chip'+(_catOn(c)?' on':'')+'" onclick="pickCat(\''+c+'\')">'+_ic(c)+(c==='호텔'?'숙소':c)+'</button>'; }).join('');
   document.getElementById('flt-cards').innerHTML=rows.length?cardHtml:'';
   document.getElementById('flt-cats').innerHTML=rows.length?catHtml:'';

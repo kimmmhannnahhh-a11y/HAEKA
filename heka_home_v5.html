@@ -1201,6 +1201,8 @@ function payStatePill(s) {
    style-clean.css·app-mobile.css 가 뒤에서 !important 로 덮으므로 여기서는 한 단계 더 구체적으로 쓴다 */
 :root{--hkd-coral:#FD5B50;--hkd-bg:#FCF9F6;--hkd-text:#16181D;--hkd-sub:#62697B;--hkd-muted:#9CA3AF;--hkd-chip:#F4F4F6}
 html body,body .phone{background:var(--hkd-bg)!important}
+/* 위쪽에 아주 옅은 코랄빛(폰 사진 기준 #FDF3EF → 바탕색) */
+body .phone{background:linear-gradient(180deg,#FDF1EC 0,#FDF5F2 90px,var(--hkd-bg) 220px) var(--hkd-bg) no-repeat!important}
 body .sb{background:var(--hkd-bg)!important}
 body .topbar,body .filterbar{background:transparent!important;box-shadow:none!important;border-bottom:0!important}
 /* 제목 */
