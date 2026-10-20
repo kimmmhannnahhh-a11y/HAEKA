@@ -329,9 +329,10 @@ function zzView(s){
   for(k in e) if(_zzEmpty(o[k])) o[k]=e[k];
   return o;
 }
-var _zzFillDone={};
+var _zzFillDone={}, _zzGone={};
 async function zzFillMissing(){
-  var need=_allStores.filter(function(s){ return s&&s.id&&!_zzFillDone[s.id]&&(_zzEmpty(s.city)||_zzEmpty(s.country)); });
+  // 모든 찜을 한 번씩 매장 원본과 맞춰 본다: 빠진 정보는 채우고, 지금은 지워진 매장(옛 테스트 매장 등)은 화면에서 뺀다
+  var need=_allStores.filter(function(s){ return s&&s.id&&!_zzFillDone[s.id]; });
   if(!need.length) return;
   need.forEach(function(s){ _zzFillDone[s.id]=1; });
   var FIELDS=['city','country','nameLocal','category','cuisine','address','lat','lng','images','payOk','payNo','menus','ratingSum','ratingCnt'];
@@ -339,12 +340,14 @@ async function zzFillMissing(){
   if(window._db&&window._getDoc&&window._doc){
     await Promise.all(need.map(function(s){
       return window._getDoc(window._doc(window._db,'stores',String(s.id))).then(function(snap){
-        if(!snap||!snap.exists()) return;
+        if(!snap) return;
+        if(!snap.exists()){ _zzGone[s.id]=1; return; }
         var d=snap.data()||{}, e=_zzExtra[s.id]||(_zzExtra[s.id]={});
         FIELDS.forEach(function(k){ if(!_zzEmpty(d[k])) e[k]=d[k]; });
       }).catch(function(){});
     }));
   }
+  _allStores=_allStores.filter(function(s){ return !(s&&_zzGone[s.id]); });
   // 2) 아직 도시가 없으면 좌표로 가장 가까운 도시
   var left=need.filter(function(s){ var v=zzView(s); return _zzEmpty(v.city)&&v.lat&&v.lng; });
   if(left.length){
@@ -494,6 +497,7 @@ function zzimSearchMatch(s, kw){
 }
 
 function doFilter(){
+  _allStores=_allStores.filter(function(s){ return !(s&&_zzGone[s.id]); });
   renderChips();
   var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
   var list=_allStores.filter(function(s){
