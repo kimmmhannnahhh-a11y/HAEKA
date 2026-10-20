@@ -37,23 +37,16 @@ body .zz-search .search-box{display:flex;align-items:center;gap:9px;background:#
 body .zz-search .search-box:focus-within{box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1.5px rgba(253,91,80,.6)!important}
 .zz-search .search-box svg{width:19px;height:19px;fill:none;stroke:var(--hkd-coral);stroke-width:2.2;stroke-linecap:round;flex-shrink:0}
 body .zz-search .search-input{flex:1;min-width:0;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;font-size:14px!important;height:100%;border-radius:0!important;color:var(--hkd-text)!important}
-/* 업종·나라 칩 (홈 칩과 같은 모양: 회색 알약 + 선 아이콘, 고르면 연분홍/코랄 테두리, 전체는 검정) */
+/* 업종·장소 칩: 안 고른 칩은 회색, 고른 칩은 전부 검정. 개수 숫자 없음 */
 .zz-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 14px 0;cursor:grab;-webkit-overflow-scrolling:touch}
 .zz-row::-webkit-scrollbar{display:none}
 .zz-row.dragging{cursor:grabbing}
 .zz-row:empty{display:none}
-.zz-chip{flex-shrink:0;height:30px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 13px;border-radius:999px;background:var(--hkd-chip);color:#2B2F38;font-size:13px;font-weight:600;line-height:1;letter-spacing:-.02em;white-space:nowrap;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
-.zz-chip.all{min-width:56px;padding:0 13px;font-size:14px;font-weight:700}
-.zz-chip.all.on{background:#16181D;color:#fff}
-.zz-chip.on:not(.all){background:#FFE6E0;color:var(--hkd-coral);box-shadow:inset 0 0 0 1.5px rgba(253,91,80,.55)}
+.zz-chip{flex-shrink:0;height:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 13px;border-radius:999px;background:#F2F1EF;color:#2B2F38;font-size:13px;font-weight:600;line-height:1;letter-spacing:-.02em;white-space:nowrap;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.zz-chip.on{background:#16181D;color:#fff}
+.zz-chip.back{padding:0 13px 0 7px;gap:4px}
+.zz-chip.back svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .zz-chip .flag{width:20px;height:14px;border-radius:2px;object-fit:cover;box-shadow:0 0 0 .5px rgba(0,0,0,.12);flex-shrink:0}
-.zz-chip .n{font-size:12px;font-weight:600;color:var(--hkd-muted)}
-.zz-chip.on .n{color:inherit;opacity:.75}
-.zz-chip.all.on .n{color:#fff}
-.zz-row.sm{padding-top:8px;gap:5px}
-.zz-row.sm .zz-chip{height:26px;padding:0 11px;font-size:12px}
-.zz-row.sm .zz-chip.all{min-width:0;font-size:12px}
-.zz-row.sm .zz-chip .n{font-size:11px}
 .zz-chip-gap{flex:0 0 4px}
 body .count-bar{padding:12px 16px 2px!important;font-size:12.5px!important;font-weight:600!important;color:var(--hkd-muted)!important;background:transparent!important}
 body .store-list{padding:6px 13px 90px!important;background:transparent!important}
@@ -273,8 +266,7 @@ function hkdRate(s) {
     </div>
   </div>
   <div class="zz-row" id="cat-row"></div>
-  <div class="zz-row" id="country-row"></div>
-  <div class="zz-row sm" id="city-row"></div>
+  <div class="zz-row" id="place-row"></div>
   <div class="count-bar" id="count-bar"></div>
   <div class="store-list" id="store-list"></div>
 
@@ -318,14 +310,58 @@ function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
 
 // ── 업종: 홈 업종 칩과 같은 순서. 목록에 없는 업종은 기타 앞에 붙인다 ──
 var ZZ_CATS=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
-function zzCat(s){return (s&&s.category)||'기타';}
+function zzCat(s){s=zzView(s);return (s&&s.category)||'기타';}
 function zzCatLbl(c){return c==='호텔'?'숙소':c;}
 
 // ── 나라: 매장의 country 가 있으면 그것, 없으면 도시 이름으로 찾는다(heka_city.html 의 COUNTRIES 와 같은 자료: [나라, 국기코드, 도시들]) ──
 var ZZ_COUNTRIES=[["일본","jp",["도쿄","오사카","교토","후쿠오카","가고시마","야마구치","삿포로","나고야","시즈오카","기타큐슈","구마모토","오이타","미야자키","미야코지마","히로시마","나라","고베","오키나와","가나자와","센다이","니가타","마쓰야마","다카마쓰","하카타","벳푸","유후인","아사히카와","쿠시로","요코하마","가와사키","지바","사이타마","가마쿠라","하코네","닛코","가와구치코","나가노","마쓰모토","다카야마","도야마","후쿠이","이세","오쓰","와카야마","히메지","오카야마","구라시키","돗토리","마쓰에","시모노세키","사가","나가사키","사세보","고치","도쿠시마","오타루","아오모리","아키타","모리오카","야마가타","후쿠시마","이시가키","하코다테","우쓰노미야","가와고에","하치오지","마치다","가시와","요코스카","쓰쿠바","다카사키","하마마쓰","도요타","오카자키","니시노미야","구루메","후나바시"]],["중국","cn",["상하이","베이징","톈진","옌타이","웨이하이","연길","내몽골","지난","창춘","선양","청두","광저우","충칭","선전","항저우","시안","우한","난징","쿤밍","구이린","하얼빈","샤먼","칭다오","다롄","쑤저우","장자제","리장","황산","친황다오","타이위안","정저우","뤄양","카이펑","쉬저우","허페이","양저우","우시","닝보","원저우","푸저우","취안저우","난창","창사","둥관","포산","주하이","난닝","하이커우","싼야","구이양","다리","샹그릴라","시닝","인촨","우루무치","라싸","스자좡","란저우","쿤산","난퉁","자싱","사오싱","이우","중산","후이저우","산터우","탕산","바오딩","웨이팡","쯔보","창저우"]],["미국","us",["뉴욕","로스앤젤레스","라스베가스","샌프란시스코","시카고","시애틀","마이애미","하와이","보스턴","워싱턴DC","올랜도","뉴올리언스","포틀랜드","샌디에이고","덴버","나파밸리","앵커리지","피닉스","애틀랜타","내슈빌"]],["프랑스","fr",["파리","니스","리옹","마르세유","보르도","스트라스부르","릴","낭트","몽펠리에","렌","그르노블","투르","아비뇽","칸","모나코","앙티브","엑상프로방스","루아르","뮐루즈","콜마르"]],["영국","gb",["런던","맨체스터","에든버러","버밍엄","리버풀","글래스고","브리스톨","리즈","옥스퍼드","케임브리지","바스","요크","코벤트리","노팅엄","셰필드","카디프","벨파스트","뉴캐슬어폰타인","레스터","사우샘프턴"]],["이탈리아","it",["로마","밀라노","피렌체","베네치아","나폴리","시칠리아","라구사","트로페아","볼로냐","토리노","팔레르모","제노바","바리","카타니아","베로나","메시나","파도바","트리에스테","타란토","브레시아","레조칼라브리아","모데나","페루자"]],["스페인","es",["바르셀로나","마드리드","세비야","발렌시아","빌바오","그라나다","말라가","사라고사","무르시아","팔마","라스팔마스","산탄데르","코르도바","바야돌리드","알리칸테","지로나","산세바스티안","살라망카","레온","부르고스"]],["독일","de",["베를린","뮌헨","밤베르크","함부르크","쾰른","프랑크푸르트","슈투트가르트","뒤셀도르프","도르트문트","에센","라이프치히","브레멘","드레스덴","하노버","뉘른베르크","뒤스부르크","보훔","뷔퍼탈","빌레펠트","본","만하임"]],["태국","th",["방콕","치앙마이","파타야","푸켓","카오산","아유타야","후아힌","코사무이","코창","코피피","나콘라차시마","하트야이","수라타니","피마이","로이엣","치앙라이","매사이","낭","람팡","파야오","끄라비","카오락","코란타","코팡안","코타오","깐짜나부리","라용","코사멧","핏사눌록","빠이","콘캔","농카이","우본라차타니","빠툼타니","촌부리","시라차"]],["베트남","vn",["호치민","하노이","다낭","호이안","나트랑","무이네","하롱","사파","달랏","후에","푸꾸옥","깜란","빈","빈롱","껀터","라오까이","디엔비엔푸","빈딘","꽝남","하이퐁","닌빈","박닌","탄호아","동허이","플레이쿠","부온마투옷","붕따우","비엔호아","미토","락자","하장"]],["싱가포르","sg",["싱가포르"]],["호주","au",["시드니","멜버른","브리즈번","퍼스","애들레이드","골드코스트","캔버라","다윈","호바트","케언스","타운스빌","뉴캐슬","울런공","서퍼스파라다이스","선샤인코스트","발러랫","제롱","맥카이","록햄튼","번다버그"]],["캐나다","ca",["토론토","밴쿠버","몬트리올","캘거리","오타와","에드먼턴","퀘벡","위니펙","해밀턴(온타리오)","킷치너","런던","빅토리아","핼리팩스","새스커툰","리자이나","세인트존스","켈로나","아보츠퍼드","베링","레자이나"]],["포르투갈","pt",["리스본","포르투","알가르브","코임브라","브라가","세투발","비제우","카스카이스","신트라","파루","에보라","아베이루","게리마레스","바르셀루스","비아나도카스텔루","포르탈레그레","구아르다","라메구","람에구","베자"]],["네덜란드","nl",["암스테르담","로테르담","헤이그","위트레흐트","에인트호번","틸뷔르흐","흐로닝언","알메러","브레다","네이메헌","엔스헤데","아펠도른","하를렘","아른험","자안담","암스텔베인","도르드레흐트","레이던","조이트펀","벤로"]],["오스트리아","at",["빈","잘츠부르크","그라츠","인스브루크","린츠","클라겐푸르트","빌라흐","레오벤","크렘스","피쇼펜","뷔르글","슈타이어","펠트키르히","브레겐츠","아이젠슈타트","브루크안데어무어","콘코르디아","트라운","뷘스","메들링"]],["체코","cz",["프라하","브르노","오스트라바","플젠","리베레츠","올로모우츠","우스티나트라벰","체스케부데요비체","흐라데츠크랄로베","파르두비체","즐린","클라드노","모스트","오파바","카를로비바리","프로스테요프","카르비나","하비로프","체스카립코","호돈인"]],["멕시코","mx",["멕시코시티","칸쿤","과달라하라","몬테레이","푸에블라","케레타로","과나후아토","오악사카","산크리스토발","메리다","로스카보스","푸에르토발라르타","마사틀란","아카풀코","툴룸","플라야델카르멘","쿠에르나바카","사카테카스","아과스칼리엔테스","치와와"]],["말레이시아","my",["쿠알라룸푸르","페낭","코타키나발루","조호르바루","쿠칭","말라카","이포","코타바루","쿠알라트렝가누","미리","바투파하트","시부","산다칸","세레반","알로르세타르","캐머런하이랜드","겐팅하이랜드","랑카위","티오만","레당","샤알람","쿠안탄","타이핑","라부안","타와우","푸트라자야","카장","세팡","숭아이프타니"]],["필리핀","ph",["마닐라","세부","보라카이","보홀","팔라완","다바오","일로일로","바기오","앙헬레스","올롱가포","수리가오","캐가얀데오로","잠보앙가","코타바토","레가스피","나가","바탕가스","산페르난도","산타로사","리갈","마카티","엘니도","바콜로드","타가이타이","타클로반","비간","라오아그","시아르가오","두마게테"]],["인도네시아","id",["발리","자카르타","족자카르타","롬복","코모도","메단","수라바야","반둥","마카사르","세마랑","팔렘방","덴파사르","마낭","쿠타","우붓","세미냑","누사두아","짐바란","산우르","레기안","보고르","말랑","솔로","바탐","페칸바루","발릭파판","폰티아낙","길리","파당","마나도"]],["크로아티아","hr",["두브로브니크","자그레브","스플리트","흐바르","코르출라","로빈","풀라","자다르","시베니크","오파티야","포레치","리예카","오미스","마카르스카","트로기르","브라치","카르나르","크르크","말리로신","로빈"]],["그리스","gr",["아테네","산토리니","미코노스","크레타","로도스","코르푸","테살로니키","델포이","메테오라","케팔로니아","나플리온","하니아","이라클리온","레스보스","히오스","사모스","파트라","라리사","볼로스","이오아니나"]],["튀르키예","tr",["이스탄불","카파도키아","안탈리아","이즈미르","앙카라","파묵칼레","에페수스","보드룸","마르마리스","페티예","알라냐","트라브존","부르사","코니아","가지안테프","아다나","차나칼레","사프란볼루","네브셰히르","카이세리"]],["인도","in",["뭄바이","델리","아그라","바라나시","자이푸르","첸나이","콜카타","방갈로르","하이데라바드","고아","케랄라","다람살라","리시케시","우다이푸르","조드푸르","카주라호","코치","마이소르","아마다바드","오리사"]],["뉴질랜드","nz",["오클랜드","웰링턴","크라이스트처치","퀸스타운","더니든","해밀턴","타우랑가","넬슨","네이피어","파머스턴노스","로토루아","타우포","와나카","인버카길","블렌하임","기즈번","뉴플리머스","왕가누이","마스터턴","혼가누"]],["아랍에미리트","ae",["두바이","아부다비","샤르자","아즈만","라스알카이마","푸자이라","움알쿠와인"]],["홍콩","hk",["홍콩"]],["마카오","mo",["마카오"]],["몰타","mt",["몰타"]],["슬로베니아","si",["류블랴나","블레드","포스토이나","보힌","디바차","캄니크"]],["헝가리","hu",["부다페스트"]],["벨기에","be",["브뤼셀","브뤼헤","겐트","안트베르펜"]],["몽골","mn",["울란바토르"]],["대만","tw",["타이베이","타이중","가오슝","타이난","화롄","타이동","자이","신주","지룽","이란","핑둥","난터우","윈린","장화","먀오리","타오위안","신베이","펑후","진먼","마쭈"]],["브라질","br",["리우데자네이루","상파울루","살바도르","포르탈레자","쿠리치바","마나우스","레시페","포르투알레그리","벨루오리존치","브라질리아","플로리아노폴리스","포스두이과수","나탈","마세이오","상루이스","테레시나","캄푸그란지","마나우스","조앙페소아","아라카주"]],["페루","pe",["리마","쿠스코","마추픽추","아레키파","이키토스","트루히요","치클라요","피우라","우아라스","이카","타크나","나스카","푸노","아야쿠초","우안카요","친차","카야오","줄리아카","포르투말도나도","우아초"]],["모로코","ma",["마라케시","페스","카사블랑카","라바트","메크네스","탕헤르","에사우이라","아가디르","샤우엔","메르주가","바하드라","자고라","티즈니트","투드라","우르자자트","달리아","이프란","아지루","켈라아메구나","루사니"]],["남아프리카공화국","za",["케이프타운","요하네스버그","더반","프리토리아","포트엘리자베스","블룸폰테인","이스트런던","포체프스트룸","키브버리","넬스프루이트","폴로콰네","음부말랑가","루스텐버그","조지","클레르크스도르프","밸파라이소","파로우","헤르마누스","스텔렌보스","프란스훅"]]];
 var _zzCityToCountry={}, _zzFlag={};
 ZZ_COUNTRIES.forEach(function(c){ _zzFlag[c[0]]=c[1]; c[2].forEach(function(city){ if(!_zzCityToCountry[city]) _zzCityToCountry[city]=c[0]; }); if(!_zzCityToCountry[c[0]]) _zzCityToCountry[c[0]]=c[0]; });
+// ── 찜 항목에 도시·나라가 빠진 경우: 화면에서만 채운다(찜 데이터는 다시 쓰지 않음) ──
+//   1) Firestore stores/{id} 를 읽어 빈 필드를 채움  2) 그래도 도시가 없으면 lat/lng 로 data/cities.json 의 가장 가까운 도시(200km 안)
+var _zzExtra={};   // id → 채운 필드
+function _zzEmpty(v){ return v==null||v===''||(Array.isArray(v)&&!v.length); }
+function zzView(s){
+  if(!s) return s;
+  var e=_zzExtra[s.id]; if(!e) return s;
+  var o={}, k;
+  for(k in s) o[k]=s[k];
+  for(k in e) if(_zzEmpty(o[k])) o[k]=e[k];
+  return o;
+}
+var _zzFillDone={};
+async function zzFillMissing(){
+  var need=_allStores.filter(function(s){ return s&&s.id&&!_zzFillDone[s.id]&&(_zzEmpty(s.city)||_zzEmpty(s.country)); });
+  if(!need.length) return;
+  need.forEach(function(s){ _zzFillDone[s.id]=1; });
+  var FIELDS=['city','country','nameLocal','category','cuisine','address','lat','lng','images','payOk','payNo','menus','ratingSum','ratingCnt'];
+  // 1) Firestore 에서 읽기(병렬, 실패해도 그대로)
+  if(window._db&&window._getDoc&&window._doc){
+    await Promise.all(need.map(function(s){
+      return window._getDoc(window._doc(window._db,'stores',String(s.id))).then(function(snap){
+        if(!snap||!snap.exists()) return;
+        var d=snap.data()||{}, e=_zzExtra[s.id]||(_zzExtra[s.id]={});
+        FIELDS.forEach(function(k){ if(!_zzEmpty(d[k])) e[k]=d[k]; });
+      }).catch(function(){});
+    }));
+  }
+  // 2) 아직 도시가 없으면 좌표로 가장 가까운 도시
+  var left=need.filter(function(s){ var v=zzView(s); return _zzEmpty(v.city)&&v.lat&&v.lng; });
+  if(left.length){
+    try{
+      var cities=await (await fetch('data/cities.json')).json();
+      cities=(cities||[]).filter(function(c){ return c&&c.name&&c.lat&&c.lng&&_zzCityToCountry[c.name]; });
+      left.forEach(function(s){
+        var v=zzView(s), best=null, bd=Infinity;
+        cities.forEach(function(c){ var d=calcDist(+v.lat,+v.lng,+c.lat,+c.lng); if(d<bd){bd=d;best=c;} });
+        if(best&&bd<=200000){ var e=_zzExtra[s.id]||(_zzExtra[s.id]={}); e.city=best.name; if(_zzEmpty(v.country)) e.country=_zzCityToCountry[best.name]; }
+      });
+    }catch(err){}
+  }
+  doFilter();
+}
 function zzCountry(s){
+  s=zzView(s);
   var c=s&&s.country&&String(s.country).trim();
   if(c) return c;
   var city=s&&s.city&&String(s.city).trim();
@@ -335,7 +371,7 @@ function zzCountry(s){
 var _selCats=[];          // 업종 여러 개 (비어 있으면 전체)
 var _selCountry='전체';   // 나라 하나
 var _selCity='전체';      // 고른 나라 안의 도시 하나
-function zzCity(s){return (s&&s.city&&String(s.city).trim())||'기타';}
+function zzCity(s){s=zzView(s);return (s&&s.city&&String(s.city).trim())||'기타';}
 
 function renderChips(){
   // 업종 칩: 찜한 매장에 있는 업종만
@@ -347,7 +383,7 @@ function renderChips(){
   _selCats=_selCats.filter(function(c){ return have[c]; });
   var h='';
   if(cats.length){
-    h='<div class="zz-chip all'+(_selCats.length?'':' on')+'" onclick="selectCat(null)">전체</div>';
+    h='<div class="zz-chip'+(_selCats.length?'':' on')+'" onclick="selectCat(null)">전체</div>';
     cats.forEach(function(c){
       h+='<div class="zz-chip'+(_selCats.indexOf(c)>-1?' on':'')+'" data-cat="'+_hkdE(c)+'" onclick="selectCat(this.getAttribute(\'data-cat\'))">'+hkdIcon(c)+'<span>'+_hkdE(zzCatLbl(c))+'</span></div>';
     });
@@ -355,42 +391,42 @@ function renderChips(){
   }
   document.getElementById('cat-row').innerHTML=h;
 
-  // 나라 칩: 국기 + 이름 + 개수, 많은 순 (기타는 맨 뒤)
+  // 장소 칩(한 줄): 처음엔 나라 칩(국기 + 이름, 많은 순, 기타는 맨 뒤). 나라를 고르면 같은 줄이 [‹ 나라] [전체] [도시…] 로 바뀐다
   var cnt={};
   _allStores.forEach(function(s){ var c=zzCountry(s); cnt[c]=(cnt[c]||0)+1; });
   if(_selCountry!=='전체'&&!cnt[_selCountry]) _selCountry='전체';
-  var order=ZZ_COUNTRIES.map(function(c){ return c[0]; });
-  var names=Object.keys(cnt).sort(function(a,b){
-    if(a==='기타') return 1; if(b==='기타') return -1;
-    if(cnt[b]!==cnt[a]) return cnt[b]-cnt[a];
-    var ai=order.indexOf(a), bi=order.indexOf(b); return (ai<0?999:ai)-(bi<0?999:bi);
-  });
   var g='';
-  if(_allStores.length){
-    g='<div class="zz-chip all'+(_selCountry==='전체'?' on':'')+'" onclick="selectCountry(null)">전체 <span class="n">'+_allStores.length+'</span></div>';
+  if(_allStores.length&&_selCountry==='전체'){
+    _selCity='전체';
+    var order=ZZ_COUNTRIES.map(function(c){ return c[0]; });
+    var names=Object.keys(cnt).sort(function(a,b){
+      if(a==='기타') return 1; if(b==='기타') return -1;
+      if(cnt[b]!==cnt[a]) return cnt[b]-cnt[a];
+      var ai=order.indexOf(a), bi=order.indexOf(b); return (ai<0?999:ai)-(bi<0?999:bi);
+    });
+    g='<div class="zz-chip on" onclick="selectCountry(null)">전체</div>';
     names.forEach(function(n){
       var code=_zzFlag[n];
-      g+='<div class="zz-chip'+(_selCountry===n?' on':'')+'" data-country="'+_hkdE(n)+'" onclick="selectCountry(this.getAttribute(\'data-country\'))">'
+      g+='<div class="zz-chip" data-country="'+_hkdE(n)+'" onclick="selectCountry(this.getAttribute(\'data-country\'))">'
         +(code?'<img class="flag" src="img/flags/'+code+'.png" alt="" onerror="this.style.display=\'none\'">':'')
-        +'<span>'+_hkdE(n)+'</span><span class="n">'+cnt[n]+'</span></div>';
+        +'<span>'+_hkdE(n)+'</span></div>';
     });
     g+='<span class="zz-chip-gap"></span>';
-  }
-  document.getElementById('country-row').innerHTML=g;
-
-  // 도시 칩: 나라를 고르면 그 나라의 도시들(개수 많은 순, 기타는 맨 뒤). 나라 전체면 숨김
-  var ch='';
-  if(_selCountry==='전체') _selCity='전체';
-  else {
-    var cc={}, inC=0;
-    _allStores.forEach(function(s){ if(zzCountry(s)!==_selCountry) return; inC++; var c=zzCity(s); cc[c]=(cc[c]||0)+1; });
+  } else if(_allStores.length){
+    var cc={};
+    _allStores.forEach(function(s){ if(zzCountry(s)!==_selCountry) return; var c=zzCity(s); cc[c]=(cc[c]||0)+1; });
     if(_selCity!=='전체'&&!cc[_selCity]) _selCity='전체';
     var cities=Object.keys(cc).sort(function(a,b){ if(a==='기타') return 1; if(b==='기타') return -1; return (cc[b]-cc[a])||a.localeCompare(b,'ko'); });
-    ch='<div class="zz-chip all'+(_selCity==='전체'?' on':'')+'" onclick="selectCity(null)">전체 <span class="n">'+inC+'</span></div>';
-    cities.forEach(function(c){ ch+='<div class="zz-chip'+(_selCity===c?' on':'')+'" data-city="'+_hkdE(c)+'" onclick="selectCity(this.getAttribute(\'data-city\'))"><span>'+_hkdE(c)+'</span><span class="n">'+cc[c]+'</span></div>'; });
-    ch+='<span class="zz-chip-gap"></span>';
+    var code2=_zzFlag[_selCountry];
+    g='<div class="zz-chip back" onclick="selectCountry(null)" aria-label="나라 목록으로"><svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>'
+      +(code2?'<img class="flag" src="img/flags/'+code2+'.png" alt="" onerror="this.style.display=\'none\'">':'')+'<span>'+_hkdE(_selCountry)+'</span></div>';
+    g+='<div class="zz-chip'+(_selCity==='전체'?' on':'')+'" onclick="selectCity(null)">전체</div>';
+    cities.forEach(function(c){ g+='<div class="zz-chip'+(_selCity===c?' on':'')+'" data-city="'+_hkdE(c)+'" onclick="selectCity(this.getAttribute(\'data-city\'))"><span>'+_hkdE(c)+'</span></div>'; });
+    g+='<span class="zz-chip-gap"></span>';
   }
-  document.getElementById('city-row').innerHTML=ch;
+  var pr=document.getElementById('place-row'), key=_selCountry;
+  pr.innerHTML=g;
+  if(pr.getAttribute('data-k')!==key){ pr.scrollLeft=0; pr.setAttribute('data-k',key); }
   document.getElementById('zz-total').textContent=_allStores.length?_allStores.length:'';
 }
 function selectCat(c){
@@ -403,7 +439,7 @@ function selectCity(c){ _selCity=(c==null||_selCity===c)?'전체':c; doFilter();
 
 // 드래그 스크롤 (PC 마우스)
 document.addEventListener('DOMContentLoaded', function(){
-  ['cat-row','country-row','city-row'].forEach(function(id){
+  ['cat-row','place-row'].forEach(function(id){
     var el=document.getElementById(id), isDown=false, moved=false, startX, scrollLeft;
     el.addEventListener('mousedown', function(e){ isDown=true; moved=false; el.classList.add('dragging'); startX=e.pageX; scrollLeft=el.scrollLeft; });
     el.addEventListener('mouseleave', function(){ isDown=false; el.classList.remove('dragging'); });
@@ -488,14 +524,15 @@ function renderList(list){
   if(!list.length){ el.innerHTML='<div class="zz-none">조건에 맞는 찜한 매장이 없어요</div>'; return; }
   var _e=_hkdE;
   var _u=window._safeImg||function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
-  el.innerHTML=list.map(function(s){
+  el.innerHTML=list.map(function(s0){
+    var s=zzView(s0);
     var pills=hkdPays(s,false,true);
     var dist='';
     if(userLat&&userLng&&s.lat&&s.lng){dist=_e(distLbl(calcDist(userLat,userLng,s.lat,s.lng)));}
     var _ci=brandImage(s)||catImage(s.cuisine!=='기타'&&s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
     var thumb=imgSrc?'<img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'">':'<div class="hkd-ph-emo" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var meta=[dist,_e(s.city||''),_e(s.category==='호텔'?'숙소':(s.category||''))].filter(Boolean).join(' · ');
-    var realIdx=_allStores.indexOf(s);
+    var realIdx=_allStores.indexOf(s0);
     return'<div class="hkd-card" onclick="openDetail('+realIdx+')">'
       +'<div class="hkd-ph">'+thumb+'</div>'
       +'<div class="hkd-bd"><div class="hkd-nm"><b>'+_e(s.name)+'</b>'+(s.nameLocal?'<span class="ln">'+_e(s.nameLocal)+'</span>':'')+(s.closed?'<span class="cl">폐업</span>':'')+'</div>'
@@ -508,7 +545,7 @@ function renderList(list){
 }
 
 function openDetail(idx){
-  var store=_allStores[idx];
+  var store=zzView(_allStores[idx]);
   if(!store)return;
   window._currentStoreId=store.id||null;
   document.getElementById('dp-name').textContent=store.name;
@@ -542,6 +579,7 @@ function init(){
     _allStores = getZzimList();
   }
   doFilter();
+  zzFillMissing();
   if(!navigator.geolocation)return;
   navigator.geolocation.getCurrentPosition(
     function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;try{sessionStorage.setItem('haeka_gps',JSON.stringify({lat:userLat,lng:userLng}));}catch(e){}doFilter();},
@@ -577,6 +615,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 window._db = db;
 window._setDoc = setDoc;
+window._getDoc = getDoc;
 window._doc = doc;
 onAuthStateChanged(auth, async u => {
   window._currentUser = u;
