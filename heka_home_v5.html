@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
 <script>
 (function preloadCachedHotpl(){
   try{
@@ -1416,14 +1416,14 @@ function hkdPays(store, big, noUnknown) {
   if (window.haekaBook && haekaBook(store)) h += '<span class="' + (big ? 'hkd-bp' : 'hkd-pay') + ' t book">온라인 예매</span>';
   return h;
 }
-// 별점 줄: 후기가 없으면 "리뷰 없음 (0)", 있으면 평균 (개수). 뒤에 대표메뉴(없으면 세부 업종)
+// 별점 줄: 후기가 없으면 "0 (0)", 있으면 평균 (개수). 뒤에 대표메뉴(없으면 세부 업종)
 function hkdMenu(s) { return (Array.isArray(s.menus) && s.menus.length) ? s.menus.join(', ') : ((s.cuisine && s.cuisine !== s.category) ? s.cuisine : ''); }
 function hkdRate(s) {
   var n = +s.ratingCnt || 0;
   var avg = (n > 0 && s.ratingSum) ? (s.ratingSum / n).toFixed(1) : '0';
   var menu = hkdMenu(s);
   return '<div class="hkd-row"><svg class="star" viewBox="0 0 24 24">' + HKD_STAR + '</svg><span>'
-    + (n > 0 ? '<b class="avg">' + avg + '</b> (' + n.toLocaleString() + ')' : '리뷰 없음 (0)')
+    + (n > 0 ? '<b class="avg">' + avg + '</b> (' + n.toLocaleString() + ')' : '0 (0)')
     + (menu ? ' · ' + _hkdE(menu) : '') + '</span></div>';
 }
 // 최근 본 항목(localStorage.haeka_recent) 저장 — 마이페이지 카드가 쓰는 필드 포함
