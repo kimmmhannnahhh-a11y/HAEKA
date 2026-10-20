@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
+<meta name="theme-color" content="#FF3900"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="해카"/>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="app-mobile.css"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+@import url('haeka_rebuild_common.css');
+</style>
+<style id="hkd-style">
+/* ===== 2026-10-20 찜 화면: 홈·전체보기 시안과 같은 매장 카드·칩 (카드 CSS 는 heka_nearby_all.html 과 같은 코드) =====
+   haeka_rebuild_common.css·app-mobile.css 가 !important 로 덮으므로 여기서는 한 단계 더 구체적으로 쓴다 */
+:root{--hkd-coral:#FD5B50;--hkd-bg:#FCF9F6;--hkd-text:#16181D;--hkd-sub:#62697B;--hkd-muted:#9CA3AF;--hkd-chip:#F4F4F6}
+html body,body .phone{background:var(--hkd-bg)!important}
+body{font-family:'Plus Jakarta Sans',Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important;color:var(--hkd-text)!important}
+body .phone{height:auto!important;overflow:visible!important;box-shadow:none}
+@media (min-width:600px){html body{background:#EEECEA!important}body .phone{box-shadow:0 0 24px rgba(0,0,0,.08)!important}}
+/* 위쪽 제목 */
+body .topbar{background:transparent!important;border-bottom:0!important;box-shadow:none!important;padding:16px 16px 4px 10px!important;min-height:0;display:flex;align-items:center;gap:4px}
+body .topbar .back-btn{width:36px;height:36px;border-radius:50%;background:transparent!important;border:0!important;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+body .topbar .back-btn svg{width:22px;height:22px;fill:none;stroke:var(--hkd-text);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+body .topbar .topbar-title{font-size:21px!important;font-weight:800!important;letter-spacing:-.04em;color:var(--hkd-text)!important;flex:0 1 auto}
+.zz-total{font-size:19px;font-weight:800;color:var(--hkd-coral);letter-spacing:-.03em;margin-left:5px}
+/* 검색칸: 전체보기 화면과 같은 흰 둥근 막대(돋보기 왼쪽, 코랄) */
+.zz-search{padding:10px 14px 4px}
+body .zz-search .search-box{display:flex;align-items:center;gap:9px;background:#fff!important;border:0!important;border-radius:999px!important;height:44px;padding:0 16px!important;box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1px rgba(0,0,0,.04)!important}
+body .zz-search .search-box:focus-within{box-shadow:0 4px 14px rgba(40,20,10,.08),0 0 0 1.5px rgba(253,91,80,.6)!important}
+.zz-search .search-box svg{width:19px;height:19px;fill:none;stroke:var(--hkd-coral);stroke-width:2.2;stroke-linecap:round;flex-shrink:0}
+body .zz-search .search-input{flex:1;min-width:0;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;font-size:14px!important;height:100%;border-radius:0!important;color:var(--hkd-text)!important}
+/* 업종·장소 칩: 안 고른 칩은 회색, 고른 칩은 전부 검정. 개수 숫자 없음 */
+.zz-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 14px 0;cursor:grab;-webkit-overflow-scrolling:touch}
+.zz-row::-webkit-scrollbar{display:none}
+.zz-row.dragging{cursor:grabbing}
+.zz-row:empty{display:none}
+.zz-chip{flex-shrink:0;height:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 13px;border-radius:999px;background:#F2F1EF;color:#2B2F38;font-size:13px;font-weight:600;line-height:1;letter-spacing:-.02em;white-space:nowrap;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.zz-chip.on{background:#16181D;color:#fff}
+.zz-chip.back{padding:0 13px 0 7px;gap:4px}
+.zz-chip.back svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.zz-chip .flag{width:20px;height:14px;border-radius:2px;object-fit:cover;box-shadow:0 0 0 .5px rgba(0,0,0,.12);flex-shrink:0}
+.zz-chip-gap{flex:0 0 4px}
+body .count-bar{padding:12px 16px 2px!important;font-size:12.5px!important;font-weight:600!important;color:var(--hkd-muted)!important;background:transparent!important}
+body .store-list{padding:6px 13px 90px!important;background:transparent!important}
+.zz-none{padding:46px 10px;text-align:center;font-size:14px;font-weight:600;color:var(--hkd-sub)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:12px}
+.empty-emoji{font-size:40px}
+.empty-txt{font-size:15px;font-weight:700;color:#2B2F38}
+.empty-sub{font-size:13px;color:var(--hkd-muted);line-height:1.6}
+body .empty-btn{margin-top:8px;padding:12px 24px;border-radius:999px!important;background:var(--hkd-coral)!important;color:#fff!important;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;box-shadow:0 8px 18px rgba(253,91,80,.28)!important}
+/* 매장 카드 */
+.hkd-ic{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hkd-mask{display:inline-block;flex-shrink:0;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.hkd-m-ali{-webkit-mask-image:url(img/pay/alipay.svg);mask-image:url(img/pay/alipay.svg)}
+.hkd-m-we{-webkit-mask-image:url(img/pay/wechat.svg);mask-image:url(img/pay/wechat.svg)}
+.hkd-card{position:relative;display:flex;gap:13px;align-items:stretch;padding:7px 30px 7px 8px;margin-bottom:10px;background:#fff;border-radius:14px;border:1px solid #F1EEEA;box-shadow:0 2px 10px rgba(30,24,16,.05);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hkd-ph{position:relative;width:108px;height:96px;flex-shrink:0;border-radius:9px;overflow:hidden;background:#F3F1EE}
+.hkd-ph img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
+.hkd-ph-emo{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:34px}
+.hkd-bd{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:4px 0 3px}
+.hkd-nm{display:flex;align-items:baseline;gap:6px;min-width:0;white-space:nowrap;padding-right:6px}
+.hkd-nm b{font-size:17px;font-weight:800;color:var(--hkd-text);letter-spacing:-.04em;overflow:hidden;text-overflow:ellipsis;flex-shrink:1;min-width:0}
+.hkd-nm .ln{font-size:11px;font-weight:500;color:var(--hkd-muted);overflow:hidden;text-overflow:ellipsis;flex-shrink:2;min-width:0}
+.hkd-nm .cl{flex-shrink:0;background:#dc2626;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;align-self:center}
+.hkd-row{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:12.5px;font-weight:500;color:var(--hkd-sub);white-space:nowrap;min-width:0;letter-spacing:-.02em}
+.hkd-row>span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hkd-row svg{width:14px;height:14px;flex-shrink:0}
+.hkd-row .pin{fill:none;stroke:#8B909B;stroke-width:2}
+.hkd-row .star{fill:#FDB927}
+.hkd-row .avg{font-weight:800;color:var(--hkd-text)}
+.hkd-pays{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.hkd-pay{height:22px;display:inline-flex;align-items:center;gap:4px;padding:0 7px 0 4px;border-radius:7px;border:1px solid #E6E8EC;background:#fff;font-size:12px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;flex-shrink:0;color:#374151}
+.hkd-pay.t{padding:0 8px}
+.hkd-pay.logo{padding:0 7px}
+.hkd-pay.ali{background:#EEF5FF;border-color:#C9DEFF;color:#1677FF}
+.hkd-pay.we{background:#E9F8EF;border-color:#BCE9CE;color:#07A752}
+.hkd-pay .ali-i{width:15px;height:15px;background:#1677FF}
+.hkd-pay .we-b{width:15px;height:15px;border-radius:4px;background:#07C160;display:inline-flex;align-items:center;justify-content:center}
+.hkd-pay .we-b .hkd-mask{width:11px;height:11px;background:#fff}
+.hkd-pay img{display:block;border-radius:0}
+.hkd-pay .visa{height:8px}.hkd-pay .mc{height:12px}.hkd-pay .jcb{height:13px}.hkd-pay .amex{height:14px;border-radius:2px}.hkd-pay .up{height:12px}
+.hkd-pay.red{background:#FEF1F1;border-color:#FBD0D0;color:#DC2626}
+.hkd-pay.gray{background:#F3F4F6;border-color:#E5E7EB;color:#6B7280}
+.hkd-pay.book{background:#EEF4FF;border-color:#BFDBFE;color:#2563eb}
+.hkd-pay.cash{background:#FBF6EC;border-color:#EADFC8;color:#6B5A3C}
+body .hkd-heart.store-zzim{position:absolute!important;top:7px!important;right:7px!important;width:30px!important;height:30px!important;border-radius:50%!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer;z-index:3}
+body .hkd-heart.store-zzim svg{width:21px;height:21px;fill:#F2344A;stroke:#F2344A;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hkd-chev{position:absolute;right:11px;top:50%;margin-top:-8px;width:16px;height:16px;fill:none;stroke:#8B909B;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+/* 매장 팝업 (기존 팝업 그대로, 모양만 시안 쪽으로) */
+body #detail-panel{border-radius:22px 22px 0 0!important;max-height:86vh!important;background:#fff!important;transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+body #detail-panel.open{transform:translateY(0)}
+body .detail-overlay{display:none}
+body .detail-overlay.open{display:block}
+#detail-panel .dp-handle{width:37px;height:4px;border-radius:2px;background:#D9D9DC;margin:10px auto 0;flex-shrink:0}
+#detail-panel .dp-topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 14px 4px 17px;flex-shrink:0}
+#detail-panel .dp-name{font-size:19px;font-weight:800;letter-spacing:-.04em;color:var(--hkd-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#detail-panel .dp-cat{font-size:13px;color:var(--hkd-sub);white-space:nowrap;flex-shrink:0}
+#detail-panel .dp-btns{display:flex;gap:6px;flex-shrink:0}
+#detail-panel .dp-btns button{width:30px;height:30px;border-radius:50%!important;background:#F3F3F5!important;border:0!important;display:flex;align-items:center;justify-content:center;padding:0!important;cursor:pointer;box-shadow:none!important}
+#detail-panel .dp-btns svg{width:16px;height:16px}
+#detail-panel .dp-scroll{padding:10px 17px 6px!important}
+.zz-dp-dist{font-size:13px;color:var(--hkd-coral);font-weight:700;margin-bottom:8px}
+.hkd-payrow{display:flex;align-items:center;gap:10px;padding:7px 8px 7px 14px;border-radius:11px;background:linear-gradient(90deg,#FCEFEC 0%,#F6F2F0 50%,#E6F7F1 100%);margin-bottom:9px;min-height:41px}
+.hkd-payrow-l{display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:14px;color:#2B2F38;font-weight:500;letter-spacing:-.02em}
+.hkd-payrow-l svg{width:21px;height:21px;fill:none;stroke:var(--hkd-coral);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hkd-payrow-l i{width:1px;height:17px;background:#E3D9D6}
+.hkd-payrow-r{flex:1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;min-width:0}
+.hkd-bp{height:27px;display:inline-flex;align-items:center;gap:7px;padding:0 13px 0 4px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap;letter-spacing:-.02em;background:#fff;color:#2B2F38;box-shadow:inset 0 0 0 1px #E6E8EC}
+.hkd-bp.t{padding:0 12px}
+.hkd-bp.logo{padding:0 12px}
+.hkd-bp img{border-radius:0}
+.hkd-bp .ic{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2)}
+.hkd-bp .ic .hkd-mask{width:13px;height:13px;background:#fff}
+.hkd-bp.ali{background:#1677FF;color:#fff;box-shadow:none;min-width:102px;justify-content:center}
+.hkd-bp.we{background:#09C163;color:#fff;box-shadow:none;min-width:93px;justify-content:center}
+.hkd-bp.red{background:#FEF1F1;color:#DC2626;box-shadow:inset 0 0 0 1px #FBD0D0}
+.hkd-bp.gray{background:#F3F4F6;color:#6B7280}
+.hkd-bp.book{background:#EEF4FF;color:#2563eb;box-shadow:inset 0 0 0 1px #BFDBFE}
+.hkd-bp.cash{background:#FBF6EC;color:#6B5A3C;box-shadow:inset 0 0 0 1px #EADFC8}
+.hkd-bp .visa{height:10px}.hkd-bp .mc{height:15px}.hkd-bp .jcb{height:17px}.hkd-bp .amex{height:18px;border-radius:2px}.hkd-bp .up{height:15px}
+.hkd-bp .hkd-ic{width:15px;height:15px}
+.zz-dp-addr{font-size:13.5px;line-height:1.4;color:#5F6470;margin:2px 0 10px}
+.zz-dp-map{width:100%;height:110px;border-radius:10px;overflow:hidden;border:1px solid #E4E4E7;margin-bottom:12px;cursor:pointer}
+#dp-gmap{width:100%;height:100%}
+body #detail-panel .dp-btn-row{display:flex;padding:8px 15px max(14px,env(safe-area-inset-bottom))!important;border-top:0!important}
+body #detail-panel .dp-btn-more{flex:1;height:46px!important;padding:0!important;border-radius:12px!important;background:#FD4748!important;color:#fff!important;font-size:16px!important;font-weight:800!important;border:0;letter-spacing:-.03em;box-shadow:0 8px 20px rgba(253,71,72,.28)!important}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf6YhFy83E7dvy9OL08WvYdnH8qzs58o4&libraries=places&v=beta&language=ko"></script>
+<script src="security.js"></script>
+<script src="map-link.js"></script>
+<script>
+// 사진이 없는 매장은 카테고리 그림으로 대신한다
+var CAT_IMAGES = { "ATM": "img/cat-atm.jpg", "기타": "img/cat-etc.jpg", "마트": "img/cat-mart.jpg", "쇼핑": "img/cat-shopping.jpg", "식당": "img/cat-restaurant.jpg", "입장권": "img/cat-ticket.jpg", "카페": "img/cat-cafe.jpg?v=3", "패스트푸드": "img/cat-fastfood.jpg", "술집": "img/cat-sooljip.jpg", "편의점": "img/cat-convenience.jpg", "호텔": "img/cat-hotel.jpg", "코인로커": "img/cat-locker.jpg", "짐 운반": "img/cat-luggage.jpg", "코인세탁소": "img/cat-laundry.jpg", "환전소": "img/cat-exchange.jpg", "온천": "img/cat-bath.jpg", "목욕탕": "img/cat-bath.jpg", "게임센터": "img/cat-arcade.jpg", "노래방": "img/cat-karaoke.jpg", "만화카페": "img/cat-mangacafe.jpg" };
+function catImage(cat) { return CAT_IMAGES[cat] || ""; }
+// 체인점 기본 사진: 매장 사진이 없을 때 업종 그림 대신 쓴다(직접 찍어 온 간판 사진을 자른 것). 이름이 정확히 같은 매장만
+var BRAND_IMAGES = { "루이싱 커피": "img/brand-luckin.jpg?v=6" };
+function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
+function storeThumb(s) { return (s && s.images && s.images[0]) || brandImage(s) || catImage(s && s.cuisine !== '기타' && s.cuisine) || catImage(s && s.category) || ""; }
+</script>
+<script>
+// 카드가 안 되는 가게는 목록에서 바로 보이게 빨간 표시를 붙인다
+function payStatePill(s) {
+  var no = (s && s.payNo) || [];
+  if (no.indexOf("카드불가") < 0) return "";
+  return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+}
+</script>
+<script>
+// 한글로 바꾼 가게는 현지 간판 이름도 작게 같이 보여준다
+function localName(s) {
+  var v = s && s.nameLocal;
+  if (!v) return "";
+  var e = window._esc || function(x){ return x==null?"":String(x); };
+  return '<span style="font-size:11px;color:#9CA3AF;font-weight:500;margin-left:5px">' + e(v) + '</span>';
+}
+</script>
+<script>
+// 카드가 되는지 안 되는지에 따라 목록에 표시를 붙인다
+//   현금만       : 카드가 안 된다고 확인된 곳
+//   카드 정보 없음 : 아직 아무도 확인하지 않은 곳 (현금만과 헷갈리면 안 된다)
+function payStatePill(s) {
+  var ok = (s && s.payOk) || [], no = (s && s.payNo) || [];
+  if (ok.indexOf("현금만") > -1 || no.indexOf("현금만") > -1 || no.indexOf("카드불가") > -1) return '<span class="cpill" style="background:#DC2626;color:#fff">현금만</span>';
+  var hasCard = ok.some(function(c){ return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이|카드가능/.test(c); });
+  if (hasCard) return "";
+  return '<span class="cpill" style="background:#E5E7EB;color:#6B7280">카드 정보 없음</span>';
+}
+</script>
+<script>
+// ===== 홈·전체보기와 같은 선 아이콘, 결제수단 배지 (heka_nearby_all.html 의 코드 그대로) =====
+var HKD_IC = {
+  '식당':'<path d="M6 3v6a2.5 2.5 0 0 0 5 0V3M8.5 3v18M17.5 21V3c-2.2 1.3-3.3 4-3.3 7.5V13h3.3"/>',
+  '카페':'<path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M4 21h12"/>',
+  '술집':'<path d="M5.5 9h9.5v10a2 2 0 0 1-2 2H7.5a2 2 0 0 1-2-2V9zM15 11.5h1.8a2 2 0 0 1 2 2v2.5a2 2 0 0 1-2 2H15M5.5 9a2.6 2.6 0 0 1 2.4-4 3 3 0 0 1 5.2-.3A2.4 2.4 0 0 1 15 9M8.7 12.5v5M11.8 12.5v5"/>',
+  '패스트푸드':'<path d="M4 11c0-3.5 3.6-6 8-6s8 2.5 8 6H4zM3 14.5h18M4.5 17.5h15v.5a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-.5z"/>',
+  '편의점':'<path d="M4 9.5 5.5 4h13L20 9.5M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0M5.2 12v8h13.6v-8M10 20v-4.5h4V20"/>',
+  '쇼핑':'<path d="M5.5 8h13l-1 13h-11l-1-13zM9 10V6.5a3 3 0 0 1 6 0V10"/>',
+  '마트':'<path d="M3 4h2.5l2.2 11h10.6l2-8H6.3"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
+  '입장권':'<path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V6zM14.5 6.5v2M14.5 11v2M14.5 15.5v2"/>',
+  '호텔':'<path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+  'ATM':'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>',
+  '기타':'<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>',
+  '코인로커':'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M5 9h14M5 15h14M8.5 6h2M8.5 12h2M8.5 18h2"/>',
+  '짐 운반':'<rect x="6" y="7" width="12" height="13" rx="1.5"/><path d="M10 7V4h4v3M10 11v5M14 11v5"/>',
+  '코인세탁소':'<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M5 7h14"/><circle cx="12" cy="13.5" r="3.8"/>',
+  '환전소':'<path d="M4 8.5h14l-3.5-3.5M20 15.5H6l3.5 3.5"/>',
+  '온천':'<path d="M4 14.5h16M4 14.5c0 3 3.6 5.5 8 5.5s8-2.5 8-5.5M8 4c-1 1.5 1 2.5 0 4.5M12 4c-1 1.5 1 2.5 0 4.5M16 4c-1 1.5 1 2.5 0 4.5"/>',
+  '게임센터':'<path d="M7 8h10a4 4 0 0 1 4 4v2a3 3 0 0 1-5.2 2l-1.3-1.5h-5L8.2 16A3 3 0 0 1 3 14v-2a4 4 0 0 1 4-4zM7.5 10.5v3.5M5.8 12.2h3.4M16 11.5v.01M18 13.5v.01"/>',
+  '노래방':'<path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v4M9 21h6"/>',
+  '만화카페':'<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5v-15zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5v-15z"/>',
+  '전철 티켓':'<path d="M7 3h10a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zM5 10h14M8 21l2-4M16 21l-2-4"/>',
+  '버스':'<rect x="5" y="4" width="14" height="13" rx="2"/><path d="M5 11h14M8 17v3M16 17v3"/>',
+  '_tag':'<path d="M3.5 12.5V4.5a1 1 0 0 1 1-1h8l8 8-9 9-8-8z"/><circle cx="8" cy="8" r="1.3"/>',
+  '_card':'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M14.5 14.5h3"/>',
+  '_wallet':'<path d="M4 7.5h14a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7.5zM4 7.5 15 4.5v3M16 13.8h1.5"/>',
+  '_cash':'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.8"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>'
+};
+HKD_IC['목욕탕'] = HKD_IC['온천'];
+function hkdIcon(key, cls) { return '<svg class="' + (cls || 'hkd-ic') + '" viewBox="0 0 24 24" aria-hidden="true">' + (HKD_IC[key] || HKD_IC._tag) + '</svg>'; }
+var HKD_PIN = '<path d="M12 21.5s-7-6.3-7-11.7a7 7 0 0 1 14 0c0 5.4-7 11.7-7 11.7z"/><circle cx="12" cy="9.8" r="2.5"/>';
+var HKD_STAR = '<path d="M12 2.6l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5-4.9-4.5 6.6-.8z"/>';
+var HKD_HEART = '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>';
+function _hkdE(t) { return window._esc ? window._esc(t) : (t == null ? '' : String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; })); }
+// 결제수단 하나를 배지로. big=true 는 팝업의 큰 배지
+function hkdPay(c, big) {
+  var k = big ? 'hkd-bp' : 'hkd-pay';
+  if (c === '알리페이') return big
+    ? '<span class="' + k + ' ali"><span class="ic"><span class="hkd-mask hkd-m-ali"></span></span>알리페이</span>'
+    : '<span class="' + k + ' ali"><span class="hkd-mask hkd-m-ali ali-i"></span>Alipay</span>';
+  if (c === '위챗페이') return big
+    ? '<span class="' + k + ' we"><span class="ic"><span class="hkd-mask hkd-m-we"></span></span>위챗페이</span>'
+    : '<span class="' + k + ' we"><span class="we-b"><span class="hkd-mask hkd-m-we"></span></span>WeChat Pay</span>';
+  var L = { 'VISA': ['visa-c.svg', 'visa'], 'MASTER': ['mastercard-mark.svg', 'mc'], 'JCB': ['jcb-c.svg', 'jcb'], 'AMEX': ['amex-c.svg', 'amex'], 'UnionPay': ['unionpay-c.svg', 'up'] }[c];
+  if (L) return '<span class="' + k + ' logo" title="' + c + '"><img class="' + L[1] + '" src="img/pay/' + L[0] + '" alt="' + c + '"></span>';
+  if (c === '트래블로그') return '<span class="' + k + ' t">' + hkdIcon('_card') + c + '</span>';
+  if (c === '트래블월렛') return '<span class="' + k + ' t">' + hkdIcon('_wallet') + c + '</span>';
+  if (c === '현금가능') return '<span class="' + k + ' t cash">' + hkdIcon('_cash') + c + '</span>';
+  if (c === '현금만' || c === '카드불가' || c === '현금불가') return '<span class="' + k + ' t red">' + _hkdE(c) + '</span>';
+  if (c === '카드 정보 없음' || c === '모르겠어요' || c === '카드가능(브랜드모름)') return '<span class="' + k + ' t gray">' + _hkdE(c) + '</span>';
+  return '<span class="' + k + ' t">' + _hkdE(c) + '</span>';
+}
+// 매장 결제수단 → 배지 줄 (기존 목록 규칙 그대로: 현금만·카드 정보 없음 표시, 카드 순서)
+function hkdPays(store, big, noUnknown) {
+  var cardOrder = ['VISA','MASTER','JCB','AMEX','UnionPay','트래블로그','트래블월렛','알리페이','위챗페이'];
+  var ok = store.payOk || [], no = store.payNo || [];
+  var cards = ok.filter(function (c) { return c !== '현금만' && c !== '카드불가' && !(c === '현금가능' && (no.indexOf('카드불가') > -1 || ok.indexOf('현금만') > -1)); });
+  cards.sort(function (a, b) { var ai = cardOrder.indexOf(a), bi = cardOrder.indexOf(b); return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi); });
+  var st = '';
+  if (ok.indexOf('현금만') > -1 || no.indexOf('현금만') > -1 || no.indexOf('카드불가') > -1) st = hkdPay('현금만', big);
+  else if (!noUnknown && !ok.some(function (c) { return /VISA|MASTER|JCB|AMEX|UnionPay|트래블|알리페이|위챗페이|카드가능/.test(c); })) st = hkdPay('카드 정보 없음', big);
+  var h = st + cards.map(function (c) { return hkdPay(c, big); }).join('');
+  if (window.haekaBook && haekaBook(store)) h += '<span class="' + (big ? 'hkd-bp' : 'hkd-pay') + ' t book">온라인 예매</span>';
+  return h;
+}
+// 별점 줄: 후기가 없으면 "0 (0)", 있으면 평균 (개수). 뒤에 대표메뉴(없으면 세부 업종)
+function hkdMenu(s) { return (Array.isArray(s.menus) && s.menus.length) ? s.menus.join(', ') : ((s.cuisine && s.cuisine !== s.category) ? s.cuisine : ''); }
+function hkdRate(s) {
+  var n = +s.ratingCnt || 0;
+  var avg = (n > 0 && s.ratingSum) ? (s.ratingSum / n).toFixed(1) : '0';
+  var menu = hkdMenu(s);
+  return '<div class="hkd-row"><svg class="star" viewBox="0 0 24 24">' + HKD_STAR + '</svg><span>'
+    + (n > 0 ? '<b class="avg">' + avg + '</b> (' + n.toLocaleString() + ')' : '0 (0)')
+    + (menu ? ' · ' + _hkdE(menu) : '') + '</span></div>';
+}
+</script>
+</head>
+<body>
+<div class="phone">
+  <div class="sb"><span>9:41</span><span>해카</span><span style="opacity:0">●●●</span></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()" aria-label="뒤로"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 5.5 4.5 12 11 18.5"/></svg></button>
+    <span class="topbar-title">내가 찜한 매장</span><span class="zz-total" id="zz-total"></span>
+  </div>
+  <div class="zz-search">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" onclick="doFilter()"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+      <input class="search-input" id="search-input" oninput="doFilter()" aria-label="찜한 매장 검색"/>
+    </div>
+  </div>
+  <div class="zz-row" id="cat-row"></div>
+  <div class="zz-row" id="place-row"></div>
+  <div class="count-bar" id="count-bar"></div>
+  <div class="store-list" id="store-list"></div>
+
+  <div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-handle"></div>
+    <div class="dp-topbar">
+      <div style="flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;overflow:hidden">
+        <div class="dp-name" id="dp-name"></div>
+        <div class="dp-cat" id="dp-cat"></div>
+      </div>
+      <div class="dp-btns">
+        <button onclick="toggleDpZzim()" aria-label="찜 해제"><svg viewBox="0 0 24 24" fill="#F2344A" stroke="#F2344A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></button>
+        <button class="dp-close" onclick="closeDetail()" aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="#555A63" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+    </div>
+    <div class="dp-scroll" id="dp-scroll"></div>
+    <div class="dp-btn-row">
+      <button class="dp-btn-more" onclick="goToDetail()">매장 상세보기 →</button>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="location.href='heka_home_v5.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H14v-6h-4v6H4a1 1 0 01-1-1V9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</div>
+    <div class="ni" onclick="location.href='heka_register.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>등록</div>
+    <div class="nplus" onclick="location.href='heka_city.html'"><button class="npbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" style="width:18px;height:18px"><circle cx="11" cy="11" r="7" stroke-width="2"/><line x1="16.5" y1="16.5" x2="22" y2="22" stroke-width="2" stroke-linecap="round"/></svg></button><span class="nplbl">검색</span></div>
+    <div class="ni" onclick="location.href='heka_yeohaengtok_v2.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#999"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>여행톡</div>
+    <div class="ni on" onclick="location.href='heka_mypage.html'"><svg viewBox="0 0 24 24" fill="none" stroke="#FF3900"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke-width="1.6"/></svg>마이페이지</div>
+  </div>
+  <div class="toast" id="toast" style="position:fixed"></div>
+</div>
+
+<script>
+var userLat=null, userLng=null;
+var _allStores=[];
+
+function catEmoji(c){return (c||'매장').slice(0,1);}
+function catBg(c){var m={'식당':'#FFF0E0','카페':'#FFF8E8','술집':'#F0F8FF','패스트푸드':'#FFF4E8','편의점':'#EEF4FF','마트':'#EDFFF4','호텔':'#F4F0FF','입장권':'#FEFEE8','전철 티켓':'#EEF0FF','버스':'#EEFFFA','ATM':'#FFF0FA'};return m[c]||'#F4F4F8';}
+function calcDist(la1,ln1,la2,ln2){var R=6371000,dLat=(la2-la1)*Math.PI/180,dLon=(ln2-ln1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)));}
+function distLbl(m){return m<1000?m+'M':(m/1000).toFixed(1)+'km';}
+
+// ── 업종: 홈 업종 칩과 같은 순서. 목록에 없는 업종은 기타 앞에 붙인다 ──
+var ZZ_CATS=['식당','카페','술집','패스트푸드','편의점','쇼핑','마트','입장권','호텔','ATM','기타'];
+function zzCat(s){s=zzView(s);return (s&&s.category)||'기타';}
+function zzCatLbl(c){return c==='호텔'?'숙소':c;}
+
+// ── 나라: 매장의 country 가 있으면 그것, 없으면 도시 이름으로 찾는다(heka_city.html 의 COUNTRIES 와 같은 자료: [나라, 국기코드, 도시들]) ──
+var ZZ_COUNTRIES=[["일본","jp",["도쿄","오사카","교토","후쿠오카","가고시마","야마구치","삿포로","나고야","시즈오카","기타큐슈","구마모토","오이타","미야자키","미야코지마","히로시마","나라","고베","오키나와","가나자와","센다이","니가타","마쓰야마","다카마쓰","하카타","벳푸","유후인","아사히카와","쿠시로","요코하마","가와사키","지바","사이타마","가마쿠라","하코네","닛코","가와구치코","나가노","마쓰모토","다카야마","도야마","후쿠이","이세","오쓰","와카야마","히메지","오카야마","구라시키","돗토리","마쓰에","시모노세키","사가","나가사키","사세보","고치","도쿠시마","오타루","아오모리","아키타","모리오카","야마가타","후쿠시마","이시가키","하코다테","우쓰노미야","가와고에","하치오지","마치다","가시와","요코스카","쓰쿠바","다카사키","하마마쓰","도요타","오카자키","니시노미야","구루메","후나바시"]],["중국","cn",["상하이","베이징","톈진","옌타이","웨이하이","연길","내몽골","지난","창춘","선양","청두","광저우","충칭","선전","항저우","시안","우한","난징","쿤밍","구이린","하얼빈","샤먼","칭다오","다롄","쑤저우","장자제","리장","황산","친황다오","타이위안","정저우","뤄양","카이펑","쉬저우","허페이","양저우","우시","닝보","원저우","푸저우","취안저우","난창","창사","둥관","포산","주하이","난닝","하이커우","싼야","구이양","다리","샹그릴라","시닝","인촨","우루무치","라싸","스자좡","란저우","쿤산","난퉁","자싱","사오싱","이우","중산","후이저우","산터우","탕산","바오딩","웨이팡","쯔보","창저우"]],["미국","us",["뉴욕","로스앤젤레스","라스베가스","샌프란시스코","시카고","시애틀","마이애미","하와이","보스턴","워싱턴DC","올랜도","뉴올리언스","포틀랜드","샌디에이고","덴버","나파밸리","앵커리지","피닉스","애틀랜타","내슈빌"]],["프랑스","fr",["파리","니스","리옹","마르세유","보르도","스트라스부르","릴","낭트","몽펠리에","렌","그르노블","투르","아비뇽","칸","모나코","앙티브","엑상프로방스","루아르","뮐루즈","콜마르"]],["영국","gb",["런던","맨체스터","에든버러","버밍엄","리버풀","글래스고","브리스톨","리즈","옥스퍼드","케임브리지","바스","요크","코벤트리","노팅엄","셰필드","카디프","벨파스트","뉴캐슬어폰타인","레스터","사우샘프턴"]],["이탈리아","it",["로마","밀라노","피렌체","베네치아","나폴리","시칠리아","라구사","트로페아","볼로냐","토리노","팔레르모","제노바","바리","카타니아","베로나","메시나","파도바","트리에스테","타란토","브레시아","레조칼라브리아","모데나","페루자"]],["스페인","es",["바르셀로나","마드리드","세비야","발렌시아","빌바오","그라나다","말라가","사라고사","무르시아","팔마","라스팔마스","산탄데르","코르도바","바야돌리드","알리칸테","지로나","산세바스티안","살라망카","레온","부르고스"]],["독일","de",["베를린","뮌헨","밤베르크","함부르크","쾰른","프랑크푸르트","슈투트가르트","뒤셀도르프","도르트문트","에센","라이프치히","브레멘","드레스덴","하노버","뉘른베르크","뒤스부르크","보훔","뷔퍼탈","빌레펠트","본","만하임"]],["태국","th",["방콕","치앙마이","파타야","푸켓","카오산","아유타야","후아힌","코사무이","코창","코피피","나콘라차시마","하트야이","수라타니","피마이","로이엣","치앙라이","매사이","낭","람팡","파야오","끄라비","카오락","코란타","코팡안","코타오","깐짜나부리","라용","코사멧","핏사눌록","빠이","콘캔","농카이","우본라차타니","빠툼타니","촌부리","시라차"]],["베트남","vn",["호치민","하노이","다낭","호이안","나트랑","무이네","하롱","사파","달랏","후에","푸꾸옥","깜란","빈","빈롱","껀터","라오까이","디엔비엔푸","빈딘","꽝남","하이퐁","닌빈","박닌","탄호아","동허이","플레이쿠","부온마투옷","붕따우","비엔호아","미토","락자","하장"]],["싱가포르","sg",["싱가포르"]],["호주","au",["시드니","멜버른","브리즈번","퍼스","애들레이드","골드코스트","캔버라","다윈","호바트","케언스","타운스빌","뉴캐슬","울런공","서퍼스파라다이스","선샤인코스트","발러랫","제롱","맥카이","록햄튼","번다버그"]],["캐나다","ca",["토론토","밴쿠버","몬트리올","캘거리","오타와","에드먼턴","퀘벡","위니펙","해밀턴(온타리오)","킷치너","런던","빅토리아","핼리팩스","새스커툰","리자이나","세인트존스","켈로나","아보츠퍼드","베링","레자이나"]],["포르투갈","pt",["리스본","포르투","알가르브","코임브라","브라가","세투발","비제우","카스카이스","신트라","파루","에보라","아베이루","게리마레스","바르셀루스","비아나도카스텔루","포르탈레그레","구아르다","라메구","람에구","베자"]],["네덜란드","nl",["암스테르담","로테르담","헤이그","위트레흐트","에인트호번","틸뷔르흐","흐로닝언","알메러","브레다","네이메헌","엔스헤데","아펠도른","하를렘","아른험","자안담","암스텔베인","도르드레흐트","레이던","조이트펀","벤로"]],["오스트리아","at",["빈","잘츠부르크","그라츠","인스브루크","린츠","클라겐푸르트","빌라흐","레오벤","크렘스","피쇼펜","뷔르글","슈타이어","펠트키르히","브레겐츠","아이젠슈타트","브루크안데어무어","콘코르디아","트라운","뷘스","메들링"]],["체코","cz",["프라하","브르노","오스트라바","플젠","리베레츠","올로모우츠","우스티나트라벰","체스케부데요비체","흐라데츠크랄로베","파르두비체","즐린","클라드노","모스트","오파바","카를로비바리","프로스테요프","카르비나","하비로프","체스카립코","호돈인"]],["멕시코","mx",["멕시코시티","칸쿤","과달라하라","몬테레이","푸에블라","케레타로","과나후아토","오악사카","산크리스토발","메리다","로스카보스","푸에르토발라르타","마사틀란","아카풀코","툴룸","플라야델카르멘","쿠에르나바카","사카테카스","아과스칼리엔테스","치와와"]],["말레이시아","my",["쿠알라룸푸르","페낭","코타키나발루","조호르바루","쿠칭","말라카","이포","코타바루","쿠알라트렝가누","미리","바투파하트","시부","산다칸","세레반","알로르세타르","캐머런하이랜드","겐팅하이랜드","랑카위","티오만","레당","샤알람","쿠안탄","타이핑","라부안","타와우","푸트라자야","카장","세팡","숭아이프타니"]],["필리핀","ph",["마닐라","세부","보라카이","보홀","팔라완","다바오","일로일로","바기오","앙헬레스","올롱가포","수리가오","캐가얀데오로","잠보앙가","코타바토","레가스피","나가","바탕가스","산페르난도","산타로사","리갈","마카티","엘니도","바콜로드","타가이타이","타클로반","비간","라오아그","시아르가오","두마게테"]],["인도네시아","id",["발리","자카르타","족자카르타","롬복","코모도","메단","수라바야","반둥","마카사르","세마랑","팔렘방","덴파사르","마낭","쿠타","우붓","세미냑","누사두아","짐바란","산우르","레기안","보고르","말랑","솔로","바탐","페칸바루","발릭파판","폰티아낙","길리","파당","마나도"]],["크로아티아","hr",["두브로브니크","자그레브","스플리트","흐바르","코르출라","로빈","풀라","자다르","시베니크","오파티야","포레치","리예카","오미스","마카르스카","트로기르","브라치","카르나르","크르크","말리로신","로빈"]],["그리스","gr",["아테네","산토리니","미코노스","크레타","로도스","코르푸","테살로니키","델포이","메테오라","케팔로니아","나플리온","하니아","이라클리온","레스보스","히오스","사모스","파트라","라리사","볼로스","이오아니나"]],["튀르키예","tr",["이스탄불","카파도키아","안탈리아","이즈미르","앙카라","파묵칼레","에페수스","보드룸","마르마리스","페티예","알라냐","트라브존","부르사","코니아","가지안테프","아다나","차나칼레","사프란볼루","네브셰히르","카이세리"]],["인도","in",["뭄바이","델리","아그라","바라나시","자이푸르","첸나이","콜카타","방갈로르","하이데라바드","고아","케랄라","다람살라","리시케시","우다이푸르","조드푸르","카주라호","코치","마이소르","아마다바드","오리사"]],["뉴질랜드","nz",["오클랜드","웰링턴","크라이스트처치","퀸스타운","더니든","해밀턴","타우랑가","넬슨","네이피어","파머스턴노스","로토루아","타우포","와나카","인버카길","블렌하임","기즈번","뉴플리머스","왕가누이","마스터턴","혼가누"]],["아랍에미리트","ae",["두바이","아부다비","샤르자","아즈만","라스알카이마","푸자이라","움알쿠와인"]],["홍콩","hk",["홍콩"]],["마카오","mo",["마카오"]],["몰타","mt",["몰타"]],["슬로베니아","si",["류블랴나","블레드","포스토이나","보힌","디바차","캄니크"]],["헝가리","hu",["부다페스트"]],["벨기에","be",["브뤼셀","브뤼헤","겐트","안트베르펜"]],["몽골","mn",["울란바토르"]],["대만","tw",["타이베이","타이중","가오슝","타이난","화롄","타이동","자이","신주","지룽","이란","핑둥","난터우","윈린","장화","먀오리","타오위안","신베이","펑후","진먼","마쭈"]],["브라질","br",["리우데자네이루","상파울루","살바도르","포르탈레자","쿠리치바","마나우스","레시페","포르투알레그리","벨루오리존치","브라질리아","플로리아노폴리스","포스두이과수","나탈","마세이오","상루이스","테레시나","캄푸그란지","마나우스","조앙페소아","아라카주"]],["페루","pe",["리마","쿠스코","마추픽추","아레키파","이키토스","트루히요","치클라요","피우라","우아라스","이카","타크나","나스카","푸노","아야쿠초","우안카요","친차","카야오","줄리아카","포르투말도나도","우아초"]],["모로코","ma",["마라케시","페스","카사블랑카","라바트","메크네스","탕헤르","에사우이라","아가디르","샤우엔","메르주가","바하드라","자고라","티즈니트","투드라","우르자자트","달리아","이프란","아지루","켈라아메구나","루사니"]],["남아프리카공화국","za",["케이프타운","요하네스버그","더반","프리토리아","포트엘리자베스","블룸폰테인","이스트런던","포체프스트룸","키브버리","넬스프루이트","폴로콰네","음부말랑가","루스텐버그","조지","클레르크스도르프","밸파라이소","파로우","헤르마누스","스텔렌보스","프란스훅"]]];
+var _zzCityToCountry={}, _zzFlag={};
+ZZ_COUNTRIES.forEach(function(c){ _zzFlag[c[0]]=c[1]; c[2].forEach(function(city){ if(!_zzCityToCountry[city]) _zzCityToCountry[city]=c[0]; }); if(!_zzCityToCountry[c[0]]) _zzCityToCountry[c[0]]=c[0]; });
+// ── 찜 항목에 도시·나라가 빠진 경우: 화면에서만 채운다(찜 데이터는 다시 쓰지 않음) ──
+//   1) Firestore stores/{id} 를 읽어 빈 필드를 채움  2) 그래도 도시가 없으면 lat/lng 로 data/cities.json 의 가장 가까운 도시(200km 안)
+var _zzExtra={};   // id → 채운 필드
+function _zzEmpty(v){ return v==null||v===''||(Array.isArray(v)&&!v.length); }
+function zzView(s){
+  if(!s) return s;
+  var e=_zzExtra[s.id]; if(!e) return s;
+  var o={}, k;
+  for(k in s) o[k]=s[k];
+  for(k in e) if(_zzEmpty(o[k])) o[k]=e[k];
+  return o;
+}
+var _zzFillDone={}, _zzGone={};
+async function zzFillMissing(){
+  // 모든 찜을 한 번씩 매장 원본과 맞춰 본다: 빠진 정보는 채우고, 지금은 지워진 매장(옛 테스트 매장 등)은 화면에서 뺀다
+  var need=_allStores.filter(function(s){ return s&&s.id&&!_zzFillDone[s.id]; });
+  if(!need.length) return;
+  need.forEach(function(s){ _zzFillDone[s.id]=1; });
+  var FIELDS=['city','country','nameLocal','category','cuisine','address','lat','lng','images','payOk','payNo','menus','ratingSum','ratingCnt'];
+  // 1) Firestore 에서 읽기(병렬, 실패해도 그대로)
+  if(window._db&&window._getDoc&&window._doc){
+    await Promise.all(need.map(function(s){
+      return window._getDoc(window._doc(window._db,'stores',String(s.id))).then(function(snap){
+        if(!snap) return;
+        if(!snap.exists()){ _zzGone[s.id]=1; return; }
+        var d=snap.data()||{}, e=_zzExtra[s.id]||(_zzExtra[s.id]={});
+        FIELDS.forEach(function(k){ if(!_zzEmpty(d[k])) e[k]=d[k]; });
+      }).catch(function(){});
+    }));
+  }
+  _allStores=_allStores.filter(function(s){ return !(s&&_zzGone[s.id]); });
+  // 2) 아직 도시가 없으면 좌표로 가장 가까운 도시
+  var left=need.filter(function(s){ var v=zzView(s); return _zzEmpty(v.city)&&v.lat&&v.lng; });
+  if(left.length){
+    try{
+      var cities=await (await fetch('data/cities.json')).json();
+      cities=(cities||[]).filter(function(c){ return c&&c.name&&c.lat&&c.lng&&_zzCityToCountry[c.name]; });
+      left.forEach(function(s){
+        var v=zzView(s), best=null, bd=Infinity;
+        cities.forEach(function(c){ var d=calcDist(+v.lat,+v.lng,+c.lat,+c.lng); if(d<bd){bd=d;best=c;} });
+        if(best&&bd<=200000){ var e=_zzExtra[s.id]||(_zzExtra[s.id]={}); e.city=best.name; if(_zzEmpty(v.country)) e.country=_zzCityToCountry[best.name]; }
+      });
+    }catch(err){}
+  }
+  doFilter();
+}
+function zzCountry(s){
+  s=zzView(s);
+  var c=s&&s.country&&String(s.country).trim();
+  if(c) return c;
+  var city=s&&s.city&&String(s.city).trim();
+  return (city&&_zzCityToCountry[city])||'기타';
+}
+
+var _selCats=[];          // 업종 여러 개 (비어 있으면 전체)
+var _selCountry='전체';   // 나라 하나
+var _selCity='전체';      // 고른 나라 안의 도시 하나
+function zzCity(s){s=zzView(s);return (s&&s.city&&String(s.city).trim())||'기타';}
+
+function renderChips(){
+  // 업종 칩: 찜한 매장에 있는 업종만
+  var have={};
+  _allStores.forEach(function(s){ have[zzCat(s)]=1; });
+  var known=ZZ_CATS.filter(function(c){ return have[c] && c!=='기타'; });
+  var extra=Object.keys(have).filter(function(c){ return ZZ_CATS.indexOf(c)<0; });
+  var cats=known.concat(extra, have['기타']?['기타']:[]);
+  _selCats=_selCats.filter(function(c){ return have[c]; });
+  var h='';
+  if(cats.length){
+    h='<div class="zz-chip'+(_selCats.length?'':' on')+'" onclick="selectCat(null)">전체</div>';
+    cats.forEach(function(c){
+      h+='<div class="zz-chip'+(_selCats.indexOf(c)>-1?' on':'')+'" data-cat="'+_hkdE(c)+'" onclick="selectCat(this.getAttribute(\'data-cat\'))">'+hkdIcon(c)+'<span>'+_hkdE(zzCatLbl(c))+'</span></div>';
+    });
+    h+='<span class="zz-chip-gap"></span>';
+  }
+  document.getElementById('cat-row').innerHTML=h;
+
+  // 장소 칩(한 줄): 처음엔 나라 칩(국기 + 이름, 많은 순, 기타는 맨 뒤). 나라를 고르면 같은 줄이 [‹ 나라] [전체] [도시…] 로 바뀐다
+  var cnt={};
+  _allStores.forEach(function(s){ var c=zzCountry(s); cnt[c]=(cnt[c]||0)+1; });
+  if(_selCountry!=='전체'&&!cnt[_selCountry]) _selCountry='전체';
+  var g='';
+  if(_allStores.length&&_selCountry==='전체'){
+    _selCity='전체';
+    var order=ZZ_COUNTRIES.map(function(c){ return c[0]; });
+    var names=Object.keys(cnt).sort(function(a,b){
+      if(a==='기타') return 1; if(b==='기타') return -1;
+      if(cnt[b]!==cnt[a]) return cnt[b]-cnt[a];
+      var ai=order.indexOf(a), bi=order.indexOf(b); return (ai<0?999:ai)-(bi<0?999:bi);
+    });
+    g='<div class="zz-chip on" onclick="selectCountry(null)">전체</div>';
+    names.forEach(function(n){
+      var code=_zzFlag[n];
+      g+='<div class="zz-chip" data-country="'+_hkdE(n)+'" onclick="selectCountry(this.getAttribute(\'data-country\'))">'
+        +'<span>'+_hkdE(n)+'</span></div>';
+    });
+    g+='<span class="zz-chip-gap"></span>';
+  } else if(_allStores.length){
+    var cc={};
+    _allStores.forEach(function(s){ if(zzCountry(s)!==_selCountry) return; var c=zzCity(s); cc[c]=(cc[c]||0)+1; });
+    if(_selCity!=='전체'&&!cc[_selCity]) _selCity='전체';
+    var cities=Object.keys(cc).sort(function(a,b){ if(a==='기타') return 1; if(b==='기타') return -1; return (cc[b]-cc[a])||a.localeCompare(b,'ko'); });
+    var code2=_zzFlag[_selCountry];
+    g='<div class="zz-chip back" onclick="selectCountry(null)" aria-label="나라 목록으로"><svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>'
+      +'<span>'+_hkdE(_selCountry)+'</span></div>';
+    g+='<div class="zz-chip'+(_selCity==='전체'?' on':'')+'" onclick="selectCity(null)">전체</div>';
+    cities.forEach(function(c){ g+='<div class="zz-chip'+(_selCity===c?' on':'')+'" data-city="'+_hkdE(c)+'" onclick="selectCity(this.getAttribute(\'data-city\'))"><span>'+_hkdE(c)+'</span></div>'; });
+    g+='<span class="zz-chip-gap"></span>';
+  }
+  var pr=document.getElementById('place-row'), key=_selCountry;
+  pr.innerHTML=g;
+  if(pr.getAttribute('data-k')!==key){ pr.scrollLeft=0; pr.setAttribute('data-k',key); }
+  document.getElementById('zz-total').textContent=_allStores.length?_allStores.length:'';
+}
+function selectCat(c){
+  if(c==null) _selCats=[];
+  else { var i=_selCats.indexOf(c); if(i>-1) _selCats.splice(i,1); else _selCats.push(c); }
+  doFilter();
+}
+function selectCountry(n){ _selCountry=(n==null||_selCountry===n)?'전체':n; _selCity='전체'; doFilter(); }
+function selectCity(c){ _selCity=(c==null||_selCity===c)?'전체':c; doFilter(); }
+
+// 드래그 스크롤 (PC 마우스)
+document.addEventListener('DOMContentLoaded', function(){
+  ['cat-row','place-row'].forEach(function(id){
+    var el=document.getElementById(id), isDown=false, moved=false, startX, scrollLeft;
+    el.addEventListener('mousedown', function(e){ isDown=true; moved=false; el.classList.add('dragging'); startX=e.pageX; scrollLeft=el.scrollLeft; });
+    el.addEventListener('mouseleave', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseup', function(){ isDown=false; el.classList.remove('dragging'); });
+    el.addEventListener('mousemove', function(e){ if(!isDown)return; var dx=e.pageX-startX; if(Math.abs(dx)>4) moved=true; if(!moved)return; e.preventDefault(); el.scrollLeft=scrollLeft-dx; });
+    el.addEventListener('click', function(e){ if(moved){ e.stopPropagation(); e.preventDefault(); moved=false; } }, true);
+  });
+});
+
+function getZzimList(){
+  if(window._currentUser&&window._zzimStores)return window._zzimStores.slice();
+  try{return JSON.parse(localStorage.getItem('haeka_zzim')||'[]');}catch(e){return[];}
+}
+async function saveZzimList(list){
+  if(window._currentUser&&window._db){
+    window._zzimStores=list;
+    try{await window._setDoc(window._doc(window._db,'zzim',window._currentUser.uid),{stores:list},{merge:true});}catch(e){console.error(e);}
+  } else {
+    try{localStorage.setItem('haeka_zzim',JSON.stringify(list));}catch(e){}
+  }
+}
+
+async function removeZzim(id){
+  var list=getZzimList().filter(function(s){return s.id!==id;});
+  // window._zzimStores 즉시 업데이트 (홈 복귀 시 참조하는 값)
+  window._zzimStores = list;
+  await saveZzimList(list); _allStores=list;
+  // 홈화면에 찜 변경 알림
+  try { sessionStorage.setItem('haeka_zzim_changed','1'); } catch(e){}
+  doFilter();
+  showToast('찜 목록에서 삭제됐어요');
+}
+
+// 한글 발음 → 영어 매칭
+var _CHO2=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+var _JUNG2=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+var _JONG2=['','g','kk','gs','n','nj','nh','d','l','lg','lm','lb','ls','lt','lp','lh','m','b','bs','s','ss','ng','j','ch','k','t','p','h'];
+var _EQUIV={'p':['f','b'],'f':['p','b'],'b':['p','v'],'k':['c','g','q'],'c':['k','g'],'g':['k'],'r':['l'],'l':['r'],'t':['d'],'d':['t'],'s':['z'],'n':['ng'],'w':[''],'':['w']};
+function _getSyllPron(str){var r='';for(var i=0;i<str.length;i++){var code=str.charCodeAt(i)-0xAC00;if(code<0||code>11171){r+=str[i];continue;}var cho=Math.floor(code/588),jung=Math.floor((code%588)/28),jong=code%28;var p=_CHO2[cho]+_JUNG2[jung]+_JONG2[jong];p=p.replace(/eu/g,'').replace(/eo/g,'o').replace(/ae/g,'e');r+=p;}return r.toLowerCase();}
+function _cons(s){return s.replace(/[aeiou]/g,'');}
+function _consMatch(ec,kc){if(ec===kc)return true;var e1=_EQUIV[ec]||[];for(var i=0;i<e1.length;i++)if(e1[i]===kc)return true;var e2=_EQUIV[kc]||[];for(var i=0;i<e2.length;i++)if(e2[i]===ec)return true;return false;}
+function _korMatchEng(kor,eng){var korCons=_cons(_getSyllPron(kor));if(!korCons||korCons.length<2)return false;var engClean=eng.toLowerCase().replace(/['\s\-.,!?]/g,'');var engCons=_cons(engClean);var ki=0;for(var ei=0;ei<engCons.length&&ki<korCons.length;ei++){if(_consMatch(engCons[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;var words=eng.toLowerCase().split(/[\s'\-]+/);for(var w=0;w<words.length;w++){var wc=_cons(words[w]);ki=0;for(var ei=0;ei<wc.length&&ki<korCons.length;ei++){if(_consMatch(wc[ei],korCons[ki]))ki++;}if(ki>=korCons.length)return true;}return false;}
+
+function zzimSearchMatch(s, kw){
+  var name=(s.name||'').toLowerCase();
+  var addr=(s.address||'').toLowerCase();
+  if(name.indexOf(kw)>-1||addr.indexOf(kw)>-1)return true;
+  if(/[가-힣]/.test(kw)){
+    if(_korMatchEng(kw,s.name||''))return true;
+    if(_korMatchEng(kw,s.address||''))return true;
+  }
+  return false;
+}
+
+function doFilter(){
+  _allStores=_allStores.filter(function(s){ return !(s&&_zzGone[s.id]); });
+  renderChips();
+  var kw=(document.getElementById('search-input').value||'').trim().toLowerCase();
+  var list=_allStores.filter(function(s){
+    var catOk=!_selCats.length||_selCats.indexOf(zzCat(s))>-1;
+    var cOk=_selCountry==='전체'||zzCountry(s)===_selCountry;
+    var cityOk=_selCity==='전체'||zzCity(s)===_selCity;
+    var kOk=!kw||zzimSearchMatch(s,kw);
+    return catOk&&cOk&&cityOk&&kOk;
+  });
+  renderList(list);
+}
+
+function renderList(list){
+  var el=document.getElementById('store-list');
+  var cb=document.getElementById('count-bar');
+  if(!_allStores.length){
+    cb.textContent='';
+    el.innerHTML='<div class="empty-state">'
+      +'<div class="empty-emoji">🤍</div>'
+      +'<div class="empty-txt">아직 찜한 매장이 없어요</div>'
+      +'<div class="empty-sub">마음에 드는 매장을<br>하트를 눌러 저장해보세요!</div>'
+      +'<button class="empty-btn" onclick="location.href=\'heka_nearby_all.html\'">주변 매장 보러가기</button>'
+      +'</div>';
+    return;
+  }
+  cb.textContent='전체 '+list.length+'개';
+  if(!list.length){ el.innerHTML='<div class="zz-none">조건에 맞는 찜한 매장이 없어요</div>'; return; }
+  var _e=_hkdE;
+  var _u=window._safeImg||function(x){return x==null?'':(/^https:\/\//i.test(x)?x:'');};
+  el.innerHTML=list.map(function(s0){
+    var s=zzView(s0);
+    var pills=hkdPays(s,false,true);
+    var dist='';
+    if(userLat&&userLng&&s.lat&&s.lng){dist=_e(distLbl(calcDist(userLat,userLng,s.lat,s.lng)));}
+    var _ci=brandImage(s)||catImage(s.cuisine!=='기타'&&s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
+    var thumb=imgSrc?'<img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'">':'<div class="hkd-ph-emo" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
+    var meta=[dist,_e(s.city||''),_e(s.category==='호텔'?'숙소':(s.category||''))].filter(Boolean).join(' · ');
+    var realIdx=_allStores.indexOf(s0);
+    return'<div class="hkd-card" onclick="openDetail('+realIdx+')">'
+      +'<div class="hkd-ph">'+thumb+'</div>'
+      +'<div class="hkd-bd"><div class="hkd-nm"><b>'+_e(s.name)+'</b>'+(s.nameLocal?'<span class="ln">'+_e(s.nameLocal)+'</span>':'')+(s.closed?'<span class="cl">폐업</span>':'')+'</div>'
+      +(meta?'<div class="hkd-row"><svg class="pin" viewBox="0 0 24 24">'+HKD_PIN+'</svg><span>'+meta+'</span></div>':'')
+      +hkdRate(s)
+      +'<div class="hkd-pays store-cards">'+pills+'</div></div>'
+      +'<button class="store-zzim hkd-heart on" data-store-id="'+_e(s.id||'')+'" onclick="event.stopPropagation();removeZzim(this.getAttribute(\'data-store-id\'))" aria-label="찜 해제"><svg viewBox="0 0 24 24">'+HKD_HEART+'</svg></button>'
+      +'<svg class="hkd-chev" viewBox="0 0 24 24"><path d="M9 5.5l6.5 6.5L9 18.5"/></svg></div>';
+  }).join('');
+}
+
+function openDetail(idx){
+  var store=zzView(_allStores[idx]);
+  if(!store)return;
+  window._currentStoreId=store.id||null;
+  document.getElementById('dp-name').textContent=store.name;
+  document.getElementById('dp-cat').textContent=(((store.category==='호텔'||store.cuisine===store.category)&&store.cuisine)?store.cuisine:[store.cuisine, (store.category==='호텔'?'숙소':store.category)].filter(Boolean).join(' · '));
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+  var distHtml='';
+  if(userLat&&userLng&&store.lat&&store.lng){var dm=calcDist(userLat,userLng,store.lat,store.lng);distHtml='<div class="zz-dp-dist">📍 '+distLbl(dm)+' 거리</div>';}
+  var mapHtml='';
+  if(store.lat&&store.lng){window._mapStore=store; window.haekaFindPlace&&haekaFindPlace(store);mapHtml='<div class="zz-dp-map" onclick="haekaOpenMap(window._mapStore)"><div id="dp-gmap"></div></div>'+(window.haekaAmapBtn?haekaAmapBtn(store):'');}
+  document.getElementById('dp-scroll').innerHTML=
+    distHtml
+    +'<div class="hkd-payrow"><div class="hkd-payrow-l"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M14 14.5h3.5"/></svg><i></i>'+(store.category==='ATM'?'출금 가능':'결제 가능')+'</div><div class="hkd-payrow-r">'+hkdPays(store,true)+'</div></div>'
+    +(store.address?'<div class="zz-dp-addr">'+_hkdE(store.address)+'</div>':'')
+    +mapHtml;
+  if(store.lat&&store.lng&&typeof google!=='undefined'){
+    setTimeout(function(){var el=document.getElementById('dp-gmap');if(!el)return;haekaMiniMap(el, store);},0);
+  }
+}
+function closeDetail(){document.getElementById('detail-overlay').classList.remove('open');document.getElementById('detail-panel').classList.remove('open');}
+function toggleDpZzim(){var id=window._currentStoreId;if(!id)return;removeZzim(id);closeDetail();}
+function goToDetail(){var id=window._currentStoreId;window.location.href='heka_store_detail.html'+(id?'?id='+id:'');}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+
+function init(){
+  try{var cached=sessionStorage.getItem('haeka_gps');if(cached){var cv=JSON.parse(cached);userLat=cv.lat;userLng=cv.lng;}}catch(e){}
+  // Firestore에서 로드된 찜 목록 우선 사용
+  if(window._currentUser && window._zzimStores) {
+    _allStores = window._zzimStores.slice();
+  } else {
+    _allStores = getZzimList();
+  }
+  doFilter();
+  zzFillMissing();
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(
+    function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;try{sessionStorage.setItem('haeka_gps',JSON.stringify({lat:userLat,lng:userLng}));}catch(e){}doFilter();},
+    function(){},{timeout:5000,maximumAge:60000}
+  );
+}
+window.addEventListener('DOMContentLoaded', function(){
+  // Firebase 로드 대기 (최대 1.5초) 후 init
+  var waited = 0;
+  var checkFb = setInterval(function(){
+    waited += 100;
+    if(window._fbReady || waited >= 3000){
+      clearInterval(checkFb);
+      init();
+    }
+  }, 100);
+});
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyCmcsC_89TfZUIhgH6hKPaTKlXQn3rRzCo",
+  authDomain: "card-store-finder.firebaseapp.com",
+  projectId: "card-store-finder",
+  storageBucket: "card-store-finder.firebasestorage.app",
+  messagingSenderId: "340038449458",
+  appId: "1:340038449458:web:14c3327a26d0d2892f3f2b"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+window._db = db;
+window._setDoc = setDoc;
+window._getDoc = getDoc;
+window._doc = doc;
+onAuthStateChanged(auth, async u => {
+  window._currentUser = u;
+  if (u) {
+    try {
+      var snap = await getDoc(doc(db, 'zzim', u.uid));
+      var local = JSON.parse(localStorage.getItem('haeka_zzim') || '[]');
+      if (local.length > 0) {
+        var existing = (snap.exists() && snap.data().stores) ? snap.data().stores : [];
+        var existIds = existing.map(function(s){ return s.id; });
+        var merged = existing.slice();
+        local.forEach(function(s){ if(existIds.indexOf(s.id)===-1) merged.unshift(s); });
+        await setDoc(doc(db,'zzim',u.uid), { stores: merged }, { merge: true });
+        localStorage.removeItem('haeka_zzim');
+        window._zzimStores = merged;
+      } else {
+        window._zzimStores = snap.exists() ? (snap.data().stores || []) : [];
+      }
+    } catch(e) { console.error('zzim load:', e); }
+  } else {
+    // 비로그인 상태도 ready
+    window._fbReady = true;
+    return;
+  }
+  window._fbReady = true;
+});
+</script>
+<script src="hscroll.js"></script>
+</body>
+</html>

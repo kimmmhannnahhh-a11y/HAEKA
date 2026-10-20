@@ -1,0 +1,179 @@
+[
+ {
+  "id": "recity-catania",
+  "type": "recity",
+  "title": "시칠리아 → 카타니아(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "카타니아",
+  "lat": 37.5079,
+  "lng": 15.083,
+  "km": 15
+ },
+ {
+  "id": "hours-01-osaka",
+  "type": "hours",
+  "title": "오사카 영업시간 749곳",
+  "file": "hours/h01-osaka.json"
+ },
+ {
+  "id": "hours-02",
+  "type": "hours",
+  "title": "73개 도시 영업시간 2071곳",
+  "file": "hours/h02.json"
+ },
+ {
+  "id": "recity-palermo",
+  "type": "recity",
+  "title": "시칠리아 → 팔레르모(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "팔레르모",
+  "lat": 38.1157,
+  "lng": 13.3615,
+  "km": 15
+ },
+ {
+  "id": "recity-messina",
+  "type": "recity",
+  "title": "시칠리아 → 메시나(반경 15km) 도시 옮기기",
+  "from": "시칠리아",
+  "to": "메시나",
+  "lat": 38.1938,
+  "lng": 15.554,
+  "km": 15
+ },
+ {
+  "id": "hours-03-jp-conbini",
+  "type": "hours",
+  "title": "일본 편의점 3사 공식 영업시간 1304곳",
+  "file": "hours/h03-jp-conbini.json"
+ },
+ {
+  "id": "set-donki-shopping",
+  "type": "set",
+  "title": "돈키호테(마트로 들어간 것) → 쇼핑",
+  "names": [
+   "돈키호테",
+   "메가 돈키호테",
+   "돈돈돈키"
+  ],
+  "where": {
+   "category": "마트"
+  },
+  "set": {
+   "category": "쇼핑",
+   "cuisine": "생활용품점"
+  }
+ },
+ {
+  "id": "hours-04",
+  "type": "hours",
+  "title": "89개 도시 영업시간 1652곳",
+  "file": "hours/h04.json"
+ },
+ {
+  "id": "set-yantai-user-1012",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이) 도시 이름 바로잡기",
+  "names": [
+   "Xinjiang Laoyou Barbecue"
+  ],
+  "where": {
+   "city": "Shan Dong Sheng"
+  },
+  "set": {
+   "city": "옌타이",
+   "country": "중국"
+  }
+ },
+ {
+  "id": "set-yantai-user-name-1013",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이) 이름을 등록한 중국어 이름으로",
+  "names": [
+   "Xinjiang Laoyou Barbecue"
+  ],
+  "where": {},
+  "set": {
+   "name": "新疆老尤烧烤",
+   "nameLocal": "新疆老尤烧烤",
+   "nameKey": "新疆老尤烧烤",
+   "localKey": "新疆老尤烧烤"
+  }
+ },
+ {
+  "id": "set-yantai-wangpo-1013",
+  "type": "set",
+  "title": "사용자 등록 매장(옌타이 海德王婆大虾) 한글 이름 넣기",
+  "names": [
+   "海德王婆大虾"
+  ],
+  "where": {},
+  "set": {
+   "name": "왕포따샤",
+   "nameKey": "왕포따샤",
+   "nameLocal": "海德王婆大虾",
+   "localKey": "海德王婆大虾",
+   "country": "중국"
+  }
+ },
+ {
+  "id": "set-yantai-alibaba-1013",
+  "type": "set",
+  "title": "옌타이 신장알리바바 현지 이름 넣기",
+  "names": [
+   "신장알리바바"
+  ],
+  "where": {
+   "city": "옌타이"
+  },
+  "set": {
+   "nameLocal": "新疆阿里巴巴",
+   "localKey": "新疆阿里巴巴"
+  }
+ },
+ {
+  "id": "set-wangpo-kaifa",
+  "type": "set",
+  "title": "왕포따샤: 위치를 개발점(华山路4-4号)으로, 영업시간·전화번호 추가(고덕 공유 링크 기준)",
+  "names": [
+   "왕포따샤"
+  ],
+  "where": {
+   "city": "옌타이"
+  },
+  "set": {
+   "lat": 37.559061,
+   "lng": 121.244693,
+   "cell": "1877_6062",
+   "address": "烟台市福山区华山路4-4号",
+   "hours": [
+    "10:00~22:00",
+    "10:00~22:00",
+    "10:00~22:00",
+    "10:00~22:00",
+    "10:00~22:00",
+    "10:00~22:00",
+    "10:00~22:00"
+   ],
+   "hoursSrc": "manual",
+   "tz": "Asia/Shanghai",
+   "phone": "0535-2162007"
+  }
+ },
+ {
+  "id": "set-wangpo-photo",
+  "type": "set",
+  "title": "왕포따샤: 사진을 줄인 것(5.2MB → 0.27MB)으로 바꿔 목록에서 빨리 뜨게",
+  "names": [
+   "왕포따샤"
+  ],
+  "where": {
+   "city": "옌타이"
+  },
+  "set": {
+   "images": [
+    "https://haeka.vercel.app/img/stores/wangpo-1791864453196.jpg"
+   ]
+  }
+ }
+]
