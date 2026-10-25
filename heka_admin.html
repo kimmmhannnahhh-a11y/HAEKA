@@ -230,6 +230,7 @@ body{background:var(--hk-bg)!important;font-family:'Plus Jakarta Sans',Pretendar
         <div class="stat-card" onclick="goPage('stores',document.getElementById('nav-stores'))" style="cursor:pointer"><div class="stat-label">전체 매장</div><div class="stat-num" id="stat-stores">-</div><div class="stat-sub">등록된 장소</div></div>
         <div class="stat-card" onclick="goPage('inquiries',document.getElementById('nav-inquiries'))" style="cursor:pointer"><div class="stat-label">1:1 문의 / 오류제보</div><div class="stat-num" id="stat-inq">-</div><div class="stat-sub">접수된 문의·오류</div></div>
         <div class="stat-card" onclick="goPage('edit-req',document.getElementById('nav-edit-req'))" style="cursor:pointer"><div class="stat-label">수정 요청</div><div class="stat-num" id="stat-edit">-</div><div class="stat-sub">처리 대기</div></div>
+        <div class="stat-card" onclick="updateDownloadCount()" style="cursor:pointer" title="클릭하여 수정"><div class="stat-label">앱 다운로드 수 ✏️</div><div class="stat-num" id="stat-dl">-</div><div class="stat-sub" id="stat-dl-sub">Play Console 숫자 수동 입력</div></div>
       </div>
       <div class="card">
         <div class="card-head"><span class="card-title">최근 등록 매장</span><button class="btn-sm" onclick="loadDashboard()">새로고침</button></div>
@@ -801,12 +802,13 @@ async function loadDashboard() {
   var f = window._fbFns;
   try {
     // 매장은 전체를 읽지 않는다: 개수는 서버에서 세고, 목록은 최근 8곳만 받는다
-    var [stCount, stSnap, inqSnap, errSnap, editSnap] = await Promise.all([
+    var [stCount, stSnap, inqSnap, errSnap, editSnap, dlSnap] = await Promise.all([
       f.getCountFromServer(f.collection(db,'stores')),
       f.getDocs(f.query(f.collection(db,'stores'), f.orderBy('createdAt','desc'), f.limit(8))),
       f.getDocs(f.collection(db,'inquiries')),
       f.getDocs(f.collection(db,'error_reports')),
-      f.getDocs(f.collection(db,'editRequests'))
+      f.getDocs(f.collection(db,'editRequests')),
+      f.getDoc(f.doc(db, 'app_meta', 'download_count'))
     ]);
     document.getElementById('stat-stores').textContent = stCount.data().count.toLocaleString();
     var unresInq = 0;
@@ -816,6 +818,21 @@ async function loadDashboard() {
     updateNavBadges(inqSnap, errSnap, editSnap);
     document.getElementById('stat-edit').textContent = editSnap.docs.filter(function(d){ return !d.data().resolved; }).length;
 
+    // 앱 다운로드 수 (관리자 수동 입력, Firestore app_meta/download_count 에서 조회)
+    var dlEl = document.getElementById('stat-dl');
+    var dlSubEl = document.getElementById('stat-dl-sub');
+    if (dlSnap.exists()) {
+      var d = dlSnap.data();
+      dlEl.textContent = (d.count != null ? Number(d.count).toLocaleString() : '-');
+      if (d.updatedAt && d.updatedAt.seconds) {
+        var dt = new Date(d.updatedAt.seconds * 1000);
+        dlSubEl.textContent = '마지막 업데이트: ' + dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+      }
+    } else {
+      dlEl.textContent = '-';
+      dlSubEl.textContent = '아직 입력 안 됨 (클릭하여 입력)';
+    }
+
     var stores = [];
     stSnap.forEach(function(d){ stores.push({id:d.id,...d.data()}); });
     stores.sort(function(a,b){ return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0); });
@@ -824,6 +841,26 @@ async function loadDashboard() {
       return '<tr><td><b>'+_e(s.name)+'</b></td><td>'+tagBadge(s.category||'-')+'</td><td>'+_e(s.city||'-')+'</td><td style="font-size:11px">'+_e((s.payOk||[]).slice(0,3).join(', '))+'</td><td>'+_e(fmt(s.createdAt))+'</td></tr>';
     }).join('') || '<tr class="empty-row"><td colspan="5">데이터 없음</td></tr>';
   } catch(e) { console.error(e); }
+}
+
+// 앱 다운로드 수 수동 입력(Play Console 숫자). Firestore app_meta/download_count 에 저장.
+async function updateDownloadCount() {
+  if (!window._db || !window._fbFns) { alert('Firebase 미연결'); return; }
+  var current = document.getElementById('stat-dl').textContent.replace(/[^0-9]/g,'');
+  var input = prompt('Play Console 다운로드 수를 입력하세요 (숫자만):', current || '0');
+  if (input === null) return;
+  var num = parseInt(input.replace(/[^0-9]/g,''), 10);
+  if (isNaN(num) || num < 0) { alert('유효하지 않은 숫자입니다.'); return; }
+  try {
+    var f = window._fbFns;
+    var db = window._db;
+    await f.setDoc(f.doc(db, 'app_meta', 'download_count'), {
+      count: num,
+      updatedAt: f.serverTimestamp()
+    });
+    alert('저장 완료: ' + num.toLocaleString() + '건');
+    loadDashboard();
+  } catch(e) { console.error(e); alert('저장 실패: ' + e.message); }
 }
 
 var _allStores = [];
