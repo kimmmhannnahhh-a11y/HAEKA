@@ -397,7 +397,7 @@ function getCountryFlag(address) {
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query, limit, onSnapshot, where, updateDoc, doc, arrayUnion, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query, limit, onSnapshot, where, updateDoc, doc, arrayUnion, deleteDoc, setDoc, getDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -1143,6 +1143,18 @@ window._doc = doc;
 window._updateDoc = updateDoc;
 window._arrayUnion = arrayUnion;
 window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, where, arrayUnion };
+
+// 앱 다운로드/최초 방문 카운터: 디바이스당 1회만 증가(localStorage 기반).
+// Firestore app_meta/install_counter.count 가 +1 된다.
+try {
+  if (!localStorage.getItem('haeka_install_counted')) {
+    localStorage.setItem('haeka_install_counted', String(Date.now()));
+    setDoc(doc(db, 'app_meta', 'install_counter'), {
+      count: increment(1),
+      lastInstall: serverTimestamp()
+    }, { merge: true }).catch(function(e){ console.warn('install counter 증가 실패:', e.message); });
+  }
+} catch(e) { /* localStorage 접근 실패 시 무시(사파리 private mode 등) */ }
 </script>
 <script src="security.js"></script>
 <script src="map-link.js"></script>
