@@ -959,9 +959,18 @@ function renderEditReqs(list) {
     var nickname = r.nickname || '익명';
     var uidShort = (r.uid && r.uid !== 'anonymous') ? r.uid.slice(0,8) : '';
     var requesterTxt = _e(nickname) + (uidShort ? '<br><span style="font-size:10px;color:#999">'+_e(uidShort)+'…</span>' : '');
-    return '<tr><td><b>'+_e(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+_e(changesTxt)+'</td><td style="font-size:11px">'+requesterTxt+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td>'+(resolved?'':'<button class="btn-sm" onclick="applyEditReq(\''+r.id+'\')">반영하기</button>')+'</td></tr>';
+    return '<tr><td><b>'+_e(r.storeName||r.storeId||'-')+'</b></td><td class="content-expand">'+_e(changesTxt)+'</td><td style="font-size:11px">'+requesterTxt+'</td><td>'+(r.agreeUids||[]).length+'명</td><td>'+(resolved?'<span class="badge bg-green">완료</span>':'<span class="badge bg-yellow">대기</span>')+'</td><td>'+fmt(r.createdAt)+'</td><td style="white-space:nowrap">'+(resolved?'':'<button class="btn-sm" onclick="applyEditReq(\''+r.id+'\')">반영하기</button> ')+'<button class="btn-danger" style="font-size:11px;padding:5px 10px" onclick="deleteEditReq(\''+r.id+'\')">삭제</button></td></tr>';
   });
   document.getElementById('editreq-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="7">데이터 없음</td></tr>';
+}
+async function deleteEditReq(id) {
+  if (!confirm('이 수정 요청을 삭제할까요? 되돌릴 수 없어요.')) return;
+  var f = window._fbFns;
+  try {
+    await f.deleteDoc(f.doc(window._db, 'editRequests', id));
+    _allEditReqs = _allEditReqs.filter(function(r){ return r.id !== id; });
+    renderEditReqs(_allEditReqs);
+  } catch(e) { alert('삭제 실패: '+e.message); }
 }
 var _storesCat = '전체';
 function setStoresCat(cat) {

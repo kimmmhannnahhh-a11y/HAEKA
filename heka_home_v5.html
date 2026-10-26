@@ -27,6 +27,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
 <script>
+// 매장 사진(파이어베이스 저장소)은 원본이 크고 캐시가 안 돼서, 해카 서버에서 줄인 사본(webp·30일 캐시)으로 받는다
+window._fastImg=function(u,w){
+  if(typeof u!=='string' || u.indexOf('https://firebasestorage.googleapis.com/')!==0) return u;
+  return 'https://haeka.vercel.app/_vercel/image?url='+encodeURIComponent(u)+'&w='+(w||640)+'&q=70';
+};
 (function preloadCachedHotpl(){
   try{
     var c=JSON.parse(localStorage.getItem('haeka_hotpl_cache')||'null');
@@ -612,7 +617,7 @@ async function loadStores() {
         if(s.images && s.images[0]){
           var preimg = new Image();
           preimg.decoding = 'async';
-          preimg.src = s.images[0];
+          preimg.src = _fastImg(s.images[0], 640);
           s._preloadedImage = preimg;
         }
       });
@@ -667,7 +672,7 @@ onSnapshot(postsQ, function(snapshot){
     // 좌측: 프사(아바타 이니셜), 우측: 사진 첨부된 글만 썸네일
     var avatarHtml = '<div class="ythumb" id="yav-'+doc.id+'" data-uid="'+(p.uid||'')+'"><svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>';
     var thumb = (p.images && p.images[0] && typeof p.images[0]==='string' && p.images[0].length > 10)
-      ? '<div class="ythumb-r"><img src="'+p.images[0]+'" style="width:40px;height:40px;object-fit:cover;display:block" loading="eager" decoding="async" onerror="this.style.display=\'none\'"/></div>'
+      ? '<div class="ythumb-r"><img src="'+_fastImg(p.images[0],128)+'" style="width:40px;height:40px;object-fit:cover;display:block" loading="eager" decoding="async" onerror="this.style.display=\'none\'"/></div>'
       : '';
     var nick = p.nickname||p.nick||'';
     var likes = p.likeCount||0;
@@ -818,7 +823,7 @@ function renderHotplSlide() {
   var imgContent = store.videoUrl
     ? '<video src="'+store.videoUrl+'" autoplay muted playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"></video>'
     : store.images && store.images[0]
-    ? '<img src="'+store.images[0]+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
+    ? '<img src="'+_fastImg(store.images[0], 640)+'" loading="eager" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0"/>'
     : '<div style="position:absolute;inset:0;background:#1a2e1a;display:flex;align-items:center;justify-content:center;font-size:36px">'+catEmoji(store.category)+'</div>';
 
   // 도트 인디케이터
@@ -838,13 +843,13 @@ function renderHotplSlide() {
     media.loop = true;
     media.setAttribute('playsinline','');
     media.setAttribute('preload','auto');
-    if(store.images && store.images[0]) media.poster = store.images[0];
+    if(store.images && store.images[0]) media.poster = _fastImg(store.images[0], 640);
     media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#F3F4F6';
     media.onclick = function(){ window.location.href='heka_store_detail.html?id='+(store.id||''); };
     media.play().catch(function(){});
   } else if(store.images && store.images[0]){
     media = document.createElement('img');
-    media.src = store.images[0];
+    media.src = _fastImg(store.images[0], 640);
     media.decoding = 'async';
     media.loading = 'eager';
     media.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#F3F4F6';
@@ -1013,7 +1018,7 @@ function renderNearby(stores) {
     var imgHtml = firstIsVideo
       ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline></video>'
       : storeThumb(store)
-      ? '<img src="'+storeThumb(store)+'" loading="eager" decoding="async" onerror="this.parentNode.innerHTML=\'<div class=hkd-ph-emo>'+catEmoji(store.category)+'</div>\'"/>'
+      ? '<img src="'+_fastImg(storeThumb(store), 384)+'" loading="eager" decoding="async" onerror="this.parentNode.innerHTML=\'<div class=hkd-ph-emo>'+catEmoji(store.category)+'</div>\'"/>'
       : store.videoUrl
       ? '<video src="'+store.videoUrl+'" autoplay muted loop playsinline></video>'
       : '<div class="hkd-ph-emo" style="background:'+catBg(store.category)+'">'+catEmoji(store.category)+'</div>';
@@ -1479,7 +1484,7 @@ function hkdDpDraw() {
   var cam = '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.8-2.5h6.4L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg>';
   if (imgs.length) {
     var i = _hkdDp.i % imgs.length;
-    el.innerHTML = '<img src="' + _hkdE(imgs[i]) + '" alt="" decoding="async">' + '<span class="hkd-dp-cnt">' + cam + (i + 1) + '/' + imgs.length + '</span>';
+    el.innerHTML = '<img src="' + _hkdE(_fastImg(imgs[i], 1080)) + '" alt="" decoding="async">' + '<span class="hkd-dp-cnt">' + cam + (i + 1) + '/' + imgs.length + '</span>';
   } else if (s.videoUrl) {
     el.innerHTML = '<video src="' + _hkdE(s.videoUrl) + '" autoplay muted loop playsinline></video>';
   } else {

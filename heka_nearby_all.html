@@ -234,6 +234,11 @@ function catImage(cat) { return CAT_IMAGES[cat] || ""; }
 // 체인점 기본 사진: 매장 사진이 없을 때 업종 그림 대신 쓴다(직접 찍어 온 간판 사진을 자른 것). 이름이 정확히 같은 매장만
 var BRAND_IMAGES = { "루이싱 커피": "img/brand-luckin.jpg?v=6" };
 function brandImage(s) { return (s && BRAND_IMAGES[s.name]) || ""; }
+// 매장 사진(파이어베이스 저장소)은 원본이 크고 캐시가 안 돼서, 해카 서버에서 줄인 사본(webp·30일 캐시)으로 받는다
+window._fastImg=function(u,w){
+  if(typeof u!=='string' || u.indexOf('https://firebasestorage.googleapis.com/')!==0) return u;
+  return 'https://haeka.vercel.app/_vercel/image?url='+encodeURIComponent(u)+'&w='+(w||640)+'&q=70';
+};
 function storeThumb(s) { return (s && s.images && s.images[0]) || brandImage(s) || catImage(s && s.cuisine !== '기타' && s.cuisine) || catImage(s && s.category) || ""; }
 </script>
 <script>
@@ -486,7 +491,7 @@ function hkdDpDraw() {
   var cam = '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.8-2.5h6.4L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg>';
   if (imgs.length) {
     var i = _hkdDp.i % imgs.length;
-    el.innerHTML = '<img src="' + _hkdE(imgs[i]) + '" alt="" decoding="async">' + '<span class="hkd-dp-cnt">' + cam + (i + 1) + '/' + imgs.length + '</span>';
+    el.innerHTML = '<img src="' + _hkdE(_fastImg(imgs[i], 1080)) + '" alt="" decoding="async">' + '<span class="hkd-dp-cnt">' + cam + (i + 1) + '/' + imgs.length + '</span>';
   } else if (s.videoUrl) {
     el.innerHTML = '<video src="' + _hkdE(s.videoUrl) + '" autoplay muted loop playsinline></video>';
   } else {
@@ -948,7 +953,7 @@ function renderList(stores){
     var status='';
     var hrs=window.haekaHours?haekaHours(s):null;
     if(hrs){if(hrs.open===true)status='<span class="hkd-on">영업중</span>';else if(hrs.open===false)status='<span class="hkd-off">영업종료</span>';}
-    var _ci=brandImage(s) || catImage(s.cuisine !== '기타' && s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_u(_t):'');
+    var _ci=brandImage(s) || catImage(s.cuisine !== '기타' && s.cuisine)||catImage(s.category); var _t=storeThumb(s); var imgSrc=(_t&&_t===_ci)?_ci:(_t?_fastImg(_u(_t),384):'');
     var thumb=imgSrc?'<img src="'+imgSrc+'" alt="" onerror="this.style.display=\'none\'">':'<div class="hkd-ph-emo" style="background:'+catBg(s.category)+'">'+_e(catEmoji(s.category))+'</div>';
     var isOn = getZzimList().some(function(z){ return z.id===s.id; });
     var sIdSafe = _e(s.id||'');
