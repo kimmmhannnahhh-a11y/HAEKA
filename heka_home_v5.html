@@ -1147,12 +1147,14 @@ window._fbFns = { collection, getDocs, getDoc, setDoc, doc, updateDoc, query, wh
 // 앱 다운로드/최초 방문 카운터: 디바이스당 1회만 증가(localStorage 기반).
 // Firestore app_meta/install_counter.count 가 +1 된다.
 try {
-  if (!localStorage.getItem('haeka_install_counted')) {
-    localStorage.setItem('haeka_install_counted', String(Date.now()));
+  if (!localStorage.getItem('haeka_install_counted2')) {
+    // 표시는 서버에 +1 이 들어간 뒤에 남긴다(실패하면 다음 방문 때 다시 센다)
     setDoc(doc(db, 'app_meta', 'install_counter'), {
       count: increment(1),
       lastInstall: serverTimestamp()
-    }, { merge: true }).catch(function(e){ console.warn('install counter 증가 실패:', e.message); });
+    }, { merge: true }).then(function(){
+      try { localStorage.setItem('haeka_install_counted2', String(Date.now())); } catch(e) {}
+    }).catch(function(e){ console.warn('install counter 증가 실패:', e.message); });
   }
 } catch(e) { /* localStorage 접근 실패 시 무시(사파리 private mode 등) */ }
 </script>

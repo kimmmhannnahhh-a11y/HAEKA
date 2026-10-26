@@ -600,8 +600,14 @@ function showAdmin() {
   try {
     var lastPage = sessionStorage.getItem('haeka_admin_page');
     if (lastPage && lastPage !== 'dashboard') {
-      var navEl = document.getElementById('nav-'+lastPage);
-      if (navEl) setTimeout(function(){ goPage(lastPage, navEl); }, 250);
+      // '데이터 등록'·'제휴 링크' 메뉴는 js 가 조금 늦게 붙이니 생길 때까지 기다렸다 누른다
+      var tries = 0;
+      function openLast(){
+        var navEl = document.getElementById('nav-'+lastPage);
+        if (navEl) { navEl.click(); return; }
+        if (++tries < 40) setTimeout(openLast, 250);
+      }
+      setTimeout(openLast, 250);
       return;
     }
   } catch(e) {}
@@ -808,7 +814,8 @@ async function loadDashboard() {
       f.getDocs(f.collection(db,'inquiries')),
       f.getDocs(f.collection(db,'error_reports')),
       f.getDocs(f.collection(db,'editRequests')),
-      f.getDoc(f.doc(db, 'app_meta', 'install_counter'))
+      // 다운로드 수를 못 읽어도 나머지 통계·배지는 떠야 한다
+      f.getDoc(f.doc(db, 'app_meta', 'install_counter')).catch(function(e){ console.warn('다운로드 수 조회 실패:', e.message); return null; })
     ]);
     document.getElementById('stat-stores').textContent = stCount.data().count.toLocaleString();
     var unresInq = 0;
@@ -821,7 +828,9 @@ async function loadDashboard() {
     // 앱 다운로드 수 (디바이스 최초 방문 자동 집계, Firestore app_meta/install_counter)
     var dlEl = document.getElementById('stat-dl');
     var dlSubEl = document.getElementById('stat-dl-sub');
-    if (dlSnap.exists()) {
+    if (!dlSnap) {
+      dlEl.textContent = '-';
+    } else if (dlSnap.exists()) {
       var d = dlSnap.data();
       dlEl.textContent = (d.count != null ? Number(d.count).toLocaleString() : '0');
       if (d.lastInstall && d.lastInstall.seconds) {
@@ -896,13 +905,34 @@ function renderStores(list) {
   document.getElementById('stores-tbody').innerHTML = rows.join('') || '<tr class="empty-row"><td colspan="6">데이터 없음</td></tr>';
 }
 
+var _storeSearchTimer = null, _storeSearchSeq = 0;
 function filterStores(q) {
   var lower = q.toLowerCase();
-  renderStores(_allStores.filter(function(s){
-    var textOk = !lower || s.name.toLowerCase().indexOf(lower) > -1 || (s.city||'').toLowerCase().indexOf(lower) > -1;
+  function pass(s){
+    var textOk = !lower || (s.name||'').toLowerCase().indexOf(lower) > -1 || (s.city||'').toLowerCase().indexOf(lower) > -1;
     var catOk = _storesCat === '전체' || (s.category||'') === _storesCat;
     return textOk && catOk;
-  }));
+  }
+  renderStores(_allStores.filter(pass));
+  // 처음 불러온 건 최근 200곳뿐이라, 검색어가 있으면 서버에서 이름(앞부분)·도시로 더 찾아 붙인다
+  clearTimeout(_storeSearchTimer);
+  var key = lower.replace(/[\s\p{P}\p{S}]/gu, '');
+  if (!key || !window._db) return;
+  var seq = ++_storeSearchSeq;
+  _storeSearchTimer = setTimeout(async function(){
+    var f = window._fbFns, db = window._db;
+    try {
+      var snaps = await Promise.all([
+        f.getDocs(f.query(f.collection(db,'stores'), f.where('nameKey','>=',key), f.where('nameKey','<=',key+''), f.limit(100))),
+        f.getDocs(f.query(f.collection(db,'stores'), f.where('city','==',q.trim()), f.limit(300)))
+      ]);
+      if (seq !== _storeSearchSeq) return;
+      var seen = {};
+      _allStores.forEach(function(s){ seen[s.id] = 1; });
+      snaps.forEach(function(sn){ sn.forEach(function(d){ if (!seen[d.id]) { seen[d.id] = 1; _allStores.push({id:d.id,...d.data()}); } }); });
+      renderStores(_allStores.filter(pass));
+    } catch(e) { console.error(e); }
+  }, 400);
 }
 
 async function loadEditReq() {
@@ -1463,9 +1493,12 @@ function openStoreModal(id) {
     document.getElementById('edit-map-wrap').style.display='none';
   }
   var payOk = store.payOk||[];
-  document.getElementById('edit-payok').innerHTML = CARDS.map(function(card){
+  // 기본 7개 밖의 값(카드가능·현금가능 등)도 칩으로 보여야 저장할 때 안 지워진다
+  var _e = window._esc || function(x){return x;};
+  var chips = CARDS.concat(payOk.filter(function(c){ return CARDS.indexOf(c)<0; }));
+  document.getElementById('edit-payok').innerHTML = chips.map(function(card){
     var on = payOk.indexOf(card)>-1 ? ' on' : '';
-    return '<div class="card-chk'+on+'" data-card="'+card+'" onclick="toggleCard(this)">'+card+'</div>';
+    return '<div class="card-chk'+on+'" data-card="'+_e(card)+'" onclick="toggleCard(this)">'+_e(card)+'</div>';
   }).join('');
   document.getElementById('store-modal').classList.add('on');
 }
@@ -1827,7 +1860,9 @@ async function saveStore() {
     review: document.getElementById('edit-review').value.trim(),
     payOk: payOk
   };
-  if (!isNaN(latVal) && !isNaN(lngVal)) { data.lat = latVal; data.lng = lngVal; }
+  // 앱은 cell(위치 칸)·nameKey(검색 키)로 매장을 찾으니 같이 다시 계산한다
+  data.nameKey = data.name.toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
+  if (!isNaN(latVal) && !isNaN(lngVal)) { data.lat = latVal; data.lng = lngVal; data.cell = Math.floor(latVal * 50) + '_' + Math.floor(lngVal * 50); }
   try {
     var { doc, updateDoc } = window._fbFns2 || {};
     if (!updateDoc) { alert('Firebase updateDoc 미연결'); return; }
@@ -2406,6 +2441,12 @@ async function setMemberStatus(uid, status) {
   try {
     // setDoc with merge: 문서가 없으면 새로 만들고, 있으면 status 필드만 업데이트
     await f.setDoc(f.doc(db, 'users', uid), { status: status }, { merge: true });
+    // 서버 규칙(isBanned)은 bans/{uid} 문서로 막는다: 강퇴·정지는 넣고, 정상 복구는 뺀다
+    if (status === 'banned' || status === 'suspended') {
+      await f.setDoc(f.doc(db, 'bans', uid), { status: status, at: f.serverTimestamp() });
+    } else {
+      await f.deleteDoc(f.doc(db, 'bans', uid));
+    }
     var m = _allMembers.find(function(x){ return x.id === uid; });
     if (m) m.status = status;
     closeMemberModal();

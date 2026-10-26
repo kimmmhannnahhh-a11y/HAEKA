@@ -649,7 +649,7 @@ function selectCountryAll(countryName){
   document.getElementById('store-count').textContent='';
   var listEl=document.getElementById('store-list');
   listEl.innerHTML='<div class="store-loading">불러오는 중...</div>';
-  document.getElementById('store-back-btn').onclick=function(){ showView('view-city'); };
+  document.getElementById('store-back-btn').onclick=showCityView;
   showView('view-stores');
   resetFilters();
   _pageState = { field:'country', value:country.name, rows:[], last:null, done:false, busy:false, label:country.name+' 전체' };
@@ -1012,6 +1012,8 @@ function showView(id){
   if(id!=='view-stores' && typeof _inStores==='function' && _inStores()){ var _si=document.getElementById('search-inp'); if(_si) _si.value=''; _flt.q=''; }
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
+  // 목록에 들어갈 때 기록을 하나 쌓아 둔다: 폰 뒤로가기가 홈이 아니라 검색 화면으로 오게
+  if(id==='view-stores' && !(history.state && history.state.v==='stores')){ try{ history.pushState({v:'stores'}, ''); }catch(e){} }
   _syncSearchHint(id==='view-stores');
   // 도시 사진 그리드는 .view 바깥에 있어서 따로 숨겨야 한다
   var grid = document.getElementById('city-img-grid');
@@ -1019,6 +1021,8 @@ function showView(id){
 }
 
 function showCountryView(){
+  // 목록에서 나갈 때는 쌓아 둔 기록부터 되돌린다(되돌아오면 popstate 가 다시 부른다)
+  if(history.state && history.state.v==='stores'){ history.back(); return; }
   _currentCity=null;
   showView('view-country');
   doSearch(document.getElementById('search-inp').value);
@@ -1078,6 +1082,11 @@ window.addEventListener('DOMContentLoaded', function(){
     inp.value=st.q;
     doSearch(st.q);
   }
+});
+
+window.addEventListener('popstate', function(){
+  var v=document.getElementById('view-stores');
+  if(v && v.classList.contains('active')) showCountryView();
 });
 
 function handleBack(){
