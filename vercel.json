@@ -1,4 +1,12 @@
 {
+  "images": {
+    "sizes": [128, 384, 640, 1080],
+    "formats": ["image/webp"],
+    "minimumCacheTTL": 2592000,
+    "remotePatterns": [
+      { "protocol": "https", "hostname": "firebasestorage.googleapis.com", "pathname": "/v0/b/card-store-finder.firebasestorage.app/**" }
+    ]
+  },
   "headers": [
     {
       "source": "/data/(.*)",
