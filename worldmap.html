@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>해카 세계지도</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;color:#1A1A1A;background:#CFE3F1}
+#map{position:absolute;inset:0;background:#CFE3F1}
+.panel{position:absolute;z-index:1000;top:12px;left:12px;width:250px;max-height:calc(100% - 24px);display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(17,24,39,.16);overflow:hidden}
+.panel-head{padding:14px 16px 12px;border-bottom:1px solid #F0EFEA}
+.panel-title{font-size:15px;font-weight:800;letter-spacing:-.02em}
+.panel-title b{color:#FF3900}
+.panel-sum{margin-top:6px;font-size:12px;color:#6B7280;line-height:1.6}
+.panel-sum strong{color:#1A1A1A;font-variant-numeric:tabular-nums}
+.list{overflow-y:auto;padding:6px 8px 10px}
+.list-h{font-size:11px;font-weight:800;color:#9CA3AF;padding:10px 8px 4px;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center}
+.list-h button{border:0;background:none;color:#DC2626;font-size:11px;font-weight:700;cursor:pointer;padding:0}
+.row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;font-size:13px;cursor:pointer}
+.row:hover{background:#F7F6F3}
+.row .nm{flex:1;font-weight:700}
+.row .ct{font-size:11.5px;color:#9CA3AF}
+.nat-row{font-size:14px;padding:8px 8px}.nat-row .nm{font-weight:800}.nat-row .arr{width:12px;color:#9CA3AF;font-size:11px;flex-shrink:0}.nat-row .ct{background:#F3F4F6;color:#4B5563;border-radius:10px;padding:1px 8px;font-weight:700}.sub-row{padding-left:28px}
+.sq{width:12px;height:12px;border-radius:3px;background:#FACC15;box-shadow:0 0 0 1px rgba(0,0,0,.18);flex-shrink:0}
+.empty{font-size:12px;color:#9CA3AF;padding:6px 8px}
+.toggle{display:none;position:absolute;z-index:1001;top:8px;left:8px;border:0;background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:800;box-shadow:0 6px 20px rgba(17,24,39,.16);cursor:pointer}
+.hint{font-size:11px;color:#9CA3AF;padding:8px 16px 12px;border-top:1px solid #F0EFEA;line-height:1.5}
+/* 지도 위에 늘 보이는 이름 */
+.lbl{pointer-events:none;white-space:nowrap;display:inline-block;transform:translate(-50%,-50%);font-weight:700;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff,0 0 2px #fff}
+.lbl.nat{color:#111827;font-weight:800;letter-spacing:.04em}
+.lbl.nat.t1{font-size:16px}.lbl.nat.t2{font-size:14px}.lbl.nat.t3{font-size:12.5px}.lbl.nat.t4{font-size:11.5px}.lbl.nat.t5{font-size:11px}
+.lbl.reg{font-size:11px;color:#4B5563}
+.lbl.reg.on{color:#111;font-weight:800}
+@media (max-width:640px){
+  .panel{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:44%}
+  .panel.closed{display:none}
+  .toggle{display:block}
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<button class="toggle" id="toggle" onclick="document.getElementById('panel').classList.toggle('closed')">목록</button>
+<div class="panel" id="panel">
+  <div class="panel-head">
+    <div class="panel-title"><b>해카</b> 세계지도</div>
+    <div class="panel-sum" id="sum">불러오는 중...</div>
+  </div>
+  <div class="list" id="list"></div>
+  <div class="hint">해카에 매장이 등록된 지역은 자동으로 노란색이에요. 다른 조각도 누르면 노란색으로 칠해지고, 한 번 더 누르면 지워져요. 확대하면 조각 이름이 나와요. 칠한 내용은 이 브라우저에만 저장돼요.</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+// 세계지도를 지역(도·주·현·직할시) 단위 퍼즐 조각으로 나눠 그린다.
+// 조각을 누르면 노란색으로 칠하고, 한 번 더 누르면 지운다(이 브라우저에만 저장).
+var YELLOW = '#FACC15', LAND = '#F6F4EE', LINE = '#C4BFB2', NATLINE = '#6B7280';
+// 나라 이름(영문) → 한글
+var KO = {"Afghanistan":"아프가니스탄","Albania":"알바니아","Algeria":"알제리","American Samoa":"아메리칸사모아","Andorra":"안도라","Angola":"앙골라","Anguilla":"앵귈라","Antarctica":"남극","Antigua and Barb.":"앤티가 바부다","Argentina":"아르헨티나","Armenia":"아르메니아","Aruba":"아루바","Ashmore and Cartier Is.":"애슈모어 카르티에 제도","Australia":"호주","Austria":"오스트리아","Azerbaijan":"아제르바이잔","Bahamas":"바하마","Bahrain":"바레인","Bangladesh":"방글라데시","Barbados":"바베이도스","Belarus":"벨라루스","Belgium":"벨기에","Belize":"벨리즈","Benin":"베냉","Bermuda":"버뮤다","Bhutan":"부탄","Bolivia":"볼리비아","Bosnia and Herz.":"보스니아 헤르체고비나","Botswana":"보츠와나","Br. Indian Ocean Ter.":"영국령 인도양 지역","Brazil":"브라질","British Virgin Is.":"영국령 버진아일랜드","Brunei":"브루나이","Bulgaria":"불가리아","Burkina Faso":"부르키나파소","Burundi":"부룬디","Cabo Verde":"카보베르데","Cambodia":"캄보디아","Cameroon":"카메룬","Canada":"캐나다","Cayman Is.":"케이맨 제도","Central African Rep.":"중앙아프리카공화국","Chad":"차드","Chile":"칠레","China":"중국","Colombia":"콜롬비아","Comoros":"코모로","Congo":"콩고","Cook Is.":"쿡 제도","Costa Rica":"코스타리카","Croatia":"크로아티아","Cuba":"쿠바","Curaçao":"퀴라소","Cyprus":"키프로스","Czechia":"체코","Côte d'Ivoire":"코트디부아르","Dem. Rep. Congo":"콩고민주공화국","Denmark":"덴마크","Djibouti":"지부티","Dominica":"도미니카 연방","Dominican Rep.":"도미니카공화국","Ecuador":"에콰도르","Egypt":"이집트","El Salvador":"엘살바도르","Eq. Guinea":"적도기니","Eritrea":"에리트레아","Estonia":"에스토니아","Ethiopia":"에티오피아","Faeroe Is.":"페로 제도","Falkland Is.":"포클랜드 제도","Fiji":"피지","Finland":"핀란드","Fr. Polynesia":"프랑스령 폴리네시아","Fr. S. Antarctic Lands":"프랑스령 남방 지역","France":"프랑스","Gabon":"가봉","Gambia":"감비아","Georgia":"조지아","Germany":"독일","Ghana":"가나","Greece":"그리스","Greenland":"그린란드","Grenada":"그레나다","Guam":"괌","Guatemala":"과테말라","Guernsey":"건지섬","Guinea":"기니","Guinea-Bissau":"기니비사우","Guyana":"가이아나","Haiti":"아이티","Heard I. and McDonald Is.":"허드 맥도널드 제도","Honduras":"온두라스","Hong Kong":"홍콩","Hungary":"헝가리","Iceland":"아이슬란드","India":"인도","Indian Ocean Ter.":"호주령 인도양 지역","Indonesia":"인도네시아","Iran":"이란","Iraq":"이라크","Ireland":"아일랜드","Isle of Man":"맨섬","Israel":"이스라엘","Italy":"이탈리아","Jamaica":"자메이카","Japan":"일본","Jersey":"저지섬","Jordan":"요르단","Kazakhstan":"카자흐스탄","Kenya":"케냐","Kiribati":"키리바시","Kosovo":"코소보","Kuwait":"쿠웨이트","Kyrgyzstan":"키르기스스탄","Laos":"라오스","Latvia":"라트비아","Lebanon":"레바논","Lesotho":"레소토","Liberia":"라이베리아","Libya":"리비아","Liechtenstein":"리히텐슈타인","Lithuania":"리투아니아","Luxembourg":"룩셈부르크","Macao":"마카오","Macedonia":"북마케도니아","Madagascar":"마다가스카르","Malawi":"말라위","Malaysia":"말레이시아","Maldives":"몰디브","Mali":"말리","Malta":"몰타","Marshall Is.":"마셜 제도","Mauritania":"모리타니","Mauritius":"모리셔스","Mexico":"멕시코","Micronesia":"미크로네시아","Moldova":"몰도바","Monaco":"모나코","Mongolia":"몽골","Montenegro":"몬테네그로","Montserrat":"몬트세랫","Morocco":"모로코","Mozambique":"모잠비크","Myanmar":"미얀마","N. Cyprus":"북키프로스","N. Mariana Is.":"북마리아나 제도","Namibia":"나미비아","Nauru":"나우루","Nepal":"네팔","Netherlands":"네덜란드","New Caledonia":"누벨칼레도니","New Zealand":"뉴질랜드","Nicaragua":"니카라과","Niger":"니제르","Nigeria":"나이지리아","Niue":"니우에","Norfolk Island":"노퍽섬","North Korea":"북한","Norway":"노르웨이","Oman":"오만","Pakistan":"파키스탄","Palau":"팔라우","Palestine":"팔레스타인","Panama":"파나마","Papua New Guinea":"파푸아뉴기니","Paraguay":"파라과이","Peru":"페루","Philippines":"필리핀","Pitcairn Is.":"핏케언 제도","Poland":"폴란드","Portugal":"포르투갈","Puerto Rico":"푸에르토리코","Qatar":"카타르","Romania":"루마니아","Russia":"러시아","Rwanda":"르완다","S. Geo. and the Is.":"사우스조지아 제도","S. Sudan":"남수단","Saint Helena":"세인트헬레나","Saint Lucia":"세인트루시아","Samoa":"사모아","San Marino":"산마리노","Saudi Arabia":"사우디아라비아","Senegal":"세네갈","Serbia":"세르비아","Seychelles":"세이셸","Siachen Glacier":"시아첸 빙하","Sierra Leone":"시에라리온","Singapore":"싱가포르","Sint Maarten":"신트마르턴","Slovakia":"슬로바키아","Slovenia":"슬로베니아","Solomon Is.":"솔로몬 제도","Somalia":"소말리아","Somaliland":"소말릴란드","South Africa":"남아프리카공화국","South Korea":"대한민국","Spain":"스페인","Sri Lanka":"스리랑카","St-Barthélemy":"생바르텔레미","St-Martin":"생마르탱","St. Kitts and Nevis":"세인트키츠 네비스","St. Pierre and Miquelon":"생피에르 미클롱","St. Vin. and Gren.":"세인트빈센트 그레나딘","Sudan":"수단","Suriname":"수리남","Sweden":"스웨덴","Switzerland":"스위스","Syria":"시리아","São Tomé and Principe":"상투메 프린시페","Taiwan":"대만","Tajikistan":"타지키스탄","Tanzania":"탄자니아","Thailand":"태국","Timor-Leste":"동티모르","Togo":"토고","Tonga":"통가","Trinidad and Tobago":"트리니다드 토바고","Tunisia":"튀니지","Turkey":"튀르키예","Turkmenistan":"투르크메니스탄","Turks and Caicos Is.":"터크스 케이커스 제도","U.S. Virgin Is.":"미국령 버진아일랜드","Uganda":"우간다","Ukraine":"우크라이나","United Arab Emirates":"아랍에미리트","United Kingdom":"영국","United States of America":"미국","Uruguay":"우루과이","Uzbekistan":"우즈베키스탄","Vanuatu":"바누아투","Vatican":"바티칸","Venezuela":"베네수엘라","Vietnam":"베트남","W. Sahara":"서사하라","Wallis and Futuna Is.":"왈리스 푸투나","Yemen":"예멘","Zambia":"잠비아","Zimbabwe":"짐바브웨","eSwatini":"에스와티니","Åland":"올란드 제도",
+// 조각 자료 쪽에서 쓰는 다른 표기
+"Hong Kong S.A.R.":"홍콩","Macao S.A.R":"마카오","Dominican Republic":"도미니카공화국","Czech Republic":"체코","Republic of Serbia":"세르비아","United Republic of Tanzania":"탄자니아","Democratic Republic of the Congo":"콩고민주공화국","Republic of the Congo":"콩고","Ivory Coast":"코트디부아르","Bosnia and Herzegovina":"보스니아 헤르체고비나","Central African Republic":"중앙아프리카공화국","Equatorial Guinea":"적도기니","South Sudan":"남수단","Western Sahara":"서사하라","Solomon Islands":"솔로몬 제도","East Timor":"동티모르","The Bahamas":"바하마","Guinea Bissau":"기니비사우","Swaziland":"에스와티니","Northern Cyprus":"북키프로스","Cape Verde":"카보베르데","Sao Tome and Principe":"상투메 프린시페","Antigua and Barbuda":"앤티가 바부다","Saint Kitts and Nevis":"세인트키츠 네비스","Saint Vincent and the Grenadines":"세인트빈센트 그레나딘","Federated States of Micronesia":"미크로네시아","Marshall Islands":"마셜 제도","Northern Mariana Islands":"북마리아나 제도","Cayman Islands":"케이맨 제도","Faroe Islands":"페로 제도","Falkland Islands":"포클랜드 제도","French Polynesia":"프랑스령 폴리네시아","Cook Islands":"쿡 제도","British Virgin Islands":"영국령 버진아일랜드","United States Virgin Islands":"미국령 버진아일랜드","Turks and Caicos Islands":"터크스 케이커스 제도","Aland":"올란드 제도","Tuvalu":"투발루","Gibraltar":"지브롤터","French Southern and Antarctic Lands":"프랑스령 남방 지역","Wallis and Futuna":"왈리스 푸투나","Saint Pierre and Miquelon":"생피에르 미클롱","Pitcairn Islands":"핏케언 제도","Saint Barthelemy":"생바르텔레미","Saint Martin":"생마르탱","Heard Island and McDonald Islands":"허드 맥도널드 제도","South Georgia and the Islands":"사우스조지아 제도","British Indian Ocean Territory":"영국령 인도양 지역","Indian Ocean Territories":"호주령 인도양 지역","Ashmore and Cartier Islands":"애슈모어 카르티에 제도","Macau S.A.R":"마카오","Gaza Strip":"가자 지구","West Bank":"요르단강 서안","Caribbean Netherlands":"카리브 네덜란드","United States Minor Outlying Islands":"미국령 군소 제도","Coral Sea Islands":"코럴해 제도","Spratly Is.":"스프래틀리 군도","Clipperton Island":"클리퍼턴섬","Dhekelia Sovereign Base Area":"데켈리아","Akrotiri Sovereign Base Area":"아크로티리","US Naval Base Guantanamo Bay":"관타나모","Baykonur Cosmodrome":"바이코누르"};
+
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function load(key, def){ try{ var v=JSON.parse(localStorage.getItem(key)||'null'); return v==null?def:v; }catch(e){ return def; } }
+function save(key, v){ try{ localStorage.setItem(key, JSON.stringify(v)); }catch(e){} }
+
+var paint = load('haeka_worldmap_pieces', {});   // { 조각 키: 1 }
+var pieces = {};                                  // 키 → { key, name, nat, layers:[], center, area, label }
+var labels = [];
+
+// 태평양이 가운데 오도록 서경 쪽(아메리카)을 오른쪽으로 옮겨 그린다
+var SHIFT_AT = -25;
+var map = L.map('map', {
+  preferCanvas:true, zoomControl:false, minZoom:2, maxZoom:10, zoomSnap:.5, worldCopyJump:false,
+  maxBounds:[[-85,-100000],[88,100000]], maxBoundsViscosity:.8
+}).setView([28, 128], 4);
+L.control.zoom({ position:'bottomright' }).addTo(map);
+// 지도는 세 바퀴(-385~-25, -25~335, 335~695)가 이어져 있다. 가운데가 그 범위를 벗어나면 360도 옆의 같은 자리로 옮겨 끝없이 끌 수 있게 한다
+function keepInWorld(){
+  var c = map.getCenter(), lng = c.lng;
+  while(lng > 335) lng -= 360;
+  while(lng < -25) lng += 360;
+  if(lng !== c.lng) map.setView([c.lat, lng], map.getZoom(), { animate:false });
+}
+map.on('moveend', keepInWorld);
+map.attributionControl.setPrefix(false).addAttribution('Natural Earth');
+map.createPane('nat');   map.getPane('nat').style.zIndex = 420;  map.getPane('nat').style.pointerEvents = 'none';
+map.createPane('names'); map.getPane('names').style.zIndex = 470; map.getPane('names').style.pointerEvents = 'none';
+var natRenderer = L.canvas({ pane:'nat' });
+var labelLayer = L.layerGroup().addTo(map);
+// 파리·런던처럼 조각이 작아서 멀리서는 안 보이는 곳은, 칠해졌다는 걸 알 수 있게 노란 점을 같이 찍는다
+map.createPane('marks'); map.getPane('marks').style.zIndex = 440; map.getPane('marks').style.pointerEvents = 'none';
+var markRenderer = L.svg({ pane:'marks' });
+var markLayer = L.layerGroup().addTo(map);
+function showMarks(){
+  markLayer.clearLayers();
+  return;   // 동그라미 표시는 끈다(정신없다는 요청). 조각 색칠만 남긴다
+  var pxPerDeg = 256 * Math.pow(2, map.getZoom()) / 360;
+  Object.keys(pieces).forEach(function(k){
+    if(!isOn(k)) return;
+    var p = pieces[k];
+    if(Math.sqrt(p.area) * pxPerDeg >= 26) return;   // 화면에서 충분히 크게 보이면 점은 필요 없다
+    markLayer.addLayer(L.circleMarker(p.center, { renderer:markRenderer, interactive:false, radius:7, weight:1.5, color:'#8A6D00', fillColor:YELLOW, fillOpacity:1 }));
+  });
+}
+
+function ringInfo(ring){
+  var a=0, sx=0, sy=0, n=ring.length;
+  for(var i=0;i<n-1;i++){ a += ring[i][0]*ring[i+1][1] - ring[i+1][0]*ring[i][1]; sx += ring[i][0]; sy += ring[i][1]; }
+  return { area: Math.abs(a/2), cx: sx/Math.max(1,n-1), cy: sy/Math.max(1,n-1) };
+}
+// GeoJSON 도형을 태평양 중심 좌표로 옮기고, 넓이와 가장 큰 덩어리의 중심을 구한다
+function prep(geom){
+  var polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+  var area = 0, best = null;
+  polys = polys.map(function(poly){
+    // 날짜변경선(±180)을 넘는 고리는 경도가 갑자기 360도 튀어 가로줄이 생긴다 → 앞 점에 이어지게 펴 준다
+    poly = poly.map(function(r){
+      var prev = null;
+      return r.map(function(p){
+        var x = p[0];
+        if(prev !== null){ while(x - prev > 180) x -= 360; while(x - prev < -180) x += 360; }
+        prev = x;
+        return [x, p[1]];
+      });
+    });
+    var mean = poly[0].reduce(function(s,p){ return s+p[0]; }, 0) / poly[0].length;
+    var shifted = mean < SHIFT_AT ? poly.map(function(r){ return r.map(function(p){ return [p[0]+360, p[1]]; }); }) : poly;
+    var info = ringInfo(shifted[0]); area += info.area;
+    if(!best || info.area > best.area) best = info;
+    return shifted;
+  });
+  return { polys:polys, area:area, best:best };
+}
+var auto = {};   // 해카에 매장이 등록된 도시가 들어 있는 조각: { 조각 키: [도시 이름] } — 자동으로 노란색
+function isOn(key){ return !!(paint[key] || auto[key]); }
+var empty = {};  // 조사했지만 넣을 정보가 없던 도시가 든 조각 → 연한 노랑
+var LIGHT_YELLOW = '#FDF1B0';
+// 매장을 넣지 않는 나라 → 나라 전체를 연한 노랑
+//  - 한국·북한: 해카 대상(해외)이 아님
+//  - 위험 지역: 외교부 여행경보가 나라 전체에 4단계(여행금지)·3단계(출국권고)인 나라 + 캄보디아·러시아(운영자 지정). 2026-10-07 확인
+var DANGER_NATIONS = [
+  'Somalia', 'Afghanistan', 'Iraq', 'Yemen', 'Libya', 'Ukraine', 'Sudan', 'Haiti', 'Mali', 'Iran',   // 4단계 여행금지
+  'South Sudan', 'S. Sudan', 'Niger', 'Lebanon', 'Myanmar', 'Belarus', 'Burkina Faso', 'Syria', 'Central African Republic', 'Chad', 'Venezuela',   // 3단계 출국권고(전역)
+  'Cambodia', 'Russia'   // 운영자 지정(공식으로는 일부 지역만 경보)
+];
+var LIGHT_NATIONS = ['South Korea', 'North Korea'].concat(DANGER_NATIONS);
+function styleOf(key){ return { color: LINE, weight: .7, fillColor: isOn(key) ? YELLOW : (empty[key] ? LIGHT_YELLOW : LAND), fillOpacity: 1 }; }
+function clickPiece(key){
+  if(auto[key]) return;   // 해카 등록 지역은 자동으로 칠해지고 지워지지 않는다
+  if(paint[key]) delete paint[key]; else paint[key] = 1;
+  save('haeka_worldmap_pieces', paint);
+  var p = pieces[key];
+  p.layers.forEach(function(l){ l.setStyle(styleOf(key)); });
+  showLabels(true);
+  renderList();
+}
+
+// 같은 땅을 서쪽으로 360도 옮긴 사본을 붙인다 → 왼쪽으로 끌어도 지도가 이어진다
+function withCopy(polys){
+  var out = polys;
+  [-360, 360].forEach(function(dx){
+    out = out.concat(polys.map(function(poly){ return poly.map(function(r){ return r.map(function(p){ return [p[0]+dx, p[1]]; }); }); }));
+  });
+  return out;
+}
+function drawPieces(topo){
+  var fc = topojson.feature(topo, topo.objects.r);
+  // 나라별 넓이·조각 수: 조각이 지나치게 잘게 나뉜 작은 나라(몰타·싱가포르·홍콩 등)는 나라 전체를 한 조각으로 묶는다
+  var nat = {};
+  var prepped = fc.features.map(function(f){
+    var q = prep(f.geometry), a = f.properties.a;
+    (nat[a] = nat[a] || { area:0, n:0 }); nat[a].area += q.area; nat[a].n++;
+    return q;
+  });
+  fc.features.forEach(function(f, i){
+    var p = f.properties, q = prepped[i], N = nat[p.a];
+    var whole = N.n > 1 && (N.area / N.n) < 0.1;        // 나라 전체를 한 조각으로
+    var key = whole ? p.a : (p.g ? p.a + '|' + p.g : p.k);
+    var name = whole ? (KO[p.a] || p.a) : (p.g || p.n || p.a);
+    var piece = pieces[key];
+    if(!piece) piece = pieces[key] = { key:key, name:name, nat:(KO[p.a] || p.a), natRaw:p.a, layers:[], area:0, best:null, whole:whole || N.n === 1 };
+    piece.area += q.area;
+    if(!piece.best || q.best.area > piece.best.area) piece.best = q.best;
+    var layer = L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } }, { style: styleOf(key) });
+    layer.on('click', function(e){ L.DomEvent.stopPropagation(e); clickPiece(key); });
+    layer.addTo(map);
+    piece.layers.push(layer);
+    piece.polys = (piece.polys || []).concat(q.polys);
+  });
+  Object.keys(pieces).forEach(function(key){
+    var p = pieces[key];
+    p.center = [p.best.cy, p.best.cx];
+    // 큰 조각은 일찍, 작은 조각은 확대해야 이름이 나온다. 나라 전체가 한 조각이면 나라 이름이 이미 있으니 조각 이름은 뺀다
+    if(p.whole) return;
+    var z = p.area > 40 ? 3.5 : p.area > 10 ? 4.5 : p.area > 2.5 ? 5 : p.area > .6 ? 6 : p.area > .12 ? 7 : 8;
+    [0, -360, 360].forEach(function(dx){
+      var c = [p.center[0], p.center[1] + dx];
+      var lb = { z:z, key:key, c:c, on:false, painted:null,
+        m: null, make:function(painted){ return L.marker(c, { pane:'names', interactive:false, keyboard:false,
+          icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl reg'+(painted?' on':'')+'">'+esc(p.name)+'</span>' }) }); } };
+      if(!dx) p.label = lb;
+      labels.push(lb);
+    });
+  });
+}
+
+// 나라 경계선(굵게)과 나라 이름
+function drawNations(world, extra){
+  var fc = topojson.feature(world, world.objects.countries);
+  fc.features.concat((extra && extra.features) || []).forEach(function(f){
+    var name = f.properties && f.properties.name; if(!name || !f.geometry) return;
+    var q = prep(f.geometry);
+    L.geoJSON({ type:'Feature', properties:{}, geometry:{ type:'MultiPolygon', coordinates:withCopy(q.polys) } },
+      { renderer:natRenderer, interactive:false, style:{ color:NATLINE, weight:1.2, fill:false } }).addTo(map);
+    var tier = q.area > 250 ? 1 : q.area > 60 ? 2 : q.area > 15 ? 3 : q.area > 3 ? 4 : 5;
+    [0, -360, 360].forEach(function(dx){
+      labels.push({ z:[2, 3, 3.5, 4.5, 5.5][tier-1], zMax: tier <= 2 ? 5 : 99, on:false, nat:true,
+        m: L.marker([q.best.cy, q.best.cx + dx], { pane:'names', interactive:false, keyboard:false,
+          icon: L.divIcon({ className:'', iconSize:[0,0], html:'<span class="lbl nat t'+tier+'">'+esc(KO[name]||name)+'</span>' }) }) });
+    });
+  });
+}
+
+function showLabels(force){
+  showMarks();
+  var z = map.getZoom(), b = map.getBounds().pad(.2);
+  labels.forEach(function(l){
+    var painted = !l.nat && isOn(l.key);
+    // 칠한 조각 이름은 조금 일찍부터 보인다
+    var want = z >= (painted ? Math.min(l.z, 4.5) : l.z) && z <= (l.zMax || 99);
+    if(!l.nat){
+      if(want && !b.contains(l.c)) want = false;
+      if(l.on && (!want || l.painted !== painted)){ labelLayer.removeLayer(l.m); l.on = false; }
+      if(want && !l.on){ l.m = l.make(painted); l.painted = painted; labelLayer.addLayer(l.m); l.on = true; }
+    } else {
+      if(want && !l.on){ labelLayer.addLayer(l.m); l.on = true; }
+      else if(!want && l.on){ labelLayer.removeLayer(l.m); l.on = false; }
+    }
+  });
+}
+map.on('moveend zoomend', function(){ showLabels(); });
+
+var openNat = {};   // 펼쳐 둔 나라
+function jsq(v){ return esc(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function renderList(){
+  var keys = Object.keys(pieces).filter(isOn);
+  var byNat = {};
+  keys.forEach(function(k){ var n = pieces[k].nat; (byNat[n] = byNat[n] || []).push(k); });
+  var nats = Object.keys(byNat).sort(function(x, y){ return byNat[y].length - byNat[x].length || x.localeCompare(y, 'ko'); });
+  var manual = Object.keys(paint).filter(function(k){ return pieces[k] && !auto[k]; }).length;
+  document.getElementById('sum').innerHTML = '칠한 나라 <strong>'+nats.length+'</strong>곳 · 지역 <strong>'+keys.length+'</strong>곳';
+  var html = '';
+  if(!nats.length) html += '<div class="empty">아직 칠한 곳이 없어요</div>';
+  nats.forEach(function(n){
+    var open = !!openNat[n];
+    html += '<div class="row nat-row" onclick="toggleNat(\''+jsq(n)+'\')"><span class="arr">'+(open?'▾':'▸')+'</span><span class="nm">'+esc(n)+'</span><span class="ct">'+byNat[n].length+'</span></div>';
+    if(!open) return;
+    byNat[n].map(function(k){
+      var p = pieces[k], cs = auto[k] || [];
+      // 해카 도시 이름을 앞에, 조각 이름이 다르면 옆에 작게
+      var main = cs.length ? cs.join(', ') : p.name;
+      var sub = (cs.length && cs.indexOf(p.name) < 0) ? p.name : '';
+      return { k:k, main:main, sub:sub, mine:!auto[k] };
+    }).sort(function(x, y){ return x.main.localeCompare(y.main, 'ko'); }).forEach(function(r){
+      html += '<div class="row sub-row" onclick="focusPiece(\''+jsq(r.k)+'\')"><i class="sq"></i><span class="nm">'+esc(r.main)+'</span>'
+        + (r.sub ? '<span class="ct">'+esc(r.sub)+'</span>' : '') + (r.mine ? '<span class="ct">직접</span>' : '') + '</div>';
+    });
+  });
+  if(manual) html += '<div class="list-h"><span>직접 칠한 곳 '+manual+'곳</span><button onclick="clearAll()">모두 지우기</button></div>';
+  document.getElementById('list').innerHTML = html;
+}
+window.toggleNat = function(n){ openNat[n] = !openNat[n]; renderList(); };
+window.clearAll = function(){
+  if(!confirm('칠한 곳을 모두 지울까요?')) return;
+  var keys = Object.keys(paint); paint = {}; save('haeka_worldmap_pieces', paint);
+  keys.forEach(function(k){ if(pieces[k]) pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); }); });
+  showLabels(true); renderList();
+};
+window.focusPiece = function(key){
+  var p = pieces[key]; if(!p) return;
+  map.flyTo(p.center, Math.max(map.getZoom(), p.area > 10 ? 5 : p.area > 1 ? 6 : 7.5), { duration:.6 });
+};
+
+// ── 해카 등록 도시가 들어 있는 조각을 찾아 자동으로 칠한다 ──
+function inRing(x, y, ring){
+  var inside = false;
+  for(var i=0, j=ring.length-1; i<ring.length; j=i++){
+    var xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
+    if(((yi>y) !== (yj>y)) && (x < (xj-xi)*(y-yi)/(yj-yi)+xi)) inside = !inside;
+  }
+  return inside;
+}
+function pieceAt(lat, lng, name){
+  var x = lng < SHIFT_AT ? lng + 360 : lng, best = null, bd = 1e9;
+  // 도시와 이름이 같은 조각이 바로 근처에 있으면 그 조각을 쓴다(타이베이·프라하처럼 작은 조각은 옆 조각으로 잘못 잡히기 쉽다)
+  if(name){
+    var nb = null, nd = 1e9;
+    for(var k0 in pieces){
+      var p0 = pieces[k0]; if(p0.name !== name) continue;
+      p0.polys.forEach(function(poly){ poly[0].forEach(function(pt){ var d = Math.abs(pt[0]-x) + Math.abs(pt[1]-lat); if(d < nd){ nd = d; nb = k0; } }); });
+    }
+    if(nb && nd < .6) return nb;
+  }
+  for(var k in pieces){
+    var p = pieces[k];
+    for(var i=0;i<p.polys.length;i++){
+      if(inRing(x, lat, p.polys[i][0])) return k;
+      // 해안 도시는 단순화된 경계 밖에 찍힐 수 있어서, 가장 가까운 조각도 기억해 둔다
+      var r = p.polys[i][0];
+      for(var j=0;j<r.length;j+=3){ var d = Math.abs(r[j][0]-x) + Math.abs(r[j][1]-lat); if(d < bd){ bd = d; best = k; } }
+    }
+  }
+  return bd < .4 ? best : null;
+}
+function paintRegistered(list){
+  list.forEach(function(c){
+    var k = pieceAt(c.lat, c.lng, c.name); if(!k) return;
+    (auto[k] = auto[k] || []).push(c.name);
+  });
+  Object.keys(auto).forEach(function(k){ pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); }); });
+  showLabels(true); renderList();
+}
+
+renderList();
+Promise.all([
+  fetch('data/world-regions.json').then(function(r){ return r.json(); }),
+  fetch('data/world-50m.json').then(function(r){ return r.json(); }),
+  fetch('data/world-extra.json').then(function(r){ return r.json(); }).catch(function(){ return null; })
+]).then(function(r){
+  drawPieces(r[0]);
+  drawNations(r[1], r[2]);
+  showLabels(true);
+  renderList();
+  return fetch('data/cities.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(paintRegistered).then(function(){
+    return fetch('data/checked.json?t=' + Date.now()).then(function(x){ return x.json(); }).then(function(list){
+      // 매장을 넣지 않는 나라(LIGHT_NATIONS)는 나라 전체를 연한 노랑으로 칠해 둔다
+      Object.keys(pieces).forEach(function(k){
+        if(LIGHT_NATIONS.indexOf(pieces[k].natRaw) < 0 || isOn(k)) return;
+        empty[k] = 1;
+        pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); });
+      });
+      list.forEach(function(c){
+        var k = pieceAt(c.lat, c.lng, c.name); if(!k || isOn(k)) return;
+        empty[k] = 1;
+        pieces[k].layers.forEach(function(l){ l.setStyle(styleOf(k)); });
+      });
+    }).catch(function(){});
+  });
+}).catch(function(e){ console.error(e); document.getElementById('sum').textContent = '지도를 불러오지 못했어요'; });
+</script>
+</body>
+</html>

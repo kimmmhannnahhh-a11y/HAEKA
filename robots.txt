@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Disallow admin
+Disallow: /heka_admin.html
+
+Sitemap: https://haeka.vercel.app/sitemap.xml
